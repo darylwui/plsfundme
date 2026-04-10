@@ -46,12 +46,24 @@ export default async function DashboardPage() {
     recentPledges = (pledges as unknown as PledgeWithBacker[]) ?? [];
   }
 
-  const statusVariant: Record<string, "violet" | "lime" | "coral" | "neutral"> = {
+  const statusVariant: Record<string, "violet" | "lime" | "coral" | "neutral" | "amber"> = {
     draft: "neutral",
+    pending_review: "amber",
     active: "violet",
     funded: "lime",
     failed: "coral",
     cancelled: "neutral",
+    removed: "coral",
+  };
+
+  const statusLabel: Record<string, string> = {
+    pending_review: "Pending review",
+    active: "Live",
+    funded: "Funded",
+    failed: "Failed",
+    cancelled: "Rejected",
+    removed: "Removed",
+    draft: "Draft",
   };
 
   return (
@@ -122,7 +134,7 @@ export default async function DashboardPage() {
                   </h2>
                   <div className="flex items-center gap-2 mt-1">
                     <Badge variant={statusVariant[activeProject.status] ?? "neutral"}>
-                      {activeProject.status}
+                      {statusLabel[activeProject.status] ?? activeProject.status}
                     </Badge>
                     <span className="text-xs text-[var(--color-ink-subtle)]">
                       Ends {formatDate(activeProject.deadline)}
@@ -182,7 +194,7 @@ export default async function DashboardPage() {
                       </p>
                     </div>
                     <Badge variant={statusVariant[p.status] ?? "neutral"}>
-                      {p.status}
+                      {statusLabel[p.status] ?? p.status}
                     </Badge>
                   </Link>
                 ))}

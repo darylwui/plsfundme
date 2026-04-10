@@ -14,10 +14,10 @@ const CREATOR_STEPS = [
       "Set your funding goal, deadline, and reward tiers. Tell your story with a compelling description and cover image.",
   },
   {
-    icon: "🚀",
-    title: "Launch & share",
+    icon: "🔍",
+    title: "Submit for review",
     description:
-      "Go live and share your campaign with your network. Every backer brings you closer to your goal.",
+      "Our team reviews your campaign within 1–2 business days. Once approved, you go live — then share with your network!",
   },
   {
     icon: "🎯",

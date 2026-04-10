@@ -147,7 +147,7 @@ export default async function DashboardBackersPage() {
                     </td>
                     <td className="px-4 py-3">
                       <Badge variant={pledge.status === "captured" || pledge.status === "paynow_captured" ? "lime" : "violet"}>
-                        {pledge.status}
+                        {pledge.status === "captured" || pledge.status === "paynow_captured" ? "Charged" : "Authorised"}
                       </Badge>
                     </td>
                     <td className="px-4 py-3 text-[var(--color-ink-muted)]">
