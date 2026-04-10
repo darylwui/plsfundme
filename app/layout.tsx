@@ -16,6 +16,14 @@ export const metadata: Metadata = {
   title: "get that bread — Back bold ideas",
   description:
     "Singapore's crowdfunding platform for entrepreneurs. Back bold ideas, fund the future.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/bread-icon.png", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/bread-icon.png",
+  },
   openGraph: {
     title: "get that bread",
     description: "Back bold ideas. Fund the future.",
