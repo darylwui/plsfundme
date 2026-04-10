@@ -42,7 +42,6 @@ export function CheckoutForm({
   const [note, setNote] = useState("");
 
   const platformFee = amount * 0.05;
-  const returnUrl = `${process.env.NEXT_PUBLIC_APP_URL}/backing/confirmation?pledge=${pledgeId}`;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -50,6 +49,10 @@ export function CheckoutForm({
 
     setLoading(true);
     setError(null);
+
+    // Use window.location.origin so the return URL always matches the
+    // actual domain (works on all Vercel deployments, preview or prod)
+    const returnUrl = `${window.location.origin}/backing/confirmation?pledge=${pledgeId}`;
 
     const { error: submitError } = await elements.submit();
     if (submitError) {
