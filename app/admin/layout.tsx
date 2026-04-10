@@ -2,12 +2,11 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Navbar } from "@/components/layout/Navbar";
-import { ShieldCheck, Users, Tag, Rocket } from "lucide-react";
+import { ShieldCheck, Tag, Rocket } from "lucide-react";
 
 const NAV = [
   { href: "/admin", label: "Overview", icon: ShieldCheck },
   { href: "/admin/projects", label: "Projects", icon: Rocket },
-  { href: "/admin/kyc", label: "KYC Approvals", icon: Users },
   { href: "/admin/categories", label: "Categories", icon: Tag },
 ];
 

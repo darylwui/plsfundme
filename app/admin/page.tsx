@@ -3,19 +3,19 @@ import { createClient } from "@/lib/supabase/server";
 export default async function AdminOverviewPage() {
   const supabase = await createClient();
 
-  const [{ count: pendingKyc }, { count: pendingProjects }, { count: activeProjects }, { count: totalPledges }] =
+  const [{ count: pendingProjects }, { count: activeProjects }, { count: totalPledges }, { count: totalUsers }] =
     await Promise.all([
-      supabase.from("profiles").select("*", { count: "exact", head: true }).eq("kyc_status", "pending"),
       supabase.from("projects").select("*", { count: "exact", head: true }).eq("status", "pending_review"),
       supabase.from("projects").select("*", { count: "exact", head: true }).eq("status", "active"),
       supabase.from("pledges").select("*", { count: "exact", head: true }).in("status", ["authorized", "paynow_captured", "captured"]),
+      supabase.from("profiles").select("*", { count: "exact", head: true }),
     ]);
 
   const stats = [
-    { label: "Pending review", value: pendingProjects ?? 0, emoji: "⏳", href: "/admin/projects" },
-    { label: "Pending KYC", value: pendingKyc ?? 0, emoji: "🪪", href: "/admin/kyc" },
-    { label: "Active campaigns", value: activeProjects ?? 0, emoji: "🚀", href: "/explore" },
-    { label: "Total pledges", value: totalPledges ?? 0, emoji: "💳", href: "/admin" },
+    { label: "Pending review", value: pendingProjects ?? 0, emoji: "⏳" },
+    { label: "Active campaigns", value: activeProjects ?? 0, emoji: "🚀" },
+    { label: "Total pledges", value: totalPledges ?? 0, emoji: "💳" },
+    { label: "Total users", value: totalUsers ?? 0, emoji: "👥" },
   ];
 
   return (

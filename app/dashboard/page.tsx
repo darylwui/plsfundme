@@ -15,7 +15,7 @@ export default async function DashboardPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("display_name, kyc_status")
+    .select("display_name")
     .eq("id", user!.id)
     .single();
 
@@ -85,25 +85,6 @@ export default async function DashboardPage() {
           </Button>
         </Link>
       </div>
-
-      {/* KYC warning */}
-      {profile?.kyc_status === "unverified" && (
-        <div className="rounded-[var(--radius-card)] bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 p-4 flex items-start gap-3">
-          <span className="text-xl shrink-0">⚠️</span>
-          <div>
-            <p className="font-bold text-sm text-amber-800 dark:text-amber-200">
-              Identity verification required
-            </p>
-            <p className="text-sm text-amber-700 dark:text-amber-300 mt-0.5">
-              Complete KYC verification before you can launch a campaign and
-              receive payouts.
-            </p>
-            <Link href="/dashboard/kyc" className="text-sm font-semibold text-amber-800 dark:text-amber-200 underline mt-1 inline-block">
-              Verify now →
-            </Link>
-          </div>
-        </div>
-      )}
 
       {typedProjects.length === 0 ? (
         /* Empty state */

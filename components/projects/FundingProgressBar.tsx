@@ -1,5 +1,8 @@
-import { fundingPercent, formatSgd } from "@/lib/utils/currency";
+"use client";
+
+import { fundingPercent } from "@/lib/utils/currency";
 import { daysRemaining } from "@/lib/utils/dates";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 interface FundingProgressBarProps {
   pledged: number;
@@ -16,6 +19,7 @@ export function FundingProgressBar({
   backerCount,
   size = "md",
 }: FundingProgressBarProps) {
+  const { convert, format } = useCurrency();
   const percent = fundingPercent(pledged, goal);
   const days = daysRemaining(deadline);
   const funded = pledged >= goal;
@@ -44,11 +48,11 @@ export function FundingProgressBar({
       >
         <div>
           <span className="font-bold text-[var(--color-ink)]">
-            {formatSgd(pledged)}
+            {format(convert(pledged))}
           </span>
           <span className="text-[var(--color-ink-subtle)]">
             {" "}
-            raised of {formatSgd(goal)}
+            raised of {format(convert(goal))}
           </span>
         </div>
         <div className="flex items-center gap-3 text-[var(--color-ink-muted)] shrink-0">

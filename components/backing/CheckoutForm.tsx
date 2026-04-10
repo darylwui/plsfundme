@@ -7,9 +7,10 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
-import { Shield, CreditCard, Smartphone } from "lucide-react";
+import { Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatSgd } from "@/lib/utils/currency";
+import { useCurrency, SGD_TO_USD, USD_TO_SGD } from "@/contexts/CurrencyContext";
 import type { ProjectWithRelations } from "@/types/project";
 import type { Reward } from "@/types/reward";
 import type { PaymentMethodType } from "@/types/database.types";
@@ -35,13 +36,28 @@ export function CheckoutForm({
   const stripe = useStripe();
   const elements = useElements();
   const router = useRouter();
+  const { currency } = useCurrency();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [amount, setAmount] = useState(initialAmount);
+  // displayAmount is what the user sees/types in their chosen currency
+  const [displayAmount, setDisplayAmount] = useState(
+    currency === "USD"
+      ? Math.ceil(initialAmount * SGD_TO_USD)
+      : initialAmount
+  );
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [note, setNote] = useState("");
 
-  const platformFee = amount * 0.05;
+  // The real SGD amount used for Stripe — always rounded to whole dollars
+  const sgdAmount = currency === "USD"
+    ? Math.round(displayAmount * USD_TO_SGD)
+    : displayAmount;
+
+  const platformFee = sgdAmount * 0.05;
+
+  // Minimum in display currency
+  const minSgd = selectedReward?.minimum_pledge_sgd ?? 1;
+  const minDisplay = currency === "USD" ? Math.ceil(minSgd * SGD_TO_USD) : minSgd;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -50,8 +66,6 @@ export function CheckoutForm({
     setLoading(true);
     setError(null);
 
-    // Use window.location.origin so the return URL always matches the
-    // actual domain (works on all Vercel deployments, preview or prod)
     const returnUrl = `${window.location.origin}/backing/confirmation?pledge=${pledgeId}`;
 
     const { error: submitError } = await elements.submit();
@@ -80,8 +94,9 @@ export function CheckoutForm({
       setError(result.error.message ?? "Payment failed.");
       setLoading(false);
     }
-    // On success Stripe redirects to return_url
   }
+
+  const currencyPrefix = currency === "USD" ? "US$" : "S$";
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
@@ -104,26 +119,31 @@ export function CheckoutForm({
         {/* Amount input */}
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium text-[var(--color-ink)]">
-            Pledge amount (SGD)
+            Pledge amount ({currency})
             {selectedReward && (
               <span className="text-[var(--color-ink-subtle)] font-normal ml-1">
-                — min {formatSgd(selectedReward.minimum_pledge_sgd)}
+                — min {currencyPrefix}{minDisplay}
               </span>
             )}
           </label>
           <div className="relative">
             <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-[var(--color-ink-muted)]">
-              S$
+              {currencyPrefix}
             </span>
             <input
               type="number"
-              min={selectedReward?.minimum_pledge_sgd ?? 1}
+              min={minDisplay}
               step={1}
-              value={amount}
-              onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
-              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] pl-9 pr-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)]"
+              value={displayAmount}
+              onChange={(e) => setDisplayAmount(parseFloat(e.target.value) || 0)}
+              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] pl-10 pr-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)]"
             />
           </div>
+          {currency === "USD" && (
+            <p className="text-xs text-[var(--color-ink-subtle)]">
+              ≈ {formatSgd(sgdAmount)} SGD charged · Rate: 1 USD = {USD_TO_SGD.toFixed(2)} SGD
+            </p>
+          )}
         </div>
 
         <div className="mt-3 pt-3 border-t border-[var(--color-border)] flex flex-col gap-1.5 text-sm">
@@ -132,8 +152,8 @@ export function CheckoutForm({
             <span>{formatSgd(platformFee)}</span>
           </div>
           <div className="flex justify-between font-bold text-[var(--color-ink)]">
-            <span>Total charged</span>
-            <span>{formatSgd(amount)}</span>
+            <span>Total charged (SGD)</span>
+            <span>{formatSgd(sgdAmount)}</span>
           </div>
         </div>
       </div>
@@ -192,7 +212,7 @@ export function CheckoutForm({
       )}
 
       <Button type="submit" size="lg" fullWidth loading={loading || !stripe}>
-        Confirm pledge — {formatSgd(amount)}
+        Confirm pledge — {formatSgd(sgdAmount)}
       </Button>
 
       <p className="text-xs text-center text-[var(--color-ink-subtle)] flex items-center justify-center gap-1.5">

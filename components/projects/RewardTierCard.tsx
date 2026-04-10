@@ -1,8 +1,8 @@
 "use client";
 
 import { Package, Users, Calendar } from "lucide-react";
-import { formatSgd } from "@/lib/utils/currency";
 import { formatDateShort } from "@/lib/utils/dates";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import type { Reward } from "@/types/reward";
 
 interface RewardTierCardProps {
@@ -18,6 +18,7 @@ export function RewardTierCard({
   onSelect,
   disabled = false,
 }: RewardTierCardProps) {
+  const { convert, format } = useCurrency();
   const isSoldOut =
     reward.max_backers !== null &&
     reward.claimed_count >= reward.max_backers;
@@ -49,7 +50,7 @@ export function RewardTierCard({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="font-black text-lg text-[var(--color-brand-violet)]">
-              {formatSgd(reward.minimum_pledge_sgd)}+
+              {format(convert(reward.minimum_pledge_sgd))}+
             </span>
             {isSoldOut && (
               <span className="text-xs font-semibold text-[var(--color-brand-coral)] bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded-full">
