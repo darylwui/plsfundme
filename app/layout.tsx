@@ -18,10 +18,7 @@ export const metadata: Metadata = {
   description:
     "Singapore's crowdfunding platform for entrepreneurs. Back bold ideas, fund the future.",
   icons: {
-    icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/bread-icon.png", type: "image/png" },
-    ],
+    icon: "/bread-icon.png",
     shortcut: "/favicon.ico",
     apple: "/bread-icon.png",
   },
