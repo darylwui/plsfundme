@@ -120,7 +120,7 @@ export async function sendProjectApprovedEmail(args: ProjectApprovedArgs) {
     subject: `🎉 Your campaign "${args.projectTitle}" is now live!`,
     html: `
       <h2>Great news, ${args.creatorName}! 🎉</h2>
-      <p>Your campaign <strong>${args.projectTitle}</strong> has been reviewed and approved. It is now live on plsfundme and visible to backers.</p>
+      <p>Your campaign <strong>${args.projectTitle}</strong> has been reviewed and approved. It is now live on get that bread and visible to backers.</p>
       <p>Share it with your network to start raising funds!</p>
       <a href="${appUrl}/projects/${args.projectSlug}" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
         View your campaign
@@ -136,7 +136,7 @@ export async function sendProjectRejectedEmail(args: ProjectRejectedArgs) {
     subject: `Your campaign "${args.projectTitle}" was not approved`,
     html: `
       <h2>Hi ${args.creatorName},</h2>
-      <p>Thank you for submitting <strong>${args.projectTitle}</strong> to plsfundme. After review, we were unable to approve your campaign at this time.</p>
+      <p>Thank you for submitting <strong>${args.projectTitle}</strong> to get that bread. After review, we were unable to approve your campaign at this time.</p>
       <p><strong>Reason:</strong> ${args.reason}</p>
       <p>You're welcome to revise your campaign and resubmit. If you have questions, please reply to this email.</p>
       <a href="${appUrl}/dashboard/projects" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
@@ -153,7 +153,7 @@ export async function sendProjectRemovedEmail(args: ProjectRemovedArgs) {
     subject: `Your campaign "${args.projectTitle}" has been removed`,
     html: `
       <h2>Hi ${args.creatorName},</h2>
-      <p>We have removed your campaign <strong>${args.projectTitle}</strong> from plsfundme due to a violation of our <a href="${appUrl}/terms">Terms of Service</a>.</p>
+      <p>We have removed your campaign <strong>${args.projectTitle}</strong> from get that bread due to a violation of our <a href="${appUrl}/terms">Terms of Service</a>.</p>
       <p><strong>Reason:</strong> ${args.reason}</p>
       <p>Any active pledges will be refunded to backers. If you believe this is a mistake, please contact us by replying to this email.</p>
     `,

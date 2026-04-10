@@ -10,7 +10,7 @@ interface ExplorePageProps {
 }
 
 export const metadata = {
-  title: "Explore projects — plsfundme",
+  title: "Explore projects — get that bread",
   description: "Discover exciting campaigns from Singapore entrepreneurs.",
 };
 

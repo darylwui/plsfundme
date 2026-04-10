@@ -13,13 +13,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "plsfundme — Back bold ideas",
+  title: "get that bread — Back bold ideas",
   description:
     "Singapore's crowdfunding platform for entrepreneurs. Back bold ideas, fund the future.",
   openGraph: {
-    title: "plsfundme",
+    title: "get that bread",
     description: "Back bold ideas. Fund the future.",
-    siteName: "plsfundme",
+    siteName: "get that bread",
     locale: "en_SG",
     type: "website",
   },

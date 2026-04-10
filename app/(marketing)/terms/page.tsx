@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — plsfundme",
-  description: "Terms of Service for plsfundme, Singapore's reward-based crowdfunding platform.",
+  title: "Terms of Service — get that bread",
+  description: "Terms of Service for get that bread, Singapore's reward-based crowdfunding platform.",
 };
 
 const LAST_UPDATED = "10 April 2026";
@@ -37,7 +37,7 @@ export default function TermsPage() {
           </Section>
 
           <Section title="2. Eligibility">
-            <p>You must meet the following requirements to use plsfundme:</p>
+            <p>You must meet the following requirements to use get that bread:</p>
             <ul>
               <li>You are at least 18 years of age.</li>
               <li>
@@ -54,7 +54,7 @@ export default function TermsPage() {
           </Section>
 
           <Section title="3. Creator Obligations">
-            <p>As a creator launching a campaign on plsfundme, you agree to:</p>
+            <p>As a creator launching a campaign on get that bread, you agree to:</p>
             <ul>
               <li>
                 <strong>Provide accurate information.</strong> All campaign descriptions, images, funding goals, and
@@ -139,7 +139,7 @@ export default function TermsPage() {
 
           <Section title="7. Prohibited Content & Conduct">
             <p>
-              The following types of campaigns, content, or conduct are strictly prohibited on plsfundme:
+              The following types of campaigns, content, or conduct are strictly prohibited on get that bread:
             </p>
             <ul>
               <li>Campaigns that are fraudulent, deceptive, or misleading in any way.</li>
@@ -168,7 +168,7 @@ export default function TermsPage() {
 
           <Section title="8. Admin Review & Removal">
             <p>
-              All campaigns submitted to plsfundme are subject to admin review before going live. We reserve the
+              All campaigns submitted to get that bread are subject to admin review before going live. We reserve the
               right to:
             </p>
             <ul>
@@ -189,7 +189,7 @@ export default function TermsPage() {
 
           <Section title="9. Intellectual Property">
             <p>
-              By uploading content to plsfundme (including images, descriptions, and videos), you grant us a
+              By uploading content to get that bread (including images, descriptions, and videos), you grant us a
               non-exclusive, royalty-free, worldwide licence to display and promote that content on our platform
               for the purposes of operating your campaign. You retain ownership of your content.
             </p>
@@ -210,14 +210,14 @@ export default function TermsPage() {
               <li>Technical failures, downtime, or errors beyond our reasonable control.</li>
             </ul>
             <p>
-              Our total liability to you for any claim arising from your use of plsfundme shall not exceed the
-              total fees paid by you to plsfundme in the 12 months preceding the claim.
+              Our total liability to you for any claim arising from your use of get that bread shall not exceed the
+              total fees paid by you to get that bread in the 12 months preceding the claim.
             </p>
           </Section>
 
           <Section title="11. Privacy">
             <p>
-              Your use of plsfundme is also governed by our{" "}
+              Your use of get that bread is also governed by our{" "}
               <a href="/privacy">Privacy Policy</a>, which is incorporated into these Terms by reference. By
               using the platform, you consent to our collection and use of your data as described in the Privacy
               Policy, in accordance with Singapore&apos;s Personal Data Protection Act 2012 (PDPA).
@@ -227,7 +227,7 @@ export default function TermsPage() {
           <Section title="12. Amendments">
             <p>
               We may update these Terms from time to time. We will notify users of material changes by email or
-              by posting a notice on the platform. Your continued use of plsfundme after changes take effect
+              by posting a notice on the platform. Your continued use of get that bread after changes take effect
               constitutes your acceptance of the updated Terms.
             </p>
           </Section>

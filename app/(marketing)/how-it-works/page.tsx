@@ -3,7 +3,7 @@ import { ArrowRight, Rocket, Users, DollarSign, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const metadata = {
-  title: "How it works — plsfundme",
+  title: "How it works — get that bread",
 };
 
 const CREATOR_STEPS = [
@@ -59,7 +59,7 @@ export default function HowItWorksPage() {
       {/* Hero */}
       <div className="text-center mb-16">
         <h1 className="text-4xl font-black text-[var(--color-ink)] tracking-tight">
-          How plsfundme works
+          How get that bread works
         </h1>
         <p className="mt-4 text-lg text-[var(--color-ink-muted)] max-w-xl mx-auto">
           All-or-nothing crowdfunding for Singapore entrepreneurs. Simple, safe, and transparent.

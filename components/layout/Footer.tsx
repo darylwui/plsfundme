@@ -8,9 +8,11 @@ export function Footer() {
           <div className="col-span-2 md:col-span-1">
             <Link
               href="/"
-              className="font-black text-xl tracking-tight text-[var(--color-ink)]"
+              className="font-black text-xl tracking-tight text-[var(--color-ink)] flex items-center gap-1.5"
             >
-              <span className="text-[var(--color-brand-violet)]">pls</span>fundme
+              <img src="/bread-icon.png" alt="" className="w-6 h-6 object-contain" />
+              <span className="text-[var(--color-brand-violet)]">get</span>
+              <span>that bread</span>
             </Link>
             <p className="mt-2 text-sm text-[var(--color-ink-muted)]">
               Singapore&apos;s platform for bold entrepreneurs.
@@ -83,7 +85,7 @@ export function Footer() {
 
         <div className="mt-10 pt-6 border-t border-[var(--color-border)] flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-xs text-[var(--color-ink-subtle)]">
-            © {new Date().getFullYear()} plsfundme. All rights reserved.
+            © {new Date().getFullYear()} get that bread. All rights reserved.
           </p>
           <p className="text-xs text-[var(--color-ink-subtle)]">
             Payments secured by Stripe · Regulated under MAS Payment Services Act

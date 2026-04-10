@@ -37,7 +37,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       danger:
         "bg-[var(--color-brand-coral)] text-white hover:bg-red-600 active:scale-[0.98]",
       inverse:
-        "bg-white text-[var(--color-brand-violet)] hover:bg-violet-50 active:scale-[0.98] shadow-lg",
+        "bg-white text-[var(--color-brand-violet)] hover:bg-[var(--color-brand-violet)] hover:text-white active:scale-[0.98] active:bg-violet-700 shadow-lg transition-colors",
     };
 
     const sizes = {

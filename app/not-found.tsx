@@ -7,7 +7,7 @@ const SUPPORT_EMAIL = "support@plsfundme.sg";
 export default function NotFound() {
   const subject = encodeURIComponent("404 Page Not Found");
   const body = encodeURIComponent(
-    "Hi,\n\nI encountered a 404 error on plsfundme.\n\nPage URL: (paste URL here)\nWhat I was trying to do: (describe here)\n\nThanks"
+    "Hi,\n\nI encountered a 404 error on get that bread.\n\nPage URL: (paste URL here)\nWhat I was trying to do: (describe here)\n\nThanks"
   );
 
   return (

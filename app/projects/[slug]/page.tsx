@@ -40,7 +40,7 @@ export async function generateMetadata({
   const project = await getProject(slug);
   if (!project) return {};
   return {
-    title: `${project.title} — plsfundme`,
+    title: `${project.title} — get that bread`,
     description: project.short_description,
     openGraph: {
       title: project.title,

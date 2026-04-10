@@ -31,9 +31,11 @@ export function Navbar() {
           {/* Logo */}
           <Link
             href="/"
-            className="font-black text-xl tracking-tight text-[var(--color-ink)] hover:text-[var(--color-brand-violet)] transition-colors"
+            className="font-black text-xl tracking-tight text-[var(--color-ink)] hover:opacity-80 transition-opacity flex items-center gap-1.5"
           >
-            <span className="text-[var(--color-brand-violet)]">pls</span>fundme
+            <img src="/bread-icon.png" alt="" className="w-6 h-6 object-contain" />
+            <span className="text-[var(--color-brand-violet)]">get</span>
+            <span>that bread</span>
           </Link>
 
           {/* Desktop nav */}
