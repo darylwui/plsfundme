@@ -14,11 +14,12 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
   const { submitted } = await searchParams;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
 
   const { data: projects } = await supabase
     .from("projects")
     .select("id, title, slug, status, funding_goal_sgd, amount_pledged_sgd, backer_count, deadline, created_at, cover_image_url")
-    .eq("creator_id", user!.id)
+    .eq("creator_id", user.id)
     .order("created_at", { ascending: false });
 
   const statusVariant: Record<string, "violet" | "lime" | "coral" | "neutral" | "amber"> = {
@@ -81,7 +82,7 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
       ) : (
         <div className="flex flex-col gap-4">
           {projects.map((project) => {
-            const percent = fundingPercent(project.amount_pledged_sgd, project.funding_goal_sgd);
+            const percent = fundingPercent(project.amount_pledged_sgd ?? 0, project.funding_goal_sgd);
             const days = daysRemaining(project.deadline);
 
             return (
@@ -128,7 +129,7 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
                       />
                     </div>
                     <span className="text-xs font-semibold text-[var(--color-ink)] shrink-0">
-                      {formatSgd(project.amount_pledged_sgd)} · {percent}% · {project.backer_count} backers
+                      {formatSgd(project.amount_pledged_sgd ?? 0)} · {percent}% · {project.backer_count ?? 0} backers
                     </span>
                   </div>
                 </div>

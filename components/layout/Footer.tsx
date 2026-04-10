@@ -11,8 +11,7 @@ export function Footer() {
               className="font-black text-xl tracking-tight text-[var(--color-ink)] flex items-center gap-1.5"
             >
               <img src="/bread-icon.png" alt="" className="w-6 h-6 object-contain" />
-              <span className="text-[var(--color-brand-violet)]">get</span>
-              <span>that bread</span>
+              <span>get that bread</span>
             </Link>
             <p className="mt-2 text-sm text-[var(--color-ink-muted)]">
               Singapore&apos;s platform for bold entrepreneurs.

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/layout/Navbar";
 
-const SUPPORT_EMAIL = "support@plsfundme.sg";
+const SUPPORT_EMAIL = "support@getthatbread.sg";
 
 export default function NotFound() {
   const subject = encodeURIComponent("404 Page Not Found");

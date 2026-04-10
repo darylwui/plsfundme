@@ -35,7 +35,7 @@ interface PledgeRefundedArgs {
   amount: number;
 }
 
-const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://plsfundme.sg";
+const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://getthatbread.sg";
 
 export async function sendCampaignFundedEmail(args: CampaignFundedArgs) {
   return resend.emails.send({

@@ -6,7 +6,7 @@ export const metadata: Metadata = {
 };
 
 const LAST_UPDATED = "10 April 2026";
-const CONTACT_EMAIL = "support@plsfundme.sg";
+const CONTACT_EMAIL = "support@getthatbread.sg";
 
 export default function TermsPage() {
   return (
@@ -23,11 +23,11 @@ export default function TermsPage() {
 
         <div className="prose prose-sm max-w-none text-[var(--color-ink)] prose-headings:text-[var(--color-ink)] prose-headings:font-black prose-a:text-[var(--color-brand-violet)] space-y-8">
 
-          <Section title="1. About plsfundme">
+          <Section title="1. About get that bread">
             <p>
-              plsfundme (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;the platform&rdquo;) is a reward-based crowdfunding
+              get that bread (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;the platform&rdquo;) is a reward-based crowdfunding
               platform operated in Singapore. We connect creators with backers who believe in their ideas. By accessing
-              or using plsfundme, you agree to be bound by these Terms of Service
+              or using get that bread, you agree to be bound by these Terms of Service
               (&ldquo;Terms&rdquo;). If you do not agree, please do not use the platform.
             </p>
             <p>
@@ -91,12 +91,12 @@ export default function TermsPage() {
                 and you do not acquire equity or ownership in the creator&apos;s business.
               </li>
               <li>
-                plsfundme uses an <strong>all-or-nothing</strong> funding model. Your payment is only collected
+                get that bread uses an <strong>all-or-nothing</strong> funding model. Your payment is only collected
                 if the campaign reaches its funding goal by the deadline.
               </li>
               <li>
                 If a campaign is funded and the creator fails to deliver rewards, your dispute is with the
-                creator. plsfundme will use reasonable efforts to assist but cannot guarantee fulfilment.
+                creator. get that bread will use reasonable efforts to assist but cannot guarantee fulfilment.
               </li>
               <li>
                 You are responsible for providing accurate billing and shipping information.
@@ -106,7 +106,7 @@ export default function TermsPage() {
 
           <Section title="5. All-or-Nothing Funding Model">
             <p>
-              plsfundme operates on an all-or-nothing basis. This means:
+              get that bread operates on an all-or-nothing basis. This means:
             </p>
             <ul>
               <li>
@@ -127,7 +127,7 @@ export default function TermsPage() {
 
           <Section title="6. Platform Fees">
             <p>
-              plsfundme charges a <strong>5% platform fee</strong> on the total amount raised by successfully
+              get that bread charges a <strong>5% platform fee</strong> on the total amount raised by successfully
               funded campaigns. This fee is deducted before funds are transferred to the creator via Stripe
               Connect. There are no fees for campaigns that do not reach their goal.
             </p>
@@ -157,7 +157,7 @@ export default function TermsPage() {
               <li>Campaigns soliciting donations without the requisite charity registration.</li>
               <li>Use of the platform to harass, intimidate, or harm other users.</li>
               <li>
-                Creating multiple accounts to circumvent bans or restrictions imposed by plsfundme.
+                Creating multiple accounts to circumvent bans or restrictions imposed by get that bread.
               </li>
             </ul>
             <p>
@@ -201,7 +201,7 @@ export default function TermsPage() {
 
           <Section title="10. Limitation of Liability">
             <p>
-              To the maximum extent permitted by Singapore law, plsfundme is not liable for:
+              To the maximum extent permitted by Singapore law, get that bread is not liable for:
             </p>
             <ul>
               <li>Any failure by a creator to fulfil rewards or deliver on campaign promises.</li>
