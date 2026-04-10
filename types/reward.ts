@@ -12,4 +12,5 @@ export interface RewardFormData {
   estimated_delivery_date: string
   max_backers: number | null
   includes_physical_item: boolean
+  image_url: string | null
 }

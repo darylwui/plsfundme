@@ -46,6 +46,16 @@ export function RewardTierCard({
         }
       `}
     >
+      {reward.image_url && (
+        <div className="w-full h-40 rounded-lg overflow-hidden mb-4 -mt-1">
+          <img
+            src={reward.image_url}
+            alt={reward.title}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
+
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">

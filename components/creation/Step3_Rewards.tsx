@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Plus, Trash2, GripVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ImageUpload } from "@/components/ui/ImageUpload";
 import { rewardSchema } from "@/lib/validations/reward";
 import { formatSgd } from "@/lib/utils/currency";
 import type { RewardFormData } from "@/types/reward";
@@ -15,6 +16,7 @@ const EMPTY_REWARD: RewardFormData = {
   estimated_delivery_date: "",
   max_backers: null,
   includes_physical_item: false,
+  image_url: null,
 };
 
 interface Step3Props {
@@ -81,6 +83,13 @@ export function Step3_Rewards({
               className="flex items-start gap-3 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-4"
             >
               <GripVertical className="w-4 h-4 text-[var(--color-ink-subtle)] mt-0.5 shrink-0" />
+              {reward.image_url && (
+                <img
+                  src={reward.image_url}
+                  alt={reward.title}
+                  className="w-14 h-14 rounded-lg object-cover shrink-0"
+                />
+              )}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="font-black text-[var(--color-brand-violet)]">
@@ -208,6 +217,14 @@ export function Step3_Rewards({
               />
             </div>
           </div>
+
+          <ImageUpload
+            label="Reward image (optional)"
+            hint="Show backers what they'll receive — product photo, mockup, etc."
+            compact
+            value={form.image_url}
+            onChange={(url) => setForm({ ...form, image_url: url })}
+          />
 
           <label className="flex items-center gap-2.5 cursor-pointer">
             <input

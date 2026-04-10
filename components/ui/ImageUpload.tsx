@@ -9,9 +9,11 @@ interface ImageUploadProps {
   onChange: (url: string | null) => void;
   label?: string;
   hint?: string;
+  /** compact = square thumbnail style, for reward images */
+  compact?: boolean;
 }
 
-export function ImageUpload({ value, onChange, label = "Cover image", hint }: ImageUploadProps) {
+export function ImageUpload({ value, onChange, label = "Cover image", hint, compact = false }: ImageUploadProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -47,14 +49,14 @@ export function ImageUpload({ value, onChange, label = "Cover image", hint }: Im
       )}
 
       {value ? (
-        <div className="relative rounded-[var(--radius-card)] overflow-hidden aspect-video bg-[var(--color-surface-overlay)] group">
-          <Image src={value} alt="Cover" fill className="object-cover" />
+        <div className={`relative rounded-[var(--radius-card)] overflow-hidden bg-[var(--color-surface-overlay)] group ${compact ? "w-32 h-32" : "aspect-video"}`}>
+          <Image src={value} alt="Upload" fill className="object-cover" />
           <button
             type="button"
             onClick={() => onChange(null)}
-            className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/60 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80"
+            className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80"
           >
-            <X className="w-4 h-4" />
+            <X className="w-3.5 h-3.5" />
           </button>
         </div>
       ) : (
@@ -62,23 +64,27 @@ export function ImageUpload({ value, onChange, label = "Cover image", hint }: Im
           onDrop={handleDrop}
           onDragOver={(e) => e.preventDefault()}
           onClick={() => inputRef.current?.click()}
-          className="rounded-[var(--radius-card)] border-2 border-dashed border-[var(--color-border)] hover:border-[var(--color-brand-violet)]/50 aspect-video flex flex-col items-center justify-center gap-3 cursor-pointer transition-colors hover:bg-[var(--color-surface-overlay)]"
+          className={`rounded-[var(--radius-card)] border-2 border-dashed border-[var(--color-border)] hover:border-[var(--color-brand-violet)]/50 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors hover:bg-[var(--color-surface-overlay)] ${compact ? "w-32 h-32" : "aspect-video gap-3"}`}
         >
           {loading ? (
-            <Loader2 className="w-8 h-8 text-[var(--color-brand-violet)] animate-spin" />
+            <Loader2 className={`text-[var(--color-brand-violet)] animate-spin ${compact ? "w-6 h-6" : "w-8 h-8"}`} />
           ) : (
             <>
-              <div className="w-12 h-12 rounded-full bg-[var(--color-surface-overlay)] flex items-center justify-center">
-                <Upload className="w-5 h-5 text-[var(--color-ink-muted)]" />
+              <div className={`rounded-full bg-[var(--color-surface-overlay)] flex items-center justify-center ${compact ? "w-9 h-9" : "w-12 h-12"}`}>
+                <Upload className={`text-[var(--color-ink-muted)] ${compact ? "w-4 h-4" : "w-5 h-5"}`} />
               </div>
-              <div className="text-center">
-                <p className="text-sm font-semibold text-[var(--color-ink)]">
-                  Drop an image or click to upload
-                </p>
-                <p className="text-xs text-[var(--color-ink-subtle)] mt-0.5">
-                  JPEG, PNG, WebP up to 5MB
-                </p>
-              </div>
+              {compact ? (
+                <p className="text-xs text-[var(--color-ink-subtle)] text-center px-2">Add photo</p>
+              ) : (
+                <div className="text-center">
+                  <p className="text-sm font-semibold text-[var(--color-ink)]">
+                    Drop an image or click to upload
+                  </p>
+                  <p className="text-xs text-[var(--color-ink-subtle)] mt-0.5">
+                    JPEG, PNG, WebP up to 5MB
+                  </p>
+                </div>
+              )}
             </>
           )}
         </div>

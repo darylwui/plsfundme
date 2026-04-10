@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Trash2, Plus, CheckCircle2, Lock } from "lucide-react";
+import { Trash2, Plus, CheckCircle2, Lock, ImageIcon } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,6 +30,7 @@ const EMPTY_REWARD: RewardFormData = {
   estimated_delivery_date: "",
   max_backers: null,
   includes_physical_item: false,
+  image_url: null,
 };
 
 export function EditProjectForm({
@@ -163,6 +164,7 @@ export function EditProjectForm({
       .insert({
         project_id: project.id,
         ...result.data,
+        image_url: rewardForm.image_url ?? null,
         display_order: rewards.length,
       })
       .select()
@@ -448,6 +450,17 @@ export function EditProjectForm({
                           : "border-[var(--color-border)] bg-[var(--color-surface-raised)]"
                       }`}
                     >
+                      {reward.image_url ? (
+                        <img
+                          src={reward.image_url}
+                          alt={reward.title}
+                          className="w-14 h-14 rounded-lg object-cover shrink-0"
+                        />
+                      ) : (
+                        <div className="w-14 h-14 rounded-lg bg-[var(--color-surface-overlay)] flex items-center justify-center shrink-0">
+                          <ImageIcon className="w-5 h-5 text-[var(--color-ink-subtle)]" />
+                        </div>
+                      )}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="font-black text-[var(--color-brand-violet)]">
@@ -564,6 +577,14 @@ export function EditProjectForm({
                   />
                 </div>
               </div>
+
+              <ImageUpload
+                label="Reward image (optional)"
+                hint="Show backers what they'll receive — product photo, mockup, etc."
+                compact
+                value={rewardForm.image_url}
+                onChange={(url) => setRewardForm({ ...rewardForm, image_url: url })}
+              />
 
               <label className="flex items-center gap-2.5 cursor-pointer">
                 <input
