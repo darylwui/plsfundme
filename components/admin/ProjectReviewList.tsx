@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, XCircle, Trash2, ExternalLink, ChevronDown } from "lucide-react";
+import { CheckCircle2, XCircle, Trash2, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatSgd } from "@/lib/utils/currency";
@@ -30,24 +30,38 @@ interface ProjectReviewListProps {
   allProjects: ProjectRow[];
 }
 
-type Tab = "pending" | "all";
-
 const STATUS_VARIANT: Record<string, "violet" | "lime" | "coral" | "neutral" | "amber"> = {
   pending_review: "amber",
   active: "violet",
   funded: "lime",
   failed: "coral",
   cancelled: "neutral",
+  removed: "coral",
+};
+
+const STATUS_LABEL: Record<string, string> = {
+  pending_review: "Pending review",
+  active: "Live",
+  funded: "Funded",
+  failed: "Failed",
+  cancelled: "Rejected",
+  removed: "Removed",
 };
 
 export function ProjectReviewList({ pendingProjects, allProjects }: ProjectReviewListProps) {
   const router = useRouter();
-  const [tab, setTab] = useState<Tab>("pending");
   const [loading, setLoading] = useState<string | null>(null);
+
+  // Per-card open state for rejection/removal reason inputs
   const [rejectingId, setRejectingId] = useState<string | null>(null);
-  const [removingId, setRemovingId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState("");
+  const [removingId, setRemovingId] = useState<string | null>(null);
   const [removeReason, setRemoveReason] = useState("");
+
+  // Merge: pending first, then the rest (all except pending already in allProjects)
+  const pendingIds = new Set(pendingProjects.map((p) => p.id));
+  const otherProjects = allProjects.filter((p) => !pendingIds.has(p.id));
+  const projects = [...pendingProjects, ...otherProjects];
 
   async function callAction(projectId: string, action: string, reason?: string) {
     setLoading(projectId + action);
@@ -60,8 +74,8 @@ export function ProjectReviewList({ pendingProjects, allProjects }: ProjectRevie
     if (res.ok) {
       router.refresh();
     } else {
-      const { error } = await res.json().catch(() => ({ error: "Unknown error" }));
-      alert(error ?? "Action failed. Please try again.");
+      const body = await res.json().catch(() => ({ error: "Unknown error" }));
+      alert(body.error ?? "Action failed. Please try again.");
     }
   }
 
@@ -73,72 +87,64 @@ export function ProjectReviewList({ pendingProjects, allProjects }: ProjectRevie
     if (res.ok) {
       router.refresh();
     } else {
-      alert("Delete failed.");
+      const body = await res.json().catch(() => ({ error: "Delete failed." }));
+      alert(body.error ?? "Delete failed.");
     }
   }
 
-  const projects = tab === "pending" ? pendingProjects : allProjects;
+  if (projects.length === 0) {
+    return (
+      <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border-2 border-dashed border-[var(--color-border)] p-16 text-center">
+        <div className="text-4xl mb-3">🚀</div>
+        <p className="font-bold text-[var(--color-ink)]">No campaigns yet</p>
+        <p className="text-sm text-[var(--color-ink-muted)] mt-1">
+          Campaigns will appear here once creators submit them.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Tab bar */}
-      <div className="flex gap-1 bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-1 w-fit">
-        <button
-          onClick={() => setTab("pending")}
-          className={`px-4 py-1.5 text-sm font-semibold rounded-[var(--radius-btn)] transition-all ${
-            tab === "pending"
-              ? "bg-[var(--color-brand-violet)] text-white"
-              : "text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
-          }`}
-        >
-          Pending Review
-          {pendingProjects.length > 0 && (
-            <span className={`ml-2 text-xs px-1.5 py-0.5 rounded-full font-bold ${
-              tab === "pending" ? "bg-white/20" : "bg-amber-100 text-amber-700"
-            }`}>
-              {pendingProjects.length}
-            </span>
-          )}
-        </button>
-        <button
-          onClick={() => setTab("all")}
-          className={`px-4 py-1.5 text-sm font-semibold rounded-[var(--radius-btn)] transition-all ${
-            tab === "all"
-              ? "bg-[var(--color-brand-violet)] text-white"
-              : "text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
-          }`}
-        >
-          All Campaigns
-        </button>
-      </div>
+      {/* Legend */}
+      <p className="text-xs text-[var(--color-ink-subtle)]">
+        {pendingProjects.length > 0
+          ? `${pendingProjects.length} campaign${pendingProjects.length !== 1 ? "s" : ""} waiting for your approval · ${projects.length} total`
+          : `${projects.length} campaign${projects.length !== 1 ? "s" : ""} total`}
+      </p>
 
-      {/* Empty state */}
-      {projects.length === 0 && (
-        <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border-2 border-dashed border-[var(--color-border)] p-16 text-center">
-          <div className="text-4xl mb-3">{tab === "pending" ? "✅" : "🚀"}</div>
-          <p className="font-bold text-[var(--color-ink)]">
-            {tab === "pending" ? "No campaigns pending review" : "No campaigns yet"}
-          </p>
-          <p className="text-sm text-[var(--color-ink-muted)] mt-1">
-            {tab === "pending" ? "You're all caught up!" : "Campaigns will appear here once created."}
-          </p>
-        </div>
-      )}
+      {projects.map((project) => {
+        const isPending = project.status === "pending_review";
+        const isActive = project.status === "active";
+        const isDeletable = (project.backer_count ?? 0) === 0;
+        const isRejectingThis = rejectingId === project.id;
+        const isRemovingThis = removingId === project.id;
 
-      {/* Project cards */}
-      <div className="flex flex-col gap-4">
-        {projects.map((project) => (
+        return (
           <div
             key={project.id}
-            className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] overflow-hidden"
+            className={`bg-[var(--color-surface)] rounded-[var(--radius-card)] border overflow-hidden ${
+              isPending
+                ? "border-amber-300 shadow-[0_0_0_3px_rgba(251,191,36,0.15)]"
+                : "border-[var(--color-border)]"
+            }`}
           >
+            {/* Pending banner */}
+            {isPending && (
+              <div className="bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-700 px-5 py-2 flex items-center gap-2">
+                <span className="text-sm font-bold text-amber-800 dark:text-amber-300">
+                  ⏳ Awaiting your approval
+                </span>
+              </div>
+            )}
+
             <div className="p-5 flex flex-col sm:flex-row gap-4">
               {/* Cover thumbnail */}
               <div className="w-full sm:w-24 h-16 rounded-lg bg-[var(--color-surface-overlay)] shrink-0 overflow-hidden">
                 {project.cover_image_url ? (
                   <img src={project.cover_image_url} alt={project.title} className="w-full h-full object-cover" />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-2xl">🚀</div>
+                  <div className="w-full h-full flex items-center justify-center text-2xl">🍞</div>
                 )}
               </div>
 
@@ -148,11 +154,9 @@ export function ProjectReviewList({ pendingProjects, allProjects }: ProjectRevie
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-bold text-[var(--color-ink)]">{project.title}</span>
-                      {project.status && (
-                        <Badge variant={STATUS_VARIANT[project.status] ?? "neutral"}>
-                          {project.status.replace("_", " ")}
-                        </Badge>
-                      )}
+                      <Badge variant={STATUS_VARIANT[project.status ?? ""] ?? "neutral"}>
+                        {STATUS_LABEL[project.status ?? ""] ?? project.status}
+                      </Badge>
                     </div>
                     <p className="text-xs text-[var(--color-ink-subtle)] mt-0.5">
                       by {project.creator?.display_name ?? "Unknown"} ·{" "}
@@ -188,114 +192,139 @@ export function ProjectReviewList({ pendingProjects, allProjects }: ProjectRevie
               </div>
             </div>
 
-            {/* Actions bar */}
-            <div className="px-5 py-3 bg-[var(--color-surface-raised)] border-t border-[var(--color-border)] flex flex-wrap items-center gap-2">
-              {tab === "pending" ? (
-                <>
-                  {/* Approve */}
+            {/* ── Actions ─────────────────────────────────── */}
+            <div className="px-5 py-3 bg-[var(--color-surface-raised)] border-t border-[var(--color-border)] flex flex-col gap-3">
+
+              {/* APPROVE / REJECT — for pending_review */}
+              {isPending && (
+                <div className="flex flex-wrap items-start gap-3">
                   <Button
                     size="sm"
                     loading={loading === project.id + "approve"}
                     onClick={() => callAction(project.id, "approve")}
-                    className="bg-[var(--color-brand-lime)] text-[#1a2e1a] hover:opacity-90"
+                    className="bg-emerald-500 hover:bg-emerald-600 text-white"
                   >
                     <CheckCircle2 className="w-3.5 h-3.5" />
-                    Approve
+                    Approve — go live
                   </Button>
 
-                  {/* Reject */}
-                  {rejectingId === project.id ? (
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <input
+                  {isRejectingThis ? (
+                    <div className="flex flex-col gap-2 flex-1 min-w-0">
+                      <textarea
                         autoFocus
-                        placeholder="Reason for rejection…"
+                        rows={2}
+                        placeholder="Tell the creator why their campaign was rejected (required)…"
                         value={rejectReason}
                         onChange={(e) => setRejectReason(e.target.value)}
-                        className="flex-1 min-w-0 rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3 py-1.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)]"
+                        className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3 py-2 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-coral)] resize-none"
                       />
-                      <Button
-                        size="sm"
-                        variant="danger"
-                        loading={loading === project.id + "reject"}
-                        disabled={!rejectReason.trim()}
-                        onClick={async () => {
-                          await callAction(project.id, "reject", rejectReason);
-                          setRejectingId(null);
-                          setRejectReason("");
-                        }}
-                      >
-                        Confirm
-                      </Button>
-                      <Button size="sm" variant="ghost" onClick={() => { setRejectingId(null); setRejectReason(""); }}>
-                        Cancel
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="danger"
+                          loading={loading === project.id + "reject"}
+                          disabled={!rejectReason.trim()}
+                          onClick={async () => {
+                            await callAction(project.id, "reject", rejectReason);
+                            setRejectingId(null);
+                            setRejectReason("");
+                          }}
+                        >
+                          Send rejection
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => { setRejectingId(null); setRejectReason(""); }}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
                     </div>
                   ) : (
-                    <Button size="sm" variant="secondary" onClick={() => setRejectingId(project.id)}>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => {
+                        setRejectingId(project.id);
+                        setRemovingId(null);
+                      }}
+                    >
                       <XCircle className="w-3.5 h-3.5" />
-                      Reject
+                      Reject with reason
                     </Button>
                   )}
-                </>
-              ) : (
-                <>
-                  {/* Remove for ToS */}
-                  {removingId === project.id ? (
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <input
+                </div>
+              )}
+
+              {/* REMOVE / DELETE — for live campaigns */}
+              {(isActive || (!isPending && project.status !== "cancelled" && project.status !== "removed")) && (
+                <div className="flex flex-wrap items-start gap-3">
+                  {isRemovingThis ? (
+                    <div className="flex flex-col gap-2 flex-1 min-w-0">
+                      <textarea
                         autoFocus
-                        placeholder="ToS violation reason…"
+                        rows={2}
+                        placeholder="Reason for removal (sent to creator by email)…"
                         value={removeReason}
                         onChange={(e) => setRemoveReason(e.target.value)}
-                        className="flex-1 min-w-0 rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3 py-1.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)]"
+                        className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3 py-2 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-coral)] resize-none"
                       />
-                      <Button
-                        size="sm"
-                        variant="danger"
-                        loading={loading === project.id + "remove"}
-                        disabled={!removeReason.trim()}
-                        onClick={async () => {
-                          await callAction(project.id, "remove", removeReason);
-                          setRemovingId(null);
-                          setRemoveReason("");
-                        }}
-                      >
-                        Remove
-                      </Button>
-                      <Button size="sm" variant="ghost" onClick={() => { setRemovingId(null); setRemoveReason(""); }}>
-                        Cancel
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="danger"
+                          loading={loading === project.id + "remove"}
+                          disabled={!removeReason.trim()}
+                          onClick={async () => {
+                            await callAction(project.id, "remove", removeReason);
+                            setRemovingId(null);
+                            setRemoveReason("");
+                          }}
+                        >
+                          Confirm removal
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => { setRemovingId(null); setRemoveReason(""); }}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
                     </div>
                   ) : (
                     <Button
                       size="sm"
                       variant="danger"
-                      onClick={() => setRemovingId(project.id)}
+                      onClick={() => {
+                        setRemovingId(project.id);
+                        setRejectingId(null);
+                      }}
                     >
                       <Trash2 className="w-3.5 h-3.5" />
-                      Remove (ToS)
+                      Remove campaign
                     </Button>
                   )}
 
-                  {/* Hard delete — only if no pledges */}
-                  {(project.backer_count ?? 0) === 0 && (
+                  {isDeletable && !isRemovingThis && (
                     <Button
                       size="sm"
                       variant="ghost"
                       loading={loading === project.id + "delete"}
                       onClick={() => handleDelete(project.id)}
-                      className="text-[var(--color-brand-coral)] hover:text-red-700"
+                      className="text-[var(--color-brand-coral)] hover:text-red-700 hover:bg-red-50"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                       Delete permanently
                     </Button>
                   )}
-                </>
+                </div>
               )}
             </div>
           </div>
-        ))}
-      </div>
+        );
+      })}
     </div>
   );
 }

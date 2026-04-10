@@ -11,7 +11,9 @@
       "Bash(sed -i '' 's/as ProjectWithRelations\\\\[\\\\]/as unknown as ProjectWithRelations[]/g' 'app/\\(marketing\\)/page.tsx' app/dashboard/page.tsx)",
       "Bash(sed -i '' 's/as PledgeWithBacker\\\\b/as unknown as PledgeWithBacker/g' app/dashboard/page.tsx components/dashboard/BackerTable.tsx)",
       "Bash(sed -i '' 's/as PledgeWithBacker\\\\[\\\\]/as unknown as PledgeWithBacker[]/g' app/dashboard/page.tsx components/dashboard/BackerTable.tsx)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(pip3 install:*)",
+      "Bash(python3 -c \"from PIL import Image; img = Image.open\\('/Users/darylwui/Desktop/bread.png'\\).resize\\(\\(32,32\\)\\); img.save\\('/Users/darylwui/plsfundme/public/favicon.ico', format='ICO', sizes=[\\(16,16\\),\\(32,32\\)]\\); print\\('done'\\)\")"
     ]
   }
 }
