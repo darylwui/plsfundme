@@ -19,7 +19,7 @@ export default async function AdminProjectsPage() {
     .select(
       "id, title, slug, status, funding_goal_sgd, amount_pledged_sgd, backer_count, created_at, cover_image_url, category:categories(name), creator:profiles!creator_id(id, display_name)"
     )
-    .not("status", "in", '("draft","removed")')
+    .not("status", "in", "(draft,removed)")
     .order("created_at", { ascending: false })
     .limit(200);
 
