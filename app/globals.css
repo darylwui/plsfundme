@@ -1,26 +1,27 @@
 @import "tailwindcss";
 
 /* ============================================================
-   plsfundme — Design Tokens
-   Fun, trendy, entrepreneur-focused aesthetic
+   get that bread — Design Tokens
+   Warm bakery aesthetic — bread, oven, golden crust
    ============================================================ */
 
 @theme inline {
-  /* Brand palette */
-  --color-brand-violet:    #7C3AED;   /* Primary CTA */
-  --color-brand-coral:     #FF4D6D;   /* Accent / urgency */
-  --color-brand-teal:      #0EA5E9;   /* Info / secondary */
-  --color-brand-amber:     #F59E0B;   /* Warning / highlights */
-  --color-brand-lime:      #84CC16;   /* Success / funded */
+  /* Brand palette — warm bakery tones */
+  --color-brand-violet:    #92400E;   /* Deep crust brown — primary CTA */
+  --color-brand-coral:     #C2410C;   /* Hot oven red-orange — urgency */
+  --color-brand-teal:      #0F766E;   /* Teal — info / secondary */
+  --color-brand-amber:     #D97706;   /* Golden crust — highlights */
+  --color-brand-lime:      #65A30D;   /* Success / funded */
+  --color-brand-gold:      #F2C480;   /* Bread gold — brand accent */
 
-  /* Neutrals */
-  --color-surface:         #FFFFFF;
-  --color-surface-raised:  #F8F7FF;   /* Slightly violet-tinted card bg */
-  --color-surface-overlay: #F1F0FF;
-  --color-border:          #E5E3FF;
-  --color-ink:             #1A1523;   /* Near-black with violet undertone */
-  --color-ink-muted:       #6B6880;
-  --color-ink-subtle:      #9D9AAD;
+  /* Surfaces — warm flour/cream palette */
+  --color-surface:         #FFFBF5;
+  --color-surface-raised:  #FDF6E8;
+  --color-surface-overlay: #F7EDD4;
+  --color-border:          #E8D5B0;
+  --color-ink:             #1C1208;   /* Warm near-black */
+  --color-ink-muted:       #78603A;   /* Warm brown */
+  --color-ink-subtle:      #A68B5B;   /* Light warm brown */
 
   /* Background */
   --color-background:      var(--color-surface);
@@ -35,22 +36,22 @@
   --radius-btn:    0.625rem;
   --radius-pill:   9999px;
 
-  /* Shadows */
-  --shadow-card:   0 2px 12px 0 rgba(124, 58, 237, 0.08);
-  --shadow-card-hover: 0 8px 32px 0 rgba(124, 58, 237, 0.16);
-  --shadow-cta:    0 4px 20px 0 rgba(124, 58, 237, 0.35);
+  /* Shadows — warm amber-brown tones */
+  --shadow-card:        0 2px 12px 0 rgba(146, 64, 14, 0.08);
+  --shadow-card-hover:  0 8px 32px 0 rgba(146, 64, 14, 0.16);
+  --shadow-cta:         0 4px 20px 0 rgba(146, 64, 14, 0.35);
 }
 
-/* Dark mode */
+/* Dark mode — warm dark bread tones */
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-surface:         #0F0D1A;
-    --color-surface-raised:  #171327;
-    --color-surface-overlay: #1E1A33;
-    --color-border:          #2D2845;
-    --color-ink:             #F0EEFF;
-    --color-ink-muted:       #A09CBC;
-    --color-ink-subtle:      #6B6880;
+    --color-surface:         #1C0F06;
+    --color-surface-raised:  #261508;
+    --color-surface-overlay: #311C0A;
+    --color-border:          #4A2E1A;
+    --color-ink:             #F5EDD8;
+    --color-ink-muted:       #C4956A;
+    --color-ink-subtle:      #8B6545;
     --color-background:      var(--color-surface);
     --color-foreground:      var(--color-ink);
   }
@@ -65,7 +66,7 @@ body {
 
 /* Smooth focus ring */
 *:focus-visible {
-  outline: 2px solid var(--color-brand-violet);
+  outline: 2px solid var(--color-brand-amber);
   outline-offset: 2px;
   border-radius: 4px;
 }

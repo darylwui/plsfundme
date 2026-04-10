@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Zap, Shield, Globe } from "lucide-react";
+import { ArrowRight, Shield, Globe, Lock } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { ProjectGrid } from "@/components/projects/ProjectGrid";
 import { Button } from "@/components/ui/button";
@@ -58,18 +58,19 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   return (
     <div>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-violet-50 via-white to-sky-50 dark:from-violet-950/20 dark:via-[var(--color-surface)] dark:to-sky-950/20">
+      <section className="relative overflow-hidden bg-gradient-to-br from-amber-50 via-[#FFFBF5] to-orange-50 dark:from-[#261508] dark:via-[#1C0F06] dark:to-[#311C0A]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 text-sm font-semibold mb-6">
-              <Zap className="w-3.5 h-3.5" />
-              Made for Singapore entrepreneurs
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 text-sm font-semibold mb-6">
+              🍞 Made for Singapore entrepreneurs
             </div>
             <h1 className="text-5xl md:text-6xl font-black tracking-tight text-[var(--color-ink)] leading-[1.1]">
               Back bold ideas.{" "}
               <span className="text-[var(--color-brand-violet)]">
                 Fund the future.
               </span>
+              <br />
+              <span style={{ color: "#F2C480" }}>get that bread.</span>
             </h1>
             <p className="mt-6 text-xl text-[var(--color-ink-muted)] max-w-xl leading-relaxed">
               Singapore&apos;s crowdfunding platform for entrepreneurs. Launch
@@ -100,17 +101,17 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                 PayNow &amp; Credit Card
               </div>
               <div className="flex items-center gap-2">
-                <Zap className="w-4 h-4 text-[var(--color-brand-amber)]" />
-                MAS regulated
+                <Lock className="w-4 h-4 text-[var(--color-brand-amber)]" />
+                Secured transactions
               </div>
             </div>
           </div>
         </div>
 
-        {/* Decorative gradient blob */}
+        {/* Decorative warm gradient blob */}
         <div
           aria-hidden
-          className="absolute top-0 right-0 w-[40vw] h-[40vw] max-w-[600px] bg-gradient-to-bl from-violet-200/60 to-sky-200/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4 pointer-events-none"
+          className="absolute top-0 right-0 w-[40vw] h-[40vw] max-w-[600px] bg-gradient-to-bl from-amber-200/60 to-orange-200/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4 pointer-events-none"
         />
       </section>
 
@@ -152,9 +153,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex flex-col md:flex-row items-center justify-between gap-8">
           <div>
             <h2 className="text-3xl font-black tracking-tight">
-              Ready to launch your idea? 🚀
+              Ready to put your idea in the oven? 🍞
             </h2>
-            <p className="mt-2 text-violet-200 max-w-xl">
+            <p className="mt-2 text-orange-200 max-w-xl">
               Create your campaign in minutes. Set your goal, build your reward
               tiers, and start raising funds from backers across Singapore.
             </p>
