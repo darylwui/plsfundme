@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PlusCircle, ArrowRight } from "lucide-react";
+import { PlusCircle, ArrowRight, Pencil } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -63,9 +63,8 @@ export default async function DashboardProjectsPage() {
             const days = daysRemaining(project.deadline);
 
             return (
-              <Link
+              <div
                 key={project.id}
-                href={`/projects/${project.slug}`}
                 className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-card-hover)] transition-shadow p-5 flex flex-col sm:flex-row sm:items-center gap-4"
               >
                 {/* Cover thumbnail */}
@@ -112,8 +111,21 @@ export default async function DashboardProjectsPage() {
                   </div>
                 </div>
 
-                <ArrowRight className="w-4 h-4 text-[var(--color-ink-subtle)] shrink-0 hidden sm:block" />
-              </Link>
+                {/* Actions */}
+                <div className="flex items-center gap-2 shrink-0">
+                  <Link
+                    href={`/projects/${project.slug}/edit`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface-overlay)] hover:bg-[var(--color-border)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
+                  >
+                    <Pencil className="w-3 h-3" />
+                    Edit
+                  </Link>
+                  <Link href={`/projects/${project.slug}`}>
+                    <ArrowRight className="w-4 h-4 text-[var(--color-ink-subtle)]" />
+                  </Link>
+                </div>
+              </div>
             );
           })}
         </div>

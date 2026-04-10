@@ -2,7 +2,14 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/layout/Navbar";
 
+const SUPPORT_EMAIL = "support@plsfundme.sg";
+
 export default function NotFound() {
+  const subject = encodeURIComponent("404 Page Not Found");
+  const body = encodeURIComponent(
+    "Hi,\n\nI encountered a 404 error on plsfundme.\n\nPage URL: (paste URL here)\nWhat I was trying to do: (describe here)\n\nThanks"
+  );
+
   return (
     <>
       <Navbar />
@@ -25,6 +32,17 @@ export default function NotFound() {
                 Explore projects
               </Button>
             </Link>
+          </div>
+          <div className="mt-6 pt-6 border-t border-[var(--color-border)]">
+            <p className="text-sm text-[var(--color-ink-subtle)] mb-3">
+              Think this is a mistake?
+            </p>
+            <a
+              href={`mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}`}
+              className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-brand-violet)] hover:underline"
+            >
+              🐛 Report this issue
+            </a>
           </div>
         </div>
       </main>

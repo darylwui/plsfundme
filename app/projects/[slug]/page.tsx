@@ -1,10 +1,11 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Pencil } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { FundingWidget } from "@/components/projects/FundingWidget";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/utils/dates";
 import type { ProjectWithRelations } from "@/types/project";
 import type { Metadata } from "next";
@@ -51,6 +52,7 @@ export async function generateMetadata({
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const { slug } = await params;
+  const supabase = await createClient();
   const project = await getProject(slug);
 
   if (!project) notFound();
@@ -58,10 +60,14 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   // Block draft projects from public view (unless creator — handled by RLS)
   if (project.status === "draft") notFound();
 
+  // Check if current user is the creator so we can show Edit button
+  const { data: { user } } = await supabase.auth.getUser();
+  const isCreator = user?.id === project.creator.id;
+
   return (
     <div className="min-h-screen bg-[var(--color-surface)]">
       {/* Back nav */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 flex items-center justify-between">
         <Link
           href="/explore"
           className="inline-flex items-center gap-1.5 text-sm text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
@@ -69,6 +75,14 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           <ArrowLeft className="w-4 h-4" />
           Back to explore
         </Link>
+        {isCreator && (
+          <Link href={`/projects/${slug}/edit`}>
+            <Button variant="secondary" size="sm">
+              <Pencil className="w-3.5 h-3.5" />
+              Edit campaign
+            </Button>
+          </Link>
+        )}
       </div>
 
       {/* Hero image */}
