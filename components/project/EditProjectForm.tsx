@@ -10,7 +10,7 @@ import { ImageUpload } from "@/components/ui/ImageUpload";
 import { Badge } from "@/components/ui/badge";
 import { formatSgd } from "@/lib/utils/currency";
 import { rewardSchema } from "@/lib/validations/reward";
-import type { ProjectWithRelations, Category } from "@/types/project";
+import type { ProjectWithRelations, Category, ProjectUpdate } from "@/types/project";
 import type { Reward, RewardFormData } from "@/types/reward";
 
 interface EditProjectFormProps {
@@ -121,11 +121,11 @@ export function EditProjectForm({
     setErrors({});
 
     setSaving(true);
-    const updates: Record<string, unknown> = {
+    const updates: ProjectUpdate = {
       deadline: `${deadline}T00:00:00.000Z`,
       payout_mode: payoutMode,
+      ...((!hasPledges) ? { funding_goal_sgd: fundingGoal } : {}),
     };
-    if (!hasPledges) updates.funding_goal_sgd = fundingGoal;
 
     const { error } = await supabase
       .from("projects")

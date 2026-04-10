@@ -38,7 +38,7 @@ export default async function EditProjectPage({ params }: EditProjectPageProps) 
   // Fetch categories for the dropdown
   const { data: categories } = await supabase
     .from("categories")
-    .select("id, name")
+    .select("*")
     .eq("is_active", true)
     .order("name");
 
