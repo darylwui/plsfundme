@@ -57,7 +57,7 @@ export function Step4_Review({ draft, rewards, categories, onBack }: Step4Props)
         payout_mode: draft.payout_mode,
         start_date: draft.start_date,
         deadline: draft.deadline,
-        status: "active",
+        status: "pending_review",
         launched_at: new Date().toISOString(),
       })
       .select()
@@ -91,18 +91,18 @@ export function Step4_Review({ draft, rewards, categories, onBack }: Step4Props)
       }
     }
 
-    router.push(`/projects/${slug}?launched=1`);
+    router.push(`/dashboard/projects?submitted=1`);
   }
 
   return (
     <div className="flex flex-col gap-6">
       <div>
         <h2 className="text-2xl font-black text-[var(--color-ink)]">
-          Review &amp; launch 🚀
+          Review &amp; submit 🚀
         </h2>
         <p className="mt-1 text-sm text-[var(--color-ink-muted)]">
-          Double-check everything before going live. You can edit your project
-          after launch from your dashboard.
+          Double-check everything before submitting. Our team will review your
+          campaign within 1–2 business days before it goes live.
         </p>
       </div>
 
@@ -152,7 +152,7 @@ export function Step4_Review({ draft, rewards, categories, onBack }: Step4Props)
         </Button>
         <Button size="lg" loading={launching} onClick={handleLaunch}>
           <Rocket className="w-4 h-4" />
-          Launch campaign
+          Submit for review
         </Button>
       </div>
     </div>

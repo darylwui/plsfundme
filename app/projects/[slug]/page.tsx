@@ -57,12 +57,17 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   if (!project) notFound();
 
-  // Block draft projects from public view (unless creator — handled by RLS)
-  if (project.status === "draft") notFound();
-
   // Check if current user is the creator so we can show Edit button
   const { data: { user } } = await supabase.auth.getUser();
   const isCreator = user?.id === project.creator.id;
+
+  // Block non-public statuses
+  if (project.status === "draft" && !isCreator) notFound();
+  if (project.status === "removed") notFound();
+
+  // Show a pending review banner for creator; block public
+  const isPendingReview = project.status === "pending_review";
+  if (isPendingReview && !isCreator) notFound();
 
   return (
     <div className="min-h-screen bg-[var(--color-surface)]">
@@ -84,6 +89,13 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           </Link>
         )}
       </div>
+
+      {/* Pending review banner */}
+      {isPendingReview && (
+        <div className="bg-amber-50 border-b border-amber-200 px-4 py-3 text-sm text-amber-800 text-center">
+          ⏳ <strong>Under review</strong> — Your campaign is pending admin approval and is not yet visible to the public.
+        </div>
+      )}
 
       {/* Hero image */}
       {project.cover_image_url && (

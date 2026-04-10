@@ -6,7 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import { formatDate, daysRemaining } from "@/lib/utils/dates";
 import { formatSgd, fundingPercent } from "@/lib/utils/currency";
 
-export default async function DashboardProjectsPage() {
+interface Props {
+  searchParams: Promise<{ submitted?: string }>;
+}
+
+export default async function DashboardProjectsPage({ searchParams }: Props) {
+  const { submitted } = await searchParams;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -18,14 +23,31 @@ export default async function DashboardProjectsPage() {
 
   const statusVariant: Record<string, "violet" | "lime" | "coral" | "neutral" | "amber"> = {
     draft: "neutral",
+    pending_review: "amber",
     active: "violet",
     funded: "lime",
     failed: "coral",
     cancelled: "neutral",
+    removed: "coral",
+  };
+
+  const statusLabel: Record<string, string> = {
+    pending_review: "pending review",
   };
 
   return (
     <div className="flex flex-col gap-6">
+      {submitted === "1" && (
+        <div className="rounded-[var(--radius-card)] bg-amber-50 border border-amber-200 px-5 py-4 flex items-start gap-3">
+          <span className="text-2xl">🎉</span>
+          <div>
+            <p className="font-bold text-amber-900">Campaign submitted for review!</p>
+            <p className="text-sm text-amber-700 mt-0.5">
+              Our team will review your campaign within 1–2 business days. You&apos;ll receive an email once it&apos;s approved and live.
+            </p>
+          </div>
+        </div>
+      )}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-black text-[var(--color-ink)]">My projects</h1>
         <Link href="/projects/create">
@@ -89,7 +111,7 @@ export default async function DashboardProjectsPage() {
                       {project.title}
                     </p>
                     <Badge variant={statusVariant[project.status] ?? "neutral"}>
-                      {project.status}
+                      {statusLabel[project.status] ?? project.status}
                     </Badge>
                   </div>
                   <p className="text-xs text-[var(--color-ink-subtle)]">

@@ -10,7 +10,8 @@
       "Bash(sed -i '' 's/as ProjectWithRelations\\\\b/as unknown as ProjectWithRelations/g' 'app/\\(marketing\\)/page.tsx' 'app/projects/[slug]/page.tsx' 'app/backing/[projectId]/checkout/page.tsx' app/dashboard/page.tsx)",
       "Bash(sed -i '' 's/as ProjectWithRelations\\\\[\\\\]/as unknown as ProjectWithRelations[]/g' 'app/\\(marketing\\)/page.tsx' app/dashboard/page.tsx)",
       "Bash(sed -i '' 's/as PledgeWithBacker\\\\b/as unknown as PledgeWithBacker/g' app/dashboard/page.tsx components/dashboard/BackerTable.tsx)",
-      "Bash(sed -i '' 's/as PledgeWithBacker\\\\[\\\\]/as unknown as PledgeWithBacker[]/g' app/dashboard/page.tsx components/dashboard/BackerTable.tsx)"
+      "Bash(sed -i '' 's/as PledgeWithBacker\\\\[\\\\]/as unknown as PledgeWithBacker[]/g' app/dashboard/page.tsx components/dashboard/BackerTable.tsx)",
+      "Bash(npm run:*)"
     ]
   }
 }

@@ -3,15 +3,17 @@ import { createClient } from "@/lib/supabase/server";
 export default async function AdminOverviewPage() {
   const supabase = await createClient();
 
-  const [{ count: pendingKyc }, { count: activeProjects }, { count: totalPledges }] =
+  const [{ count: pendingKyc }, { count: pendingProjects }, { count: activeProjects }, { count: totalPledges }] =
     await Promise.all([
       supabase.from("profiles").select("*", { count: "exact", head: true }).eq("kyc_status", "pending"),
+      supabase.from("projects").select("*", { count: "exact", head: true }).eq("status", "pending_review"),
       supabase.from("projects").select("*", { count: "exact", head: true }).eq("status", "active"),
       supabase.from("pledges").select("*", { count: "exact", head: true }).in("status", ["authorized", "paynow_captured", "captured"]),
     ]);
 
   const stats = [
-    { label: "Pending KYC", value: pendingKyc ?? 0, emoji: "⏳", href: "/admin/kyc" },
+    { label: "Pending review", value: pendingProjects ?? 0, emoji: "⏳", href: "/admin/projects" },
+    { label: "Pending KYC", value: pendingKyc ?? 0, emoji: "🪪", href: "/admin/kyc" },
     { label: "Active campaigns", value: activeProjects ?? 0, emoji: "🚀", href: "/explore" },
     { label: "Total pledges", value: totalPledges ?? 0, emoji: "💳", href: "/admin" },
   ];
@@ -19,7 +21,7 @@ export default async function AdminOverviewPage() {
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-black text-[var(--color-ink)]">Admin overview</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {stats.map(({ label, value, emoji }) => (
           <div
             key={label}

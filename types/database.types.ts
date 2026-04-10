@@ -6,7 +6,7 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export type ProjectStatus = 'draft' | 'active' | 'funded' | 'failed' | 'cancelled'
+export type ProjectStatus = 'draft' | 'pending_review' | 'active' | 'funded' | 'failed' | 'cancelled' | 'removed'
 export type PledgeStatus = 'pending' | 'authorized' | 'paynow_captured' | 'captured' | 'released' | 'refunded' | 'failed'
 export type PaymentMethodType = 'card' | 'paynow'
 export type FulfillmentStatus = 'unfulfilled' | 'shipped' | 'delivered'
