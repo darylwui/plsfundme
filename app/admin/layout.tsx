@@ -1,15 +1,7 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Navbar } from "@/components/layout/Navbar";
-import { ShieldCheck, Tag, Rocket, Users } from "lucide-react";
-
-const NAV = [
-  { href: "/admin", label: "Overview", icon: ShieldCheck },
-  { href: "/admin/projects", label: "Projects", icon: Rocket },
-  { href: "/admin/users", label: "Users", icon: Users },
-  { href: "/admin/categories", label: "Categories", icon: Tag },
-];
+import { AdminNav } from "@/components/admin/AdminNav";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -35,18 +27,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
                 Admin
               </span>
             </div>
-            <nav className="flex flex-row md:flex-col gap-1">
-              {NAV.map(({ href, label, icon: Icon }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-semibold text-[var(--color-ink-muted)] hover:bg-[var(--color-surface)] hover:text-[var(--color-ink)] transition-all"
-                >
-                  <Icon className="w-4 h-4 shrink-0" />
-                  <span className="hidden sm:block">{label}</span>
-                </Link>
-              ))}
-            </nav>
+            <AdminNav />
           </aside>
           <main className="flex-1 min-w-0">{children}</main>
         </div>

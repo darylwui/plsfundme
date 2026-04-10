@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PlusCircle, ArrowRight } from "lucide-react";
+import { PlusCircle, ArrowRight, Pencil } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { FundingProgressCard } from "@/components/dashboard/FundingProgressCard";
 import { BackerTable } from "@/components/dashboard/BackerTable";
@@ -122,12 +122,21 @@ export default async function DashboardPage() {
                     </span>
                   </div>
                 </div>
-                <Link
-                  href={`/projects/${activeProject.slug}`}
-                  className="text-sm font-semibold text-[var(--color-brand-violet)] hover:underline flex items-center gap-1"
-                >
-                  View campaign <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
+                <div className="flex items-center gap-2 shrink-0">
+                  <Link
+                    href={`/projects/${activeProject.slug}/edit`}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface-overlay)] hover:bg-[var(--color-border)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
+                  >
+                    <Pencil className="w-3 h-3" />
+                    Edit
+                  </Link>
+                  <Link
+                    href={`/projects/${activeProject.slug}`}
+                    className="text-sm font-semibold text-[var(--color-brand-violet)] hover:underline flex items-center gap-1"
+                  >
+                    View <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
               </div>
 
               <FundingProgressCard
@@ -161,10 +170,9 @@ export default async function DashboardPage() {
               </h2>
               <div className="flex flex-col gap-3">
                 {typedProjects.map((p) => (
-                  <Link
+                  <div
                     key={p.id}
-                    href={`/projects/${p.slug}`}
-                    className="flex items-center gap-4 bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-4 hover:shadow-[var(--shadow-card-hover)] transition-shadow"
+                    className="flex items-center gap-4 bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-4"
                   >
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-[var(--color-ink)] truncate">
@@ -177,7 +185,19 @@ export default async function DashboardPage() {
                     <Badge variant={statusVariant[p.status] ?? "neutral"}>
                       {statusLabel[p.status] ?? p.status}
                     </Badge>
-                  </Link>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <Link
+                        href={`/projects/${p.slug}/edit`}
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface-overlay)] hover:bg-[var(--color-border)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
+                      >
+                        <Pencil className="w-3 h-3" />
+                        Edit
+                      </Link>
+                      <Link href={`/projects/${p.slug}`}>
+                        <ArrowRight className="w-4 h-4 text-[var(--color-ink-subtle)]" />
+                      </Link>
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
