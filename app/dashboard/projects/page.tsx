@@ -138,7 +138,6 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
                 <div className="flex items-center gap-2 shrink-0">
                   <Link
                     href={`/projects/${project.slug}/edit`}
-                    onClick={(e) => e.stopPropagation()}
                     className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface-overlay)] hover:bg-[var(--color-border)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
                   >
                     <Pencil className="w-3 h-3" />
