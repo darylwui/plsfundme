@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir=no --import-alias=\"@/*\" --yes)",
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(node -e \"const s = require\\('stripe'\\); console.log\\(require\\('./node_modules/stripe/package.json'\\).version\\)\")",
+      "Bash(node -e \"console.log\\(require\\('./node_modules/@supabase/supabase-js/package.json'\\).version\\)\")",
+      "Bash(node -e \"console.log\\(require\\('./node_modules/zod/package.json'\\).version\\)\")",
+      "Bash(sed -i '' 's/as ProjectWithRelations\\\\b/as unknown as ProjectWithRelations/g' 'app/\\(marketing\\)/page.tsx' 'app/projects/[slug]/page.tsx' 'app/backing/[projectId]/checkout/page.tsx' app/dashboard/page.tsx)",
+      "Bash(sed -i '' 's/as ProjectWithRelations\\\\[\\\\]/as unknown as ProjectWithRelations[]/g' 'app/\\(marketing\\)/page.tsx' app/dashboard/page.tsx)",
+      "Bash(sed -i '' 's/as PledgeWithBacker\\\\b/as unknown as PledgeWithBacker/g' app/dashboard/page.tsx components/dashboard/BackerTable.tsx)",
+      "Bash(sed -i '' 's/as PledgeWithBacker\\\\[\\\\]/as unknown as PledgeWithBacker[]/g' app/dashboard/page.tsx components/dashboard/BackerTable.tsx)"
+    ]
+  }
+}

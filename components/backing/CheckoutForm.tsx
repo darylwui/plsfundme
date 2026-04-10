@@ -1,0 +1,202 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  PaymentElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
+import { Shield, CreditCard, Smartphone } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { formatSgd } from "@/lib/utils/currency";
+import type { ProjectWithRelations } from "@/types/project";
+import type { Reward } from "@/types/reward";
+import type { PaymentMethodType } from "@/types/database.types";
+import type { CreatePledgeResponse } from "@/types/pledge";
+
+interface CheckoutFormProps {
+  project: ProjectWithRelations;
+  selectedReward: Reward | null;
+  initialAmount: number;
+  clientSecret: string;
+  pledgeId: string;
+  intentType: "payment_intent" | "setup_intent";
+}
+
+export function CheckoutForm({
+  project,
+  selectedReward,
+  initialAmount,
+  clientSecret,
+  pledgeId,
+  intentType,
+}: CheckoutFormProps) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [amount, setAmount] = useState(initialAmount);
+  const [isAnonymous, setIsAnonymous] = useState(false);
+  const [note, setNote] = useState("");
+
+  const platformFee = amount * 0.05;
+  const returnUrl = `${process.env.NEXT_PUBLIC_APP_URL}/backing/confirmation?pledge=${pledgeId}`;
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!stripe || !elements) return;
+
+    setLoading(true);
+    setError(null);
+
+    const { error: submitError } = await elements.submit();
+    if (submitError) {
+      setError(submitError.message ?? "Payment failed.");
+      setLoading(false);
+      return;
+    }
+
+    let result;
+    if (intentType === "setup_intent") {
+      result = await stripe.confirmSetup({
+        elements,
+        clientSecret,
+        confirmParams: { return_url: returnUrl },
+      });
+    } else {
+      result = await stripe.confirmPayment({
+        elements,
+        clientSecret,
+        confirmParams: { return_url: returnUrl },
+      });
+    }
+
+    if (result.error) {
+      setError(result.error.message ?? "Payment failed.");
+      setLoading(false);
+    }
+    // On success Stripe redirects to return_url
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+      {/* Order summary */}
+      <div className="rounded-[var(--radius-card)] bg-[var(--color-surface-raised)] border border-[var(--color-border)] p-5">
+        <h3 className="font-bold text-sm text-[var(--color-ink-muted)] uppercase tracking-wider mb-3">
+          Your pledge
+        </h3>
+        <div className="flex items-start gap-3 mb-4">
+          <div className="flex-1">
+            <p className="font-bold text-[var(--color-ink)]">{project.title}</p>
+            {selectedReward && (
+              <p className="text-sm text-[var(--color-ink-muted)] mt-0.5">
+                Reward: {selectedReward.title}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Amount input */}
+        <div className="flex flex-col gap-1.5">
+          <label className="text-sm font-medium text-[var(--color-ink)]">
+            Pledge amount (SGD)
+            {selectedReward && (
+              <span className="text-[var(--color-ink-subtle)] font-normal ml-1">
+                — min {formatSgd(selectedReward.minimum_pledge_sgd)}
+              </span>
+            )}
+          </label>
+          <div className="relative">
+            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-[var(--color-ink-muted)]">
+              S$
+            </span>
+            <input
+              type="number"
+              min={selectedReward?.minimum_pledge_sgd ?? 1}
+              step={1}
+              value={amount}
+              onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
+              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] pl-9 pr-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)]"
+            />
+          </div>
+        </div>
+
+        <div className="mt-3 pt-3 border-t border-[var(--color-border)] flex flex-col gap-1.5 text-sm">
+          <div className="flex justify-between text-[var(--color-ink-muted)]">
+            <span>Platform fee (5%)</span>
+            <span>{formatSgd(platformFee)}</span>
+          </div>
+          <div className="flex justify-between font-bold text-[var(--color-ink)]">
+            <span>Total charged</span>
+            <span>{formatSgd(amount)}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Stripe Payment Element */}
+      <div>
+        <h3 className="font-bold text-sm text-[var(--color-ink-muted)] uppercase tracking-wider mb-3">
+          Payment method
+        </h3>
+        <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] p-4">
+          <PaymentElement
+            options={{
+              layout: "tabs",
+              paymentMethodOrder: ["paynow", "card"],
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Options */}
+      <div className="flex flex-col gap-3">
+        <label className="flex items-center gap-2.5 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={isAnonymous}
+            onChange={(e) => setIsAnonymous(e.target.checked)}
+            className="w-4 h-4 rounded accent-[var(--color-brand-violet)]"
+          />
+          <span className="text-sm text-[var(--color-ink)]">
+            Back anonymously (your name won&apos;t appear on the project page)
+          </span>
+        </label>
+
+        <div className="flex flex-col gap-1.5">
+          <label className="text-sm font-medium text-[var(--color-ink)]">
+            Note to creator{" "}
+            <span className="font-normal text-[var(--color-ink-subtle)]">
+              (optional)
+            </span>
+          </label>
+          <textarea
+            rows={2}
+            maxLength={500}
+            placeholder="Share your excitement or a personal message…"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)] resize-none"
+          />
+        </div>
+      </div>
+
+      {error && (
+        <div className="rounded-[var(--radius-btn)] bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">
+          {error}
+        </div>
+      )}
+
+      <Button type="submit" size="lg" fullWidth loading={loading || !stripe}>
+        Confirm pledge — {formatSgd(amount)}
+      </Button>
+
+      <p className="text-xs text-center text-[var(--color-ink-subtle)] flex items-center justify-center gap-1.5">
+        <Shield className="w-3.5 h-3.5" />
+        You&apos;re only charged if the campaign reaches its goal by{" "}
+        {new Date(project.deadline).toLocaleDateString("en-SG")}
+      </p>
+    </form>
+  );
+}

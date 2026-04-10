@@ -1,0 +1,24 @@
+import { createClient } from "@/lib/supabase/server";
+import { KycApprovalList } from "@/components/admin/KycApprovalList";
+
+export default async function KycPage() {
+  const supabase = await createClient();
+
+  const { data: profiles } = await supabase
+    .from("profiles")
+    .select("id, display_name, avatar_url, kyc_status, kyc_submitted_at, created_at")
+    .in("kyc_status", ["pending", "unverified"])
+    .order("kyc_submitted_at", { ascending: true });
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div>
+        <h1 className="text-2xl font-black text-[var(--color-ink)]">KYC Approvals</h1>
+        <p className="text-sm text-[var(--color-ink-muted)] mt-1">
+          Review and approve creator identity verifications.
+        </p>
+      </div>
+      <KycApprovalList profiles={profiles ?? []} />
+    </div>
+  );
+}

@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+/* ============================================================
+   plsfundme — Design Tokens
+   Fun, trendy, entrepreneur-focused aesthetic
+   ============================================================ */
+
+@theme inline {
+  /* Brand palette */
+  --color-brand-violet:    #7C3AED;   /* Primary CTA */
+  --color-brand-coral:     #FF4D6D;   /* Accent / urgency */
+  --color-brand-teal:      #0EA5E9;   /* Info / secondary */
+  --color-brand-amber:     #F59E0B;   /* Warning / highlights */
+  --color-brand-lime:      #84CC16;   /* Success / funded */
+
+  /* Neutrals */
+  --color-surface:         #FFFFFF;
+  --color-surface-raised:  #F8F7FF;   /* Slightly violet-tinted card bg */
+  --color-surface-overlay: #F1F0FF;
+  --color-border:          #E5E3FF;
+  --color-ink:             #1A1523;   /* Near-black with violet undertone */
+  --color-ink-muted:       #6B6880;
+  --color-ink-subtle:      #9D9AAD;
+
+  /* Background */
+  --color-background:      var(--color-surface);
+  --color-foreground:      var(--color-ink);
+
+  /* Typography */
+  --font-sans:   var(--font-geist-sans);
+  --font-mono:   var(--font-geist-mono);
+
+  /* Border radius */
+  --radius-card:   1rem;
+  --radius-btn:    0.625rem;
+  --radius-pill:   9999px;
+
+  /* Shadows */
+  --shadow-card:   0 2px 12px 0 rgba(124, 58, 237, 0.08);
+  --shadow-card-hover: 0 8px 32px 0 rgba(124, 58, 237, 0.16);
+  --shadow-cta:    0 4px 20px 0 rgba(124, 58, 237, 0.35);
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-surface:         #0F0D1A;
+    --color-surface-raised:  #171327;
+    --color-surface-overlay: #1E1A33;
+    --color-border:          #2D2845;
+    --color-ink:             #F0EEFF;
+    --color-ink-muted:       #A09CBC;
+    --color-ink-subtle:      #6B6880;
+    --color-background:      var(--color-surface);
+    --color-foreground:      var(--color-ink);
+  }
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Smooth focus ring */
+*:focus-visible {
+  outline: 2px solid var(--color-brand-violet);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
