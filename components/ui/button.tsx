@@ -4,7 +4,7 @@ import { type ButtonHTMLAttributes, forwardRef } from "react";
 import { Loader2 } from "lucide-react";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "ghost" | "danger";
+  variant?: "primary" | "secondary" | "ghost" | "danger" | "inverse";
   size?: "sm" | "md" | "lg";
   loading?: boolean;
   fullWidth?: boolean;
@@ -36,6 +36,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         "text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] hover:bg-[var(--color-surface-overlay)] active:scale-[0.98]",
       danger:
         "bg-[var(--color-brand-coral)] text-white hover:bg-red-600 active:scale-[0.98]",
+      inverse:
+        "bg-white text-[var(--color-brand-violet)] hover:bg-violet-50 active:scale-[0.98] shadow-lg",
     };
 
     const sizes = {

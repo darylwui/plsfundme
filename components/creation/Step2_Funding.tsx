@@ -109,18 +109,22 @@ export function Step2_Funding({ draft, onUpdate, onNext, onBack }: Step2Props) {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Input
           label="Campaign start date (optional)"
-          type="datetime-local"
-          value={draft.start_date ?? ""}
-          onChange={(e) =>
-            onUpdate({ start_date: e.target.value || null })
-          }
+          type="date"
+          value={draft.start_date ? draft.start_date.slice(0, 10) : ""}
+          onChange={(e) => {
+            const v = e.target.value;
+            onUpdate({ start_date: v ? `${v}T00:00:00.000Z` : null });
+          }}
           hint="Leave blank to launch immediately"
         />
         <Input
           label="Campaign deadline"
-          type="datetime-local"
-          value={draft.deadline}
-          onChange={(e) => onUpdate({ deadline: e.target.value })}
+          type="date"
+          value={draft.deadline ? draft.deadline.slice(0, 10) : ""}
+          onChange={(e) => {
+            const v = e.target.value;
+            onUpdate({ deadline: v ? `${v}T00:00:00.000Z` : "" });
+          }}
           error={errors.deadline}
           required
         />
