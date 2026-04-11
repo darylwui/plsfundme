@@ -23,6 +23,7 @@ interface CheckoutFormProps {
   clientSecret: string;
   pledgeId: string;
   intentType: "payment_intent" | "setup_intent";
+  paymentMethod?: "card" | "paynow";
 }
 
 export function CheckoutForm({
@@ -32,6 +33,7 @@ export function CheckoutForm({
   clientSecret,
   pledgeId,
   intentType,
+  paymentMethod = "card",
 }: CheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
@@ -161,16 +163,25 @@ export function CheckoutForm({
       {/* Stripe Payment Element */}
       <div>
         <h3 className="font-bold text-sm text-[var(--color-ink-muted)] uppercase tracking-wider mb-3">
-          Payment method
+          {paymentMethod === "paynow" ? "Scan to pay" : "Card details"}
         </h3>
         <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] p-4">
           <PaymentElement
             options={{
-              layout: "tabs",
-              paymentMethodOrder: ["paynow", "card"],
+              layout: "auto",
             }}
           />
         </div>
+        {paymentMethod === "paynow" && (
+          <p className="mt-2 text-xs text-[var(--color-ink-subtle)]">
+            Open your bank app and scan the QR code to complete payment instantly.
+          </p>
+        )}
+        {paymentMethod === "card" && (
+          <p className="mt-2 text-xs text-[var(--color-ink-subtle)]">
+            Your card will only be charged if the campaign reaches its goal.
+          </p>
+        )}
       </div>
 
       {/* Options */}
