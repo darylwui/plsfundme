@@ -60,7 +60,14 @@ export default async function EditProjectPage({ params }: EditProjectPageProps) 
     });
   }
 
-  const hasPledges = (project.amount_pledged_sgd ?? 0) > 0;
+  // Count all non-cancelled pledges for this project (catches authorized/pre-auth too)
+  const { count: pledgeCount } = await supabase
+    .from("pledges")
+    .select("id", { count: "exact", head: true })
+    .eq("project_id", project.id)
+    .not("status", "in", "(cancelled,failed)");
+
+  const hasPledges = (pledgeCount ?? 0) > 0;
 
   return (
     <div className="min-h-screen bg-[var(--color-surface-raised)]">

@@ -201,7 +201,12 @@ export function EditProjectForm({
     const { error } = await supabase.from("projects").delete().eq("id", project.id);
     setDeleting(false);
     if (error) {
-      setDeleteError(error.message);
+      if (error.code === "23503") {
+        // Foreign key violation — pledges exist
+        setDeleteError("Your project has pledged funds, please contact support for assistance.");
+      } else {
+        setDeleteError(error.message);
+      }
     } else {
       router.push("/dashboard/projects");
     }
@@ -659,7 +664,7 @@ export function EditProjectForm({
             <h3 className="font-bold text-[var(--color-ink)]">Delete campaign</h3>
             <p className="text-sm text-[var(--color-ink-muted)] mt-0.5">
               {hasPledges
-                ? "This campaign has active pledges and cannot be deleted. Contact support if you need assistance."
+                ? "Your project has pledged funds, please contact support for assistance."
                 : "Permanently remove this campaign and all its data. This cannot be undone."}
             </p>
           </div>
