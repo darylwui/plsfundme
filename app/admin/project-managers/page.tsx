@@ -48,10 +48,19 @@ export default async function ProjectManagersPage({ searchParams }: PageProps) {
   // Fetch PM profiles with service client
   const service = createServiceClient();
 
-  const { data: pmProfiles } = await service
+  const { data: pmRaw } = await service
     .from("project_manager_profiles")
-    .select("*, profile:profiles(display_name, avatar_url)")
+    .select("*")
     .order("submitted_at", { ascending: true });
+
+  // Fetch display names from profiles
+  const { data: profileRows } = await service
+    .from("profiles")
+    .select("id, display_name, avatar_url");
+
+  const profileMap = new Map(
+    (profileRows ?? []).map((p) => [p.id, { display_name: p.display_name, avatar_url: p.avatar_url }])
+  );
 
   // Fetch emails from auth
   const {
@@ -60,8 +69,9 @@ export default async function ProjectManagersPage({ searchParams }: PageProps) {
 
   const emailMap = new Map(users.map((u) => [u.id, u.email ?? ""]));
 
-  const enriched: PMProfile[] = (pmProfiles ?? []).map((p) => ({
+  const enriched: PMProfile[] = (pmRaw ?? []).map((p) => ({
     ...p,
+    profile: profileMap.get(p.id) ?? null,
     email: emailMap.get(p.id) ?? "",
   }));
 

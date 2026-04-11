@@ -27,24 +27,18 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
   const { action, rejection_reason } = await req.json();
 
   const service = createServiceClient();
-  const updates: Record<string, unknown> = {
-    reviewed_at: new Date().toISOString(),
-    reviewed_by: user.id,
-  };
 
-  if (action === "approve") {
-    updates.status = "approved";
-  } else if (action === "reject") {
-    updates.status = "rejected";
-    updates.rejection_reason =
-      rejection_reason || "Application did not meet requirements.";
-  } else {
+  if (action !== "approve" && action !== "reject") {
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });
   }
 
   const { error } = await service
     .from("project_manager_profiles")
-    .update(updates)
+    .update(
+      action === "approve"
+        ? { status: "approved", reviewed_at: new Date().toISOString(), reviewed_by: user.id }
+        : { status: "rejected", rejection_reason: rejection_reason || "Application did not meet requirements.", reviewed_at: new Date().toISOString(), reviewed_by: user.id }
+    )
     .eq("id", id);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
