@@ -65,7 +65,6 @@ export default async function HomePage({ searchParams }: HomePageProps) {
               🍞 Made for Singapore entrepreneurs
             </div>
             <h1 className="text-5xl md:text-6xl font-black tracking-tight text-[var(--color-ink)] leading-[1.1]">
-              Back bold ideas.{" "}
               <span className="text-[var(--color-brand-violet)]">
                 Fund the future.
               </span>
@@ -149,13 +148,13 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       </section>
 
       {/* Creator CTA band */}
-      <section className="bg-[var(--color-brand-violet)] text-white">
+      <section className="bg-[#0a0a0a] text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex flex-col md:flex-row items-center justify-between gap-8">
           <div>
             <h2 className="text-3xl font-black tracking-tight">
               Ready to put your idea in the oven? 🍞
             </h2>
-            <p className="mt-2 text-orange-200 max-w-xl">
+            <p className="mt-2 text-neutral-400 max-w-xl">
               Create your campaign in minutes. Set your goal, build your reward
               tiers, and start raising funds from backers across Singapore.
             </p>

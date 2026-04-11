@@ -46,7 +46,7 @@ export function Navbar() {
             className="font-black text-xl tracking-tight hover:opacity-80 transition-opacity flex items-center gap-1.5 shrink-0"
           >
             <img src="/bread-icon.png" alt="" className="w-6 h-6 object-contain" />
-            <span style={{ color: "#F2C480" }}>get that bread</span>
+            <span className="text-white">get that bread</span>
           </Link>
 
           {/* Desktop search bar */}

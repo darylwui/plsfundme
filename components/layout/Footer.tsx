@@ -8,8 +8,7 @@ export function Footer() {
           <div className="col-span-2 md:col-span-1">
             <Link
               href="/"
-              className="font-black text-xl tracking-tight flex items-center gap-1.5"
-              style={{ color: "#F2C480" }}
+              className="font-black text-xl tracking-tight flex items-center gap-1.5 text-white"
             >
               <img src="/bread-icon.png" alt="" className="w-6 h-6 object-contain" />
               <span>get that bread</span>
