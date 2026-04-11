@@ -112,7 +112,7 @@ export function Navbar() {
                 {user ? (
                   <>
                     <Link href="/projects/create">
-                      <Button variant="secondary" size="sm">
+                      <Button variant="inverse" size="sm">
                         <PlusCircle className="w-4 h-4" />
                         Start a project
                       </Button>
@@ -211,7 +211,7 @@ export function Navbar() {
               {user ? (
                 <>
                   <Link href="/projects/create" onClick={() => setMenuOpen(false)}>
-                    <Button variant="secondary" size="md" fullWidth>
+                    <Button variant="inverse" size="md" fullWidth>
                       <PlusCircle className="w-4 h-4" />
                       Start a project
                     </Button>

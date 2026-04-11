@@ -160,7 +160,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
             </p>
           </div>
           <Link href="/projects/create" className="shrink-0">
-            <Button size="lg">
+            <Button size="lg" variant="inverse">
               Start for free
               <ArrowRight className="w-4 h-4" />
             </Button>
