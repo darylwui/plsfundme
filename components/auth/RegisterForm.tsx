@@ -9,9 +9,13 @@ import { PMRegistrationSteps } from "@/components/auth/PMRegistrationSteps";
 
 type Role = "backer" | "project_manager" | null;
 
-export function RegisterForm() {
+interface RegisterFormProps {
+  initialRole?: Role;
+}
+
+export function RegisterForm({ initialRole = null }: RegisterFormProps) {
   const router = useRouter();
-  const [selectedRole, setSelectedRole] = useState<Role>(null);
+  const [selectedRole, setSelectedRole] = useState<Role>(initialRole);
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

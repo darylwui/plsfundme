@@ -14,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "get that bread — Back bold ideas",
+  title: "get that bread — Fund the future.",
   description:
-    "Singapore's crowdfunding platform for entrepreneurs. Back bold ideas, fund the future.",
+    "Singapore's crowdfunding platform for entrepreneurs. Fund the future, one bold idea at a time.",
   icons: {
     icon: "/bread-icon.png",
     shortcut: "/favicon.ico",
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "get that bread",
-    description: "Back bold ideas. Fund the future.",
+    description: "Fund the future.",
     siteName: "get that bread",
     locale: "en_SG",
     type: "website",
