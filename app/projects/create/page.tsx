@@ -40,7 +40,7 @@ export default async function CreateProjectPage() {
               </p>
             </div>
             <Link
-              href="/register?role=pm"
+              href="/apply/pm"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-[var(--radius-btn)] bg-[var(--color-brand-violet)] text-white text-sm font-semibold hover:opacity-90 transition-opacity"
             >
               <Rocket className="w-4 h-4" />
