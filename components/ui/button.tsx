@@ -29,15 +29,15 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variants = {
       primary:
-        "bg-[var(--color-brand-violet)] text-white hover:bg-violet-700 active:scale-[0.98] shadow-[var(--shadow-cta)]",
+        "bg-[var(--color-brand-violet)] text-white hover:bg-[#7A3409] active:scale-[0.98] shadow-[var(--shadow-cta)]",
       secondary:
         "bg-[var(--color-surface-overlay)] text-[var(--color-ink)] border border-[var(--color-border)] hover:bg-[var(--color-border)] active:scale-[0.98]",
       ghost:
         "text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] hover:bg-[var(--color-surface-overlay)] active:scale-[0.98]",
       danger:
-        "bg-[var(--color-brand-coral)] text-white hover:bg-red-600 active:scale-[0.98]",
+        "bg-[var(--color-brand-coral)] text-white hover:bg-red-700 active:scale-[0.98]",
       inverse:
-        "bg-white text-[var(--color-brand-violet)] hover:bg-[var(--color-brand-violet)] hover:text-white active:scale-[0.98] active:bg-violet-700 shadow-lg transition-colors",
+        "bg-white text-[var(--color-brand-violet)] hover:bg-[var(--color-brand-violet)] hover:text-white active:scale-[0.98] active:bg-[#7A3409] shadow-lg transition-colors",
     };
 
     const sizes = {
