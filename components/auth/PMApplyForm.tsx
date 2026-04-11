@@ -22,14 +22,14 @@ const PROJECT_TYPES = [
 
 interface PMApplyFormProps {
   userId: string;
+  onSuccess?: () => void;
 }
 
-export function PMApplyForm({ userId }: PMApplyFormProps) {
+export function PMApplyForm({ userId, onSuccess }: PMApplyFormProps) {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [success, setSuccess] = useState(false);
 
   // Step 1: About you
   const [bio, setBio] = useState("");
@@ -96,30 +96,16 @@ export function PMApplyForm({ userId }: PMApplyFormProps) {
         setErrors({ form: json.error ?? "Something went wrong. Please try again." });
         return;
       }
-      setSuccess(true);
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        router.push("/dashboard");
+      }
     } catch {
       setErrors({ form: "An unexpected error occurred. Please try again." });
     } finally {
       setLoading(false);
     }
-  }
-
-  if (success) {
-    return (
-      <div className="text-center flex flex-col gap-4 py-8">
-        <div className="text-5xl">🎉</div>
-        <h3 className="font-bold text-xl text-[var(--color-ink)]">Application submitted!</h3>
-        <p className="text-sm text-[var(--color-ink-muted)] max-w-sm mx-auto">
-          We&apos;ll review your application within <strong>1–2 business days</strong> and notify you by email.
-        </p>
-        <button
-          onClick={() => router.push("/dashboard")}
-          className="mt-2 text-sm font-semibold text-[var(--color-brand-violet)] hover:underline"
-        >
-          Go to dashboard →
-        </button>
-      </div>
-    );
   }
 
   const totalSteps = 3;

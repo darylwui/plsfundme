@@ -8,7 +8,25 @@ interface PMApplyLandingProps {
 }
 
 export function PMApplyLanding({ userId }: PMApplyLandingProps) {
-  const [mode, setMode] = useState<"select" | "manual">("select");
+  const [mode, setMode] = useState<"select" | "manual" | "success">("select");
+
+  if (mode === "success") {
+    return (
+      <div className="text-center flex flex-col items-center gap-4 py-16">
+        <div className="text-6xl">🎉</div>
+        <h1 className="font-bold text-2xl text-[var(--color-ink)]">Application submitted!</h1>
+        <p className="text-sm text-[var(--color-ink-muted)] max-w-sm">
+          We&apos;ll review your application within <strong>1–2 business days</strong> and notify you by email once a decision has been made.
+        </p>
+        <a
+          href="/dashboard"
+          className="mt-2 text-sm font-semibold text-[var(--color-brand-violet)] hover:underline"
+        >
+          Go to dashboard →
+        </a>
+      </div>
+    );
+  }
 
   if (mode === "manual") {
     return (
@@ -27,7 +45,7 @@ export function PMApplyLanding({ userId }: PMApplyLandingProps) {
             Tell us about yourself and your campaign plan. We&apos;ll review your application within 1–2 business days.
           </p>
         </div>
-        <PMApplyForm userId={userId} />
+        <PMApplyForm userId={userId} onSuccess={() => setMode("success")} />
       </>
     );
   }
