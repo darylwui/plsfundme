@@ -79,7 +79,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
             <div className="mt-6 flex flex-wrap gap-3">
               <Link href="/projects/create">
                 <Button size="lg" variant="inverse">
-                  Start your campaign
+                  Start for free
                   <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
