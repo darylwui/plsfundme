@@ -6,6 +6,8 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
+export type UserRole = 'backer' | 'project_manager'
+export type PmStatus = 'pending_review' | 'approved' | 'rejected'
 export type ProjectStatus = 'draft' | 'pending_review' | 'active' | 'funded' | 'failed' | 'cancelled' | 'removed'
 export type PledgeStatus = 'pending' | 'authorized' | 'paynow_captured' | 'captured' | 'released' | 'refunded' | 'failed'
 export type PaymentMethodType = 'card' | 'paynow'
@@ -32,6 +34,7 @@ export interface Database {
           stripe_account_id: string | null
           stripe_customer_id: string | null
           is_admin: boolean
+          role: UserRole
           created_at: string
           updated_at: string
         }
@@ -48,10 +51,53 @@ export interface Database {
           stripe_account_id?: string | null
           stripe_customer_id?: string | null
           is_admin?: boolean
+          role?: UserRole
           created_at?: string
           updated_at?: string
         }
         Update: Partial<Database['public']['Tables']['profiles']['Insert']>
+      }
+      project_manager_profiles: {
+        Relationships: []
+        Row: {
+          id: string
+          bio: string
+          linkedin_url: string | null
+          company_name: string | null
+          company_website: string | null
+          project_type: string
+          project_description: string
+          id_document_url: string | null
+          singpass_verified: boolean
+          singpass_sub: string | null
+          status: PmStatus
+          rejection_reason: string | null
+          submitted_at: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          bio: string
+          linkedin_url?: string | null
+          company_name?: string | null
+          company_website?: string | null
+          project_type: string
+          project_description: string
+          id_document_url?: string | null
+          singpass_verified?: boolean
+          singpass_sub?: string | null
+          status?: PmStatus
+          rejection_reason?: string | null
+          submitted_at?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: Partial<Database['public']['Tables']['project_manager_profiles']['Insert']>
       }
       categories: {
         Relationships: []
@@ -334,6 +380,8 @@ export interface Database {
       kyc_status: KycStatus
       payout_mode: PayoutMode
       payout_status: PayoutStatus
+      user_role: UserRole
+      pm_status: PmStatus
     }
   }
 }
