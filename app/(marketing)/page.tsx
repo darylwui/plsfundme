@@ -84,8 +84,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                 </Button>
               </Link>
               <Link href="/explore">
-                <Button size="lg" variant="secondary">
+                <Button size="lg">
                   Explore projects
+                  <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
             </div>
