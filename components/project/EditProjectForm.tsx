@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Trash2, Plus, CheckCircle2, Lock, ImageIcon } from "lucide-react";
+import { Trash2, Plus, CheckCircle2, Lock, ImageIcon, AlertTriangle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -66,6 +66,12 @@ export function EditProjectForm({
   // Rewards state
   const [rewards, setRewards] = useState<Reward[]>(initialRewards);
   const [addingReward, setAddingReward] = useState(false);
+
+  // Delete project state
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteInput, setDeleteInput] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
   const [rewardForm, setRewardForm] = useState<RewardFormData>(EMPTY_REWARD);
   const [rewardFormErrors, setRewardFormErrors] = useState<Record<string, string>>({});
   const [rewardSaving, setRewardSaving] = useState(false);
@@ -186,6 +192,18 @@ export function EditProjectForm({
     const { error } = await supabase.from("rewards").delete().eq("id", rewardId);
     if (!error) {
       setRewards((prev) => prev.filter((r) => r.id !== rewardId));
+    }
+  }
+
+  async function deleteProject() {
+    setDeleting(true);
+    setDeleteError("");
+    const { error } = await supabase.from("projects").delete().eq("id", project.id);
+    setDeleting(false);
+    if (error) {
+      setDeleteError(error.message);
+    } else {
+      router.push("/dashboard/projects");
     }
   }
 
@@ -632,6 +650,67 @@ export function EditProjectForm({
           )}
         </div>
       )}
+
+      {/* ── Danger zone ──────────────────────────────── */}
+      <div className="rounded-[var(--radius-card)] border border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-900/10 p-5 flex flex-col gap-4">
+        <div className="flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-[var(--color-brand-coral)] shrink-0 mt-0.5" />
+          <div>
+            <h3 className="font-bold text-[var(--color-ink)]">Delete campaign</h3>
+            <p className="text-sm text-[var(--color-ink-muted)] mt-0.5">
+              {hasPledges
+                ? "This campaign has active pledges and cannot be deleted. Contact support if you need assistance."
+                : "Permanently remove this campaign and all its data. This cannot be undone."}
+            </p>
+          </div>
+        </div>
+
+        {!hasPledges && !showDeleteConfirm && (
+          <button
+            type="button"
+            onClick={() => setShowDeleteConfirm(true)}
+            className="self-start inline-flex items-center gap-2 px-4 py-2 rounded-[var(--radius-btn)] border border-red-300 dark:border-red-700 text-sm font-semibold text-[var(--color-brand-coral)] hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+          >
+            <Trash2 className="w-4 h-4" />
+            Delete campaign
+          </button>
+        )}
+
+        {!hasPledges && showDeleteConfirm && (
+          <div className="flex flex-col gap-3">
+            <p className="text-sm text-[var(--color-ink-muted)]">
+              Type <span className="font-mono font-bold text-[var(--color-ink)]">DELETE</span> to confirm.
+            </p>
+            <input
+              type="text"
+              value={deleteInput}
+              onChange={(e) => setDeleteInput(e.target.value)}
+              placeholder="DELETE"
+              className="w-full max-w-xs rounded-[var(--radius-btn)] border border-red-300 dark:border-red-700 px-3.5 py-2 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-coral)]"
+            />
+            {deleteError && (
+              <p className="text-xs text-[var(--color-brand-coral)]">{deleteError}</p>
+            )}
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => { setShowDeleteConfirm(false); setDeleteInput(""); setDeleteError(""); }}
+                className="px-4 py-2 rounded-[var(--radius-btn)] border border-[var(--color-border)] text-sm font-semibold text-[var(--color-ink-muted)] hover:bg-[var(--color-surface-overlay)] transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={deleteInput !== "DELETE" || deleting}
+                onClick={deleteProject}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-[var(--radius-btn)] bg-red-600 text-sm font-semibold text-white hover:bg-red-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {deleting ? "Deleting…" : "Permanently delete"}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
