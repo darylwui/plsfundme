@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
@@ -11,7 +11,7 @@ import { CheckCircle, AlertCircle } from "lucide-react";
 
 type Stage = "verifying" | "ready" | "success" | "expired";
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [stage, setStage] = useState<Stage>("verifying");
@@ -155,5 +155,18 @@ export default function ResetPasswordPage() {
         </Button>
       </form>
     </Card>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={
+      <Card padding="lg" className="flex flex-col items-center gap-4 text-center py-10">
+        <div className="w-8 h-8 rounded-full border-2 border-[var(--color-brand-violet)] border-t-transparent animate-spin" />
+        <p className="text-sm text-[var(--color-ink-muted)]">Loading…</p>
+      </Card>
+    }>
+      <ResetPasswordContent />
+    </Suspense>
   );
 }
