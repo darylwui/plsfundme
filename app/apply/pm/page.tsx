@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Navbar } from "@/components/layout/Navbar";
-import { PMApplyForm } from "@/components/auth/PMApplyForm";
+import { PMApplyLanding } from "@/components/auth/PMApplyLanding";
 
 export default async function ApplyPMPage() {
   const supabase = await createClient();
@@ -34,15 +34,7 @@ export default async function ApplyPMPage() {
       <Navbar />
       <main className="flex-1 bg-[var(--color-surface-raised)]">
         <div className="max-w-lg mx-auto px-4 sm:px-6 py-12">
-          <div className="mb-8">
-            <h1 className="text-2xl font-black text-[var(--color-ink)] tracking-tight">
-              Apply as Project Manager 🚀
-            </h1>
-            <p className="text-sm text-[var(--color-ink-muted)] mt-1.5">
-              Tell us about yourself and your campaign plan. We&apos;ll review your application within 1–2 business days.
-            </p>
-          </div>
-          <PMApplyForm userId={user.id} />
+          <PMApplyLanding userId={user.id} />
         </div>
       </main>
     </>
