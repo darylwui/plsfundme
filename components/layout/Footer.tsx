@@ -3,7 +3,7 @@ import Link from "next/link";
 export function Footer() {
   return (
     <footer className="bg-[#2C1A0E]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="col-span-2 md:col-span-1">
             <Link
@@ -82,7 +82,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-6 pt-5 border-t border-[#4A2E1A] flex flex-col sm:flex-row items-center justify-between gap-2">
+        <div className="mt-4 pt-4 border-t border-[#4A2E1A] flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-xs text-[#8B6545]">
             © {new Date().getFullYear()} get that bread. All rights reserved.
           </p>

@@ -59,7 +59,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     <div>
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-amber-50 via-[#FFFBF5] to-orange-50 dark:from-[#0f0f0f] dark:via-[#0a0a0a] dark:to-[#111111]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 text-sm font-semibold mb-4">
               🍞 Made for Singapore entrepreneurs
@@ -117,7 +117,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       </section>
 
       {/* Discovery section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         {/* Filter tabs */}
         <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
           <div className="flex gap-1 p-1 bg-[var(--color-surface-overlay)] rounded-[var(--radius-btn)]">
@@ -151,7 +151,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
       {/* Creator CTA band — matches footer */}
       <section className="bg-[#2C1A0E]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row items-center justify-between gap-6">
           <div>
             <h2 className="text-3xl font-black tracking-tight text-white">
               Ready to put your idea in the oven? 🍞
