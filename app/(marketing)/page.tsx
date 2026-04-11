@@ -148,19 +148,19 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       </section>
 
       {/* Creator CTA band */}
-      <section className="bg-[#0a0a0a] text-white">
+      <section className="bg-[var(--color-surface)] dark:bg-[#0a0a0a] border-t border-[var(--color-border)] dark:border-neutral-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex flex-col md:flex-row items-center justify-between gap-8">
           <div>
-            <h2 className="text-3xl font-black tracking-tight">
+            <h2 className="text-3xl font-black tracking-tight text-[var(--color-ink)]">
               Ready to put your idea in the oven? 🍞
             </h2>
-            <p className="mt-2 text-neutral-400 max-w-xl">
+            <p className="mt-2 text-[var(--color-ink-muted)] max-w-xl">
               Create your campaign in minutes. Set your goal, build your reward
               tiers, and start raising funds from backers across Singapore.
             </p>
           </div>
           <Link href="/projects/create" className="shrink-0">
-            <Button size="lg" variant="inverse">
+            <Button size="lg">
               Start for free
               <ArrowRight className="w-4 h-4" />
             </Button>
