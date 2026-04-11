@@ -21,32 +21,19 @@ export default function ResetPasswordPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function verifyCode() {
-      const code = searchParams.get("code");
-
-      if (!code) {
-        // No code — might be a direct visit or hash-based (old flow)
-        // Check if we already have a valid recovery session
-        const supabase = createClient();
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          setStage("ready");
-        } else {
-          setStage("expired");
-        }
-        return;
-      }
-
-      const supabase = createClient();
-      const { error } = await supabase.auth.exchangeCodeForSession(code);
-      if (error) {
-        setStage("expired");
-      } else {
-        setStage("ready");
-      }
+    // Callback already exchanged the code — just verify we have an active session
+    if (searchParams.get("error") === "expired") {
+      setStage("expired");
+      return;
     }
 
-    verifyCode();
+    async function checkSession() {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      setStage(session ? "ready" : "expired");
+    }
+
+    checkSession();
   }, []);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -86,7 +73,7 @@ export default function ResetPasswordPage() {
 
   if (stage === "expired") {
     return (
-      <Card padding="lg" className="flex flex-col items-center gap-4 text-center">
+      <Card padding="lg" className="flex flex-col items-center gap-5 text-center">
         <div className="w-14 h-14 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
           <AlertCircle className="w-7 h-7 text-red-500" />
         </div>
@@ -95,7 +82,7 @@ export default function ResetPasswordPage() {
             Link expired
           </h1>
           <p className="text-sm text-[var(--color-ink-muted)] max-w-sm">
-            This password reset link has expired or already been used. Request a new one.
+            This password reset link has expired or already been used. Request a fresh one.
           </p>
         </div>
         <Link href="/forgot-password" className="w-full">
@@ -103,10 +90,7 @@ export default function ResetPasswordPage() {
             Request new link
           </Button>
         </Link>
-        <Link
-          href="/login"
-          className="text-sm text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
-        >
+        <Link href="/login" className="text-sm text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors">
           Back to login
         </Link>
       </Card>
@@ -115,7 +99,7 @@ export default function ResetPasswordPage() {
 
   if (stage === "success") {
     return (
-      <Card padding="lg" className="flex flex-col items-center gap-4 text-center">
+      <Card padding="lg" className="flex flex-col items-center gap-5 text-center">
         <div className="w-14 h-14 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
           <CheckCircle className="w-7 h-7 text-green-600 dark:text-green-400" />
         </div>
