@@ -42,18 +42,27 @@
   --shadow-cta:         0 4px 20px 0 rgba(146, 64, 14, 0.35);
 }
 
-/* Dark mode — warm dark bread tones */
+/* Dark mode — clean neutral dark (shadcn/ui-inspired) */
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-surface:         #1C0F06;
-    --color-surface-raised:  #261508;
-    --color-surface-overlay: #311C0A;
-    --color-border:          #4A2E1A;
-    --color-ink:             #F5EDD8;
-    --color-ink-muted:       #C4956A;
-    --color-ink-subtle:      #8B6545;
+    /* Neutral near-black surfaces — no warm tint, full contrast */
+    --color-surface:         #0a0a0a;   /* Page background — near-black */
+    --color-surface-raised:  #111111;   /* Slightly lifted (layout bg) */
+    --color-surface-overlay: #1c1c1c;   /* Cards, panels, modals */
+    --color-border:          #2a2a2a;   /* Subtle neutral border */
+
+    /* Typography — crisp white hierarchy */
+    --color-ink:             #fafafa;   /* Near-white — primary text */
+    --color-ink-muted:       #a3a3a3;   /* Secondary text */
+    --color-ink-subtle:      #737373;   /* Tertiary / placeholder */
+
     --color-background:      var(--color-surface);
     --color-foreground:      var(--color-ink);
+
+    /* Shadows — dark mode uses barely-there outlines instead */
+    --shadow-card:        0 0 0 1px rgba(255, 255, 255, 0.06);
+    --shadow-card-hover:  0 0 0 1px rgba(255, 255, 255, 0.12), 0 4px 24px 0 rgba(0, 0, 0, 0.4);
+    --shadow-cta:         0 4px 20px 0 rgba(242, 196, 128, 0.25);
   }
 }
 
