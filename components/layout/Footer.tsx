@@ -88,7 +88,7 @@ export function Footer() {
             © {new Date().getFullYear()} get that bread. All rights reserved.
           </p>
           <p className="text-xs text-[#8B6545]">
-            Payments secured by Stripe · Regulated under MAS Payment Services Act
+            Payments secured by Stripe · Built for Singapore entrepreneurs
           </p>
         </div>
       </div>

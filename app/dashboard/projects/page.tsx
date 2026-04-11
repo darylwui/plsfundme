@@ -33,7 +33,13 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
   };
 
   const statusLabel: Record<string, string> = {
-    pending_review: "pending review",
+    draft: "Draft",
+    pending_review: "Pending review",
+    active: "Live",
+    funded: "Funded",
+    failed: "Failed",
+    cancelled: "Rejected",
+    removed: "Removed",
   };
 
   return (
