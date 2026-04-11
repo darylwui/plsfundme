@@ -65,13 +65,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
               🍞 Made for Singapore entrepreneurs
             </div>
             <h1 className="text-5xl md:text-6xl font-black tracking-tight leading-[1.1]">
-              <span className="text-[var(--color-brand-violet)]">
-                Fund the future.
-              </span>
+              <span className="text-white">Empowering all founders to </span>
+              <span style={{ color: "#92400E" }}>get that bread.</span>
             </h1>
-            <p className="mt-3 text-2xl md:text-3xl font-black tracking-tight" style={{ color: "#F2C480" }}>
-              get that bread.
-            </p>
             <p className="mt-4 text-xl text-[var(--color-ink-muted)] max-w-xl leading-relaxed">
               Singapore&apos;s crowdfunding platform for entrepreneurs. Launch
               your campaign, find your backers, bring your idea to life.
