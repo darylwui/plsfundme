@@ -33,16 +33,18 @@ export function ProjectCard({ project }: ProjectCardProps) {
             </div>
           )}
 
-          {/* Badges overlay */}
+          {/* Badges overlay — solid so they read on any image/bg */}
           <div className="absolute top-3 left-3 flex gap-1.5">
             {project.category && (
-              <Badge variant="violet">{project.category.name}</Badge>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/90 text-[var(--color-brand-violet)] backdrop-blur-sm">
+                {project.category.name}
+              </span>
             )}
             {isEndingSoon && (
-              <Badge variant="coral">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-600 text-white">
                 <Clock className="w-3 h-3" />
                 Ending soon
-              </Badge>
+              </span>
             )}
           </div>
         </div>
