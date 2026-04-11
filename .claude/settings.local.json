@@ -41,7 +41,9 @@
       "Bash(echo \"Exit: $?\")",
       "Bash(osascript -e 'tell application \"Keynote\" to activate')",
       "Bash(osascript -e 'tell application \"Keynote\" to open POSIX file \"/tmp/pitch_deck/GetThatBread_PitchDeck.pptx\"')",
-      "Bash(npx next:*)"
+      "Bash(npx next:*)",
+      "Bash(curl -s --max-time 5 https://github.com)",
+      "Bash(GIT_SSH_COMMAND=\"ssh -o 'StrictHostKeyChecking=no' -o 'AddressFamily inet'\" git push origin main)"
     ]
   }
 }

@@ -11,9 +11,10 @@ export default function AuthLayout({
       <header className="px-6 py-5">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 font-black text-xl tracking-tight text-[var(--color-ink)] hover:text-[var(--color-brand-violet)] transition-colors"
+          className="inline-flex items-center gap-1.5 font-black text-xl tracking-tight hover:opacity-80 transition-opacity"
         >
-          <span className="text-[var(--color-brand-violet)]">pls</span>fundme
+          <img src="/bread-icon.png" alt="" className="w-6 h-6 object-contain" />
+          <span className="text-[var(--color-ink)]">get that bread</span>
         </Link>
       </header>
 
@@ -27,8 +28,8 @@ export default function AuthLayout({
         aria-hidden
         className="fixed inset-0 -z-10 overflow-hidden pointer-events-none"
       >
-        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-violet-200/30 blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-[600px] h-[600px] rounded-full bg-sky-200/20 blur-3xl" />
+        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-amber-200/30 blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-[600px] h-[600px] rounded-full bg-orange-200/20 blur-3xl" />
       </div>
     </div>
   );
