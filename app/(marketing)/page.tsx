@@ -64,13 +64,14 @@ export default async function HomePage({ searchParams }: HomePageProps) {
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 text-sm font-semibold mb-6">
               🍞 Made for Singapore entrepreneurs
             </div>
-            <h1 className="text-5xl md:text-6xl font-black tracking-tight text-[var(--color-ink)] leading-[1.1]">
+            <h1 className="text-5xl md:text-6xl font-black tracking-tight leading-[1.1]">
               <span className="text-[var(--color-brand-violet)]">
                 Fund the future.
               </span>
-              <br />
-              <span style={{ color: "#F2C480" }}>get that bread.</span>
             </h1>
+            <p className="mt-3 text-2xl md:text-3xl font-black tracking-tight" style={{ color: "#F2C480" }}>
+              get that bread.
+            </p>
             <p className="mt-6 text-xl text-[var(--color-ink-muted)] max-w-xl leading-relaxed">
               Singapore&apos;s crowdfunding platform for entrepreneurs. Launch
               your campaign, find your backers, bring your idea to life.

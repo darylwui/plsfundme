@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Class-based dark mode — overrides Tailwind v4's default media-query strategy */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* ============================================================
    get that bread — Design Tokens
    Warm bakery aesthetic — bread, oven, golden crust
@@ -43,8 +46,7 @@
 }
 
 /* Dark mode — clean neutral dark (shadcn/ui-inspired) */
-@media (prefers-color-scheme: dark) {
-  :root {
+.dark {
     /* Neutral near-black surfaces — no warm tint, full contrast */
     --color-surface:         #0a0a0a;   /* Page background — near-black */
     --color-surface-raised:  #111111;   /* Slightly lifted (layout bg) */
@@ -63,7 +65,6 @@
     --shadow-card:        0 0 0 1px rgba(255, 255, 255, 0.06);
     --shadow-card-hover:  0 0 0 1px rgba(255, 255, 255, 0.12), 0 4px 24px 0 rgba(0, 0, 0, 0.4);
     --shadow-cta:         0 4px 20px 0 rgba(242, 196, 128, 0.25);
-  }
 }
 
 body {

@@ -3,15 +3,17 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { Menu, X, PlusCircle, Search } from "lucide-react";
+import { Menu, X, PlusCircle, Search, Sun, Moon } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useTheme } from "@/components/ThemeProvider";
 
 export function Navbar() {
   const { user, loading } = useAuth();
   const { currency, setCurrency } = useCurrency();
+  const { theme, toggle: toggleTheme } = useTheme();
   const pathname = usePathname();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -107,6 +109,17 @@ export function Navbar() {
               </button>
             </div>
 
+            {/* Theme toggle */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-lg text-[#C4956A] hover:bg-[#3D2010] transition-colors"
+              aria-label="Toggle dark mode"
+            >
+              {theme === "dark"
+                ? <Sun className="w-4 h-4" />
+                : <Moon className="w-4 h-4" />}
+            </button>
+
             {!loading && (
               <>
                 {user ? (
@@ -177,6 +190,18 @@ export function Navbar() {
               {label}
             </Link>
           ))}
+
+          {/* Mobile theme + currency row */}
+          <div className="flex items-center justify-between gap-3">
+            <button
+              onClick={toggleTheme}
+              className="flex items-center gap-2 text-sm font-medium text-[#C4956A] hover:text-[#F5EDD8] transition-colors"
+            >
+              {theme === "dark"
+                ? <><Sun className="w-4 h-4" /> Light mode</>
+                : <><Moon className="w-4 h-4" /> Dark mode</>}
+            </button>
+          </div>
 
           {/* Mobile currency toggle */}
           <div className="flex items-center gap-2">
