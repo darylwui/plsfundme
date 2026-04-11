@@ -117,9 +117,10 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       </section>
 
       {/* Discovery section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <section className="bg-[var(--color-surface-raised)] border-t border-[var(--color-border)]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Filter tabs */}
-        <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
+        <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
           <div className="flex gap-1 p-1 bg-[var(--color-surface-overlay)] rounded-[var(--radius-btn)]">
             {TABS.map(({ key, label, emoji }) => (
               <Link
@@ -147,26 +148,6 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           projects={projects}
           emptyMessage="No active projects yet — be the first to launch one!"
         />
-      </section>
-
-      {/* Creator CTA band — matches footer */}
-      <section className="bg-[#2C1A0E]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div>
-            <h2 className="text-3xl font-black tracking-tight text-white">
-              Ready to put your idea in the oven? 🍞
-            </h2>
-            <p className="mt-2 text-[#8B6545] max-w-xl">
-              Create your campaign in minutes. Set your goal, build your reward
-              tiers, and start raising funds from backers across Singapore.
-            </p>
-          </div>
-          <Link href="/projects/create" className="shrink-0">
-            <Button size="lg" variant="inverse">
-              Start for free
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-          </Link>
         </div>
       </section>
     </div>
