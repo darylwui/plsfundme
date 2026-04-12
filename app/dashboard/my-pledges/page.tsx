@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { ArrowRight, Heart } from "lucide-react";
+import { ArrowRight, Heart, Rocket } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { formatSgd } from "@/lib/utils/currency";
-import { formatDate } from "@/lib/utils/dates";
+import { formatSgd, fundingPercent } from "@/lib/utils/currency";
+import { formatDate, daysRemaining } from "@/lib/utils/dates";
 
 export default async function MyPledgesPage() {
   const supabase = await createClient();
@@ -52,21 +52,95 @@ export default async function MyPledgesPage() {
     draft: "Draft", cancelled: "Cancelled",
   };
 
-  function PledgeCard({ pledge }: { pledge: PledgeRow }) {
+  function ActivePledgeCard({ pledge }: { pledge: PledgeRow }) {
+    const project = pledge.project;
+    if (!project) return null;
+    const percent = fundingPercent(project.amount_pledged_sgd, project.funding_goal_sgd);
+    const days = daysRemaining(project.deadline);
+    const isActive = project.status === "active";
+    const isFunded = project.status === "funded";
+    const barColor = isFunded ? "bg-[var(--color-brand-lime)]" : "bg-[var(--color-brand-violet)]";
+
+    return (
+      <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] shadow-[var(--shadow-card)] overflow-hidden">
+        <div className="flex items-center gap-4 p-5">
+          <div className="w-16 h-16 rounded-lg bg-[var(--color-surface-overlay)] shrink-0 overflow-hidden">
+            {project.cover_image_url ? (
+              <img src={project.cover_image_url} alt={project.title} className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <Rocket className="w-6 h-6 text-[var(--color-ink-subtle)]" />
+              </div>
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-bold text-[var(--color-ink)] truncate">{project.title}</p>
+            <div className="flex flex-wrap items-center gap-1.5 mt-1">
+              <Badge variant={projectStatusVariant[project.status] ?? "neutral"}>
+                {projectStatusLabel[project.status] ?? project.status}
+              </Badge>
+              <Badge variant={pledgeStatusVariant[pledge.status] ?? "neutral"}>
+                {pledgeStatusLabel[pledge.status] ?? pledge.status}
+              </Badge>
+            </div>
+            <p className="text-xs text-[var(--color-ink-subtle)] mt-1">
+              You pledged <span className="font-mono font-semibold text-[var(--color-ink)]">{formatSgd(pledge.amount_sgd)}</span>
+              {" "}via {pledge.payment_method === "paynow" ? "PayNow" : "Card"} · {formatDate(pledge.created_at)}
+            </p>
+          </div>
+          <Link
+            href={`/projects/${project.slug}`}
+            className="text-sm font-semibold text-[var(--color-brand-violet)] hover:underline flex items-center gap-1 shrink-0"
+          >
+            View <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        {/* Live progress strip */}
+        <div className="border-t border-[var(--color-border)] bg-[var(--color-surface-raised)] px-5 py-3 flex flex-col gap-2">
+          <div className="h-1.5 rounded-full bg-[var(--color-surface-overlay)] overflow-hidden">
+            <div
+              className={`h-full rounded-full transition-all duration-500 ${barColor}`}
+              style={{ width: `${Math.min(percent, 100)}%` }}
+            />
+          </div>
+          <div className="flex items-center justify-between text-xs text-[var(--color-ink-muted)]">
+            <span>
+              <span className="font-mono font-bold text-[var(--color-ink)]">{formatSgd(project.amount_pledged_sgd)}</span>
+              {" "}raised of <span className="font-mono">{formatSgd(project.funding_goal_sgd)}</span>
+            </span>
+            <div className="flex items-center gap-3">
+              <span><span className="font-mono font-bold text-[var(--color-ink)]">{percent}%</span> funded</span>
+              <span><span className="font-mono font-bold text-[var(--color-ink)]">{project.backer_count}</span> backers</span>
+              {isActive && (
+                <span className={`font-mono font-bold ${days <= 3 ? "text-[var(--color-brand-coral)]" : "text-[var(--color-ink)]"}`}>
+                  {days}d left
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  function PastPledgeCard({ pledge }: { pledge: PledgeRow }) {
     const project = pledge.project;
     if (!project) return null;
     return (
-      <div className="flex items-center gap-4 bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] shadow-[var(--shadow-card)] p-4">
-        <div className="w-16 h-16 rounded-lg bg-[var(--color-surface-overlay)] shrink-0 overflow-hidden">
+      <div className="flex items-center gap-4 bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-4 opacity-70">
+        <div className="w-12 h-12 rounded-lg bg-[var(--color-surface-overlay)] shrink-0 overflow-hidden">
           {project.cover_image_url ? (
             <img src={project.cover_image_url} alt={project.title} className="w-full h-full object-cover" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-2xl">🍞</div>
+            <div className="w-full h-full flex items-center justify-center">
+              <Rocket className="w-5 h-5 text-[var(--color-ink-subtle)]" />
+            </div>
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-bold text-[var(--color-ink)] truncate">{project.title}</p>
-          <div className="flex flex-wrap items-center gap-1.5 mt-1">
+          <p className="font-semibold text-[var(--color-ink-muted)] truncate text-sm">{project.title}</p>
+          <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
             <Badge variant={projectStatusVariant[project.status] ?? "neutral"}>
               {projectStatusLabel[project.status] ?? project.status}
             </Badge>
@@ -74,15 +148,15 @@ export default async function MyPledgesPage() {
               {pledgeStatusLabel[pledge.status] ?? pledge.status}
             </Badge>
           </div>
-          <p className="text-xs text-[var(--color-ink-subtle)] mt-1">
-            {formatSgd(pledge.amount_sgd)} via {pledge.payment_method === "paynow" ? "PayNow" : "Card"} · {formatDate(pledge.created_at)}
+          <p className="text-xs text-[var(--color-ink-subtle)] mt-0.5">
+            {formatSgd(pledge.amount_sgd)} · {formatDate(pledge.created_at)}
           </p>
         </div>
         <Link
           href={`/projects/${project.slug}`}
-          className="text-sm font-semibold text-[var(--color-brand-violet)] hover:underline flex items-center gap-1 shrink-0"
+          className="text-xs font-semibold text-[var(--color-ink-subtle)] hover:text-[var(--color-brand-violet)] flex items-center gap-1 shrink-0 transition-colors"
         >
-          View <ArrowRight className="w-3.5 h-3.5" />
+          View <ArrowRight className="w-3 h-3" />
         </Link>
       </div>
     );
@@ -99,19 +173,23 @@ export default async function MyPledgesPage() {
         </div>
         {activePledges.length > 0 && (
           <div className="text-sm text-[var(--color-ink-muted)]">
-            <span className="font-bold text-[var(--color-ink)]">{activePledges.length}</span> active pledge{activePledges.length !== 1 ? "s" : ""} ·{" "}
-            <span className="font-bold text-[var(--color-brand-violet)]">{formatSgd(totalActive)}</span> pledged
+            <span className="font-mono font-bold text-[var(--color-ink)]">{activePledges.length}</span> active pledge{activePledges.length !== 1 ? "s" : ""}{" · "}
+            <span className="font-mono font-bold text-[var(--color-brand-violet)]">{formatSgd(totalActive)}</span> pledged
           </div>
         )}
       </div>
 
       {pledges.length === 0 ? (
-        <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border-2 border-dashed border-[var(--color-border)] p-12 text-center">
-          <p className="text-4xl mb-4">🍞</p>
-          <h2 className="text-lg font-bold text-[var(--color-ink)]">No pledges yet</h2>
-          <p className="text-sm text-[var(--color-ink-muted)] mt-1 mb-6">
-            Find a project you believe in and back it.
-          </p>
+        <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border-2 border-dashed border-[var(--color-border)] p-12 text-center flex flex-col items-center gap-4">
+          <div className="w-16 h-16 rounded-full bg-[var(--color-brand-violet)]/10 flex items-center justify-center">
+            <Heart className="w-8 h-8 text-[var(--color-brand-violet)]" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-[var(--color-ink)]">No pledges yet</h2>
+            <p className="text-sm text-[var(--color-ink-muted)] mt-1">
+              Find a project you believe in and be the first to back it.
+            </p>
+          </div>
           <Link href="/explore">
             <Button size="lg"><Heart className="w-4 h-4" /> Explore projects</Button>
           </Link>
@@ -121,13 +199,13 @@ export default async function MyPledgesPage() {
           {activePledges.length > 0 && (
             <div className="flex flex-col gap-3">
               <h2 className="font-bold text-[var(--color-ink)]">Active pledges</h2>
-              {activePledges.map((p) => <PledgeCard key={p.id} pledge={p} />)}
+              {activePledges.map((p) => <ActivePledgeCard key={p.id} pledge={p} />)}
             </div>
           )}
           {pastPledges.length > 0 && (
             <div className="flex flex-col gap-3">
-              <h2 className="font-bold text-[var(--color-ink-muted)]">Past pledges</h2>
-              {pastPledges.map((p) => <PledgeCard key={p.id} pledge={p} />)}
+              <h2 className="font-bold text-[var(--color-ink-muted)] text-sm uppercase tracking-wider">Past pledges</h2>
+              {pastPledges.map((p) => <PastPledgeCard key={p.id} pledge={p} />)}
             </div>
           )}
         </div>

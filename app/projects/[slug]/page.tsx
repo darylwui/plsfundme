@@ -7,6 +7,8 @@ import { ShareButtons } from "@/components/sharing/ShareButtons";
 const BASE_URL = "https://getthatbread.vercel.app";
 import { createClient } from "@/lib/supabase/server";
 import { FundingWidget } from "@/components/projects/FundingWidget";
+import { ProjectUpdatesFeed } from "@/components/projects/ProjectUpdatesFeed";
+import { PostUpdateForm } from "@/components/project/PostUpdateForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/utils/dates";
@@ -78,6 +80,26 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   // Check if current user is the creator so we can show Edit button
   const { data: { user } } = await supabase.auth.getUser();
   const isCreator = user?.id === project.creator.id;
+
+  // Fetch updates + check backer status in parallel
+  const [{ data: updatesRaw }, backerCheck] = await Promise.all([
+    supabase
+      .from("project_updates")
+      .select("*")
+      .eq("project_id", project.id)
+      .order("created_at", { ascending: false }),
+    user
+      ? supabase
+          .from("pledges")
+          .select("id", { count: "exact", head: true })
+          .eq("project_id", project.id)
+          .eq("backer_id", user.id)
+          .not("status", "in", "(cancelled,failed,released,refunded)")
+      : Promise.resolve({ count: 0 }),
+  ]);
+
+  const updates = (updatesRaw ?? []) as import("@/types/project").ProjectUpdatePost[];
+  const isBacker = isCreator || ((backerCheck as { count: number | null }).count ?? 0) > 0;
 
   // Block non-public statuses
   if (project.status === "draft" && !isCreator) notFound();
@@ -225,6 +247,17 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                 </div>
               </div>
             )}
+
+            {/* Post update form — creator only */}
+            {isCreator && project.status === "active" && (
+              <PostUpdateForm
+                projectId={project.id}
+                creatorId={project.creator.id}
+              />
+            )}
+
+            {/* Updates feed */}
+            <ProjectUpdatesFeed updates={updates} isBacker={isBacker} />
           </div>
 
           {/* Right: sticky funding widget */}
