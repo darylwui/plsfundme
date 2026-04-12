@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Shield, Globe, Lock } from "lucide-react";
+import { ArrowRight, Shield, Globe, Lock, TrendingUp, Star, Clock } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { ProjectGrid } from "@/components/projects/ProjectGrid";
 import { Button } from "@/components/ui/button";
@@ -42,10 +42,10 @@ async function getProjects(filter: FilterTab): Promise<ProjectWithRelations[]> {
   return (data as unknown as ProjectWithRelations[]) ?? [];
 }
 
-const TABS: { key: FilterTab; label: string; emoji: string }[] = [
-  { key: "trending", label: "Trending", emoji: "🔥" },
-  { key: "newest", label: "Newest", emoji: "✨" },
-  { key: "ending_soon", label: "Ending soon", emoji: "⏰" },
+const TABS: { key: FilterTab; label: string; Icon: React.ComponentType<{ className?: string }> }[] = [
+  { key: "trending", label: "Trending", Icon: TrendingUp },
+  { key: "newest", label: "Newest", Icon: Star },
+  { key: "ending_soon", label: "Ending soon", Icon: Clock },
 ];
 
 export default async function HomePage({ searchParams }: HomePageProps) {
@@ -59,47 +59,61 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     <div>
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-amber-50 via-[#FFFBF5] to-orange-50 dark:from-[#0f0f0f] dark:via-[#0a0a0a] dark:to-[#111111]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 text-sm font-semibold mb-4">
-              🍞 Made for Singapore entrepreneurs
+            {/* Eyebrow badge */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 text-[11px] uppercase tracking-[0.15em] font-medium mb-6">
+              Made for Singapore entrepreneurs
             </div>
-            <h1 className="text-5xl md:text-6xl font-black tracking-tight leading-[1.1]">
-              <span className="text-white">Empowering all founders to </span>
+
+            <h1 className="text-[52px] md:text-[64px] font-black tracking-tight leading-[1.1]">
+              <span className="text-[var(--color-ink)]">Empowering all founders to </span>
               <span style={{ color: "#92400E" }}>get that bread.</span>
             </h1>
-            <p className="mt-4 text-xl text-[var(--color-ink-muted)] max-w-xl leading-relaxed">
+
+            <p className="mt-6 text-xl text-[var(--color-ink-muted)] max-w-lg leading-relaxed">
               Singapore&apos;s crowdfunding platform for entrepreneurs. Launch
               your campaign, find your backers, bring your idea to life.
             </p>
-            <div className="mt-6 flex flex-wrap gap-3">
+
+            <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/projects/create">
                 <Button size="lg" variant="inverse">
                   Start for free
-                  <ArrowRight className="w-4 h-4" />
+                  <span className="w-7 h-7 rounded-full bg-black/10 flex items-center justify-center shrink-0">
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </span>
                 </Button>
               </Link>
               <Link href="/explore">
                 <Button size="lg">
                   Explore projects
-                  <ArrowRight className="w-4 h-4" />
+                  <span className="w-7 h-7 rounded-full bg-[var(--color-brand-violet)]/10 flex items-center justify-center shrink-0">
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </span>
                 </Button>
               </Link>
             </div>
 
             {/* Trust bar */}
-            <div className="mt-8 flex flex-wrap gap-6 text-sm text-[var(--color-ink-muted)]">
-              <div className="flex items-center gap-2">
-                <Shield className="w-4 h-4 text-[var(--color-brand-violet)]" />
+            <div className="mt-10 pt-8 border-t border-[var(--color-border)] flex flex-wrap gap-6 text-sm text-[var(--color-ink-muted)]">
+              <div
+                className="flex items-center gap-2"
+                title="If the project doesn't hit its funding goal, backers are fully refunded. No risk."
+              >
+                <Shield className="w-4 h-4 text-[var(--color-brand-violet)] shrink-0" />
                 All-or-nothing funding
               </div>
               <div className="flex items-center gap-2">
-                <Globe className="w-4 h-4 text-[var(--color-brand-teal)]" />
+                <Globe className="w-4 h-4 text-[var(--color-brand-teal)] shrink-0" />
                 PayNow &amp; Credit Card
               </div>
-              <div className="flex items-center gap-2">
-                <Lock className="w-4 h-4 text-[var(--color-brand-amber)]" />
-                Secured transactions
+              <div
+                className="flex items-center gap-2"
+                title="Funds are held in escrow and only released to creators once their goal is met."
+              >
+                <Lock className="w-4 h-4 text-[var(--color-brand-amber)] shrink-0" />
+                Secured escrow transactions
               </div>
             </div>
           </div>
@@ -114,36 +128,37 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
       {/* Discovery section */}
       <section className="bg-[var(--color-surface-raised)] border-t border-[var(--color-border)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Filter tabs */}
-        <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
-          <div className="flex gap-1 p-1 bg-[var(--color-surface-overlay)] rounded-[var(--radius-btn)]">
-            {TABS.map(({ key, label, emoji }) => (
-              <Link
-                key={key}
-                href={`/?filter=${key}`}
-                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-150 ${
-                  activeFilter === key
-                    ? "bg-[var(--color-surface)] shadow-sm text-[var(--color-ink)]"
-                    : "text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
-                }`}
-              >
-                {emoji} {label}
-              </Link>
-            ))}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+          {/* Filter tabs */}
+          <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
+            <div className="flex gap-1 p-1 bg-[var(--color-surface-overlay)] rounded-[var(--radius-btn)] border border-[var(--color-border)]">
+              {TABS.map(({ key, label, Icon }) => (
+                <Link
+                  key={key}
+                  href={`/?filter=${key}`}
+                  className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-[calc(var(--radius-btn)-2px)] text-sm font-semibold transition-colors duration-[150ms] ${
+                    activeFilter === key
+                      ? "bg-[var(--color-surface)] shadow-sm text-[var(--color-ink)]"
+                      : "text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  {label}
+                </Link>
+              ))}
+            </div>
+            <Link
+              href="/explore"
+              className="text-sm font-semibold text-[var(--color-brand-violet)] hover:underline flex items-center gap-1"
+            >
+              View all <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
-          <Link
-            href="/explore"
-            className="text-sm font-semibold text-[var(--color-brand-violet)] hover:underline flex items-center gap-1"
-          >
-            View all <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
 
-        <ProjectGrid
-          projects={projects}
-          emptyMessage="No active projects yet — be the first to launch one!"
-        />
+          <ProjectGrid
+            projects={projects}
+            emptyMessage="No active projects yet — be the first to launch one!"
+          />
         </div>
       </section>
     </div>

@@ -23,21 +23,35 @@ export function FundingProgressBar({
   const percent = fundingPercent(pledged, goal);
   const days = daysRemaining(deadline);
   const funded = pledged >= goal;
+  const nearFunded = percent >= 90;
+
+  const barColor = funded
+    ? "bg-[var(--color-brand-lime)]"
+    : days <= 3
+    ? "bg-[var(--color-brand-coral)]"
+    : "bg-[var(--color-brand-violet)]";
+
+  const barGlow = nearFunded || funded
+    ? funded
+      ? "0 0 8px 0 rgba(101, 163, 13, 0.5)"
+      : days <= 3
+      ? "0 0 8px 0 rgba(194, 65, 12, 0.5)"
+      : "0 0 8px 0 rgba(217, 119, 6, 0.5)"
+    : undefined;
 
   return (
     <div className="flex flex-col gap-2">
       {/* Bar */}
-      <div className="relative h-2 rounded-full bg-[var(--color-surface-overlay)] overflow-hidden">
+      <div className="relative h-1.5 rounded-full bg-[var(--color-surface-overlay)] overflow-hidden">
         <div
-          className={`absolute left-0 top-0 h-full rounded-full transition-all duration-500 ${
-            funded
-              ? "bg-[var(--color-brand-lime)]"
-              : days <= 3
-              ? "bg-[var(--color-brand-coral)]"
-              : "bg-[var(--color-brand-violet)]"
-          }`}
-          style={{ width: `${Math.min(percent, 100)}%` }}
-        />
+          className={`absolute left-0 top-0 h-full rounded-full transition-all duration-500`}
+          style={{
+            width: `${Math.min(percent, 100)}%`,
+            ...(barGlow ? { boxShadow: barGlow } : {}),
+          }}
+        >
+          <div className={`w-full h-full rounded-full ${barColor}`} />
+        </div>
       </div>
 
       {/* Stats */}
@@ -47,30 +61,31 @@ export function FundingProgressBar({
         }`}
       >
         <div>
-          <span className="font-bold text-[var(--color-ink)]">
+          <span className="font-bold font-mono text-[var(--color-ink)]">
             {format(convert(pledged))}
           </span>
           <span className="text-[var(--color-ink-subtle)]">
             {" "}
-            raised of {format(convert(goal))}
+            raised of{" "}
+            <span className="font-mono">{format(convert(goal))}</span>
           </span>
         </div>
         <div className="flex items-center gap-3 text-[var(--color-ink-muted)] shrink-0">
           <span>
-            <strong className="text-[var(--color-ink)]">{percent}%</strong>
+            <strong className="font-mono text-[var(--color-ink)]">{percent}%</strong>
           </span>
           <span>
             <strong
-              className={
+              className={`font-mono ${
                 days <= 3 ? "text-[var(--color-brand-coral)]" : "text-[var(--color-ink)]"
-              }
+              }`}
             >
               {days}d
             </strong>{" "}
             left
           </span>
           <span>
-            <strong className="text-[var(--color-ink)]">{backerCount}</strong>{" "}
+            <strong className="font-mono text-[var(--color-ink)]">{backerCount}</strong>{" "}
             backers
           </span>
         </div>

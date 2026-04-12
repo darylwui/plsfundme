@@ -39,13 +39,28 @@ export async function generateMetadata({
   const { slug } = await params;
   const project = await getProject(slug);
   if (!project) return {};
+
+  const ogImages = project.cover_image_url
+    ? [{ url: project.cover_image_url, width: 1200, height: 630, alt: project.title }]
+    : [{ url: "/og-default.png", width: 1200, height: 630, alt: "get that bread" }];
+
   return {
-    title: `${project.title} — get that bread`,
+    title: project.title,
     description: project.short_description,
     openGraph: {
+      title: `${project.title} — get that bread`,
+      description: project.short_description,
+      url: `https://getthatbread.vercel.app/projects/${slug}`,
+      type: "website",
+      locale: "en_SG",
+      siteName: "get that bread",
+      images: ogImages,
+    },
+    twitter: {
+      card: "summary_large_image",
       title: project.title,
       description: project.short_description,
-      images: project.cover_image_url ? [project.cover_image_url] : [],
+      images: ogImages.map((img) => img.url),
     },
   };
 }

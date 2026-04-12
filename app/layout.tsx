@@ -15,20 +15,40 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "get that bread — Fund the future.",
+  metadataBase: new URL("https://getthatbread.vercel.app"),
+  title: {
+    default: "get that bread — Fund the future.",
+    template: "%s — get that bread",
+  },
   description:
-    "Singapore's crowdfunding platform for entrepreneurs. Fund the future, one bold idea at a time.",
+    "Singapore's reward-based crowdfunding platform for entrepreneurs. Launch your campaign, find your backers, bring your idea to life.",
   icons: {
     icon: "/bread-icon.png",
     shortcut: "/favicon.ico",
     apple: "/bread-icon.png",
   },
   openGraph: {
-    title: "get that bread",
-    description: "Fund the future.",
+    title: "get that bread — Singapore's Crowdfunding Platform",
+    description:
+      "Launch your campaign, find your backers, bring your idea to life. All-or-nothing funding with PayNow & Stripe.",
     siteName: "get that bread",
+    url: "https://getthatbread.vercel.app",
     locale: "en_SG",
     type: "website",
+    images: [
+      {
+        url: "/og-default.png",
+        width: 1200,
+        height: 630,
+        alt: "get that bread — Singapore's crowdfunding platform for entrepreneurs",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "get that bread",
+    description: "Singapore's crowdfunding platform for entrepreneurs.",
+    images: ["/og-default.png"],
   },
 };
 
