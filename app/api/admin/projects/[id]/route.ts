@@ -70,9 +70,10 @@ export async function PATCH(request: Request, { params }: RouteContext) {
   if (action === "reject") {
     if (!reason?.trim()) return NextResponse.json({ error: "Reason is required" }, { status: 400 });
 
-    const { error } = await service
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await (service as any)
       .from("projects")
-      .update({ status: "cancelled" })
+      .update({ status: "cancelled", rejection_reason: reason.trim() })
       .eq("id", id);
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });

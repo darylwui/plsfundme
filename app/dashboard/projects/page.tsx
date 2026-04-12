@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PlusCircle, ArrowRight, Pencil, Rocket, PartyPopper } from "lucide-react";
+import { PlusCircle, ArrowRight, Pencil, Rocket, PartyPopper, XCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,20 +10,21 @@ import { formatSgd, fundingPercent } from "@/lib/utils/currency";
 const BASE_URL = "https://getthatbread.vercel.app";
 
 interface Props {
-  searchParams: Promise<{ submitted?: string; slug?: string }>;
+  searchParams: Promise<{ submitted?: string; slug?: string; resubmitted?: string }>;
 }
 
 export default async function DashboardProjectsPage({ searchParams }: Props) {
-  const { submitted, slug: submittedSlug } = await searchParams;
+  const { submitted, slug: submittedSlug, resubmitted } = await searchParams;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const { data: projects } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: projects } = await (supabase as any)
     .from("projects")
-    .select("id, title, slug, status, funding_goal_sgd, amount_pledged_sgd, backer_count, deadline, created_at, cover_image_url")
+    .select("id, title, slug, status, rejection_reason, funding_goal_sgd, amount_pledged_sgd, backer_count, deadline, created_at, cover_image_url")
     .eq("creator_id", user.id)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false }) as { data: any[] | null };
 
   const statusVariant: Record<string, "violet" | "lime" | "coral" | "neutral" | "amber"> = {
     draft: "neutral",
@@ -47,6 +48,19 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
 
   return (
     <div className="flex flex-col gap-6">
+
+      {/* Resubmit confirmation */}
+      {resubmitted === "1" && (
+        <div className="rounded-[var(--radius-card)] border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 px-5 py-4 flex items-start gap-3">
+          <PartyPopper className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+          <div>
+            <p className="font-bold text-amber-900 dark:text-amber-200">Campaign resubmitted!</p>
+            <p className="text-sm text-amber-700 dark:text-amber-400 mt-0.5">
+              Our team will review your updated campaign within 1–2 business days.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Post-submission share banner */}
       {submitted === "1" && submittedSlug && (
@@ -108,6 +122,8 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
             const percent = fundingPercent(project.amount_pledged_sgd ?? 0, project.funding_goal_sgd);
             const days = daysRemaining(project.deadline);
             const isShareable = project.status === "active" || project.status === "pending_review";
+            const isRejected = project.status === "cancelled";
+            const rejectionReason = (project as any).rejection_reason as string | null;
 
             return (
               <div
@@ -183,6 +199,23 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
                       title={project.title}
                       compact
                     />
+                  </div>
+                )}
+
+                {/* Rejection reason strip */}
+                {isRejected && rejectionReason && (
+                  <div className="border-t border-red-200 dark:border-red-800 px-5 py-3 bg-red-50 dark:bg-red-900/20 flex items-start gap-2">
+                    <XCircle className="w-3.5 h-3.5 text-[var(--color-brand-coral)] shrink-0 mt-0.5" />
+                    <div className="min-w-0">
+                      <span className="text-xs font-bold text-red-600 dark:text-red-400 uppercase tracking-wider">Reviewer feedback: </span>
+                      <span className="text-xs text-red-700 dark:text-red-300">{rejectionReason}</span>
+                    </div>
+                    <Link
+                      href={`/projects/${project.slug}/edit`}
+                      className="ml-auto shrink-0 text-xs font-semibold text-[var(--color-brand-violet)] hover:underline"
+                    >
+                      Edit &amp; resubmit →
+                    </Link>
                   </div>
                 )}
               </div>

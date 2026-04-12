@@ -1,8 +1,9 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, XCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { EditProjectForm } from "@/components/project/EditProjectForm";
+import { ResubmitButton } from "@/components/project/ResubmitButton";
 import type { ProjectWithRelations } from "@/types/project";
 import type { Reward } from "@/types/reward";
 
@@ -23,7 +24,7 @@ export default async function EditProjectPage({ params }: EditProjectPageProps) 
   const { data: raw } = await supabase
     .from("projects")
     .select(
-      `*, category:categories(*), creator:profiles!creator_id(id, display_name, avatar_url), rewards(*), stretch_goals(*)`
+      `*, rejection_reason, category:categories(*), creator:profiles!creator_id(id, display_name, avatar_url), rewards(*), stretch_goals(*)`
     )
     .eq("slug", slug)
     .single();
@@ -68,6 +69,8 @@ export default async function EditProjectPage({ params }: EditProjectPageProps) 
     .not("status", "in", "(cancelled,failed)");
 
   const hasPledges = (pledgeCount ?? 0) > 0;
+  const isRejected = project.status === "cancelled";
+  const rejectionReason = (raw as any).rejection_reason as string | null;
 
   return (
     <div className="min-h-screen bg-[var(--color-surface-raised)]">
@@ -81,12 +84,42 @@ export default async function EditProjectPage({ params }: EditProjectPageProps) 
           Back to project
         </Link>
 
+        {/* Rejection banner */}
+        {isRejected && (
+          <div className="mb-8 rounded-[var(--radius-card)] border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 overflow-hidden">
+            <div className="px-5 py-4 flex items-start gap-3 border-b border-red-200 dark:border-red-800">
+              <XCircle className="w-5 h-5 text-[var(--color-brand-coral)] shrink-0 mt-0.5" />
+              <div>
+                <p className="font-bold text-red-800 dark:text-red-300">Your campaign was not approved</p>
+                <p className="text-sm text-red-700 dark:text-red-400 mt-0.5">
+                  Address the feedback below, then resubmit. Our team will review again within 1–2 business days.
+                </p>
+              </div>
+            </div>
+            {rejectionReason && (
+              <div className="px-5 py-4 border-b border-red-200 dark:border-red-800">
+                <p className="text-xs font-bold uppercase tracking-wider text-red-500 dark:text-red-400 mb-1.5">
+                  Feedback from reviewer
+                </p>
+                <p className="text-sm text-red-800 dark:text-red-300 leading-relaxed">
+                  {rejectionReason}
+                </p>
+              </div>
+            )}
+            <div className="px-5 py-4">
+              <ResubmitButton projectId={project.id} />
+            </div>
+          </div>
+        )}
+
         <div className="mb-8">
           <h1 className="text-3xl font-black text-[var(--color-ink)] tracking-tight">
-            Edit campaign
+            {isRejected ? "Edit & resubmit campaign" : "Edit campaign"}
           </h1>
           <p className="mt-1 text-[var(--color-ink-muted)]">
-            Changes are saved immediately and reflected on your public page.
+            {isRejected
+              ? "Make your changes below, then hit Resubmit above."
+              : "Changes are saved immediately and reflected on your public page."}
           </p>
         </div>
 
