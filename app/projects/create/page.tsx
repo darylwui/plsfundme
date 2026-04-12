@@ -151,7 +151,7 @@ export default async function CreateProjectPage() {
     <>
       <Navbar />
       <main className="flex-1 bg-[var(--color-surface-raised)]">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
           <ProjectCreationForm categories={(categories as Category[]) ?? []} />
         </div>
       </main>

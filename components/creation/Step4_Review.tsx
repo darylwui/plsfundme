@@ -2,15 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Rocket } from "lucide-react";
+import { Rocket, Eye, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { formatSgd } from "@/lib/utils/currency";
-import { formatDate } from "@/lib/utils/dates";
+import { Badge } from "@/components/ui/badge";
+import { FundingWidget } from "@/components/projects/FundingWidget";
 import { createClient } from "@/lib/supabase/client";
 import { slugifyUnique } from "@/lib/utils/slugify";
-import type { ProjectDraft } from "@/types/project";
-import type { RewardFormData } from "@/types/reward";
-import type { Category } from "@/types/project";
+import { formatDate } from "@/lib/utils/dates";
+import type { ProjectDraft, ProjectWithRelations, Category } from "@/types/project";
+import type { RewardFormData, Reward } from "@/types/reward";
 
 interface Step4Props {
   draft: ProjectDraft;
@@ -19,12 +19,63 @@ interface Step4Props {
   onBack: () => void;
 }
 
+/** Build a fake ProjectWithRelations so we can pass it to real display components. */
+function buildPreviewProject(
+  draft: ProjectDraft,
+  rewards: RewardFormData[],
+  category: Category | undefined
+): ProjectWithRelations {
+  const fakeRewards: Reward[] = rewards.map((r, i) => ({
+    id: `preview-${i}`,
+    project_id: "preview",
+    title: r.title,
+    description: r.description,
+    minimum_pledge_sgd: r.minimum_pledge_sgd,
+    estimated_delivery_date: r.estimated_delivery_date || null,
+    max_backers: r.max_backers,
+    claimed_count: 0,
+    includes_physical_item: r.includes_physical_item,
+    image_url: r.image_url,
+    is_active: true,
+    display_order: i,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  }));
+
+  return {
+    id: "preview",
+    creator_id: "preview",
+    category_id: draft.category_id,
+    title: draft.title || "Your project title",
+    slug: "preview",
+    short_description: draft.short_description || "Your short description will appear here.",
+    full_description: draft.full_description || "",
+    cover_image_url: draft.cover_image_url,
+    video_url: draft.video_url,
+    funding_goal_sgd: draft.funding_goal_sgd || 1000,
+    amount_pledged_sgd: 0,
+    backer_count: 0,
+    payout_mode: draft.payout_mode,
+    start_date: draft.start_date,
+    deadline: draft.deadline || new Date(Date.now() + 30 * 86400000).toISOString(),
+    status: "active",
+    launched_at: new Date().toISOString(),
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    category: category ?? null,
+    creator: { id: "preview", display_name: "You", avatar_url: null },
+    rewards: fakeRewards,
+    stretch_goals: [],
+  } as unknown as ProjectWithRelations;
+}
+
 export function Step4_Review({ draft, rewards, categories, onBack }: Step4Props) {
   const router = useRouter();
   const [launching, setLaunching] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const category = categories.find((c) => c.id === draft.category_id);
+  const previewProject = buildPreviewProject(draft, rewards, category);
 
   async function handleLaunch() {
     setLaunching(true);
@@ -41,7 +92,6 @@ export function Step4_Review({ draft, rewards, categories, onBack }: Step4Props)
 
     const slug = slugifyUnique(draft.title);
 
-    // Insert project
     const { data: project, error: projectError } = await supabase
       .from("projects")
       .insert({
@@ -69,7 +119,6 @@ export function Step4_Review({ draft, rewards, categories, onBack }: Step4Props)
       return;
     }
 
-    // Insert rewards
     if (rewards.length > 0) {
       const rewardRows = rewards.map((r, i) => ({
         project_id: project.id,
@@ -82,10 +131,7 @@ export function Step4_Review({ draft, rewards, categories, onBack }: Step4Props)
         display_order: i,
       }));
 
-      const { error: rewardError } = await supabase
-        .from("rewards")
-        .insert(rewardRows);
-
+      const { error: rewardError } = await supabase.from("rewards").insert(rewardRows);
       if (rewardError) {
         setError("Project created, but some rewards failed to save. Check your dashboard.");
       }
@@ -96,13 +142,16 @@ export function Step4_Review({ draft, rewards, categories, onBack }: Step4Props)
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Header */}
       <div>
-        <h2 className="text-2xl font-black text-[var(--color-ink)]">
-          Review &amp; submit 🚀
-        </h2>
-        <p className="mt-1 text-sm text-[var(--color-ink-muted)]">
-          Double-check everything before submitting. Our team will review your
-          campaign within 1–2 business days before it goes live.
+        <div className="flex items-center gap-2 mb-1">
+          <Eye className="w-4 h-4 text-[var(--color-brand-violet)]" />
+          <h2 className="text-2xl font-black text-[var(--color-ink)]">
+            Preview &amp; submit
+          </h2>
+        </div>
+        <p className="text-sm text-[var(--color-ink-muted)]">
+          This is exactly how your campaign will appear to backers. Check everything before submitting for review.
         </p>
       </div>
 
@@ -112,40 +161,89 @@ export function Step4_Review({ draft, rewards, categories, onBack }: Step4Props)
         </div>
       )}
 
-      {/* Summary cards */}
-      <div className="flex flex-col gap-4">
-        <SummaryBlock title="Project basics">
-          <Row label="Title" value={draft.title} />
-          <Row label="Category" value={category?.name ?? "—"} />
-          <Row label="Summary" value={draft.short_description} />
-        </SummaryBlock>
+      {/* Campaign preview */}
+      <div className="rounded-[var(--radius-card)] border-2 border-dashed border-[var(--color-border)] overflow-hidden">
+        {/* Preview label */}
+        <div className="bg-[var(--color-surface-overlay)] border-b border-[var(--color-border)] px-4 py-2 flex items-center gap-2">
+          <div className="flex gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-red-400" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
+            <span className="w-2.5 h-2.5 rounded-full bg-lime-400" />
+          </div>
+          <span className="text-xs text-[var(--color-ink-subtle)] font-medium mx-auto">
+            Campaign preview
+          </span>
+        </div>
 
-        <SummaryBlock title="Funding">
-          <Row label="Goal" value={formatSgd(draft.funding_goal_sgd)} />
-          <Row
-            label="Deadline"
-            value={draft.deadline ? formatDate(draft.deadline) : "—"}
-          />
-          <Row label="Payout" value={draft.payout_mode === "automatic" ? "Automatic" : "Manual"} />
-        </SummaryBlock>
-
-        <SummaryBlock title={`Reward tiers (${rewards.length})`}>
-          {rewards.length === 0 ? (
-            <p className="text-sm text-[var(--color-ink-subtle)]">
-              No reward tiers — backers can pledge any amount.
-            </p>
-          ) : (
-            rewards.map((r, i) => (
-              <Row
-                key={i}
-                label={formatSgd(r.minimum_pledge_sgd) + "+"}
-                value={r.title}
+        <div className="bg-[var(--color-surface)]">
+          {/* Cover image */}
+          {draft.cover_image_url ? (
+            <div className="relative w-full aspect-[21/9] bg-[var(--color-surface-overlay)] overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={draft.cover_image_url}
+                alt={draft.title}
+                className="w-full h-full object-cover"
               />
-            ))
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+            </div>
+          ) : (
+            <div className="w-full aspect-[21/9] bg-gradient-to-br from-[var(--color-surface-overlay)] to-[var(--color-surface-raised)] flex items-center justify-center">
+              <p className="text-xs text-[var(--color-ink-subtle)]">No cover image</p>
+            </div>
           )}
-        </SummaryBlock>
+
+          <div className="p-6 flex flex-col gap-6">
+            {/* Title + meta */}
+            <div>
+              {category && (
+                <Badge variant="violet" className="mb-3">
+                  {category.name}
+                </Badge>
+              )}
+              <h1 className="text-2xl font-black text-[var(--color-ink)] tracking-tight leading-tight">
+                {draft.title || <span className="text-[var(--color-ink-subtle)]">Your project title</span>}
+              </h1>
+              <p className="mt-2 text-base text-[var(--color-ink-muted)] leading-relaxed">
+                {draft.short_description || <span className="text-[var(--color-ink-subtle)] italic">Short description…</span>}
+              </p>
+
+              {/* Creator chip */}
+              <div className="mt-4 inline-flex items-center gap-3 px-4 py-2.5 rounded-[var(--radius-card)] bg-[var(--color-surface-raised)] border border-[var(--color-border)]">
+                <div className="w-8 h-8 rounded-full bg-[var(--color-brand-violet)]/15 ring-1 ring-[var(--color-border)] flex items-center justify-center font-bold text-[var(--color-brand-violet)] text-sm shrink-0">
+                  Y
+                </div>
+                <div>
+                  <p className="text-[10px] text-[var(--color-ink-subtle)] uppercase tracking-[0.1em] font-medium">Campaign by</p>
+                  <p className="text-sm font-semibold text-[var(--color-ink)]">You</p>
+                </div>
+                {draft.deadline && (
+                  <>
+                    <div className="w-px h-7 bg-[var(--color-border)] mx-1" />
+                    <div className="flex items-center gap-1.5 text-xs text-[var(--color-ink-subtle)]">
+                      <CalendarDays className="w-3.5 h-3.5" />
+                      Ends {formatDate(draft.deadline)}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Funding widget */}
+            <FundingWidget project={previewProject} />
+
+            {/* Description */}
+            {draft.full_description && (
+              <div
+                className="prose prose-sm max-w-none text-[var(--color-ink)] prose-headings:text-[var(--color-ink)] prose-a:text-[var(--color-brand-violet)]"
+                dangerouslySetInnerHTML={{ __html: draft.full_description }}
+              />
+            )}
+          </div>
+        </div>
       </div>
 
+      {/* Actions */}
       <div className="flex justify-between pt-2">
         <Button variant="secondary" size="lg" onClick={onBack}>
           Back
@@ -155,34 +253,6 @@ export function Step4_Review({ draft, rewards, categories, onBack }: Step4Props)
           Submit for review
         </Button>
       </div>
-    </div>
-  );
-}
-
-function SummaryBlock({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] overflow-hidden">
-      <div className="px-5 py-3 border-b border-[var(--color-border)] bg-[var(--color-surface-overlay)]">
-        <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--color-ink-muted)]">
-          {title}
-        </h3>
-      </div>
-      <div className="p-5 flex flex-col gap-2">{children}</div>
-    </div>
-  );
-}
-
-function Row({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-baseline gap-3 text-sm">
-      <span className="text-[var(--color-ink-subtle)] w-28 shrink-0">{label}</span>
-      <span className="text-[var(--color-ink)] font-medium">{value}</span>
     </div>
   );
 }
