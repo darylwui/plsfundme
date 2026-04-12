@@ -92,9 +92,9 @@ export default function HowItWorksPage() {
             The model
           </div>
           <h1 className="text-[40px] md:text-[52px] font-black tracking-tight leading-[1.1] mb-4">
-            <span style={{ color: "#98644F" }}>How </span>
-            <span style={{ color: "#C68C5F" }}>get that bread</span>
-            <span style={{ color: "#98644F" }}> works</span>
+            <span style={{ color: "#d97706" }}>How </span>
+            <span style={{ color: "#f2c480" }}>get that bread</span>
+            <span style={{ color: "#d97706" }}> works</span>
           </h1>
           <p className="text-lg text-[var(--color-ink-muted)] max-w-xl leading-relaxed">
             All-or-nothing crowdfunding for Singapore entrepreneurs.

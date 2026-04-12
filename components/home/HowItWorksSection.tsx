@@ -35,7 +35,7 @@ export function HowItWorksSection() {
             <div className="inline-flex items-center px-3 py-1 rounded-full bg-[var(--color-surface-overlay)] border border-[var(--color-border)] text-[11px] uppercase tracking-[0.15em] font-medium text-[var(--color-ink-muted)] mb-4">
               How it works
             </div>
-            <h2 className="text-3xl md:text-4xl font-black tracking-tight" style={{ color: "#98644F" }}>
+            <h2 className="text-3xl md:text-4xl font-black tracking-tight" style={{ color: "#d97706" }}>
               From idea to funded<br />in three steps.
             </h2>
           </div>
