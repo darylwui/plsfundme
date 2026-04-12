@@ -67,7 +67,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
             </div>
 
             <h1 className="text-[52px] md:text-[64px] font-black tracking-tight leading-[1.1]">
-              <span className="block" style={{ color: "#C47647" }}>Empowering founders to</span>
+              <span className="block" style={{ color: "#98644F" }}>Empowering founders to</span>
               <span className="block" style={{ color: "#C68C5F" }}>get that bread.</span>
             </h1>
 

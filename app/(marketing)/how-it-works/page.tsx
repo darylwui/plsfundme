@@ -59,9 +59,9 @@ export default function HowItWorksPage() {
       {/* Hero */}
       <div className="text-center mb-16">
         <h1 className="text-4xl font-black tracking-tight">
-          <span style={{ color: "#C47647" }}>How </span>
+          <span style={{ color: "#98644F" }}>How </span>
           <span style={{ color: "#C68C5F" }}>get that bread</span>
-          <span style={{ color: "#C47647" }}> works</span>
+          <span style={{ color: "#98644F" }}> works</span>
         </h1>
         <p className="mt-4 text-lg text-[var(--color-ink-muted)] max-w-xl mx-auto">
           All-or-nothing crowdfunding for Singapore entrepreneurs. Simple, safe, and transparent.
