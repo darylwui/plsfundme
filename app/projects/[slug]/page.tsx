@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Pencil } from "lucide-react";
+import { ArrowLeft, Pencil, Clock, CheckCircle2, Circle, CalendarDays } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { FundingWidget } from "@/components/projects/FundingWidget";
 import { Badge } from "@/components/ui/badge";
@@ -107,14 +107,15 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
       {/* Pending review banner */}
       {isPendingReview && (
-        <div className="bg-amber-50 border-b border-amber-200 px-4 py-3 text-sm text-amber-800 text-center">
-          ⏳ <strong>Under review</strong> — Your campaign is pending admin approval and is not yet visible to the public.
+        <div className="bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800 px-4 py-3 text-sm text-amber-800 dark:text-amber-300 text-center flex items-center justify-center gap-2">
+          <Clock className="w-4 h-4 shrink-0" />
+          <span><strong>Under review</strong> — Your campaign is pending admin approval and is not yet visible to the public.</span>
         </div>
       )}
 
       {/* Hero image */}
       {project.cover_image_url && (
-        <div className="relative w-full aspect-[2.5/1] mt-4 bg-[var(--color-surface-overlay)]">
+        <div className="relative w-full aspect-[21/9] mt-4 bg-[var(--color-surface-overlay)] overflow-hidden">
           <Image
             src={project.cover_image_url}
             alt={project.title}
@@ -123,7 +124,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             className="object-cover"
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
         </div>
       )}
 
@@ -147,17 +148,20 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               </p>
 
               {/* Creator info */}
-              <div className="mt-5 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[var(--color-brand-violet)]/20 flex items-center justify-center font-bold text-[var(--color-brand-violet)]">
+              <div className="mt-6 inline-flex items-center gap-3 px-4 py-3 rounded-[var(--radius-card)] bg-[var(--color-surface-raised)] border border-[var(--color-border)]">
+                <div className="w-10 h-10 rounded-full bg-[var(--color-brand-violet)]/15 ring-1 ring-[var(--color-border)] flex items-center justify-center font-bold text-[var(--color-brand-violet)] shrink-0">
                   {project.creator.display_name.charAt(0).toUpperCase()}
                 </div>
                 <div>
+                  <p className="text-xs text-[var(--color-ink-subtle)] uppercase tracking-[0.1em] font-medium">Campaign by</p>
                   <p className="text-sm font-semibold text-[var(--color-ink)]">
                     {project.creator.display_name}
                   </p>
-                  <p className="text-xs text-[var(--color-ink-subtle)]">
-                    Campaign ends {formatDate(project.deadline)}
-                  </p>
+                </div>
+                <div className="w-px h-8 bg-[var(--color-border)] mx-1" />
+                <div className="flex items-center gap-1.5 text-xs text-[var(--color-ink-subtle)]">
+                  <CalendarDays className="w-3.5 h-3.5" />
+                  Ends {formatDate(project.deadline)}
                 </div>
               </div>
             </div>
@@ -171,7 +175,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             {/* Stretch goals */}
             {project.stretch_goals.length > 0 && (
               <div>
-                <h2 className="text-xl font-bold text-[var(--color-ink)] mb-4">
+                <h2 className="text-xl font-bold text-[var(--color-ink)] mb-4 tracking-tight">
                   Stretch Goals
                 </h2>
                 <div className="flex flex-col gap-3">
@@ -180,15 +184,17 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                     .map((goal) => (
                       <div
                         key={goal.id}
-                        className={`rounded-[var(--radius-card)] border-2 p-4 flex items-start gap-4 ${
+                        className={`rounded-[var(--radius-card)] border-2 p-5 flex items-start gap-4 ${
                           goal.reached_at
                             ? "border-[var(--color-brand-lime)] bg-lime-50/50 dark:bg-lime-900/10"
                             : "border-[var(--color-border)] bg-[var(--color-surface-raised)]"
                         }`}
                       >
-                        <div className="text-2xl">
-                          {goal.reached_at ? "✅" : "🎯"}
-                        </div>
+                        {goal.reached_at ? (
+                          <CheckCircle2 className="w-5 h-5 text-[var(--color-brand-lime)] shrink-0 mt-0.5" />
+                        ) : (
+                          <Circle className="w-5 h-5 text-[var(--color-ink-subtle)] shrink-0 mt-0.5" />
+                        )}
                         <div>
                           <p className="font-bold text-[var(--color-ink)]">
                             {goal.title}
@@ -198,7 +204,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                               {goal.description}
                             </p>
                           )}
-                          <p className="text-xs font-semibold text-[var(--color-brand-violet)] mt-1">
+                          <p className="text-xs font-semibold font-mono text-[var(--color-brand-violet)] mt-1.5">
                             Unlocks at S${goal.goal_amount_sgd.toLocaleString()}
                           </p>
                         </div>

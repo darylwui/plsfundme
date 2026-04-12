@@ -34,10 +34,10 @@ export function RewardTierCard({
       disabled={isSoldOut || disabled || !onSelect}
       className={`
         w-full text-left rounded-[var(--radius-card)] border-2 p-5
-        transition-all duration-150
+        transition-[border-color,background-color,opacity] duration-[160ms] ease-[cubic-bezier(0.23,1,0.32,1)]
         ${
           selected
-            ? "border-[var(--color-brand-violet)] bg-violet-50/50 dark:bg-violet-900/10"
+            ? "border-[var(--color-brand-violet)] bg-[var(--color-surface-overlay)]/60"
             : isSoldOut
             ? "border-[var(--color-border)] bg-[var(--color-surface-raised)] opacity-60 cursor-not-allowed"
             : onSelect

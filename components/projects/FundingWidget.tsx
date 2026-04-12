@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Shield, Clock } from "lucide-react";
+import { Shield, Clock, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FundingProgressBar } from "./FundingProgressBar";
 import { RewardTierCard } from "./RewardTierCard";
@@ -23,8 +23,9 @@ export function FundingWidget({ project }: FundingWidgetProps) {
 
   return (
     <div className="flex flex-col gap-5">
-      {/* Progress card */}
-      <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] shadow-[var(--shadow-card)] p-6">
+      {/* Progress card — double-bezel */}
+      <div className="p-[3px] rounded-[calc(var(--radius-card)+3px)] bg-[var(--color-surface-overlay)] ring-1 ring-[var(--color-border)] shadow-[var(--shadow-card)]">
+      <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.04)] p-6">
         <FundingProgressBar
           pledged={project.amount_pledged_sgd}
           goal={project.funding_goal_sgd}
@@ -43,10 +44,15 @@ export function FundingWidget({ project }: FundingWidgetProps) {
         {/* CTA */}
         <div className="mt-5">
           {isClosed ? (
-            <div className="text-center text-sm text-[var(--color-ink-muted)] py-2">
-              {project.status === "funded"
-                ? "🎉 This project was successfully funded!"
-                : "This campaign has ended."}
+            <div className="text-center text-sm text-[var(--color-ink-muted)] py-2 flex items-center justify-center gap-2">
+              {project.status === "funded" ? (
+                <>
+                  <CheckCircle2 className="w-4 h-4 text-[var(--color-brand-lime)] shrink-0" />
+                  This project was successfully funded!
+                </>
+              ) : (
+                "This campaign has ended."
+              )}
             </div>
           ) : (
             <Link
@@ -68,6 +74,7 @@ export function FundingWidget({ project }: FundingWidgetProps) {
           <Shield className="w-3.5 h-3.5" />
           All-or-nothing — you&apos;re only charged if the goal is reached
         </p>
+      </div>
       </div>
 
       {/* Reward tiers */}
