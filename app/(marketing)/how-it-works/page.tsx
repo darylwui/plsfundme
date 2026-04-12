@@ -58,8 +58,10 @@ export default function HowItWorksPage() {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
       {/* Hero */}
       <div className="text-center mb-16">
-        <h1 className="text-4xl font-black text-[var(--color-ink)] tracking-tight">
-          How get that bread works
+        <h1 className="text-4xl font-black tracking-tight">
+          <span style={{ color: "#C47647" }}>How </span>
+          <span style={{ color: "#C68C5F" }}>get that bread</span>
+          <span style={{ color: "#C47647" }}> works</span>
         </h1>
         <p className="mt-4 text-lg text-[var(--color-ink-muted)] max-w-xl mx-auto">
           All-or-nothing crowdfunding for Singapore entrepreneurs. Simple, safe, and transparent.
