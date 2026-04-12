@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { ProjectGrid } from "@/components/projects/ProjectGrid";
-import { Search } from "lucide-react";
+import { Search, TrendingUp, Star, Clock } from "lucide-react";
 import Link from "next/link";
 import type { ProjectWithRelations } from "@/types/project";
 import type { Category } from "@/types/project";
@@ -54,9 +54,9 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
   const typedProjects = (projects as unknown as ProjectWithRelations[]) ?? [];
 
   const SORTS = [
-    { key: "trending", label: "🔥 Trending" },
-    { key: "newest", label: "✨ Newest" },
-    { key: "ending_soon", label: "⏰ Ending soon" },
+    { key: "trending", label: "Trending", Icon: TrendingUp },
+    { key: "newest", label: "Newest", Icon: Star },
+    { key: "ending_soon", label: "Ending soon", Icon: Clock },
   ];
 
   function buildUrl(params: Record<string, string | undefined>) {
@@ -96,17 +96,18 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
         </form>
 
         {/* Sort tabs */}
-        <div className="flex gap-1 p-1 bg-[var(--color-surface-overlay)] rounded-[var(--radius-btn)] w-fit">
-          {SORTS.map(({ key, label }) => (
+        <div className="flex gap-1 p-1 bg-[var(--color-surface-overlay)] rounded-[var(--radius-btn)] border border-[var(--color-border)] w-fit">
+          {SORTS.map(({ key, label, Icon }) => (
             <Link
               key={key}
               href={buildUrl({ sort: key })}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+              className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-[calc(var(--radius-btn)-2px)] text-sm font-semibold transition-colors duration-[150ms] ${
                 sort === key
                   ? "bg-[var(--color-surface)] shadow-sm text-[var(--color-ink)]"
                   : "text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
               }`}
             >
+              <Icon className="w-3.5 h-3.5" />
               {label}
             </Link>
           ))}
@@ -116,7 +117,7 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
         <div className="flex flex-wrap gap-2">
           <Link
             href={buildUrl({ category: undefined })}
-            className={`px-3 py-1.5 rounded-full text-sm font-semibold transition-all ${
+            className={`px-3 py-1.5 rounded-full text-sm font-semibold transition-colors duration-[150ms] ${
               !category
                 ? "bg-[var(--color-brand-violet)] text-white"
                 : "bg-[var(--color-surface-overlay)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
@@ -128,7 +129,7 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
             <Link
               key={cat.id}
               href={buildUrl({ category: cat.slug })}
-              className={`px-3 py-1.5 rounded-full text-sm font-semibold transition-all ${
+              className={`px-3 py-1.5 rounded-full text-sm font-semibold transition-colors duration-[150ms] ${
                 category === cat.slug
                   ? "bg-[var(--color-brand-violet)] text-white"
                   : "bg-[var(--color-surface-overlay)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"

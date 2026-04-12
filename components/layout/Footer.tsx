@@ -1,93 +1,72 @@
 import Link from "next/link";
 
+const LINKS = {
+  Discover: [
+    { href: "/explore", label: "Explore projects" },
+    { href: "/how-it-works", label: "How it works" },
+  ],
+  Create: [
+    { href: "/projects/create", label: "Start a project" },
+    { href: "/dashboard", label: "Creator dashboard" },
+  ],
+  Legal: [
+    { href: "/terms", label: "Terms of service" },
+    { href: "/privacy", label: "Privacy policy" },
+  ],
+};
+
 export function Footer() {
   return (
-    <footer className="bg-[#2C1A0E]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          <div className="col-span-2 md:col-span-1">
+    <footer className="bg-[var(--color-surface-invert)]">
+      {/* Main footer grid */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-10">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
+          {/* Brand column */}
+          <div className="col-span-2 md:col-span-1 flex flex-col gap-4">
             <Link
               href="/"
-              className="font-black text-xl tracking-tight flex items-center gap-1.5 text-white"
+              className="font-black text-xl tracking-tight flex items-center gap-2 text-[var(--color-ink-invert)] hover:opacity-80 transition-opacity duration-[160ms]"
             >
-              <img src="/bread-icon.png" alt="" className="w-6 h-6 object-contain" />
+              <img src="/bread-icon.png" alt="" className="w-7 h-7 object-contain" />
               <span>get that bread</span>
             </Link>
-            <p className="mt-2 text-sm text-[#8B6545]">
-              Singapore&apos;s platform for bold entrepreneurs.
+            <p className="text-sm text-[var(--color-ink-invert-subtle)] leading-relaxed max-w-[220px]">
+              Singapore&apos;s reward-based crowdfunding platform for bold entrepreneurs.
+            </p>
+            <p className="text-xs text-[var(--color-ink-invert-subtle)]">
+              Payments secured by Stripe
             </p>
           </div>
 
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-widest text-[#8B6545] mb-3">
-              Discover
-            </h4>
-            <ul className="flex flex-col gap-2">
-              {[
-                { href: "/explore", label: "Explore projects" },
-                { href: "/how-it-works", label: "How it works" },
-              ].map(({ href, label }) => (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    className="text-sm text-[#8B6545] hover:text-[#F5EDD8] transition-colors"
-                  >
-                    {label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-widest text-[#8B6545] mb-3">
-              Create
-            </h4>
-            <ul className="flex flex-col gap-2">
-              {[
-                { href: "/projects/create", label: "Start a project" },
-                { href: "/dashboard", label: "Creator dashboard" },
-              ].map(({ href, label }) => (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    className="text-sm text-[#8B6545] hover:text-[#F5EDD8] transition-colors"
-                  >
-                    {label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-widest text-[#8B6545] mb-3">
-              Legal
-            </h4>
-            <ul className="flex flex-col gap-2">
-              {[
-                { href: "/terms", label: "Terms of service" },
-                { href: "/privacy", label: "Privacy policy" },
-              ].map(({ href, label }) => (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    className="text-sm text-[#8B6545] hover:text-[#F5EDD8] transition-colors"
-                  >
-                    {label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* Link columns */}
+          {Object.entries(LINKS).map(([section, links]) => (
+            <div key={section}>
+              <h4 className="text-[11px] font-bold uppercase tracking-[0.15em] text-[var(--color-ink-invert-subtle)] mb-4">
+                {section}
+              </h4>
+              <ul className="flex flex-col gap-2.5">
+                {links.map(({ href, label }) => (
+                  <li key={href}>
+                    <Link
+                      href={href}
+                      className="text-sm text-[var(--color-ink-invert-muted)] hover:text-[var(--color-ink-invert)] transition-colors duration-[160ms]"
+                    >
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
-        <div className="mt-4 pt-4 border-t border-[#4A2E1A] flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="text-xs text-[#8B6545]">
+        {/* Bottom bar */}
+        <div className="mt-12 pt-6 border-t border-[var(--color-border-invert)] flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-xs text-[var(--color-ink-invert-subtle)]">
             © {new Date().getFullYear()} get that bread. All rights reserved.
           </p>
-          <p className="text-xs text-[#8B6545]">
-            Payments secured by Stripe · Built for Singapore entrepreneurs
+          <p className="text-xs text-[var(--color-ink-invert-subtle)]">
+            Built for Singapore entrepreneurs 🇸🇬
           </p>
         </div>
       </div>

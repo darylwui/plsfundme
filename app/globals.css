@@ -26,6 +26,14 @@
   --color-ink-muted:       #78603A;   /* Warm brown */
   --color-ink-subtle:      #A68B5B;   /* Light warm brown */
 
+  /* Inverted surfaces — navbar & footer (dark crust) */
+  --color-surface-invert:       #2C1A0E;
+  --color-surface-invert-raised:#3D2010;
+  --color-border-invert:        #4A2E1A;
+  --color-ink-invert:           #F5EDD8;
+  --color-ink-invert-muted:     #C4956A;
+  --color-ink-invert-subtle:    #8B6545;
+
   /* Background */
   --color-background:      var(--color-surface);
   --color-foreground:      var(--color-ink);
@@ -49,40 +57,85 @@
   --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1);
 
   /* Animations */
-  --animate-fade-up: fade-up 400ms cubic-bezier(0.23, 1, 0.32, 1) both;
+  --animate-fade-up:    fade-up 400ms cubic-bezier(0.23, 1, 0.32, 1) both;
+  --animate-fade-in:    fade-in 300ms cubic-bezier(0.23, 1, 0.32, 1) both;
 }
 
 @keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Dark mode — clean neutral dark (shadcn/ui-inspired) */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ============================================================
+   shadcn/ui CSS variable layer
+   Mapped to our warm bakery palette so shadcn components
+   automatically inherit brand colors.
+   ============================================================ */
+
+:root {
+  --background:            #FFFBF5;
+  --foreground:            #1C1208;
+  --card:                  #FFFBF5;
+  --card-foreground:       #1C1208;
+  --popover:               #FFFBF5;
+  --popover-foreground:    #1C1208;
+  --primary:               #92400E;
+  --primary-foreground:    #FFFFFF;
+  --secondary:             #FDF6E8;
+  --secondary-foreground:  #1C1208;
+  --muted:                 #F7EDD4;
+  --muted-foreground:      #78603A;
+  --accent:                #D97706;
+  --accent-foreground:     #FFFFFF;
+  --destructive:           #C2410C;
+  --destructive-foreground:#FFFFFF;
+  --border:                #E8D5B0;
+  --input:                 #E8D5B0;
+  --ring:                  #D97706;
+  --radius:                0.625rem;
+}
+
 .dark {
-    /* Neutral near-black surfaces — no warm tint, full contrast */
-    --color-surface:         #0a0a0a;   /* Page background — near-black */
-    --color-surface-raised:  #111111;   /* Slightly lifted (layout bg) */
-    --color-surface-overlay: #1c1c1c;   /* Cards, panels, modals */
-    --color-border:          #2a2a2a;   /* Subtle neutral border */
+  --background:            #0a0a0a;
+  --foreground:            #fafafa;
+  --card:                  #111111;
+  --card-foreground:       #fafafa;
+  --popover:               #111111;
+  --popover-foreground:    #fafafa;
+  --primary:               #F2C480;
+  --primary-foreground:    #1C1208;
+  --secondary:             #1c1c1c;
+  --secondary-foreground:  #fafafa;
+  --muted:                 #1c1c1c;
+  --muted-foreground:      #a3a3a3;
+  --accent:                #D97706;
+  --accent-foreground:     #FFFFFF;
+  --destructive:           #C2410C;
+  --destructive-foreground:#FFFFFF;
+  --border:                #2a2a2a;
+  --input:                 #2a2a2a;
+  --ring:                  #D97706;
+}
 
-    /* Typography — crisp white hierarchy */
-    --color-ink:             #fafafa;   /* Near-white — primary text */
-    --color-ink-muted:       #a3a3a3;   /* Secondary text */
-    --color-ink-subtle:      #737373;   /* Tertiary / placeholder */
-
-    --color-background:      var(--color-surface);
-    --color-foreground:      var(--color-ink);
-
-    /* Shadows — dark mode uses barely-there outlines instead */
-    --shadow-card:        0 0 0 1px rgba(255, 255, 255, 0.06);
-    --shadow-card-hover:  0 0 0 1px rgba(255, 255, 255, 0.12), 0 4px 24px 0 rgba(0, 0, 0, 0.4);
-    --shadow-cta:         0 4px 20px 0 rgba(242, 196, 128, 0.25);
+/* Dark mode — clean neutral dark */
+.dark {
+  --color-surface:         #0a0a0a;
+  --color-surface-raised:  #111111;
+  --color-surface-overlay: #1c1c1c;
+  --color-border:          #2a2a2a;
+  --color-ink:             #fafafa;
+  --color-ink-muted:       #a3a3a3;
+  --color-ink-subtle:      #737373;
+  --color-background:      var(--color-surface);
+  --color-foreground:      var(--color-ink);
+  --shadow-card:        0 0 0 1px rgba(255, 255, 255, 0.06);
+  --shadow-card-hover:  0 0 0 1px rgba(255, 255, 255, 0.12), 0 4px 24px 0 rgba(0, 0, 0, 0.4);
+  --shadow-cta:         0 4px 20px 0 rgba(242, 196, 128, 0.25);
 }
 
 body {
@@ -106,7 +159,11 @@ body {
   }
 }
 
-/* Stagger animation utility */
+/* Animation utilities */
 .animate-fade-up {
   animation: var(--animate-fade-up);
+}
+
+.animate-fade-in {
+  animation: var(--animate-fade-in);
 }
