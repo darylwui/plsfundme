@@ -17,6 +17,7 @@ export function ProjectCreationForm({ categories }: ProjectCreationFormProps) {
     step,
     draft,
     rewards,
+    saveState,
     updateDraft,
     addReward,
     updateReward,
@@ -24,11 +25,12 @@ export function ProjectCreationForm({ categories }: ProjectCreationFormProps) {
     goTo,
     next,
     back,
+    clearDraft,
   } = useProjectCreation();
 
   return (
     <div className="flex flex-col gap-8">
-      <StepIndicator current={step} onGoTo={goTo} />
+      <StepIndicator current={step} saveState={saveState} onGoTo={goTo} />
 
       <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] shadow-[var(--shadow-card)] p-6 sm:p-8">
         {step === 1 && (
@@ -63,6 +65,7 @@ export function ProjectCreationForm({ categories }: ProjectCreationFormProps) {
             rewards={rewards}
             categories={categories}
             onBack={back}
+            onSuccess={clearDraft}
           />
         )}
       </div>

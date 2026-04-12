@@ -17,6 +17,7 @@ interface Step4Props {
   rewards: RewardFormData[];
   categories: Category[];
   onBack: () => void;
+  onSuccess?: () => void;
 }
 
 /** Build a fake ProjectWithRelations so we can pass it to real display components. */
@@ -69,7 +70,7 @@ function buildPreviewProject(
   } as unknown as ProjectWithRelations;
 }
 
-export function Step4_Review({ draft, rewards, categories, onBack }: Step4Props) {
+export function Step4_Review({ draft, rewards, categories, onBack, onSuccess }: Step4Props) {
   const router = useRouter();
   const [launching, setLaunching] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -137,6 +138,7 @@ export function Step4_Review({ draft, rewards, categories, onBack }: Step4Props)
       }
     }
 
+    onSuccess?.();
     router.push(`/dashboard/projects?submitted=1`);
   }
 

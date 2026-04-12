@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { createClient } from "@/lib/supabase/client";
 import type { ProjectDraft } from "@/types/project";
 import type { RewardFormData } from "@/types/reward";
 
 export type CreationStep = 1 | 2 | 3 | 4;
+export type SaveState = "idle" | "saving" | "saved" | "error";
 
 const INITIAL_DRAFT: ProjectDraft = {
   title: "",
@@ -19,10 +21,88 @@ const INITIAL_DRAFT: ProjectDraft = {
   payout_mode: "automatic",
 };
 
+const SAVE_DEBOUNCE_MS = 1200;
+
 export function useProjectCreation() {
   const [step, setStep] = useState<CreationStep>(1);
   const [draft, setDraft] = useState<ProjectDraft>(INITIAL_DRAFT);
   const [rewards, setRewards] = useState<RewardFormData[]>([]);
+  const [saveState, setSaveState] = useState<SaveState>("idle");
+  const [loaded, setLoaded] = useState(false);
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Load existing draft on mount
+  useEffect(() => {
+    async function loadDraft() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setLoaded(true); return; }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data } = await (supabase as any)
+        .from("campaign_drafts")
+        .select("draft_data, rewards_data, step")
+        .eq("user_id", user.id)
+        .single();
+
+      if (data) {
+        setDraft(data.draft_data as ProjectDraft);
+        setRewards(data.rewards_data as RewardFormData[]);
+        setStep(data.step as CreationStep);
+      }
+      setLoaded(true);
+    }
+    loadDraft();
+  }, []);
+
+  const saveDraft = useCallback(async (
+    nextDraft: ProjectDraft,
+    nextRewards: RewardFormData[],
+    nextStep: CreationStep,
+  ) => {
+    setSaveState("saving");
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await (supabase as any)
+      .from("campaign_drafts")
+      .upsert(
+        {
+          user_id: user.id,
+          draft_data: nextDraft,
+          rewards_data: nextRewards,
+          step: nextStep,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id" }
+      );
+
+    setSaveState(error ? "error" : "saved");
+    // Reset to idle after 2s
+    setTimeout(() => setSaveState("idle"), 2000);
+  }, []);
+
+  // Debounced auto-save whenever draft/rewards/step change (after initial load)
+  useEffect(() => {
+    if (!loaded) return;
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
+      saveDraft(draft, rewards, step);
+    }, SAVE_DEBOUNCE_MS);
+    return () => {
+      if (saveTimer.current) clearTimeout(saveTimer.current);
+    };
+  }, [draft, rewards, step, loaded, saveDraft]);
+
+  async function clearDraft() {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase as any).from("campaign_drafts").delete().eq("user_id", user.id);
+  }
 
   function updateDraft(partial: Partial<ProjectDraft>) {
     setDraft((prev) => ({ ...prev, ...partial }));
@@ -65,6 +145,8 @@ export function useProjectCreation() {
     step,
     draft,
     rewards,
+    saveState,
+    loaded,
     updateDraft,
     addReward,
     updateReward,
@@ -73,5 +155,6 @@ export function useProjectCreation() {
     goTo,
     next,
     back,
+    clearDraft,
   };
 }
