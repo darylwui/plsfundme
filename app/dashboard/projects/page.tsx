@@ -1,17 +1,20 @@
 import Link from "next/link";
-import { PlusCircle, ArrowRight, Pencil } from "lucide-react";
+import { PlusCircle, ArrowRight, Pencil, Rocket, PartyPopper } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { ShareButtons } from "@/components/sharing/ShareButtons";
 import { formatDate, daysRemaining } from "@/lib/utils/dates";
 import { formatSgd, fundingPercent } from "@/lib/utils/currency";
 
+const BASE_URL = "https://getthatbread.vercel.app";
+
 interface Props {
-  searchParams: Promise<{ submitted?: string }>;
+  searchParams: Promise<{ submitted?: string; slug?: string }>;
 }
 
 export default async function DashboardProjectsPage({ searchParams }: Props) {
-  const { submitted } = await searchParams;
+  const { submitted, slug: submittedSlug } = await searchParams;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
@@ -44,17 +47,32 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
 
   return (
     <div className="flex flex-col gap-6">
-      {submitted === "1" && (
-        <div className="rounded-[var(--radius-card)] bg-amber-50 border border-amber-200 px-5 py-4 flex items-start gap-3">
-          <span className="text-2xl">🎉</span>
-          <div>
-            <p className="font-bold text-amber-900">Campaign submitted for review!</p>
-            <p className="text-sm text-amber-700 mt-0.5">
-              Our team will review your campaign within 1–2 business days. You&apos;ll receive an email once it&apos;s approved and live.
+
+      {/* Post-submission share banner */}
+      {submitted === "1" && submittedSlug && (
+        <div className="rounded-[var(--radius-card)] border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 overflow-hidden">
+          <div className="px-5 py-4 flex items-start gap-3 border-b border-amber-200 dark:border-amber-800">
+            <PartyPopper className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-bold text-amber-900 dark:text-amber-200">Campaign submitted for review!</p>
+              <p className="text-sm text-amber-700 dark:text-amber-400 mt-0.5">
+                Our team will review within 1–2 business days. While you wait — share your campaign link now to build momentum before it goes live.
+              </p>
+            </div>
+          </div>
+          <div className="px-5 py-3 flex flex-col gap-2">
+            <p className="text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">
+              Share your campaign
             </p>
+            <ShareButtons
+              url={`${BASE_URL}/projects/${submittedSlug}`}
+              title={projects?.find((p) => p.slug === submittedSlug)?.title ?? "My campaign"}
+              compact
+            />
           </div>
         </div>
       )}
+
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-black text-[var(--color-ink)]">My projects</h1>
         <Link href="/projects/create">
@@ -67,14 +85,13 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
 
       {!projects || projects.length === 0 ? (
         <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border-2 border-dashed border-[var(--color-border)] p-16 flex flex-col items-center text-center gap-4">
-          <div className="text-5xl">🚀</div>
+          <div className="w-16 h-16 rounded-full bg-[var(--color-brand-violet)]/10 flex items-center justify-center">
+            <Rocket className="w-8 h-8 text-[var(--color-brand-violet)]" />
+          </div>
           <div>
-            <h2 className="text-xl font-black text-[var(--color-ink)]">
-              No projects yet
-            </h2>
+            <h2 className="text-xl font-black text-[var(--color-ink)]">No projects yet</h2>
             <p className="text-sm text-[var(--color-ink-muted)] mt-1 max-w-sm">
-              Ready to raise funds for your idea? Create your first campaign in
-              minutes.
+              Ready to raise funds for your idea? Create your first campaign in minutes.
             </p>
           </div>
           <Link href="/projects/create">
@@ -90,69 +107,84 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
           {projects.map((project) => {
             const percent = fundingPercent(project.amount_pledged_sgd ?? 0, project.funding_goal_sgd);
             const days = daysRemaining(project.deadline);
+            const isShareable = project.status === "active" || project.status === "pending_review";
 
             return (
               <div
                 key={project.id}
-                className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-card-hover)] transition-shadow p-5 flex flex-col sm:flex-row sm:items-center gap-4"
+                className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-card-hover)] transition-shadow overflow-hidden"
               >
-                {/* Cover thumbnail */}
-                <div className="w-full sm:w-24 h-16 rounded-lg bg-[var(--color-surface-overlay)] shrink-0 overflow-hidden">
-                  {project.cover_image_url ? (
-                    <img
-                      src={project.cover_image_url}
-                      alt={project.title}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-2xl">
-                      🚀
-                    </div>
-                  )}
-                </div>
-
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <p className="font-bold text-[var(--color-ink)] truncate">
-                      {project.title}
-                    </p>
-                    <Badge variant={statusVariant[project.status] ?? "neutral"}>
-                      {statusLabel[project.status] ?? project.status}
-                    </Badge>
-                  </div>
-                  <p className="text-xs text-[var(--color-ink-subtle)]">
-                    Created {formatDate(project.created_at)} · Deadline {formatDate(project.deadline)}
-                    {project.status === "active" && ` · ${days}d left`}
-                  </p>
-
-                  {/* Mini progress bar */}
-                  <div className="mt-2 flex items-center gap-3">
-                    <div className="flex-1 h-1.5 rounded-full bg-[var(--color-surface-overlay)] overflow-hidden">
-                      <div
-                        className="h-full rounded-full bg-[var(--color-brand-violet)]"
-                        style={{ width: `${Math.min(percent, 100)}%` }}
+                <div className="p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+                  {/* Cover thumbnail */}
+                  <div className="w-full sm:w-24 h-16 rounded-lg bg-[var(--color-surface-overlay)] shrink-0 overflow-hidden">
+                    {project.cover_image_url ? (
+                      <img
+                        src={project.cover_image_url}
+                        alt={project.title}
+                        className="w-full h-full object-cover"
                       />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Rocket className="w-6 h-6 text-[var(--color-ink-subtle)]" />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                      <p className="font-bold text-[var(--color-ink)] truncate">{project.title}</p>
+                      <Badge variant={statusVariant[project.status] ?? "neutral"}>
+                        {statusLabel[project.status] ?? project.status}
+                      </Badge>
                     </div>
-                    <span className="text-xs font-semibold text-[var(--color-ink)] shrink-0">
-                      {formatSgd(project.amount_pledged_sgd ?? 0)} · {percent}% · {project.backer_count ?? 0} backers
-                    </span>
+                    <p className="text-xs text-[var(--color-ink-subtle)]">
+                      Created {formatDate(project.created_at)} · Deadline {formatDate(project.deadline)}
+                      {project.status === "active" && ` · ${days}d left`}
+                    </p>
+
+                    {/* Mini progress bar */}
+                    <div className="mt-2 flex items-center gap-3">
+                      <div className="flex-1 h-1.5 rounded-full bg-[var(--color-surface-overlay)] overflow-hidden">
+                        <div
+                          className="h-full rounded-full bg-[var(--color-brand-violet)]"
+                          style={{ width: `${Math.min(percent, 100)}%` }}
+                        />
+                      </div>
+                      <span className="text-xs font-semibold font-mono text-[var(--color-ink)] shrink-0">
+                        {formatSgd(project.amount_pledged_sgd ?? 0)} · {percent}% · {project.backer_count ?? 0} backers
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Link
+                      href={`/projects/${project.slug}/edit`}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface-overlay)] hover:bg-[var(--color-border)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
+                    >
+                      <Pencil className="w-3 h-3" />
+                      Edit
+                    </Link>
+                    <Link href={`/projects/${project.slug}`}>
+                      <ArrowRight className="w-4 h-4 text-[var(--color-ink-subtle)]" />
+                    </Link>
                   </div>
                 </div>
 
-                {/* Actions */}
-                <div className="flex items-center gap-2 shrink-0">
-                  <Link
-                    href={`/projects/${project.slug}/edit`}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface-overlay)] hover:bg-[var(--color-border)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
-                  >
-                    <Pencil className="w-3 h-3" />
-                    Edit
-                  </Link>
-                  <Link href={`/projects/${project.slug}`}>
-                    <ArrowRight className="w-4 h-4 text-[var(--color-ink-subtle)]" />
-                  </Link>
-                </div>
+                {/* Share strip for live / pending campaigns */}
+                {isShareable && (
+                  <div className="border-t border-[var(--color-border)] px-5 py-3 bg-[var(--color-surface-raised)] flex items-center gap-3">
+                    <span className="text-xs font-semibold text-[var(--color-ink-subtle)] uppercase tracking-wider shrink-0">
+                      Share
+                    </span>
+                    <ShareButtons
+                      url={`${BASE_URL}/projects/${project.slug}`}
+                      title={project.title}
+                      compact
+                    />
+                  </div>
+                )}
               </div>
             );
           })}

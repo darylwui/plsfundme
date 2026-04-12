@@ -139,7 +139,7 @@ export function Step4_Review({ draft, rewards, categories, onBack, onSuccess }: 
     }
 
     onSuccess?.();
-    router.push(`/dashboard/projects?submitted=1`);
+    router.push(`/dashboard/projects?submitted=1&slug=${slug}`);
   }
 
   return (

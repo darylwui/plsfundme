@@ -2,6 +2,9 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Pencil, Clock, CheckCircle2, Circle, CalendarDays } from "lucide-react";
+import { ShareButtons } from "@/components/sharing/ShareButtons";
+
+const BASE_URL = "https://getthatbread.vercel.app";
 import { createClient } from "@/lib/supabase/server";
 import { FundingWidget } from "@/components/projects/FundingWidget";
 import { Badge } from "@/components/ui/badge";
@@ -96,12 +99,21 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           Back to explore
         </Link>
         {isCreator && (
-          <Link href={`/projects/${slug}/edit`}>
-            <Button variant="secondary" size="sm">
-              <Pencil className="w-3.5 h-3.5" />
-              Edit campaign
-            </Button>
-          </Link>
+          <div className="flex items-center gap-2">
+            {project.status === "active" && (
+              <ShareButtons
+                url={`${BASE_URL}/projects/${slug}`}
+                title={project.title}
+                compact
+              />
+            )}
+            <Link href={`/projects/${slug}/edit`}>
+              <Button variant="secondary" size="sm">
+                <Pencil className="w-3.5 h-3.5" />
+                Edit campaign
+              </Button>
+            </Link>
+          </div>
         )}
       </div>
 
