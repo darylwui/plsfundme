@@ -96,9 +96,8 @@ export default function HowItWorksPage() {
             <span style={{ color: "#f2c480" }}>get that bread</span>
             <span style={{ color: "#d97706" }}> works</span>
           </h1>
-          <p className="text-lg text-[var(--color-ink-muted)] max-w-xl leading-relaxed">
-            All-or-nothing crowdfunding for Singapore entrepreneurs.
-            Simple, safe, and transparent.
+          <p className="text-lg text-[var(--color-ink-muted)] whitespace-nowrap leading-relaxed">
+            All-or-nothing crowdfunding for Singapore entrepreneurs. Simple, safe, and transparent.
           </p>
         </div>
       </section>
