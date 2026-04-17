@@ -104,7 +104,7 @@ export function CheckoutForm({
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
       {/* Order summary */}
       <div className="rounded-[var(--radius-card)] bg-[var(--color-surface-raised)] border border-[var(--color-border)] p-5">
-        <h3 className="font-bold text-sm text-[var(--color-ink-muted)] uppercase tracking-wider mb-3">
+        <h3 className="text-xs font-semibold text-[var(--color-ink-muted)] uppercase tracking-wider mb-3">
           Your pledge
         </h3>
         <div className="flex items-start gap-3 mb-4">
@@ -162,7 +162,7 @@ export function CheckoutForm({
 
       {/* Stripe Payment Element */}
       <div>
-        <h3 className="font-bold text-sm text-[var(--color-ink-muted)] uppercase tracking-wider mb-3">
+        <h3 className="text-xs font-semibold text-[var(--color-ink-muted)] uppercase tracking-wider mb-3">
           {paymentMethod === "paynow" ? "Scan to pay" : "Card details"}
         </h3>
         <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] p-4">

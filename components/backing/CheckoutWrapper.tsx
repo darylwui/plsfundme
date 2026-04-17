@@ -52,7 +52,7 @@ function PledgeSummary({ project, selectedReward, amount }: PledgeSummaryProps) 
         </div>
       )}
       <div className="min-w-0 flex-1">
-        <p className="text-xs uppercase tracking-wider font-semibold text-[var(--color-ink-subtle)]">
+        <p className="text-xs font-semibold uppercase tracking-wider text-[var(--color-ink-muted)]">
           You&apos;re pledging
         </p>
         <p className="font-black text-xl text-[var(--color-ink)] font-mono">
@@ -128,7 +128,7 @@ export function CheckoutWrapper({
         />
 
         <div>
-          <h3 className="font-bold text-sm text-[var(--color-ink-muted)] uppercase tracking-wider mb-3">
+          <h3 className="text-xs font-semibold text-[var(--color-ink-muted)] uppercase tracking-wider mb-3">
             How would you like to pay?
           </h3>
 

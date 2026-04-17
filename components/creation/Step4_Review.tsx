@@ -232,7 +232,7 @@ export function Step4_Review({ draft, rewards, categories, onBack, onSuccess }: 
                   Y
                 </div>
                 <div>
-                  <p className="text-[10px] text-[var(--color-ink-subtle)] uppercase tracking-[0.1em] font-medium">Campaign by</p>
+                  <p className="text-xs font-semibold text-[var(--color-ink-muted)] uppercase tracking-wider">Campaign by</p>
                   <p className="text-sm font-semibold text-[var(--color-ink)]">You</p>
                 </div>
                 {draft.deadline && (
