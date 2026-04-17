@@ -111,7 +111,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
               </div>
 
               <h1 className="text-[52px] md:text-[60px] font-black tracking-tight leading-[1.05]">
-                <span className="block text-[#b45309] dark:text-amber-300">Empowering founders to</span>
+                <span className="block text-[#b45309] dark:text-amber-300">Let&apos;s go</span>
                 <span className="block text-[#9a3412] dark:text-orange-300">get that bread.</span>
               </h1>
 
@@ -134,27 +134,6 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                 </Link>
               </div>
 
-              {/* Trust bar */}
-              <div className="mt-10 pt-8 border-t border-[var(--color-border)] flex flex-wrap gap-6 text-sm text-[var(--color-ink-muted)]">
-                <div
-                  className="flex items-center gap-2"
-                  title="If the project doesn't hit its funding goal, backers are fully refunded. No risk."
-                >
-                  <Shield className="w-4 h-4 text-[var(--color-brand-violet)] shrink-0" />
-                  All-or-nothing funding
-                </div>
-                <div className="flex items-center gap-2">
-                  <Globe className="w-4 h-4 text-[var(--color-brand-teal)] shrink-0" />
-                  PayNow &amp; Credit Card
-                </div>
-                <div
-                  className="flex items-center gap-2"
-                  title="Funds are held in escrow and only released to creators once their goal is met."
-                >
-                  <Lock className="w-4 h-4 text-[var(--color-brand-amber)] shrink-0" />
-                  Secured escrow transactions
-                </div>
-              </div>
             </div>
 
             {/* Right — platform stats card (shown once platform has live data) */}
