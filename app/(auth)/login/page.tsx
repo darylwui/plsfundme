@@ -21,7 +21,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   return (
     <Card padding="lg" className="flex flex-col gap-6">
       <div className="flex flex-col gap-1.5">
-        <h1 className="text-2xl font-black tracking-tight" style={{ color: "#d97706" }}>
+        <h1 className="text-2xl font-black tracking-tight text-[var(--color-ink)]">
           Welcome back 👋
         </h1>
         <p className="text-sm text-[var(--color-ink-muted)]">

@@ -182,7 +182,7 @@ export function CheckoutWrapper({
         )}
 
         {error && (
-          <div className="rounded-[var(--radius-btn)] bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">
+          <div className="rounded-[var(--radius-btn)] bg-red-50 border border-red-200 px-4 py-3 text-sm text-[var(--color-brand-coral)]">
             {error}
           </div>
         )}

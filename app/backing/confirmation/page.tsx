@@ -47,7 +47,7 @@ export default async function ConfirmationPage({
         </h1>
 
         {amount > 0 && (
-          <p className="mt-2 text-[var(--color-brand-violet)] font-bold text-lg">
+          <p className="mt-2 text-[var(--color-brand-violet)] font-black text-lg">
             {formatSgd(amount)} pledged
           </p>
         )}

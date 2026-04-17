@@ -169,7 +169,7 @@ export function PMApplyForm({ userId, onSuccess }: PMApplyFormProps) {
               ) : (
                 <p className="text-xs text-[var(--color-ink-subtle)]">Minimum 50 characters</p>
               )}
-              <p className={`text-xs ${bio.length < 50 ? "text-[var(--color-ink-subtle)]" : "text-green-600"}`}>
+              <p className={`text-xs ${bio.length < 50 ? "text-[var(--color-ink-subtle)]" : "text-[var(--color-brand-lime)]"}`}>
                 {bio.length}/50
               </p>
             </div>
@@ -254,15 +254,15 @@ export function PMApplyForm({ userId, onSuccess }: PMApplyFormProps) {
               ) : (
                 <p className="text-xs text-[var(--color-ink-subtle)]">Minimum 100 characters</p>
               )}
-              <p className={`text-xs ${projectDescription.length < 100 ? "text-[var(--color-ink-subtle)]" : "text-green-600"}`}>
+              <p className={`text-xs ${projectDescription.length < 100 ? "text-[var(--color-ink-subtle)]" : "text-[var(--color-brand-lime)]"}`}>
                 {projectDescription.length}/100
               </p>
             </div>
           </div>
 
           <div className="flex gap-3">
-            <Button type="button" variant="ghost" onClick={() => setStep(1)}>Back</Button>
-            <Button type="button" fullWidth onClick={handleNext}>Continue</Button>
+            <Button type="button" size="lg" variant="ghost" onClick={() => setStep(1)}>Back</Button>
+            <Button type="button" size="lg" fullWidth onClick={handleNext}>Continue</Button>
           </div>
         </div>
       )}
@@ -314,8 +314,8 @@ export function PMApplyForm({ userId, onSuccess }: PMApplyFormProps) {
           </div>
 
           <div className="flex gap-3">
-            <Button type="button" variant="ghost" onClick={() => setStep(2)}>Back</Button>
-            <Button type="button" fullWidth loading={loading} onClick={handleSubmit}>
+            <Button type="button" size="lg" variant="ghost" onClick={() => setStep(2)}>Back</Button>
+            <Button type="button" size="lg" fullWidth loading={loading} onClick={handleSubmit}>
               Submit application
             </Button>
           </div>

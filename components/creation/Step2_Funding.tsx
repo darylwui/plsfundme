@@ -92,7 +92,7 @@ export function Step2_Funding({ draft, onUpdate, onNext, onBack }: Step2Props) {
       {/* Fee breakdown */}
       {draft.funding_goal_sgd > 0 && (
         <div className="rounded-[var(--radius-card)] bg-[var(--color-surface-raised)] border border-[var(--color-border)] p-4 text-sm flex flex-col gap-2">
-          <h4 className="font-semibold text-[var(--color-ink)]">Fee breakdown</h4>
+          <h4 className="font-bold text-[var(--color-ink)]">Fee breakdown</h4>
           <div className="flex justify-between text-[var(--color-ink-muted)]">
             <span>Funding goal</span>
             <span>{formatSgd(draft.funding_goal_sgd)}</span>

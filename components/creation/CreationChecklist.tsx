@@ -115,7 +115,7 @@ export function CreationChecklist({ draft, rewards }: CreationChecklistProps) {
             {/* Icon */}
             <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5">
               {item.isComplete ? (
-                <div className="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center">
+                <div className="w-5 h-5 rounded-full bg-[var(--color-brand-lime)] flex items-center justify-center">
                   <Check className="w-3 h-3 text-white" />
                 </div>
               ) : item.isRequired ? (
@@ -131,7 +131,7 @@ export function CreationChecklist({ draft, rewards }: CreationChecklistProps) {
 
             {/* Text */}
             <div className="flex-1 min-w-0">
-              <p className={`text-xs font-bold ${item.isComplete ? "text-emerald-600" : item.isRequired ? "text-[var(--color-ink)]" : "text-[var(--color-ink-subtle)]"}`}>
+              <p className={`text-xs font-bold ${item.isComplete ? "text-[var(--color-brand-lime)]" : item.isRequired ? "text-[var(--color-ink)]" : "text-[var(--color-ink-subtle)]"}`}>
                 {item.label}
               </p>
               <p className="text-xs text-[var(--color-ink-subtle)]">{item.description}</p>

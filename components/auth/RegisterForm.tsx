@@ -177,7 +177,7 @@ export function RegisterForm({ initialRole = null }: RegisterFormProps) {
               <p className="text-xs text-[var(--color-ink-muted)] mt-1 leading-relaxed">
                 Support ideas you believe in.
               </p>
-              <p className="text-xs text-green-600 font-medium mt-1.5">
+              <p className="text-xs text-[var(--color-brand-lime)] font-medium mt-1.5">
                 No approval needed.
               </p>
             </div>
@@ -196,7 +196,7 @@ export function RegisterForm({ initialRole = null }: RegisterFormProps) {
               <p className="text-xs text-[var(--color-ink-muted)] mt-1 leading-relaxed">
                 Launch campaigns and raise funds for your projects.
               </p>
-              <p className="text-xs text-amber-600 font-medium mt-1.5">
+              <p className="text-xs text-[var(--color-brand-amber)] font-medium mt-1.5">
                 Application required.
               </p>
             </div>
@@ -225,7 +225,7 @@ export function RegisterForm({ initialRole = null }: RegisterFormProps) {
       </button>
 
       {errors.form && (
-        <div className="rounded-[var(--radius-btn)] bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">
+        <div className="rounded-[var(--radius-btn)] bg-red-50 border border-red-200 px-4 py-3 text-sm text-[var(--color-brand-coral)]">
           {errors.form}
         </div>
       )}
