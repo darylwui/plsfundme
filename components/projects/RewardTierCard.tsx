@@ -33,15 +33,15 @@ export function RewardTierCard({
       onClick={() => !isSoldOut && !disabled && onSelect?.(reward)}
       disabled={isSoldOut || disabled || !onSelect}
       className={`
-        w-full text-left rounded-[var(--radius-card)] border-2 p-5
-        transition-[border-color,background-color,opacity] duration-[160ms] ease-[cubic-bezier(0.23,1,0.32,1)]
+        w-full text-left rounded-[var(--radius-card)] border-2 p-5 relative
+        transition-[border-color,background-color,opacity,box-shadow,transform] duration-[160ms] ease-[cubic-bezier(0.23,1,0.32,1)]
         ${
           selected
-            ? "border-[var(--color-brand-violet)] bg-[var(--color-surface-overlay)]/60"
+            ? "border-[var(--color-brand-violet)] bg-[var(--color-surface-overlay)]/60 shadow-[0_0_0_2px_rgba(146,64,14,0.15)]"
             : isSoldOut
             ? "border-[var(--color-border)] bg-[var(--color-surface-raised)] opacity-60 cursor-not-allowed"
             : onSelect
-            ? "border-[var(--color-border)] hover:border-[var(--color-brand-violet)]/50 cursor-pointer"
+            ? "border-[var(--color-border)] hover:border-[var(--color-brand-violet)]/30 hover:shadow-[0_8px_24px_0_rgba(146,64,14,0.12)] hover:-translate-y-1 cursor-pointer"
             : "border-[var(--color-border)]"
         }
       `}
@@ -79,7 +79,7 @@ export function RewardTierCard({
         </div>
 
         {selected && (
-          <div className="w-5 h-5 rounded-full bg-[var(--color-brand-violet)] flex items-center justify-center shrink-0 mt-0.5">
+          <div className="w-5 h-5 rounded-full bg-[var(--color-brand-violet)] flex items-center justify-center shrink-0 mt-0.5 animate-pop">
             <svg className="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none">
               <path
                 d="M2 6l3 3 5-5"

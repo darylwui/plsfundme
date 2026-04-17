@@ -49,8 +49,8 @@ export function HowItWorksSection() {
 
         {/* Steps */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-6">
-          {STEPS.map(({ Icon, step, title, description }) => (
-            <div key={step} className="relative flex flex-col gap-4">
+          {STEPS.map(({ Icon, step, title, description }, index) => (
+            <div key={step} className="relative flex flex-col gap-4 animate-fade-up" style={{ animationDelay: `${index * 120}ms` }}>
               {/* Step number + icon */}
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-[var(--radius-card)] bg-[var(--color-brand-violet)] flex items-center justify-center shrink-0 shadow-[var(--shadow-cta)]">

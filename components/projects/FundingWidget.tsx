@@ -65,17 +65,38 @@ export function FundingWidget({ project }: FundingWidgetProps) {
               <label htmlFor="pledge-amount" className="text-sm font-semibold text-[var(--color-ink)]">
                 Amount (SGD)
               </label>
-              <input
-                id="pledge-amount"
-                type="number"
-                min={1}
-                step={1}
-                value={pledgeAmount}
-                onChange={(e) => setPledgeAmount(Math.max(1, Number(e.target.value) || 1))}
-                className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)]"
-              />
+              <div className="relative">
+                <input
+                  id="pledge-amount"
+                  type="number"
+                  min={1}
+                  step={1}
+                  value={pledgeAmount}
+                  onChange={(e) => setPledgeAmount(Math.max(1, Number(e.target.value) || 1))}
+                  className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)]"
+                />
+                {/* Threshold progress indicator */}
+                {activeRewards.length > 0 && (
+                  <div className="absolute bottom-0 left-0 right-0 h-1 rounded-b-[var(--radius-btn)] bg-[var(--color-brand-violet)]/10 overflow-hidden">
+                    <div
+                      className="h-full bg-[var(--color-brand-violet)] transition-all duration-300"
+                      style={{
+                        width: `${Math.min(
+                          100,
+                          (pledgeAmount / Math.max(activeRewards[activeRewards.length - 1]?.minimum_pledge_sgd ?? 100, pledgeAmount)) * 100
+                        )}%`,
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+              {eligibleRewards.length > 0 && (
+                <div className="animate-fade-in text-xs font-semibold text-[var(--color-brand-violet)] flex items-center gap-1">
+                  ✨ {eligibleRewards.length} reward{eligibleRewards.length !== 1 ? "s" : ""} unlocked
+                </div>
+              )}
               <p className="text-xs text-[var(--color-ink-subtle)]">
-                You are pledging {format(convert(pledgeAmount))} · {eligibleRewards.length} reward{eligibleRewards.length !== 1 ? "s" : ""} unlocked
+                You are pledging {format(convert(pledgeAmount))}
               </p>
             </div>
 
@@ -211,15 +232,22 @@ export function FundingWidget({ project }: FundingWidgetProps) {
             Choose a reward
           </h3>
           {activeRewards
-            .map((reward) => (
-              <RewardTierCard
-                key={reward.id}
-                reward={reward}
-                selected={selectedReward?.id === reward.id}
-                onSelect={isClosed ? undefined : setSelectedReward}
-                disabled={isClosed}
-              />
-            ))}
+            .map((reward) => {
+              const isEligible = pledgeAmount >= reward.minimum_pledge_sgd;
+              return (
+                <div
+                  key={reward.id}
+                  className={isEligible ? "animate-pulse-glow" : ""}
+                >
+                  <RewardTierCard
+                    reward={reward}
+                    selected={selectedReward?.id === reward.id}
+                    onSelect={isClosed ? undefined : setSelectedReward}
+                    disabled={isClosed}
+                  />
+                </div>
+              );
+            })}
         </div>
       )}
     </div>

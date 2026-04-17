@@ -18,7 +18,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
   return (
     <Link href={`/projects/${project.slug}`} className="group flex w-full h-full">
       {/* Double-bezel outer shell */}
-      <div className="flex-1 h-full p-[3px] bg-[var(--color-surface-overlay)] rounded-[calc(var(--radius-card)+3px)] ring-1 ring-[var(--color-border)] shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-card-hover)] transition-[box-shadow] duration-[200ms] ease-[cubic-bezier(0.23,1,0.32,1)]">
+      <div className="flex-1 h-full p-[3px] bg-[var(--color-surface-overlay)] rounded-[calc(var(--radius-card)+3px)] ring-1 ring-[var(--color-border)] shadow-[var(--shadow-card)] hover:shadow-[0_12px_40px_0_rgba(146,64,14,0.2)] hover:-translate-y-1 transition-[box-shadow,transform] duration-[200ms] ease-[cubic-bezier(0.23,1,0.32,1)]">
         {/* Inner card */}
         <article className="h-full bg-[var(--color-surface)] rounded-[var(--radius-card)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.04)] overflow-hidden flex flex-col">
           {/* Cover image */}
@@ -41,7 +41,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
             {/* Bread stamp — featured */}
             {project.is_featured && (
-              <span className="absolute top-2 left-2 z-10 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-400 dark:bg-amber-500 text-amber-900">
+              <span className="absolute top-2 left-2 z-10 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-400 dark:bg-amber-500 text-amber-900 animate-subtle-pulse">
                 🍞 Team pick
               </span>
             )}
@@ -49,12 +49,12 @@ export function ProjectCard({ project }: ProjectCardProps) {
             {/* Badges overlay */}
             <div className="absolute top-3 left-3 flex gap-1.5">
               {project.category && (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/90 text-[var(--color-brand-violet)] backdrop-blur-sm">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/90 text-[var(--color-brand-violet)] backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-0">
                   {project.category.name}
                 </span>
               )}
               {isEndingSoon && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-600 text-white">
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-600 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
                   <Clock className="w-3 h-3" />
                   Ending soon
                 </span>

@@ -71,6 +71,32 @@
   to   { opacity: 1; }
 }
 
+@keyframes pop {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+@keyframes slide-in {
+  from { width: 0; }
+  to { width: 4px; }
+}
+
+@keyframes subtle-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(146, 64, 14, 0); }
+  50% { box-shadow: 0 0 0 8px rgba(146, 64, 14, 0.1); }
+}
+
+@keyframes count-up {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 /* ============================================================
    shadcn/ui CSS variable layer
    Mapped to our warm bakery palette so shadcn components
@@ -164,11 +190,42 @@ body {
   }
 }
 
-/* Animation utilities */
-.animate-fade-up {
-  animation: var(--animate-fade-up);
+/* Animation utilities — respect prefers-reduced-motion */
+@media (prefers-reduced-motion: no-preference) {
+  .animate-fade-up {
+    animation: var(--animate-fade-up);
+  }
+
+  .animate-fade-in {
+    animation: var(--animate-fade-in);
+  }
+
+  .animate-pop {
+    animation: pop 400ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  .animate-slide-in {
+    animation: slide-in 300ms cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  }
+
+  .animate-subtle-pulse {
+    animation: subtle-pulse 3s ease-in-out infinite;
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 300ms ease-out;
+  }
+
+  .animate-count-up {
+    animation: count-up 300ms ease-out;
+  }
 }
 
-.animate-fade-in {
-  animation: var(--animate-fade-in);
-}
+/* Delay utilities for staggered animations */
+.delay-0 { animation-delay: 0ms; }
+.delay-100 { animation-delay: 100ms; }
+.delay-120 { animation-delay: 120ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-240 { animation-delay: 240ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-360 { animation-delay: 360ms; }
