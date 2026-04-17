@@ -147,7 +147,7 @@ export default function HowItWorksPage() {
                 <Shield className="w-5 h-5 text-white" />
               </div>
               <div className="w-full">
-                <h2 className="text-xl font-black mb-2" style={{ color: "#d97706" }}>
+                <h2 className="text-xl font-black mb-2 text-[var(--color-ink)]">
                   All-or-nothing funding
                 </h2>
                 <p className="text-[var(--color-ink-muted)] leading-relaxed text-left">
@@ -166,7 +166,7 @@ export default function HowItWorksPage() {
                   <CreditCard className="w-4.5 h-4.5 text-[var(--color-brand-amber)]" />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="font-bold mb-1.5" style={{ color: "#d97706" }}>
+                  <h3 className="font-bold mb-1.5 text-[var(--color-ink)]">
                     PayNow &amp; Credit Card
                   </h3>
                   <p className="text-sm text-[var(--color-ink-muted)] leading-relaxed">
@@ -184,7 +184,7 @@ export default function HowItWorksPage() {
                   <Lock className="w-4.5 h-4.5 text-[var(--color-brand-violet)]" />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="font-bold mb-1.5" style={{ color: "#d97706" }}>
+                  <h3 className="font-bold mb-1.5 text-[var(--color-ink)]">
                     Secured escrow transactions
                   </h3>
                   <p className="text-sm text-[var(--color-ink-muted)] leading-relaxed">
@@ -209,7 +209,7 @@ export default function HowItWorksPage() {
             </div>
             <div>
               <p className="text-xs uppercase tracking-[0.12em] font-medium text-[var(--color-ink-subtle)]">For creators</p>
-              <h2 className="text-2xl font-black" style={{ color: "#d97706" }}>Launch your campaign</h2>
+              <h2 className="text-2xl font-black text-[var(--color-ink)]">Launch your campaign</h2>
             </div>
           </div>
 
@@ -262,7 +262,7 @@ export default function HowItWorksPage() {
             </div>
             <div>
               <p className="text-xs uppercase tracking-[0.12em] font-medium text-[var(--color-ink-subtle)]">For backers</p>
-              <h2 className="text-2xl font-black" style={{ color: "#d97706" }}>Support what you believe in</h2>
+              <h2 className="text-2xl font-black text-[var(--color-ink)]">Support what you believe in</h2>
             </div>
           </div>
 
@@ -314,7 +314,7 @@ export default function HowItWorksPage() {
             </div>
             <div>
               <p className="text-xs uppercase tracking-[0.12em] font-medium text-[var(--color-ink-subtle)]">Transparent</p>
-              <h2 className="text-2xl font-black" style={{ color: "#d97706" }}>Simple, honest fees</h2>
+              <h2 className="text-2xl font-black text-[var(--color-ink)]">Simple, honest fees</h2>
             </div>
           </div>
 
@@ -356,7 +356,7 @@ export default function HowItWorksPage() {
             </div>
             <div>
               <p className="text-xs uppercase tracking-[0.12em] font-medium text-[var(--color-ink-subtle)]">Good to know</p>
-              <h2 className="text-2xl font-black text-[#b45309] dark:text-amber-300">Frequently asked questions</h2>
+              <h2 className="text-2xl font-black text-[var(--color-ink)]">Frequently asked questions</h2>
             </div>
           </div>
 
@@ -399,7 +399,7 @@ export default function HowItWorksPage() {
       <section className="bg-[var(--color-surface)]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div>
-            <h2 className="text-2xl font-black tracking-tight" style={{ color: "#d97706" }}>
+            <h2 className="text-2xl font-black tracking-tight text-[var(--color-ink)]">
               Ready to launch?
             </h2>
             <p className="text-[var(--color-ink-muted)] mt-1">
