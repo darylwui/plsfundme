@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ImageUpload } from "@/components/ui/ImageUpload";
+import { CampaignEditor } from "@/components/projects/CampaignEditor";
 import { projectBasicInfoSchema } from "@/lib/validations/project";
 import type { ProjectDraft } from "@/types/project";
 import type { Category } from "@/types/project";
@@ -130,20 +131,12 @@ export function Step1_BasicInfo({
 
       <div className="flex flex-col gap-1.5">
         <label className="text-sm font-medium text-[var(--color-ink)]">
-          Full description
+          Campaign story
         </label>
-        <textarea
-          rows={8}
-          placeholder="Describe your project in detail — what it is, why it matters, and what backers get."
+        <CampaignEditor
           value={draft.full_description}
-          onChange={(e) => onUpdate({ full_description: e.target.value })}
-          className={`
-            w-full rounded-[var(--radius-btn)] border px-3.5 py-2.5 text-sm
-            bg-[var(--color-surface)] text-[var(--color-ink)]
-            placeholder:text-[var(--color-ink-subtle)]
-            focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)] focus:border-transparent
-            ${errors.full_description ? "border-[var(--color-brand-coral)]" : "border-[var(--color-border)]"}
-          `}
+          onChange={(html) => onUpdate({ full_description: html })}
+          error={errors.full_description}
         />
         {errors.full_description && (
           <p className="text-xs text-[var(--color-brand-coral)]">

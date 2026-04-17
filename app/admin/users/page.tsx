@@ -1,10 +1,14 @@
-import { createServiceClient } from "@/lib/supabase/server";
+import { createServiceClient, createClient } from "@/lib/supabase/server";
 import { UserList } from "@/components/admin/UserList";
 
 export const metadata = { title: "Users — Admin" };
 
 export default async function AdminUsersPage() {
   const service = createServiceClient();
+  const supabase = await createClient();
+
+  // Get current session user id
+  const { data: { user: sessionUser } } = await supabase.auth.getUser();
 
   // Fetch all auth users (includes email)
   const { data: { users: authUsers } } = await service.auth.admin.listUsers({
@@ -37,7 +41,7 @@ export default async function AdminUsersPage() {
           {users.length} registered user{users.length !== 1 ? "s" : ""}
         </p>
       </div>
-      <UserList users={users} />
+      <UserList users={users} currentUserId={sessionUser?.id ?? ""} />
     </div>
   );
 }

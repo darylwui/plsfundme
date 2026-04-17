@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ImageUpload } from "@/components/ui/ImageUpload";
 import { Badge } from "@/components/ui/badge";
+import { CampaignEditor } from "@/components/projects/CampaignEditor";
 import { formatSgd } from "@/lib/utils/currency";
 import { rewardSchema } from "@/lib/validations/reward";
 import type { ProjectWithRelations, Category, ProjectUpdate } from "@/types/project";
@@ -52,7 +53,18 @@ export function EditProjectForm({
   const [title, setTitle] = useState(project.title);
   const [categoryId, setCategoryId] = useState(project.category_id);
   const [shortDesc, setShortDesc] = useState(project.short_description);
-  const [fullDesc, setFullDesc] = useState(project.full_description);
+  const [fullDesc, setFullDesc] = useState(() => {
+    const value = project.full_description;
+    if (!/<[a-z][\s\S]*>/i.test(value)) {
+      // Plain text — wrap each non-empty line in <p> for Tiptap
+      return value
+        .split("\n")
+        .filter((line) => line.trim() !== "")
+        .map((line) => `<p>${line}</p>`)
+        .join("");
+    }
+    return value;
+  });
   const [coverUrl, setCoverUrl] = useState<string | null>(project.cover_image_url);
   const [videoUrl, setVideoUrl] = useState(project.video_url ?? "");
 
@@ -300,14 +312,11 @@ export function EditProjectForm({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-[var(--color-ink)]">Full description</label>
-            <textarea
-              rows={10}
+            <label className="text-sm font-medium text-[var(--color-ink)]">Campaign story</label>
+            <CampaignEditor
               value={fullDesc}
-              onChange={(e) => setFullDesc(e.target.value)}
-              className={`w-full rounded-[var(--radius-btn)] border px-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)] focus:border-transparent ${
-                errors.full_description ? "border-[var(--color-brand-coral)]" : "border-[var(--color-border)]"
-              }`}
+              onChange={(html) => setFullDesc(html)}
+              error={errors.full_description}
             />
             {errors.full_description && (
               <p className="text-xs text-[var(--color-brand-coral)]">{errors.full_description}</p>

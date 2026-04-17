@@ -16,11 +16,11 @@ export function ProjectCard({ project }: ProjectCardProps) {
   const initial = project.title.charAt(0).toUpperCase();
 
   return (
-    <Link href={`/projects/${project.slug}`} className="group block">
+    <Link href={`/projects/${project.slug}`} className="group flex w-full h-full">
       {/* Double-bezel outer shell */}
-      <div className="p-[3px] bg-[var(--color-surface-overlay)] rounded-[calc(var(--radius-card)+3px)] ring-1 ring-[var(--color-border)] shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-card-hover)] transition-[box-shadow] duration-[200ms] ease-[cubic-bezier(0.23,1,0.32,1)]">
+      <div className="flex-1 h-full p-[3px] bg-[var(--color-surface-overlay)] rounded-[calc(var(--radius-card)+3px)] ring-1 ring-[var(--color-border)] shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-card-hover)] transition-[box-shadow] duration-[200ms] ease-[cubic-bezier(0.23,1,0.32,1)]">
         {/* Inner card */}
-        <article className="bg-[var(--color-surface)] rounded-[var(--radius-card)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.04)] overflow-hidden h-full flex flex-col">
+        <article className="h-full bg-[var(--color-surface)] rounded-[var(--radius-card)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.04)] overflow-hidden flex flex-col">
           {/* Cover image */}
           <div className="relative aspect-video bg-[var(--color-surface-overlay)] overflow-hidden">
             {project.cover_image_url ? (
@@ -37,6 +37,13 @@ export function ProjectCard({ project }: ProjectCardProps) {
                   {initial}
                 </span>
               </div>
+            )}
+
+            {/* Bread stamp — featured */}
+            {project.is_featured && (
+              <span className="absolute top-2 left-2 z-10 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-400 dark:bg-amber-500 text-amber-900">
+                🍞 Team pick
+              </span>
             )}
 
             {/* Badges overlay */}
@@ -62,13 +69,13 @@ export function ProjectCard({ project }: ProjectCardProps) {
               <div className="w-7 h-7 rounded-full bg-[var(--color-brand-violet)]/15 ring-1 ring-[var(--color-border)] flex items-center justify-center text-xs font-bold text-[var(--color-brand-violet)] shrink-0">
                 {project.creator.display_name.charAt(0).toUpperCase()}
               </div>
-              <span className="text-xs text-[var(--color-ink-muted)] truncate">
+              <span className="text-sm md:text-xs text-[var(--color-ink-muted)] truncate">
                 {project.creator.display_name}
               </span>
             </div>
 
             {/* Title + description */}
-            <div className="flex-1">
+            <div className="flex-1 min-h-[5.5rem] sm:min-h-[5rem]">
               <h3 className="font-bold text-[var(--color-ink)] leading-snug line-clamp-2 group-hover:text-[var(--color-brand-violet)] transition-colors duration-[160ms] ease-[cubic-bezier(0.23,1,0.32,1)]">
                 {project.title}
               </h3>

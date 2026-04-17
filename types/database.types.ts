@@ -142,6 +142,8 @@ export interface Database {
           backer_count: number
           payout_mode: PayoutMode
           status: ProjectStatus
+          is_featured: boolean
+          rejection_reason: string | null
           start_date: string | null
           deadline: string
           launched_at: string | null
@@ -165,6 +167,8 @@ export interface Database {
           backer_count?: number
           payout_mode?: PayoutMode
           status?: ProjectStatus
+          is_featured?: boolean
+          rejection_reason?: string | null
           start_date?: string | null
           deadline: string
           launched_at?: string | null
@@ -338,6 +342,28 @@ export interface Database {
           updated_at?: string
         }
         Update: Partial<Database['public']['Tables']['project_updates']['Insert']>
+      }
+      project_feedback: {
+        Relationships: []
+        Row: {
+          id: string
+          project_id: string
+          author_id: string
+          parent_id: string | null
+          message: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          project_id: string
+          author_id: string
+          parent_id?: string | null
+          message: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: Partial<Database['public']['Tables']['project_feedback']['Insert']>
       }
     }
     Views: Record<string, never>

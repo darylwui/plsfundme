@@ -1,17 +1,16 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Pencil, Clock, CheckCircle2, Circle, CalendarDays } from "lucide-react";
+import { ArrowLeft, Pencil, Clock, CalendarDays, Building2, Globe, Link2 } from "lucide-react";
 import { ShareButtons } from "@/components/sharing/ShareButtons";
 
 const BASE_URL = "https://getthatbread.vercel.app";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { FundingWidget } from "@/components/projects/FundingWidget";
-import { ProjectUpdatesFeed } from "@/components/projects/ProjectUpdatesFeed";
-import { PostUpdateForm } from "@/components/project/PostUpdateForm";
+import { ProjectPageSections } from "@/components/projects/ProjectPageSections";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { formatDate } from "@/lib/utils/dates";
+import { daysRemaining, formatDate } from "@/lib/utils/dates";
 import type { ProjectWithRelations } from "@/types/project";
 import type { Metadata } from "next";
 
@@ -55,7 +54,7 @@ export async function generateMetadata({
     openGraph: {
       title: `${project.title} — get that bread`,
       description: project.short_description,
-      url: `https://getthatbread.vercel.app/projects/${slug}`,
+      url: `${BASE_URL}/projects/${slug}`,
       type: "website",
       locale: "en_SG",
       siteName: "get that bread",
@@ -77,15 +76,21 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   if (!project) notFound();
 
-  // Check if current user is the creator so we can show Edit button
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   const isCreator = user?.id === project.creator.id;
 
-  // Fetch updates + check backer status in parallel
-  const [{ data: updatesRaw }, backerCheck] = await Promise.all([
+  // Parallel fetches
+  const [{ data: updatesRaw }, { data: feedbackRaw }, backerCheck] = await Promise.all([
     supabase
       .from("project_updates")
       .select("*")
+      .eq("project_id", project.id)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("project_feedback")
+      .select("id, project_id, author_id, parent_id, message, created_at, updated_at")
       .eq("project_id", project.id)
       .order("created_at", { ascending: false }),
     user
@@ -98,19 +103,90 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
       : Promise.resolve({ count: 0 }),
   ]);
 
-  const updates = (updatesRaw ?? []) as import("@/types/project").ProjectUpdatePost[];
-  const isBacker = isCreator || ((backerCheck as { count: number | null }).count ?? 0) > 0;
+  const service = createServiceClient();
+  const { data: creatorPmProfile } = await service
+    .from("project_manager_profiles")
+    .select("bio, linkedin_url, company_name, company_website, project_type, project_description")
+    .eq("id", project.creator.id)
+    .maybeSingle();
 
-  // Block non-public statuses
+  const updates = (updatesRaw ?? []) as import("@/types/project").ProjectUpdatePost[];
+
+  const feedbackRows = (feedbackRaw ?? []) as {
+    id: string;
+    project_id: string;
+    author_id: string;
+    parent_id: string | null;
+    message: string;
+    created_at: string;
+    updated_at: string;
+  }[];
+
+  const authorIds = [...new Set(feedbackRows.map((f) => f.author_id))];
+  const { data: authorsRaw } = authorIds.length
+    ? await supabase
+        .from("profiles")
+        .select("id, display_name, avatar_url")
+        .in("id", authorIds)
+    : { data: [] as { id: string; display_name: string; avatar_url: string | null }[] };
+
+  const authors = new Map((authorsRaw ?? []).map((a) => [a.id, a]));
+  const feedback = feedbackRows.map((item) => ({
+    ...item,
+    author: authors.get(item.author_id)
+      ? {
+          display_name: authors.get(item.author_id)!.display_name,
+          avatar_url: authors.get(item.author_id)!.avatar_url,
+        }
+      : null,
+  }));
+
+  const isBacker = isCreator || ((backerCheck as { count: number | null }).count ?? 0) > 0;
+  const daysLeft = daysRemaining(project.deadline);
+
+  const { data: similarRaw } = await supabase
+    .from("projects")
+    .select(
+      "id, title, slug, short_description, cover_image_url, amount_pledged_sgd, funding_goal_sgd, backer_count, deadline"
+    )
+    .eq("category_id", project.category_id)
+    .neq("id", project.id)
+    .in("status", ["active", "funded"])
+    .order("created_at", { ascending: false })
+    .limit(3);
+
+  const similarProjects = (similarRaw ?? []) as {
+    id: string;
+    title: string;
+    slug: string;
+    short_description: string;
+    cover_image_url: string | null;
+    amount_pledged_sgd: number;
+    funding_goal_sgd: number;
+    backer_count: number;
+    deadline: string;
+  }[];
+
+  // Status guards
   if (project.status === "draft" && !isCreator) notFound();
   if (project.status === "removed") notFound();
 
-  // Show a pending review banner for creator; block public
   const isPendingReview = project.status === "pending_review";
   if (isPendingReview && !isCreator) notFound();
 
   return (
     <div className="min-h-screen bg-[var(--color-surface)]">
+      {/* Pending review banner */}
+      {isPendingReview && (
+        <div className="bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800 px-4 py-3 text-sm text-amber-800 dark:text-amber-300 text-center flex items-center justify-center gap-2">
+          <Clock className="w-4 h-4 shrink-0" />
+          <span>
+            <strong>Under review</strong> — Your campaign is pending admin approval and is not yet
+            visible to the public.
+          </span>
+        </div>
+      )}
+
       {/* Back nav */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 flex items-center justify-between">
         <Link
@@ -139,35 +215,14 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         )}
       </div>
 
-      {/* Pending review banner */}
-      {isPendingReview && (
-        <div className="bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800 px-4 py-3 text-sm text-amber-800 dark:text-amber-300 text-center flex items-center justify-center gap-2">
-          <Clock className="w-4 h-4 shrink-0" />
-          <span><strong>Under review</strong> — Your campaign is pending admin approval and is not yet visible to the public.</span>
-        </div>
-      )}
+      {/* ── Two-column layout: left = full story, right = sticky widget ── */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_380px] gap-10 items-start">
 
-      {/* Hero image */}
-      {project.cover_image_url && (
-        <div className="relative w-full aspect-[21/9] mt-4 bg-[var(--color-surface-overlay)] overflow-hidden">
-          <Image
-            src={project.cover_image_url}
-            alt={project.title}
-            fill
-            priority
-            className="object-cover"
-            sizes="100vw"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
-        </div>
-      )}
+          {/* ── LEFT COLUMN ── */}
+          <div className="flex flex-col gap-6 min-w-0">
 
-      {/* Main layout */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-10">
-          {/* Left: content */}
-          <div className="flex flex-col gap-8 min-w-0">
-            {/* Header */}
+            {/* Hero */}
             <div>
               {project.category && (
                 <Badge variant="violet" className="mb-3">
@@ -181,13 +236,30 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                 {project.short_description}
               </p>
 
-              {/* Creator info */}
-              <div className="mt-6 inline-flex items-center gap-3 px-4 py-3 rounded-[var(--radius-card)] bg-[var(--color-surface-raised)] border border-[var(--color-border)]">
-                <div className="w-10 h-10 rounded-full bg-[var(--color-brand-violet)]/15 ring-1 ring-[var(--color-border)] flex items-center justify-center font-bold text-[var(--color-brand-violet)] shrink-0">
-                  {project.creator.display_name.charAt(0).toUpperCase()}
+              {project.is_featured && (
+                <div className="mt-4 inline-flex items-center gap-2 px-4 py-3 rounded-[var(--radius-card)] bg-amber-100/40 dark:bg-amber-900/20 border border-amber-300 dark:border-amber-700/50 text-sm font-semibold text-amber-800 dark:text-amber-300">
+                  🍞 The get that bread team loves this one
+                </div>
+              )}
+
+              <div className="mt-5 inline-flex items-center gap-3 px-4 py-3 rounded-[var(--radius-card)] bg-amber-100/40 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50">
+                <div className="w-10 h-10 rounded-full bg-amber-200/70 dark:bg-amber-800/40 ring-1 ring-amber-300 dark:ring-amber-700 flex items-center justify-center font-bold text-amber-800 dark:text-amber-300 shrink-0 overflow-hidden">
+                  {project.creator.avatar_url ? (
+                    <Image
+                      src={project.creator.avatar_url}
+                      alt={project.creator.display_name}
+                      width={40}
+                      height={40}
+                      className="w-10 h-10 object-cover"
+                    />
+                  ) : (
+                    project.creator.display_name.charAt(0).toUpperCase()
+                  )}
                 </div>
                 <div>
-                  <p className="text-xs text-[var(--color-ink-subtle)] uppercase tracking-[0.1em] font-medium">Campaign by</p>
+                  <p className="text-xs text-[var(--color-ink-subtle)] uppercase tracking-[0.1em] font-medium">
+                    Campaign by
+                  </p>
                   <p className="text-sm font-semibold text-[var(--color-ink)]">
                     {project.creator.display_name}
                   </p>
@@ -195,76 +267,183 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                 <div className="w-px h-8 bg-[var(--color-border)] mx-1" />
                 <div className="flex items-center gap-1.5 text-xs text-[var(--color-ink-subtle)]">
                   <CalendarDays className="w-3.5 h-3.5" />
-                  Ends {formatDate(project.deadline)}
+                  {daysLeft > 0 ? `${daysLeft} days left` : `Ended ${formatDate(project.deadline)}`}
                 </div>
               </div>
             </div>
 
-            {/* Description */}
-            <div
-              className="prose prose-sm max-w-none text-[var(--color-ink)] prose-headings:text-[var(--color-ink)] prose-a:text-[var(--color-brand-violet)]"
-              dangerouslySetInnerHTML={{ __html: project.full_description }}
-            />
+            {/* Cover image */}
+            {project.cover_image_url && (
+              <div className="relative w-full aspect-[16/9] rounded-[var(--radius-card)] border border-amber-200 dark:border-amber-800/50 bg-[var(--color-surface-overlay)] overflow-hidden">
+                <Image
+                  src={project.cover_image_url}
+                  alt={project.title}
+                  fill
+                  priority
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 66vw"
+                />
+              </div>
+            )}
 
-            {/* Stretch goals */}
-            {project.stretch_goals.length > 0 && (
-              <div>
-                <h2 className="text-xl font-bold text-[var(--color-ink)] mb-4 tracking-tight">
-                  Stretch Goals
-                </h2>
-                <div className="flex flex-col gap-3">
-                  {project.stretch_goals
-                    .sort((a, b) => a.goal_amount_sgd - b.goal_amount_sgd)
-                    .map((goal) => (
-                      <div
-                        key={goal.id}
-                        className={`rounded-[var(--radius-card)] border-2 p-5 flex items-start gap-4 ${
-                          goal.reached_at
-                            ? "border-[var(--color-brand-lime)] bg-lime-50/50 dark:bg-lime-900/10"
-                            : "border-[var(--color-border)] bg-[var(--color-surface-raised)]"
-                        }`}
-                      >
-                        {goal.reached_at ? (
-                          <CheckCircle2 className="w-5 h-5 text-[var(--color-brand-lime)] shrink-0 mt-0.5" />
-                        ) : (
-                          <Circle className="w-5 h-5 text-[var(--color-ink-subtle)] shrink-0 mt-0.5" />
+            {/* Creator PM profile card */}
+            {creatorPmProfile && (
+              <div className="rounded-[var(--radius-card)] border-2 border-amber-200 dark:border-amber-800/60 bg-amber-50/30 dark:bg-amber-950/10 p-5">
+                <div className="flex items-start gap-3">
+                  <div className="w-11 h-11 rounded-full bg-amber-200/70 dark:bg-amber-800/40 ring-1 ring-amber-300 dark:ring-amber-700 flex items-center justify-center font-bold text-amber-800 dark:text-amber-300 shrink-0 overflow-hidden">
+                    {project.creator.avatar_url ? (
+                      <Image
+                        src={project.creator.avatar_url}
+                        alt={project.creator.display_name}
+                        width={44}
+                        height={44}
+                        className="w-11 h-11 object-cover"
+                      />
+                    ) : (
+                      project.creator.display_name.charAt(0).toUpperCase()
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <h2 className="text-lg font-bold text-[var(--color-ink)]">About the creator</h2>
+                      <Badge variant="amber">{creatorPmProfile.project_type}</Badge>
+                    </div>
+                    <p className="text-sm font-semibold text-[var(--color-ink)] mt-0.5">
+                      {project.creator.display_name}
+                    </p>
+                    <p className="mt-3 text-sm text-[var(--color-ink-muted)] whitespace-pre-line leading-relaxed">
+                      {creatorPmProfile.bio}
+                    </p>
+
+                    {(creatorPmProfile.company_name ||
+                      creatorPmProfile.company_website ||
+                      creatorPmProfile.linkedin_url) && (
+                      <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-[var(--color-ink-subtle)]">
+                        {creatorPmProfile.company_name && (
+                          <span className="inline-flex items-center gap-1.5">
+                            <Building2 className="w-3.5 h-3.5" />
+                            {creatorPmProfile.company_name}
+                          </span>
                         )}
-                        <div>
-                          <p className="font-bold text-[var(--color-ink)]">
-                            {goal.title}
-                          </p>
-                          {goal.description && (
-                            <p className="text-sm text-[var(--color-ink-muted)] mt-0.5">
-                              {goal.description}
-                            </p>
-                          )}
-                          <p className="text-xs font-semibold font-mono text-[var(--color-brand-violet)] mt-1.5">
-                            Unlocks at S${goal.goal_amount_sgd.toLocaleString()}
-                          </p>
-                        </div>
+                        {creatorPmProfile.company_website && (
+                          <a
+                            href={creatorPmProfile.company_website}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1.5 hover:text-amber-700 dark:hover:text-amber-300"
+                          >
+                            <Globe className="w-3.5 h-3.5" />
+                            Website
+                          </a>
+                        )}
+                        {creatorPmProfile.linkedin_url && (
+                          <a
+                            href={creatorPmProfile.linkedin_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1.5 hover:text-amber-700 dark:hover:text-amber-300"
+                          >
+                            <Link2 className="w-3.5 h-3.5" />
+                            LinkedIn
+                          </a>
+                        )}
                       </div>
-                    ))}
+                    )}
+
+                    <div className="mt-4 rounded-[var(--radius-btn)] border border-amber-200 dark:border-amber-700/60 bg-amber-100/50 dark:bg-amber-900/20 px-3 py-2.5">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-[var(--color-ink-subtle)] mb-1">
+                        What they are building
+                      </p>
+                      <p className="text-sm text-[var(--color-ink-muted)] whitespace-pre-line leading-relaxed">
+                        {creatorPmProfile.project_description}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
 
-            {/* Post update form — creator only */}
-            {isCreator && project.status === "active" && (
-              <PostUpdateForm
-                projectId={project.id}
-                creatorId={project.creator.id}
-              />
-            )}
+            {/* Funding widget — inline on mobile only */}
+            <div className="lg:hidden">
+              <FundingWidget project={project} />
+            </div>
 
-            {/* Updates feed */}
-            <ProjectUpdatesFeed updates={updates} isBacker={isBacker} />
+            {/* ── Anchored sections (nav + Campaign, Rewards, FAQ, Updates, Comments) ── */}
+            <ProjectPageSections
+              projectId={project.id}
+              projectStatus={project.status}
+              creatorId={project.creator.id}
+              creatorDisplayName={project.creator.display_name}
+              currentUserId={user?.id ?? null}
+              currentUserDisplayName={
+                (user?.user_metadata?.full_name as string | undefined) ?? null
+              }
+              loginRedirectTo={`/projects/${slug}`}
+              updates={updates}
+              isBacker={isBacker}
+              initialFeedback={feedback}
+              descriptionHtml={project.full_description}
+              rewards={project.rewards}
+            />
           </div>
 
-          {/* Right: sticky funding widget */}
-          <div className="lg:sticky lg:top-20 lg:self-start">
-            <FundingWidget project={project} />
+          {/* ── RIGHT COLUMN — sticky funding widget (desktop only) ── */}
+          <div className="hidden lg:block">
+            <div className="sticky top-[calc(4rem+3.5rem)] self-start">
+              <FundingWidget project={project} />
+
+              {/* Share below widget on desktop */}
+              {project.status === "active" && (
+                <div className="mt-4 pt-3 border-t border-[var(--color-border)]">
+                  <ShareButtons
+                    url={`${BASE_URL}/projects/${slug}`}
+                    title={project.title}
+                    compact
+                  />
+                </div>
+              )}
+            </div>
           </div>
         </div>
+
+        {/* Similar projects */}
+        {similarProjects.length > 0 && (
+          <section className="mt-16">
+            <h2 className="text-2xl font-black text-[var(--color-ink)] tracking-tight mb-4">
+              Similar projects
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {similarProjects.map((item) => (
+                <Link
+                  key={item.id}
+                  href={`/projects/${item.slug}`}
+                  className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] overflow-hidden hover:shadow-[var(--shadow-card)] transition-shadow"
+                >
+                  <div className="relative aspect-[16/10] bg-[var(--color-surface-overlay)]">
+                    {item.cover_image_url ? (
+                      <Image
+                        src={item.cover_image_url}
+                        alt={item.title}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                      />
+                    ) : null}
+                  </div>
+                  <div className="p-4">
+                    <p className="font-bold text-[var(--color-ink)] line-clamp-1">{item.title}</p>
+                    <p className="mt-1 text-sm text-[var(--color-ink-muted)] line-clamp-2">
+                      {item.short_description}
+                    </p>
+                    <div className="mt-2 text-xs text-[var(--color-ink-subtle)]">
+                      {item.backer_count} backers · {daysRemaining(item.deadline)}d left
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );

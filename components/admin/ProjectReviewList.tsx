@@ -21,6 +21,7 @@ interface ProjectRow {
   created_at: string;
   cover_image_url: string | null;
   status?: string;
+  is_featured?: boolean;
   category: { name: string } | null;
   creator: { id: string; display_name: string } | null;
 }
@@ -51,6 +52,34 @@ const STATUS_LABEL: Record<string, string> = {
 export function ProjectReviewList({ pendingProjects, allProjects }: ProjectReviewListProps) {
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
+
+  // Optimistic featured state: map of project id → is_featured
+  const initialFeatured = Object.fromEntries(
+    [...pendingProjects, ...allProjects].map((p) => [p.id, p.is_featured ?? false])
+  );
+  const [featuredMap, setFeaturedMap] = useState<Record<string, boolean>>(initialFeatured);
+  const [featureLoading, setFeatureLoading] = useState<string | null>(null);
+
+  async function toggleFeatured(projectId: string) {
+    const current = featuredMap[projectId] ?? false;
+    setFeaturedMap((prev) => ({ ...prev, [projectId]: !current }));
+    setFeatureLoading(projectId);
+    try {
+      const res = await fetch(`/api/admin/projects/${projectId}/feature`, { method: "PATCH" });
+      if (res.ok) {
+        const body = await res.json() as { is_featured: boolean };
+        setFeaturedMap((prev) => ({ ...prev, [projectId]: body.is_featured }));
+      } else {
+        // Revert on failure
+        setFeaturedMap((prev) => ({ ...prev, [projectId]: current }));
+        alert("Failed to update featured status.");
+      }
+    } catch {
+      setFeaturedMap((prev) => ({ ...prev, [projectId]: current }));
+    } finally {
+      setFeatureLoading(null);
+    }
+  }
 
   // Per-card open state for rejection/removal reason inputs
   const [rejectingId, setRejectingId] = useState<string | null>(null);
@@ -194,6 +223,21 @@ export function ProjectReviewList({ pendingProjects, allProjects }: ProjectRevie
 
             {/* ── Actions ─────────────────────────────────── */}
             <div className="px-5 py-3 bg-[var(--color-surface-raised)] border-t border-[var(--color-border)] flex flex-col gap-3">
+              {/* Featured toggle */}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  disabled={featureLoading === project.id}
+                  onClick={() => toggleFeatured(project.id)}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--radius-btn)] text-xs font-bold border transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                    featuredMap[project.id]
+                      ? "bg-amber-100 dark:bg-amber-900/30 border-amber-400 dark:border-amber-600 text-amber-800 dark:text-amber-300"
+                      : "bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-ink-muted)] hover:border-amber-400 hover:text-amber-700"
+                  }`}
+                >
+                  🍞 {featuredMap[project.id] ? "Featured" : "Mark as featured"}
+                </button>
+              </div>
 
               {/* APPROVE / REJECT — for pending_review */}
               {isPending && (

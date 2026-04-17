@@ -47,7 +47,10 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
   } else if (sort === "ending_soon") {
     query = query.gt("deadline", new Date().toISOString()).order("deadline", { ascending: true });
   } else {
-    query = query.order("backer_count", { ascending: false });
+    // trending: featured projects float to the top, then by backer_count desc
+    query = query
+      .order("is_featured", { ascending: false })
+      .order("backer_count", { ascending: false });
   }
 
   const { data: projects } = await query.limit(24);
@@ -78,11 +81,11 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
           </div>
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
             <div>
-              <h1 className="text-3xl md:text-4xl font-black text-[var(--color-ink)] tracking-tight">
+              <h1 className="text-3xl md:text-4xl font-black tracking-tight" style={{ color: "#d97706" }}>
                 Explore projects
               </h1>
               <p className="text-[var(--color-ink-muted)] mt-1.5">
-                <span className="font-mono font-bold text-[var(--color-ink)]">{typedProjects.length}</span> active campaign{typedProjects.length !== 1 ? "s" : ""} live right now
+                <span className="font-mono font-bold" style={{ color: "#d97706" }}>{typedProjects.length}</span> active campaign{typedProjects.length !== 1 ? "s" : ""} live right now
               </p>
             </div>
           </div>

@@ -15,7 +15,7 @@ export default async function AdminOverviewPage() {
   const stats = [
     { label: "Pending review", value: pendingProjects ?? 0, emoji: "⏳", href: "/admin/projects" },
     { label: "Active campaigns", value: activeProjects ?? 0, emoji: "🚀", href: "/admin/projects" },
-    { label: "Total pledges", value: totalPledges ?? 0, emoji: "💳", href: "/admin" },
+    { label: "Total pledges", value: totalPledges ?? 0, emoji: "💳", href: "/admin/projects" },
     { label: "Total users", value: totalUsers ?? 0, emoji: "👥", href: "/admin/users" },
   ];
 
