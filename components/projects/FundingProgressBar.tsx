@@ -20,6 +20,7 @@ export function FundingProgressBar({
   size = "md",
 }: FundingProgressBarProps) {
   const { convert, format } = useCurrency();
+  const isSmall = size === "sm";
   const percent = fundingPercent(pledged, goal);
   const days = daysRemaining(deadline);
   const funded = pledged >= goal;
@@ -56,11 +57,13 @@ export function FundingProgressBar({
 
       {/* Stats */}
       <div
-        className={`flex items-end justify-between gap-2 ${
-          size === "sm" ? "text-xs" : "text-sm"
-        }`}
+        className={
+          isSmall
+              ? "flex flex-col gap-2 text-sm md:text-xs"
+            : "flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between text-sm"
+        }
       >
-        <div>
+        <div className={isSmall ? "min-h-[2.25rem]" : "min-h-[2.25rem] sm:min-h-0"}>
           <span className="font-bold font-mono text-[var(--color-ink)]">
             {format(convert(pledged))}
           </span>
@@ -70,7 +73,13 @@ export function FundingProgressBar({
             <span className="font-mono">{format(convert(goal))}</span>
           </span>
         </div>
-        <div className="flex items-center gap-3 text-[var(--color-ink-muted)] shrink-0">
+        <div
+          className={
+            isSmall
+              ? "flex items-center justify-between gap-3 text-[var(--color-ink-muted)]"
+              : "flex items-center justify-between gap-3 text-[var(--color-ink-muted)] sm:justify-start sm:shrink-0"
+          }
+        >
           <span>
             <strong className="font-mono text-[var(--color-ink)]">{percent}%</strong>
           </span>

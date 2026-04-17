@@ -45,7 +45,7 @@ export default async function DashboardAdminUsersPage() {
           {users.length} registered user{users.length !== 1 ? "s" : ""}
         </p>
       </div>
-      <UserList users={users} />
+      <UserList users={users} currentUserId={user.id} />
     </div>
   );
 }

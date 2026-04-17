@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { Navbar } from "@/components/layout/Navbar";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 
 export default async function DashboardLayout({
@@ -23,7 +22,6 @@ export default async function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-[var(--color-surface-raised)]">
-      <Navbar />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col md:flex-row gap-8">
           <aside className="w-full md:w-52 shrink-0">

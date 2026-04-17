@@ -3,7 +3,6 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { CheckoutWrapper } from "@/components/backing/CheckoutWrapper";
-import { Navbar } from "@/components/layout/Navbar";
 import type { ProjectWithRelations } from "@/types/project";
 import type { Reward } from "@/types/reward";
 
@@ -45,30 +44,27 @@ export default async function CheckoutPage({
     : selectedReward?.minimum_pledge_sgd ?? 25;
 
   return (
-    <>
-      <Navbar />
-      <main className="flex-1 bg-[var(--color-surface-raised)]">
-        <div className="max-w-lg mx-auto px-4 sm:px-6 py-10">
-          <Link
-            href={`/projects/${typedProject.slug}`}
-            className="inline-flex items-center gap-1.5 text-sm text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] mb-6 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to {typedProject.title}
-          </Link>
+    <main className="flex-1 bg-[var(--color-surface-raised)]">
+      <div className="max-w-lg mx-auto px-4 sm:px-6 py-10">
+        <Link
+          href={`/projects/${typedProject.slug}`}
+          className="inline-flex items-center gap-1.5 text-sm text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] mb-6 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to {typedProject.title}
+        </Link>
 
-          <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] shadow-[var(--shadow-card)] p-6 sm:p-8">
-            <h1 className="text-2xl font-black text-[var(--color-ink)] mb-6">
-              Complete your pledge
-            </h1>
-            <CheckoutWrapper
-              project={typedProject}
-              selectedReward={selectedReward}
-              initialAmount={initialAmount}
-            />
-          </div>
+        <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] shadow-[var(--shadow-card)] p-6 sm:p-8">
+          <h1 className="text-2xl font-black text-[var(--color-ink)] mb-6">
+            Complete your pledge
+          </h1>
+          <CheckoutWrapper
+            project={typedProject}
+            selectedReward={selectedReward}
+            initialAmount={initialAmount}
+          />
         </div>
-      </main>
-    </>
+      </div>
+    </main>
   );
 }

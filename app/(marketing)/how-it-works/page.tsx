@@ -10,6 +10,7 @@ import {
   Target,
   Package,
   CreditCard,
+  Lock,
   Gift,
   CheckCircle2,
 } from "lucide-react";
@@ -88,7 +89,7 @@ export default function HowItWorksPage() {
       {/* ── Hero ─────────────────────────────────────────────── */}
       <section className="bg-gradient-to-br from-amber-50 via-[#FFFBF5] to-orange-50 dark:from-[#0f0f0f] dark:via-[#0a0a0a] dark:to-[#111111] border-b border-[var(--color-border)]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24">
-          <div className="inline-flex items-center px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 text-[11px] uppercase tracking-[0.15em] font-medium mb-6">
+          <div className="inline-flex items-center px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 text-xs uppercase tracking-[0.12em] font-medium mb-6">
             The model
           </div>
           <h1 className="text-[40px] md:text-[52px] font-black tracking-tight leading-[1.1] mb-4">
@@ -96,7 +97,7 @@ export default function HowItWorksPage() {
             <span style={{ color: "#f2c480" }}>get that bread</span>
             <span style={{ color: "#d97706" }}> works</span>
           </h1>
-          <p className="text-lg text-[var(--color-ink-muted)] whitespace-nowrap leading-relaxed">
+          <p className="text-lg text-[var(--color-ink-muted)] leading-relaxed">
             All-or-nothing crowdfunding for Singapore entrepreneurs. Simple, safe, and transparent.
           </p>
         </div>
@@ -110,15 +111,53 @@ export default function HowItWorksPage() {
               <div className="w-12 h-12 rounded-[var(--radius-card)] bg-[var(--color-brand-violet)] flex items-center justify-center shrink-0 shadow-[var(--shadow-cta)]">
                 <Shield className="w-5 h-5 text-white" />
               </div>
-              <div>
-                <h2 className="text-xl font-black text-[var(--color-ink)] mb-2">
+              <div className="w-full">
+                <h2 className="text-xl font-black mb-2" style={{ color: "#d97706" }}>
                   All-or-nothing funding
                 </h2>
-                <p className="text-[var(--color-ink-muted)] leading-relaxed">
+                <p className="text-[var(--color-ink-muted)] leading-relaxed text-left">
                   Backers are only charged if a campaign reaches its full funding goal
                   by the deadline. If the goal isn&apos;t met, no one pays a cent. This
                   protects backers and motivates creators to set realistic, achievable goals.
                 </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="p-[3px] rounded-[calc(var(--radius-card)+3px)] bg-[var(--color-surface-overlay)] ring-1 ring-[var(--color-border)]">
+              <div className="rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] p-5 h-full flex items-start gap-4">
+                <div className="w-10 h-10 rounded-[var(--radius-btn)] bg-[var(--color-surface-overlay)] border border-[var(--color-border)] flex items-center justify-center shrink-0 mt-0.5">
+                  <CreditCard className="w-4.5 h-4.5 text-[var(--color-brand-amber)]" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="font-bold mb-1.5" style={{ color: "#d97706" }}>
+                    PayNow &amp; Credit Card
+                  </h3>
+                  <p className="text-sm text-[var(--color-ink-muted)] leading-relaxed text-justify">
+                    Backers can pledge instantly using local PayNow or major credit cards.
+                    Creators benefit from lower checkout friction, so supporters can contribute
+                    quickly without complicated payment steps.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-[3px] rounded-[calc(var(--radius-card)+3px)] bg-[var(--color-surface-overlay)] ring-1 ring-[var(--color-border)]">
+              <div className="rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] p-5 h-full flex items-start gap-4">
+                <div className="w-10 h-10 rounded-[var(--radius-btn)] bg-[var(--color-surface-overlay)] border border-[var(--color-border)] flex items-center justify-center shrink-0 mt-0.5">
+                  <Lock className="w-4.5 h-4.5 text-[var(--color-brand-violet)]" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="font-bold mb-1.5" style={{ color: "#d97706" }}>
+                    Secured escrow transactions
+                  </h3>
+                  <p className="text-sm text-[var(--color-ink-muted)] leading-relaxed text-justify">
+                    Pledges are held securely until campaign end. If a project meets its goal,
+                    funds are released to the creator. If not, backers are not charged, giving
+                    both sides transparent, low-risk protection.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -134,8 +173,8 @@ export default function HowItWorksPage() {
               <Rocket className="w-5 h-5 text-white" />
             </div>
             <div>
-              <p className="text-[11px] uppercase tracking-[0.15em] font-medium text-[var(--color-ink-subtle)]">For creators</p>
-              <h2 className="text-2xl font-black text-[var(--color-ink)]">Launch your campaign</h2>
+              <p className="text-xs uppercase tracking-[0.12em] font-medium text-[var(--color-ink-subtle)]">For creators</p>
+              <h2 className="text-2xl font-black" style={{ color: "#d97706" }}>Launch your campaign</h2>
             </div>
           </div>
 
@@ -150,13 +189,13 @@ export default function HowItWorksPage() {
                     <div className="w-10 h-10 rounded-[var(--radius-btn)] bg-[var(--color-surface-overlay)] border border-[var(--color-border)] flex items-center justify-center shrink-0">
                       <Icon className="w-4.5 h-4.5 text-[var(--color-brand-violet)]" />
                     </div>
-                    <span className="font-mono text-[11px] font-bold text-[var(--color-ink-subtle)] uppercase tracking-widest">
+                    <span className="font-mono text-xs font-bold text-[var(--color-ink-subtle)] uppercase tracking-[0.12em]">
                       Step {step}
                     </span>
                   </div>
                   <div>
                     <h3 className="font-bold text-[var(--color-ink)] mb-1.5">{title}</h3>
-                    <p className="text-sm text-[var(--color-ink-muted)] leading-relaxed">
+                    <p className="text-sm text-[var(--color-ink-muted)] leading-relaxed text-justify max-w-[38ch] mx-auto">
                       {description}
                     </p>
                   </div>
@@ -183,16 +222,16 @@ export default function HowItWorksPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
           {/* Section header */}
           <div className="flex items-center gap-3 mb-12">
-            <div className="w-11 h-11 rounded-[var(--radius-card)] bg-[var(--color-brand-teal)] flex items-center justify-center shadow-[0_4px_20px_0_rgba(15,118,110,0.35)]">
+            <div className="w-11 h-11 rounded-[var(--radius-card)] bg-[var(--color-brand-amber)] flex items-center justify-center shadow-[0_4px_20px_0_rgba(217,119,6,0.35)]">
               <Users className="w-5 h-5 text-white" />
             </div>
             <div>
-              <p className="text-[11px] uppercase tracking-[0.15em] font-medium text-[var(--color-ink-subtle)]">For backers</p>
-              <h2 className="text-2xl font-black text-[var(--color-ink)]">Support what you believe in</h2>
+              <p className="text-xs uppercase tracking-[0.12em] font-medium text-[var(--color-ink-subtle)]">For backers</p>
+              <h2 className="text-2xl font-black" style={{ color: "#d97706" }}>Support what you believe in</h2>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {BACKER_STEPS.map(({ Icon, step, title, description }) => (
               <div
                 key={step}
@@ -201,15 +240,15 @@ export default function HowItWorksPage() {
                 <div className="rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] p-6 h-full flex flex-col gap-4">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-[var(--radius-btn)] bg-[var(--color-surface-overlay)] border border-[var(--color-border)] flex items-center justify-center shrink-0">
-                      <Icon className="w-4.5 h-4.5 text-[var(--color-brand-teal)]" />
+                      <Icon className="w-4.5 h-4.5 text-[var(--color-brand-amber)]" />
                     </div>
-                    <span className="font-mono text-[11px] font-bold text-[var(--color-ink-subtle)] uppercase tracking-widest">
+                    <span className="font-mono text-xs font-bold text-[var(--color-ink-subtle)] uppercase tracking-[0.12em]">
                       Step {step}
                     </span>
                   </div>
                   <div>
                     <h3 className="font-bold text-[var(--color-ink)] mb-1.5">{title}</h3>
-                    <p className="text-sm text-[var(--color-ink-muted)] leading-relaxed">
+                    <p className="text-sm text-[var(--color-ink-muted)] leading-relaxed text-justify max-w-[38ch] mx-auto">
                       {description}
                     </p>
                   </div>
@@ -239,8 +278,8 @@ export default function HowItWorksPage() {
               <DollarSign className="w-5 h-5 text-white" />
             </div>
             <div>
-              <p className="text-[11px] uppercase tracking-[0.15em] font-medium text-[var(--color-ink-subtle)]">Transparent</p>
-              <h2 className="text-2xl font-black text-[var(--color-ink)]">Simple, honest fees</h2>
+              <p className="text-xs uppercase tracking-[0.12em] font-medium text-[var(--color-ink-subtle)]">Transparent</p>
+              <h2 className="text-2xl font-black" style={{ color: "#d97706" }}>Simple, honest fees</h2>
             </div>
           </div>
 
@@ -257,12 +296,12 @@ export default function HowItWorksPage() {
                   <span
                     className={`text-sm font-bold font-mono ${
                       highlight
-                        ? "text-[var(--color-brand-lime)]"
+                        ? "text-[var(--color-brand-amber)]"
                         : "text-[var(--color-ink)]"
                     }`}
                   >
                     {highlight && (
-                      <CheckCircle2 className="w-3.5 h-3.5 inline mr-1.5 text-[var(--color-brand-lime)]" />
+                      <CheckCircle2 className="w-3.5 h-3.5 inline mr-1.5 text-[var(--color-brand-amber)]" />
                     )}
                     {value}
                   </span>
@@ -277,7 +316,7 @@ export default function HowItWorksPage() {
       <section className="bg-[var(--color-surface)]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div>
-            <h2 className="text-2xl font-black text-[var(--color-ink)] tracking-tight">
+            <h2 className="text-2xl font-black tracking-tight" style={{ color: "#d97706" }}>
               Ready to launch?
             </h2>
             <p className="text-[var(--color-ink-muted)] mt-1">

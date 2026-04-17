@@ -17,7 +17,7 @@ export function StatsBar({ stats }: StatsBarProps) {
               <span className="font-mono font-black text-2xl text-[var(--color-brand-gold)]">
                 {value}
               </span>
-              <span className="text-xs text-[var(--color-ink-invert-subtle)] mt-1 uppercase tracking-[0.1em]">
+              <span className="text-sm md:text-xs text-[var(--color-ink-invert-subtle)] mt-1 uppercase tracking-[0.08em]">
                 {label}
               </span>
             </div>

@@ -21,7 +21,7 @@ export default async function RegisterPage({ searchParams }: PageProps) {
   return (
     <Card padding="lg" className="flex flex-col gap-6">
       <div className="flex flex-col gap-1.5">
-        <h1 className="text-2xl font-black text-[var(--color-ink)] tracking-tight">
+        <h1 className="text-2xl font-black tracking-tight" style={{ color: "#d97706" }}>
           {initialRole === "project_manager" ? "Apply as Project Manager 🚀" : "Launch your idea 🚀"}
         </h1>
         <p className="text-sm text-[var(--color-ink-muted)]">

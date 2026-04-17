@@ -13,6 +13,7 @@ export async function POST(req: NextRequest) {
       project_type,
       project_description,
       id_document_url,
+      photo_url,
     } = body;
 
     if (!userId || !bio || !project_type || !project_description) {
@@ -21,17 +22,32 @@ export async function POST(req: NextRequest) {
 
     const service = createServiceClient();
 
-    // Update role on profile
+    // Block re-submission if already approved or pending review
+    const { data: existing } = await service
+      .from("project_manager_profiles")
+      .select("status")
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (existing?.status === "approved" || existing?.status === "pending_review") {
+      return NextResponse.json({ error: "Application already submitted" }, { status: 400 });
+    }
+
+    // Update role (and avatar if a photo was uploaded)
     const { error: profileError } = await service
       .from("profiles")
-      .update({ role: "project_manager" })
+      .update(
+        photo_url
+          ? { role: "project_manager", avatar_url: photo_url }
+          : { role: "project_manager" }
+      )
       .eq("id", userId);
 
     if (profileError) {
       return NextResponse.json({ error: profileError.message }, { status: 500 });
     }
 
-    // Create PM profile
+    // Upsert PM profile — always reset to pending_review so rejected creators can re-apply
     const { error } = await service.from("project_manager_profiles").upsert({
       id: userId,
       bio,
@@ -41,6 +57,11 @@ export async function POST(req: NextRequest) {
       project_type,
       project_description,
       id_document_url: id_document_url || null,
+      status: "pending_review",
+      submitted_at: new Date().toISOString(),
+      rejection_reason: null,
+      reviewed_at: null,
+      reviewed_by: null,
     });
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });

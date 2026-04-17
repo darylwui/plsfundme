@@ -138,11 +138,16 @@
   --shadow-cta:         0 4px 20px 0 rgba(242, 196, 128, 0.25);
 }
 
+html {
+  overflow-x: hidden;
+}
+
 body {
   background: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 /* Smooth focus ring */

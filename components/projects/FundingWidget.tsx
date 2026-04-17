@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Shield, Clock, CheckCircle2, Flame } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,18 +17,110 @@ interface FundingWidgetProps {
 
 export function FundingWidget({ project }: FundingWidgetProps) {
   const [selectedReward, setSelectedReward] = useState<Reward | null>(null);
+  const [pledgeAmount, setPledgeAmount] = useState<number>(25);
   const { convert, format } = useCurrency();
   const days = daysRemaining(project.deadline);
   const isFunded = project.amount_pledged_sgd >= project.funding_goal_sgd;
   const isClosed = project.status !== "active";
   const isZeroState = project.backer_count === 0 && project.amount_pledged_sgd === 0 && !isClosed;
-  const activeRewards = project.rewards.filter((r) => r.is_active);
+  const activeRewards = useMemo(
+    () => project.rewards.filter((r) => r.is_active).sort((a, b) => a.minimum_pledge_sgd - b.minimum_pledge_sgd),
+    [project.rewards]
+  );
+
+  const eligibleRewards = useMemo(
+    () => activeRewards.filter((r) => pledgeAmount >= r.minimum_pledge_sgd),
+    [activeRewards, pledgeAmount]
+  );
+
+  useEffect(() => {
+    if (selectedReward && pledgeAmount < selectedReward.minimum_pledge_sgd) {
+      setSelectedReward(null);
+    }
+  }, [pledgeAmount, selectedReward]);
+
+  const checkoutHref = useMemo(() => {
+    const params = new URLSearchParams();
+    if (selectedReward) params.set("reward", selectedReward.id);
+    if (Number.isFinite(pledgeAmount) && pledgeAmount > 0) {
+      params.set("amount", String(Math.round(pledgeAmount)));
+    }
+    const query = params.toString();
+    return `/backing/${project.id}/checkout${query ? `?${query}` : ""}`;
+  }, [pledgeAmount, project.id, selectedReward]);
 
   return (
     <div className="flex flex-col gap-5">
       {/* Progress card — double-bezel */}
       <div className="p-[3px] rounded-[calc(var(--radius-card)+3px)] bg-[var(--color-surface-overlay)] ring-1 ring-[var(--color-border)] shadow-[var(--shadow-card)]">
       <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.04)] p-6">
+
+        {!isClosed && activeRewards.length > 0 && (
+          <div className="mb-5 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-4 flex flex-col gap-3">
+            <p className="text-xs font-bold uppercase tracking-wider text-[var(--color-ink-subtle)]">
+              Plan your pledge
+            </p>
+
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="pledge-amount" className="text-sm font-semibold text-[var(--color-ink)]">
+                Amount (SGD)
+              </label>
+              <input
+                id="pledge-amount"
+                type="number"
+                min={1}
+                step={1}
+                value={pledgeAmount}
+                onChange={(e) => setPledgeAmount(Math.max(1, Number(e.target.value) || 1))}
+                className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)]"
+              />
+              <p className="text-xs text-[var(--color-ink-subtle)]">
+                You are pledging {format(convert(pledgeAmount))} · {eligibleRewards.length} reward{eligibleRewards.length !== 1 ? "s" : ""} unlocked
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="reward-select" className="text-sm font-semibold text-[var(--color-ink)]">
+                Select reward
+              </label>
+              <select
+                id="reward-select"
+                value={selectedReward?.id ?? ""}
+                onChange={(e) => {
+                  const next = eligibleRewards.find((r) => r.id === e.target.value) ?? null;
+                  setSelectedReward(next);
+                }}
+                className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)]"
+              >
+                <option value="">No reward selected</option>
+                {eligibleRewards.map((reward) => (
+                  <option key={reward.id} value={reward.id}>
+                    {reward.title} (min S${reward.minimum_pledge_sgd})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {eligibleRewards.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {eligibleRewards.slice(0, 3).map((reward) => (
+                  <button
+                    key={reward.id}
+                    type="button"
+                    onClick={() => setSelectedReward(reward)}
+                    className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+                      selectedReward?.id === reward.id
+                        ? "border-[var(--color-brand-violet)] bg-[var(--color-brand-violet)]/10 text-[var(--color-brand-violet)]"
+                        : "border-[var(--color-border)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
+                    }`}
+                  >
+                    {reward.title}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {isZeroState ? (
           /* ── Zero-state: be the first ── */
@@ -54,11 +146,7 @@ export function FundingWidget({ project }: FundingWidgetProps) {
               </div>
             )}
 
-            <Link
-              href={`/backing/${project.id}/checkout${
-                selectedReward ? `?reward=${selectedReward.id}` : ""
-              }`}
-            >
+            <Link href={checkoutHref}>
               <Button size="lg" fullWidth>
                 {selectedReward ? `Back with ${selectedReward.title}` : "Be the first backer"}
               </Button>
@@ -99,11 +187,7 @@ export function FundingWidget({ project }: FundingWidgetProps) {
                   )}
                 </div>
               ) : (
-                <Link
-                  href={`/backing/${project.id}/checkout${
-                    selectedReward ? `?reward=${selectedReward.id}` : ""
-                  }`}
-                >
+                <Link href={checkoutHref}>
                   <Button size="lg" fullWidth>
                     {selectedReward ? `Back with ${selectedReward.title}` : "Back this project"}
                   </Button>
@@ -127,7 +211,6 @@ export function FundingWidget({ project }: FundingWidgetProps) {
             Choose a reward
           </h3>
           {activeRewards
-            .sort((a, b) => a.minimum_pledge_sgd - b.minimum_pledge_sgd)
             .map((reward) => (
               <RewardTierCard
                 key={reward.id}

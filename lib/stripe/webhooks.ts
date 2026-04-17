@@ -1,5 +1,5 @@
 import Stripe from 'stripe'
-import { stripe } from './server'
+import { getStripe } from './server'
 
 /**
  * Verify and parse an incoming Stripe webhook request.
@@ -8,6 +8,7 @@ import { stripe } from './server'
 export async function verifyWebhookSignature(
   request: Request
 ): Promise<Stripe.Event> {
+  const stripe = getStripe()
   const body = await request.text()
   const signature = request.headers.get('stripe-signature')
 

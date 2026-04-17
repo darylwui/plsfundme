@@ -86,7 +86,7 @@ export function Navbar() {
           {/* Desktop actions */}
           <div className="hidden md:flex items-center gap-2 shrink-0">
             {/* Currency toggle */}
-            <div className="flex items-center rounded-[var(--radius-btn)] border border-[var(--color-border-invert)] overflow-hidden text-xs font-bold">
+            <div className="flex items-center rounded-[var(--radius-btn)] border border-[var(--color-border-invert)] bg-[var(--color-surface-invert-raised)]/80 overflow-hidden text-xs font-bold">
               {(["SGD", "USD"] as const).map((cur) => (
                 <button
                   key={cur}
@@ -94,8 +94,8 @@ export function Navbar() {
                   className={cn(
                     "px-2.5 py-1.5 transition-colors duration-[160ms]",
                     currency === cur
-                      ? "bg-[var(--color-brand-gold)] text-[var(--color-ink)]"
-                      : "text-[var(--color-ink-invert-muted)] hover:text-[var(--color-ink-invert)]"
+                      ? "bg-[var(--color-brand-gold)] text-[#4A2208]"
+                      : "bg-transparent text-[var(--color-ink-invert)]/90 hover:bg-[var(--color-surface-invert)] hover:text-[var(--color-ink-invert)]"
                   )}
                 >
                   {cur}
@@ -188,7 +188,7 @@ export function Navbar() {
                 : <><Moon className="w-4 h-4" /> Dark mode</>}
             </button>
 
-            <div className="flex items-center rounded-[var(--radius-btn)] border border-[var(--color-border-invert)] overflow-hidden text-xs font-bold">
+            <div className="flex items-center rounded-[var(--radius-btn)] border border-[var(--color-border-invert)] bg-[var(--color-surface-invert-raised)]/80 overflow-hidden text-xs font-bold">
               {(["SGD", "USD"] as const).map((cur) => (
                 <button
                   key={cur}
@@ -196,8 +196,8 @@ export function Navbar() {
                   className={cn(
                     "px-3 py-1.5 transition-colors duration-[160ms]",
                     currency === cur
-                      ? "bg-[var(--color-brand-gold)] text-[var(--color-ink)]"
-                      : "text-[var(--color-ink-invert-muted)]"
+                      ? "bg-[var(--color-brand-gold)] text-[#4A2208]"
+                      : "bg-transparent text-[var(--color-ink-invert)]/90 hover:bg-[var(--color-surface-invert)] hover:text-[var(--color-ink-invert)]"
                   )}
                 >
                   {cur}

@@ -4,25 +4,26 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, FolderOpen, Users, Wallet, Heart, LogOut,
-  ClipboardList, UserCheck, UsersRound,
+  ClipboardList, UserCheck, UsersRound, User,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 const PM_NAV = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
   { href: "/dashboard/projects", label: "My projects", icon: FolderOpen, exact: false },
+  { href: "/dashboard/creator-profile", label: "Creator profile", icon: User, exact: false },
   { href: "/dashboard/backers", label: "Backers", icon: Users, exact: false },
   { href: "/dashboard/payouts", label: "Payouts", icon: Wallet, exact: false },
 ];
 
 const BACKER_NAV = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
-  { href: "/dashboard/my-pledges", label: "My pledges", icon: Heart, exact: false },
+  { href: "/dashboard/my-pledges", label: "My backed projects", icon: Heart, exact: false },
 ];
 
 const ADMIN_NAV = [
   { href: "/dashboard/admin/projects", label: "Review campaigns", icon: ClipboardList, exact: false },
-  { href: "/dashboard/admin/pms", label: "Project Managers", icon: UserCheck, exact: false },
+  { href: "/dashboard/admin/pms", label: "Creators", icon: UserCheck, exact: false },
   { href: "/dashboard/admin/users", label: "Users", icon: UsersRound, exact: false },
 ];
 

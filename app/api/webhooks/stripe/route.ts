@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { verifyWebhookSignature } from "@/lib/stripe/webhooks";
-import { stripe } from "@/lib/stripe/server";
+import { getStripe } from "@/lib/stripe/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import {
   sendCampaignFundedEmail,
@@ -10,6 +10,7 @@ import {
 } from "@/lib/email/templates";
 
 export async function POST(request: Request) {
+  const stripe = getStripe();
   let event;
   try {
     event = await verifyWebhookSignature(request);

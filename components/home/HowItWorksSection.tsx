@@ -32,7 +32,7 @@ export function HowItWorksSection() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-14">
           <div>
-            <div className="inline-flex items-center px-3 py-1 rounded-full bg-[var(--color-surface-overlay)] border border-[var(--color-border)] text-[11px] uppercase tracking-[0.15em] font-medium text-[var(--color-ink-muted)] mb-4">
+            <div className="inline-flex items-center px-3 py-1 rounded-full bg-[var(--color-surface-overlay)] border border-[var(--color-border)] text-xs uppercase tracking-[0.12em] font-medium text-[var(--color-ink-muted)] mb-4">
               How it works
             </div>
             <h2 className="text-3xl md:text-4xl font-black tracking-tight" style={{ color: "#d97706" }}>
@@ -48,7 +48,7 @@ export function HowItWorksSection() {
         </div>
 
         {/* Steps */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-6">
           {STEPS.map(({ Icon, step, title, description }) => (
             <div key={step} className="relative flex flex-col gap-4">
               {/* Step number + icon */}
@@ -56,7 +56,7 @@ export function HowItWorksSection() {
                 <div className="w-12 h-12 rounded-[var(--radius-card)] bg-[var(--color-brand-violet)] flex items-center justify-center shrink-0 shadow-[var(--shadow-cta)]">
                   <Icon className="w-5 h-5 text-white" />
                 </div>
-                <span className="font-mono text-[11px] font-bold text-[var(--color-ink-subtle)] uppercase tracking-widest">
+                <span className="font-mono text-sm md:text-[15px] font-bold text-[var(--color-ink-subtle)] uppercase tracking-[0.2em]">
                   Step {step}
                 </span>
               </div>

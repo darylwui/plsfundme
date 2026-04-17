@@ -166,7 +166,7 @@ export default async function MyPledgesPage() {
     <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl font-black text-[var(--color-ink)]">My pledges</h1>
+          <h1 className="text-2xl font-black text-[var(--color-ink)]">My backed projects</h1>
           <p className="text-sm text-[var(--color-ink-muted)] mt-0.5">
             All the projects you&apos;ve backed on get that bread.
           </p>

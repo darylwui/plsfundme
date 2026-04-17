@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { Navbar } from "@/components/layout/Navbar";
 import { PMApplyLanding } from "@/components/auth/PMApplyLanding";
 
 export default async function ApplyPMPage() {
@@ -30,13 +29,10 @@ export default async function ApplyPMPage() {
   }
 
   return (
-    <>
-      <Navbar />
-      <main className="flex-1 bg-[var(--color-surface-raised)]">
-        <div className="max-w-lg mx-auto px-4 sm:px-6 py-12">
-          <PMApplyLanding userId={user.id} />
-        </div>
-      </main>
-    </>
+    <div className="bg-[var(--color-surface-raised)]">
+      <div className="max-w-lg mx-auto px-4 sm:px-6 py-12">
+        <PMApplyLanding userId={user.id} />
+      </div>
+    </div>
   );
 }

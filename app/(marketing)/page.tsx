@@ -102,7 +102,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
             {/* Left — headline + CTAs */}
             <div className="max-w-xl">
-              <div className="inline-flex items-center px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 text-[11px] uppercase tracking-[0.15em] font-medium mb-6">
+              <div className="inline-flex items-center px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 text-xs uppercase tracking-[0.12em] font-medium mb-6">
                 Made for Singapore entrepreneurs
               </div>
 
@@ -119,17 +119,13 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                 <Link href="/projects/create">
                   <Button size="lg" variant="inverse">
                     Start for free
-                    <span className="w-7 h-7 rounded-full bg-black/10 flex items-center justify-center shrink-0">
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </span>
+                    <ArrowRight className="w-4 h-4 shrink-0" />
                   </Button>
                 </Link>
                 <Link href="/explore">
                   <Button size="lg">
                     Explore projects
-                    <span className="w-7 h-7 rounded-full bg-[var(--color-brand-violet)]/10 flex items-center justify-center shrink-0">
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </span>
+                    <ArrowRight className="w-4 h-4 shrink-0" />
                   </Button>
                 </Link>
               </div>
@@ -168,11 +164,11 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                     <div className="px-6 pt-6 pb-4 border-b border-[var(--color-border)]">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="w-2 h-2 rounded-full bg-[var(--color-brand-lime)] animate-pulse" />
-                        <span className="text-[11px] uppercase tracking-[0.15em] font-medium text-[var(--color-ink-subtle)]">
+                        <span className="text-xs uppercase tracking-[0.12em] font-medium text-[var(--color-ink-subtle)]">
                           Platform at a glance
                         </span>
                       </div>
-                      <p className="text-xs text-[var(--color-ink-subtle)]">Live data · updated in real time</p>
+                      <p className="text-sm md:text-xs text-[var(--color-ink-subtle)]">Live data · updated in real time</p>
                     </div>
 
                     {/* Stats grid */}
@@ -181,30 +177,30 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                         <span className="font-mono font-black text-2xl text-[var(--color-ink)]">
                           S{formatStatValue(platformStats.totalRaisedSGD, "$")}
                         </span>
-                        <span className="text-xs text-[var(--color-ink-muted)]">Total raised</span>
+                        <span className="text-sm md:text-xs text-[var(--color-ink-muted)]">Total raised</span>
                       </div>
                       <div className="p-5 flex flex-col gap-1">
                         <span className="font-mono font-black text-2xl text-[var(--color-ink)]">
                           {formatStatValue(platformStats.totalBackers)}
                         </span>
-                        <span className="text-xs text-[var(--color-ink-muted)]">Backers</span>
+                        <span className="text-sm md:text-xs text-[var(--color-ink-muted)]">Backers</span>
                       </div>
                       <div className="p-5 flex flex-col gap-1">
                         <span className="font-mono font-black text-2xl text-[var(--color-ink)]">
                           {platformStats.activeCampaigns}
                         </span>
-                        <span className="text-xs text-[var(--color-ink-muted)]">Live campaigns</span>
+                        <span className="text-sm md:text-xs text-[var(--color-ink-muted)]">Live campaigns</span>
                       </div>
                       <div className="p-5 flex flex-col gap-1">
                         <span className="font-mono font-black text-2xl text-[var(--color-brand-lime)]">5%</span>
-                        <span className="text-xs text-[var(--color-ink-muted)]">Platform fee</span>
+                        <span className="text-sm md:text-xs text-[var(--color-ink-muted)]">Platform fee</span>
                       </div>
                     </div>
 
                     {/* Card footer */}
                     <div className="px-6 py-4 bg-[var(--color-surface-raised)] border-t border-[var(--color-border)] flex items-center gap-2">
                       <Shield className="w-3.5 h-3.5 text-[var(--color-brand-violet)] shrink-0" />
-                      <span className="text-xs text-[var(--color-ink-muted)]">
+                      <span className="text-sm md:text-xs text-[var(--color-ink-muted)]">
                         All-or-nothing · funds held in escrow
                       </span>
                     </div>
@@ -212,7 +208,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                 </div>
 
                 {/* Floating label below card */}
-                <p className="text-center text-xs text-[var(--color-ink-subtle)] mt-4">
+                <p className="text-center text-sm md:text-xs text-[var(--color-ink-subtle)] mt-4">
                   No risk to backers — ever.
                 </p>
               </div>

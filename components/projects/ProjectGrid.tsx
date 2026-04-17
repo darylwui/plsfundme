@@ -27,7 +27,7 @@ export function ProjectGrid({
       {projects.map((project, index) => (
         <div
           key={project.id}
-          className="animate-fade-up"
+          className="animate-fade-up flex h-full"
           style={{ animationDelay: `${index * 60}ms` }}
         >
           <ProjectCard project={project} />

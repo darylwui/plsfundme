@@ -2,7 +2,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ProjectCreationForm } from "@/components/creation/ProjectCreationForm";
-import { Navbar } from "@/components/layout/Navbar";
 import type { Category } from "@/types/project";
 import { Clock, XCircle, Rocket } from "lucide-react";
 
@@ -24,10 +23,8 @@ export default async function CreateProjectPage() {
   // Not a PM at all
   if (profile?.role !== "project_manager") {
     return (
-      <>
-        <Navbar />
-        <main className="flex-1 bg-[var(--color-surface-raised)] flex items-center justify-center px-4 py-16">
-          <div className="max-w-md w-full text-center flex flex-col items-center gap-5">
+      <main className="flex-1 bg-[var(--color-surface-raised)] flex items-center justify-center px-4 py-16">
+        <div className="max-w-md w-full text-center flex flex-col items-center gap-5">
             <div className="w-16 h-16 rounded-full bg-[var(--color-brand-violet)]/10 flex items-center justify-center">
               <Rocket className="w-8 h-8 text-[var(--color-brand-violet)]" />
             </div>
@@ -52,9 +49,8 @@ export default async function CreateProjectPage() {
             >
               Back to homepage
             </Link>
-          </div>
-        </main>
-      </>
+        </div>
+      </main>
     );
   }
 
@@ -68,10 +64,8 @@ export default async function CreateProjectPage() {
   // No PM profile yet, or pending review
   if (!pmProfile || pmProfile.status === "pending_review") {
     return (
-      <>
-        <Navbar />
-        <main className="flex-1 bg-[var(--color-surface-raised)] flex items-center justify-center px-4 py-16">
-          <div className="max-w-md w-full text-center flex flex-col items-center gap-5">
+      <main className="flex-1 bg-[var(--color-surface-raised)] flex items-center justify-center px-4 py-16">
+        <div className="max-w-md w-full text-center flex flex-col items-center gap-5">
             <div className="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center">
               <Clock className="w-8 h-8 text-amber-600" />
             </div>
@@ -92,19 +86,16 @@ export default async function CreateProjectPage() {
             >
               Back to homepage
             </Link>
-          </div>
-        </main>
-      </>
+        </div>
+      </main>
     );
   }
 
   // Rejected
   if (pmProfile.status === "rejected") {
     return (
-      <>
-        <Navbar />
-        <main className="flex-1 bg-[var(--color-surface-raised)] flex items-center justify-center px-4 py-16">
-          <div className="max-w-md w-full text-center flex flex-col items-center gap-5">
+      <main className="flex-1 bg-[var(--color-surface-raised)] flex items-center justify-center px-4 py-16">
+        <div className="max-w-md w-full text-center flex flex-col items-center gap-5">
             <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
               <XCircle className="w-8 h-8 text-red-600" />
             </div>
@@ -122,6 +113,12 @@ export default async function CreateProjectPage() {
                 <p className="text-xs text-red-600">{pmProfile.rejection_reason}</p>
               </div>
             )}
+            <Link
+              href="/apply/pm"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-[var(--radius-btn)] bg-[var(--color-brand-violet)] text-white text-sm font-semibold hover:opacity-90 transition-opacity"
+            >
+              Re-apply as Creator
+            </Link>
             <a
               href="mailto:support@getthatbread.sg"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] text-sm font-semibold text-[var(--color-ink)] hover:bg-[var(--color-surface-raised)] transition-colors"
@@ -134,9 +131,8 @@ export default async function CreateProjectPage() {
             >
               Back to homepage
             </Link>
-          </div>
-        </main>
-      </>
+        </div>
+      </main>
     );
   }
 
@@ -148,13 +144,10 @@ export default async function CreateProjectPage() {
     .order("display_order");
 
   return (
-    <>
-      <Navbar />
-      <main className="flex-1 bg-[var(--color-surface-raised)]">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-          <ProjectCreationForm categories={(categories as Category[]) ?? []} />
-        </div>
-      </main>
-    </>
+    <main className="flex-1 bg-[var(--color-surface-raised)]">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
+        <ProjectCreationForm categories={(categories as Category[]) ?? []} />
+      </div>
+    </main>
   );
 }

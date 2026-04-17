@@ -71,7 +71,7 @@ export default async function DashboardAdminPMsPage({ searchParams }: PageProps)
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-black text-[var(--color-ink)]">Project Manager Applications</h1>
+        <h1 className="text-2xl font-black text-[var(--color-ink)]">Creator Applications</h1>
         <p className="text-sm text-[var(--color-ink-muted)] mt-1">
           Review and approve applications from aspiring campaign creators.
         </p>

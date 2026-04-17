@@ -44,6 +44,9 @@ export function PMApplyForm({ userId, onSuccess }: PMApplyFormProps) {
   // Step 3: Identity
   const [idDocumentUrl, setIdDocumentUrl] = useState<string | null>(null);
 
+  // Profile photo
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+
   function validateStep1() {
     const e: Record<string, string> = {};
     if (!bio.trim()) e.bio = "Bio is required";
@@ -89,6 +92,7 @@ export function PMApplyForm({ userId, onSuccess }: PMApplyFormProps) {
           project_type: projectType,
           project_description: projectDescription.trim(),
           id_document_url: idDocumentUrl,
+          photo_url: photoUrl,
         }),
       });
       const json = await res.json();
@@ -136,9 +140,17 @@ export function PMApplyForm({ userId, onSuccess }: PMApplyFormProps) {
           <div>
             <h2 className="font-bold text-lg text-[var(--color-ink)]">About you</h2>
             <p className="text-sm text-[var(--color-ink-muted)] mt-0.5">
-              Tell us a bit about yourself. This helps build trust with backers.
+              Tell us about yourself. This appears on your public creator card on each project page, and you can edit it later from your dashboard.
             </p>
           </div>
+
+          <ImageUpload
+            value={photoUrl}
+            onChange={setPhotoUrl}
+            label="Profile photo"
+            hint="Shown publicly on your creator card for all your campaigns"
+            compact
+          />
 
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-[var(--color-ink)]">
@@ -170,7 +182,7 @@ export function PMApplyForm({ userId, onSuccess }: PMApplyFormProps) {
             value={linkedinUrl}
             onChange={(e) => setLinkedinUrl(e.target.value)}
             error={errors.linkedinUrl}
-            hint="Optional — helps verify your professional background"
+            hint="Optional — shown on your project creator card"
           />
           <Input
             label="Company name"
@@ -178,7 +190,7 @@ export function PMApplyForm({ userId, onSuccess }: PMApplyFormProps) {
             placeholder="Acme Pte. Ltd."
             value={companyName}
             onChange={(e) => setCompanyName(e.target.value)}
-            hint="Optional"
+            hint="Optional — shown on your project creator card"
           />
           <Input
             label="Company website"
@@ -187,7 +199,7 @@ export function PMApplyForm({ userId, onSuccess }: PMApplyFormProps) {
             value={companyWebsite}
             onChange={(e) => setCompanyWebsite(e.target.value)}
             error={errors.companyWebsite}
-            hint="Optional"
+            hint="Optional — shown on your project creator card"
           />
 
           <Button type="button" fullWidth onClick={handleNext} size="lg">

@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
-import { stripe, toCents, calculateApplicationFee } from "@/lib/stripe/server";
+import { getStripe, toCents, calculateApplicationFee } from "@/lib/stripe/server";
 import { createPledgeSchema } from "@/lib/validations/pledge";
 
 export async function POST(request: Request) {
+  const stripe = getStripe();
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 

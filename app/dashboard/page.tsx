@@ -12,7 +12,7 @@ import type { PledgeWithBacker } from "@/types/pledge";
 
 // ─── Backer Dashboard ────────────────────────────────────────────────────────
 
-async function BackerDashboard({ userId, displayName }: { userId: string; displayName: string }) {
+async function BackerDashboard({ userId, displayName, email }: { userId: string; displayName: string; email: string }) {
   const supabase = await createClient();
 
   const { data: pledgesRaw } = await supabase
@@ -48,6 +48,20 @@ async function BackerDashboard({ userId, displayName }: { userId: string; displa
         <p className="text-sm text-[var(--color-ink-muted)] mt-0.5">
           Here are the projects you&apos;re backing.
         </p>
+        <p className="text-xs text-[var(--color-ink-subtle)] mt-1">{email}</p>
+      </div>
+
+      {/* Apply as Creator CTA */}
+      <div className="bg-gradient-to-r from-[var(--color-brand-amber)]/10 to-[var(--color-brand-violet)]/10 rounded-[var(--radius-card)] border border-[var(--color-brand-amber)]/30 p-6 flex items-center justify-between gap-4">
+        <div>
+          <h3 className="font-bold text-[var(--color-ink)] mb-1">Ready to launch your own campaign?</h3>
+          <p className="text-sm text-[var(--color-ink-muted)]">Become a creator and bring your ideas to life on get that bread.</p>
+        </div>
+        <Link href="/apply/pm" className="shrink-0">
+          <Button variant="primary" size="sm">
+            Apply as Creator
+          </Button>
+        </Link>
       </div>
 
       {/* Stats */}
@@ -119,9 +133,12 @@ async function BackerDashboard({ userId, displayName }: { userId: string; displa
         </div>
       )}
 
-      <div className="text-center pt-2">
-        <Link href="/explore" className="text-sm font-semibold text-[var(--color-brand-violet)] hover:underline">
-          Discover more projects →
+      <div className="pt-4 border-t border-[var(--color-border)]">
+        <Link href="/explore">
+          <Button variant="ghost" fullWidth>
+            <Heart className="w-4 h-4" />
+            Explore all projects
+          </Button>
         </Link>
       </div>
     </div>
@@ -130,7 +147,7 @@ async function BackerDashboard({ userId, displayName }: { userId: string; displa
 
 // ─── Creator / PM Dashboard ──────────────────────────────────────────────────
 
-async function CreatorDashboard({ userId, displayName }: { userId: string; displayName: string }) {
+async function CreatorDashboard({ userId, displayName, email }: { userId: string; displayName: string; email: string }) {
   const supabase = await createClient();
 
   const { data: projects } = await supabase
@@ -174,13 +191,22 @@ async function CreatorDashboard({ userId, displayName }: { userId: string; displ
           <p className="text-sm text-[var(--color-ink-muted)] mt-0.5">
             Here&apos;s what&apos;s happening with your campaigns.
           </p>
+          <p className="text-xs text-[var(--color-ink-subtle)] mt-1">{email}</p>
         </div>
-        <Link href="/projects/create">
-          <Button>
-            <PlusCircle className="w-4 h-4" />
-            New campaign
-          </Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link href="/dashboard/creator-profile">
+            <Button variant="secondary">
+              <Pencil className="w-4 h-4" />
+              Edit creator card
+            </Button>
+          </Link>
+          <Link href="/projects/create">
+            <Button>
+              <PlusCircle className="w-4 h-4" />
+              New campaign
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {typedProjects.length === 0 ? (
@@ -269,11 +295,13 @@ export default async function DashboardPage() {
     .single();
 
   const displayName = profile?.display_name ?? "there";
-  const role = profile?.role ?? "backer";
+  const email = user?.email ?? "";
+  const role = (profile?.role ?? "backer").toString().trim().toLowerCase();
 
+  // Backer shows backer dashboard for all non-project_manager roles
   if (role === "project_manager") {
-    return <CreatorDashboard userId={user!.id} displayName={displayName} />;
+    return <CreatorDashboard userId={user!.id} displayName={displayName} email={email} />;
   }
 
-  return <BackerDashboard userId={user!.id} displayName={displayName} />;
+  return <BackerDashboard userId={user!.id} displayName={displayName} email={email} />;
 }

@@ -1,4 +1,4 @@
-import { resend, FROM } from "./resend";
+import { getResend, FROM } from "./resend";
 import { formatSgd } from "@/lib/utils/currency";
 
 interface CampaignFundedArgs {
@@ -37,8 +37,12 @@ interface PledgeRefundedArgs {
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://getthatbread.sg";
 
+function sendEmail(payload: Parameters<ReturnType<typeof getResend>["emails"]["send"]>[0]) {
+  return getResend().emails.send(payload);
+}
+
 export async function sendCampaignFundedEmail(args: CampaignFundedArgs) {
-  return resend.emails.send({
+  return sendEmail({
     from: FROM,
     to: args.creatorEmail,
     subject: `🎉 Your campaign "${args.projectTitle}" has been funded!`,
@@ -58,7 +62,7 @@ export async function sendCampaignFundedEmail(args: CampaignFundedArgs) {
 }
 
 export async function sendCampaignFailedEmail(args: CampaignFailedArgs) {
-  return resend.emails.send({
+  return sendEmail({
     from: FROM,
     to: args.creatorEmail,
     subject: `Your campaign "${args.projectTitle}" didn't reach its goal`,
@@ -77,7 +81,7 @@ export async function sendCampaignFailedEmail(args: CampaignFailedArgs) {
 }
 
 export async function sendPledgeConfirmedEmail(args: PledgeConfirmedArgs) {
-  return resend.emails.send({
+  return sendEmail({
     from: FROM,
     to: args.backerEmail,
     subject: `You backed "${args.projectTitle}" 🚀`,
@@ -114,7 +118,7 @@ interface ProjectRemovedArgs {
 }
 
 export async function sendProjectApprovedEmail(args: ProjectApprovedArgs) {
-  return resend.emails.send({
+  return sendEmail({
     from: FROM,
     to: args.creatorEmail,
     subject: `🎉 Your campaign "${args.projectTitle}" is now live!`,
@@ -130,7 +134,7 @@ export async function sendProjectApprovedEmail(args: ProjectApprovedArgs) {
 }
 
 export async function sendProjectRejectedEmail(args: ProjectRejectedArgs) {
-  return resend.emails.send({
+  return sendEmail({
     from: FROM,
     to: args.creatorEmail,
     subject: `Your campaign "${args.projectTitle}" was not approved`,
@@ -147,7 +151,7 @@ export async function sendProjectRejectedEmail(args: ProjectRejectedArgs) {
 }
 
 export async function sendProjectRemovedEmail(args: ProjectRemovedArgs) {
-  return resend.emails.send({
+  return sendEmail({
     from: FROM,
     to: args.creatorEmail,
     subject: `Your campaign "${args.projectTitle}" has been removed`,
@@ -161,7 +165,7 @@ export async function sendProjectRemovedEmail(args: ProjectRemovedArgs) {
 }
 
 export async function sendPledgeRefundedEmail(args: PledgeRefundedArgs) {
-  return resend.emails.send({
+  return sendEmail({
     from: FROM,
     to: args.backerEmail,
     subject: `Your pledge to "${args.projectTitle}" has been refunded`,
