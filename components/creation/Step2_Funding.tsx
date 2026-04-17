@@ -82,6 +82,11 @@ export function Step2_Funding({ draft, onUpdate, onNext, onBack }: Step2Props) {
             {errors.funding_goal_sgd}
           </p>
         )}
+        {!errors.funding_goal_sgd && (
+          <p className="text-xs text-[var(--color-ink-subtle)]">
+            Minimum S$500, maximum S$10M. This is the amount you must raise to keep the funds. Be realistic — aim for what you actually need to bring your project to life.
+          </p>
+        )}
       </div>
 
       {/* Fee breakdown */}
@@ -117,17 +122,24 @@ export function Step2_Funding({ draft, onUpdate, onNext, onBack }: Step2Props) {
           }}
           hint="Leave blank to launch immediately"
         />
-        <Input
-          label="Campaign deadline"
-          type="date"
-          value={draft.deadline ? draft.deadline.slice(0, 10) : ""}
-          onChange={(e) => {
-            const v = e.target.value;
-            onUpdate({ deadline: v ? `${v}T00:00:00.000Z` : "" });
-          }}
-          error={errors.deadline}
-          required
-        />
+        <div className="flex flex-col gap-1.5">
+          <Input
+            label="Campaign deadline"
+            type="date"
+            value={draft.deadline ? draft.deadline.slice(0, 10) : ""}
+            onChange={(e) => {
+              const v = e.target.value;
+              onUpdate({ deadline: v ? `${v}T00:00:00.000Z` : "" });
+            }}
+            error={errors.deadline}
+            required
+          />
+          {!errors.deadline && (
+            <p className="text-xs text-[var(--color-ink-subtle)]">
+              30–90 days is ideal. Shorter deadlines create urgency; longer deadlines give you more time to reach your goal.
+            </p>
+          )}
+        </div>
       </div>
 
       <div className="flex flex-col gap-1.5">

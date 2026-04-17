@@ -9,6 +9,7 @@ import { FundingWidget } from "@/components/projects/FundingWidget";
 import { createClient } from "@/lib/supabase/client";
 import { slugifyUnique } from "@/lib/utils/slugify";
 import { formatDate } from "@/lib/utils/dates";
+import { sanitizeRichHtml } from "@/lib/utils/sanitize";
 import type { ProjectDraft, ProjectWithRelations, Category } from "@/types/project";
 import type { RewardFormData, Reward } from "@/types/reward";
 
@@ -77,6 +78,21 @@ export function Step4_Review({ draft, rewards, categories, onBack, onSuccess }: 
 
   const category = categories.find((c) => c.id === draft.category_id);
   const previewProject = buildPreviewProject(draft, rewards, category);
+
+  // Check submission readiness
+  const isReady = {
+    title: draft.title && draft.title.length >= 5 && draft.title.length <= 100,
+    category: !!draft.category_id,
+    shortDescription: draft.short_description && draft.short_description.length >= 20 && draft.short_description.length <= 200,
+    fullDescription: draft.full_description && draft.full_description.length >= 50,
+    goal: draft.funding_goal_sgd && draft.funding_goal_sgd >= 500 && draft.funding_goal_sgd <= 10_000_000,
+    deadline: draft.deadline && new Date(draft.deadline) > new Date(),
+    rewards: rewards.length > 0 && rewards.every((r) => r.title && r.title.trim().length > 0),
+  };
+
+  const allReady = Object.values(isReady).every(Boolean);
+  const readyCount = Object.values(isReady).filter(Boolean).length;
+  const readyPercent = Math.round((readyCount / Object.keys(isReady).length) * 100);
 
   async function handleLaunch() {
     setLaunching(true);
@@ -234,23 +250,47 @@ export function Step4_Review({ draft, rewards, categories, onBack, onSuccess }: 
             {/* Funding widget */}
             <FundingWidget project={previewProject} />
 
-            {/* Description */}
+            {/* Description — sanitized before render */}
             {draft.full_description && (
               <div
                 className="prose prose-sm max-w-none text-[var(--color-ink)] prose-headings:text-[var(--color-ink)] prose-a:text-[var(--color-brand-violet)]"
-                dangerouslySetInnerHTML={{ __html: draft.full_description }}
+                dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(draft.full_description) }}
               />
             )}
           </div>
         </div>
       </div>
 
+      {/* Readiness check */}
+      {!allReady && (
+        <div className="rounded-[var(--radius-card)] border border-amber-200 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/20 p-4">
+          <p className="text-xs font-bold text-amber-800 dark:text-amber-300 mb-2">
+            📋 {readyPercent}% ready to submit
+          </p>
+          <div className="flex flex-col gap-1.5 text-xs text-amber-700 dark:text-amber-400">
+            {!isReady.title && <p>• Project title needs work (5–100 characters)</p>}
+            {!isReady.category && <p>• Select a category</p>}
+            {!isReady.shortDescription && <p>• Short description needs work (20–200 characters)</p>}
+            {!isReady.fullDescription && <p>• Campaign story needs work (50+ characters)</p>}
+            {!isReady.goal && <p>• Funding goal must be S$500–S$10M</p>}
+            {!isReady.deadline && <p>• Deadline must be in the future</p>}
+            {!isReady.rewards && <p>• Add at least 1 reward with a title</p>}
+          </div>
+        </div>
+      )}
+
       {/* Actions */}
       <div className="flex justify-between pt-2">
         <Button variant="secondary" size="lg" onClick={onBack}>
           Back
         </Button>
-        <Button size="lg" loading={launching} onClick={handleLaunch}>
+        <Button
+          size="lg"
+          loading={launching}
+          disabled={!allReady || launching}
+          onClick={handleLaunch}
+          title={!allReady ? "Complete all required fields to submit" : ""}
+        >
           <Rocket className="w-4 h-4" />
           Submit for review
         </Button>

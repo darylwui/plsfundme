@@ -80,8 +80,8 @@ export function StepIndicator({ current, saveState, onGoTo }: StepIndicatorProps
         </ol>
       </nav>
 
-      {/* Auto-save indicator */}
-      {saveState && saveState !== "idle" && (
+      {/* Auto-save indicator — always shown so creators know their work persists */}
+      {saveState && (
         <div className="flex items-center gap-1.5 text-xs text-[var(--color-ink-subtle)] shrink-0">
           {saveState === "saving" && (
             <>
@@ -99,6 +99,12 @@ export function StepIndicator({ current, saveState, onGoTo }: StepIndicatorProps
             <>
               <CloudOff className="w-3.5 h-3.5 text-[var(--color-brand-coral)]" />
               <span className="text-[var(--color-brand-coral)]">Save failed</span>
+            </>
+          )}
+          {saveState === "idle" && (
+            <>
+              <Cloud className="w-3.5 h-3.5" />
+              Auto-saves as you type
             </>
           )}
         </div>

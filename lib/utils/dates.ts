@@ -11,19 +11,25 @@ export function isExpired(deadline: string | Date): boolean {
   return new Date(deadline) <= new Date()
 }
 
-/** Format a date for display e.g. "15 May 2025" */
-export function formatDate(date: string | Date): string {
+/** Format a date for display e.g. "15 May 2025". Returns empty string for invalid input. */
+export function formatDate(date: string | Date | null | undefined): string {
+  if (!date) return ''
+  const d = new Date(date)
+  if (Number.isNaN(d.getTime())) return ''
   return new Intl.DateTimeFormat('en-SG', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
-  }).format(new Date(date))
+  }).format(d)
 }
 
-/** Format a date as short e.g. "15 May" */
-export function formatDateShort(date: string | Date): string {
+/** Format a date as short e.g. "15 May". Returns empty string for invalid input. */
+export function formatDateShort(date: string | Date | null | undefined): string {
+  if (!date) return ''
+  const d = new Date(date)
+  if (Number.isNaN(d.getTime())) return ''
   return new Intl.DateTimeFormat('en-SG', {
     day: 'numeric',
     month: 'short',
-  }).format(new Date(date))
+  }).format(d)
 }

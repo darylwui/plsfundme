@@ -144,6 +144,7 @@ export interface Database {
           status: ProjectStatus
           is_featured: boolean
           rejection_reason: string | null
+          rejection_reason_code: string | null
           start_date: string | null
           deadline: string
           launched_at: string | null
@@ -169,6 +170,7 @@ export interface Database {
           status?: ProjectStatus
           is_featured?: boolean
           rejection_reason?: string | null
+          rejection_reason_code?: string | null
           start_date?: string | null
           deadline: string
           launched_at?: string | null

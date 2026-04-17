@@ -11,6 +11,7 @@ import { ProjectSectionNav } from "@/components/projects/ProjectSectionNav";
 import type { ProjectUpdatePost } from "@/types/project";
 import type { Reward } from "@/types/reward";
 import { formatDate } from "@/lib/utils/dates";
+import { sanitizeRichHtml } from "@/lib/utils/sanitize";
 
 type FeedbackAuthor = {
   display_name: string;
@@ -109,7 +110,10 @@ export function ProjectPageSections({
     [activeRewards, selectedRewardId]
   );
 
-  const processed = useMemo(() => processHtml(descriptionHtml ?? ""), [descriptionHtml]);
+  const processed = useMemo(
+    () => processHtml(sanitizeRichHtml(descriptionHtml ?? "")),
+    [descriptionHtml]
+  );
 
   const faqItems = useMemo(
     () =>

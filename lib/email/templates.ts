@@ -107,7 +107,8 @@ interface ProjectRejectedArgs {
   creatorEmail: string;
   creatorName: string;
   projectTitle: string;
-  reason: string;
+  reasonCode?: string;
+  message: string;
 }
 
 interface ProjectRemovedArgs {
@@ -137,12 +138,26 @@ export async function sendProjectRejectedEmail(args: ProjectRejectedArgs) {
   return sendEmail({
     from: FROM,
     to: args.creatorEmail,
-    subject: `Your campaign "${args.projectTitle}" was not approved`,
+    subject: `Feedback on your campaign "${args.projectTitle}"`,
     html: `
       <h2>Hi ${args.creatorName},</h2>
-      <p>Thank you for submitting <strong>${args.projectTitle}</strong> to get that bread. After review, we were unable to approve your campaign at this time.</p>
-      <p><strong>Reason:</strong> ${args.reason}</p>
-      <p>You're welcome to revise your campaign and resubmit. If you have questions, please reply to this email.</p>
+      <p>Thank you for submitting <strong>${args.projectTitle}</strong> to get that bread. Our team reviewed your campaign and has some feedback:</p>
+      ${
+        args.reasonCode
+          ? `<div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:12px;margin:16px 0;border-radius:4px;">
+              <p style="margin:0;font-weight:bold;color:#92400e;">📋 ${args.reasonCode === "unclear_goal" ? "Unclear project goal" : args.reasonCode === "weak_description" ? "Description needs work" : args.reasonCode === "missing_rewards" ? "Rewards unclear or missing" : args.reasonCode === "unrealistic_timeline" ? "Timeline or goal unrealistic" : args.reasonCode === "low_quality_assets" ? "Cover image or video quality" : args.reasonCode === "category_mismatch" ? "Wrong category selected" : args.reasonCode === "policy_violation" ? "Policy violation" : "Other feedback"}</p>
+            </div>`
+          : ""
+      }
+      <p><strong>Feedback:</strong></p>
+      <p>${args.message}</p>
+      <p><strong>Next steps:</strong></p>
+      <ol>
+        <li>Address the feedback above in your campaign</li>
+        <li>Edit your project in your dashboard</li>
+        <li>Click "Resubmit for review"</li>
+      </ol>
+      <p>Our team will review your updated campaign within 1–2 business days. If you have questions, please reply to this email.</p>
       <a href="${appUrl}/dashboard/projects" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
         Go to dashboard
       </a>

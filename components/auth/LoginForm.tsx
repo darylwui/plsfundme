@@ -63,6 +63,7 @@ export function LoginForm({ redirectTo = "/dashboard" }: LoginFormProps) {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          showPasswordToggle
           error={error ?? undefined}
         />
         <div className="flex justify-end">

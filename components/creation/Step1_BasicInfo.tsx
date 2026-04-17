@@ -63,7 +63,7 @@ export function Step1_BasicInfo({
         value={draft.title}
         onChange={(e) => onUpdate({ title: e.target.value })}
         error={errors.title}
-        hint="60 characters or fewer works best"
+        hint="60 characters or fewer works best. Be specific about what you're building — backers see this in search results."
       />
 
       <div className="flex flex-col gap-1.5">
@@ -92,6 +92,11 @@ export function Step1_BasicInfo({
             {errors.category_id}
           </p>
         )}
+        {!errors.category_id && (
+          <p className="text-xs text-[var(--color-ink-subtle)]">
+            Choose the category that best matches your project. This helps backers find you.
+          </p>
+        )}
       </div>
 
       <div className="flex flex-col gap-1.5">
@@ -115,24 +120,28 @@ export function Step1_BasicInfo({
             ${errors.short_description ? "border-[var(--color-brand-coral)]" : "border-[var(--color-border)]"}
           `}
         />
-        <div className="flex justify-between">
-          {errors.short_description ? (
-            <p className="text-xs text-[var(--color-brand-coral)]">
-              {errors.short_description}
-            </p>
-          ) : (
-            <span />
-          )}
+        <div className="flex items-start justify-between gap-4">
           <p className="text-xs text-[var(--color-ink-subtle)]">
+            Hook readers in 20–200 characters. Answer: What is this, and why should I care?
+          </p>
+          <p className="text-xs text-[var(--color-ink-subtle)] whitespace-nowrap">
             {draft.short_description.length}/200
           </p>
         </div>
+        {errors.short_description && (
+          <p className="text-xs text-[var(--color-brand-coral)]">
+            {errors.short_description}
+          </p>
+        )}
       </div>
 
       <div className="flex flex-col gap-1.5">
         <label className="text-sm font-medium text-[var(--color-ink)]">
           Campaign story
         </label>
+        <p className="text-xs text-[var(--color-ink-subtle)]">
+          Tell backers your story. What's the problem you're solving? Why are you building this? Who benefits? Include images, videos, or links to build trust.
+        </p>
         <CampaignEditor
           value={draft.full_description}
           onChange={(html) => onUpdate({ full_description: html })}

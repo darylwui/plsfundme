@@ -16,8 +16,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://getthatbread.sg";
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://getthatbread.vercel.app"),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "get that bread — Fund the future.",
     template: "%s — get that bread",
@@ -34,7 +36,7 @@ export const metadata: Metadata = {
     description:
       "Launch your campaign, find your backers, bring your idea to life. All-or-nothing funding with PayNow & Stripe.",
     siteName: "get that bread",
-    url: "https://getthatbread.vercel.app",
+    url: SITE_URL,
     locale: "en_SG",
     type: "website",
     images: [

@@ -94,12 +94,16 @@ export function RewardTierCard({
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-[var(--color-ink-subtle)]">
-        {reward.estimated_delivery_date && (
-          <span className="flex items-center gap-1">
-            <Calendar className="w-3.5 h-3.5" />
-            Est. delivery {formatDateShort(reward.estimated_delivery_date)}
-          </span>
-        )}
+        {(() => {
+          const formatted = formatDateShort(reward.estimated_delivery_date);
+          if (!formatted) return null;
+          return (
+            <span className="flex items-center gap-1">
+              <Calendar className="w-3.5 h-3.5" />
+              Est. delivery {formatted}
+            </span>
+          );
+        })()}
         {reward.includes_physical_item && (
           <span className="flex items-center gap-1">
             <Package className="w-3.5 h-3.5" />

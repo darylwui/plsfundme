@@ -9,6 +9,80 @@ import { PMRegistrationSteps } from "@/components/auth/PMRegistrationSteps";
 
 type Role = "backer" | "project_manager" | null;
 
+function RegisterSuccess({
+  email,
+  mailHost,
+}: {
+  email: string;
+  mailHost: { url: string; label: string } | null;
+}) {
+  const [resending, setResending] = useState(false);
+  const [resent, setResent] = useState(false);
+  const [resendError, setResendError] = useState<string | null>(null);
+
+  async function handleResend() {
+    setResending(true);
+    setResendError(null);
+    const supabase = createClient();
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email,
+      options: {
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+      },
+    });
+    setResending(false);
+    if (error) {
+      setResendError(error.message);
+      return;
+    }
+    setResent(true);
+  }
+
+  return (
+    <div className="text-center flex flex-col gap-4 items-center">
+      <div className="text-4xl">📬</div>
+      <div>
+        <h3 className="font-bold text-lg text-[var(--color-ink)]">
+          Check your inbox
+        </h3>
+        <p className="text-sm text-[var(--color-ink-muted)] mt-1">
+          We sent a confirmation link to <strong>{email}</strong>. Click it to
+          activate your account.
+        </p>
+      </div>
+
+      {mailHost && (
+        <a
+          href={mailHost.url}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center justify-center gap-2 rounded-[var(--radius-btn)] bg-[var(--color-brand-violet)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#7A3409] transition-colors w-full sm:w-auto"
+        >
+          {mailHost.label} →
+        </a>
+      )}
+
+      <div className="flex flex-col gap-1.5 items-center">
+        <p className="text-xs text-[var(--color-ink-muted)]">
+          Didn&apos;t get the email? Check spam, or
+        </p>
+        <button
+          type="button"
+          onClick={handleResend}
+          disabled={resending || resent}
+          className="text-xs font-semibold text-[var(--color-brand-violet)] hover:underline disabled:opacity-60 disabled:no-underline"
+        >
+          {resent ? "Sent — check your inbox again" : resending ? "Resending…" : "Resend confirmation email"}
+        </button>
+        {resendError && (
+          <p className="text-xs text-[var(--color-brand-coral)] mt-1">{resendError}</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 interface RegisterFormProps {
   initialRole?: Role;
 }
@@ -63,18 +137,17 @@ export function RegisterForm({ initialRole = null }: RegisterFormProps) {
   // PM success is handled inside PMRegistrationSteps
 
   if (success) {
-    return (
-      <div className="text-center flex flex-col gap-3">
-        <div className="text-4xl">📬</div>
-        <h3 className="font-bold text-lg text-[var(--color-ink)]">
-          Check your inbox
-        </h3>
-        <p className="text-sm text-[var(--color-ink-muted)]">
-          We sent a confirmation link to <strong>{email}</strong>. Click it to
-          activate your account.
-        </p>
-      </div>
-    );
+    const provider = email.split("@")[1]?.toLowerCase() ?? "";
+    const mailHost =
+      provider.includes("gmail") || provider.includes("googlemail")
+        ? { url: "https://mail.google.com", label: "Open Gmail" }
+        : provider.includes("outlook") || provider.includes("hotmail") || provider.includes("live")
+        ? { url: "https://outlook.live.com/mail", label: "Open Outlook" }
+        : provider.includes("yahoo")
+        ? { url: "https://mail.yahoo.com", label: "Open Yahoo Mail" }
+        : null;
+
+    return <RegisterSuccess email={email} mailHost={mailHost} />;
   }
 
   // Role selection screen
@@ -185,6 +258,7 @@ export function RegisterForm({ initialRole = null }: RegisterFormProps) {
         onChange={(e) => setPassword(e.target.value)}
         error={errors.password}
         hint="Must be at least 8 characters"
+        showPasswordToggle
         required
       />
       <Button type="submit" size="lg" fullWidth loading={loading}>

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils/dates";
 import { formatSgd } from "@/lib/utils/currency";
+import { getProjectStatusLabel, getProjectStatusVariant } from "@/lib/utils/project-status";
 import type { ProjectWithRelations } from "@/types/project";
 import type { PledgeWithBacker } from "@/types/pledge";
 
@@ -29,15 +30,6 @@ async function BackerDashboard({ userId, displayName, email }: { userId: string;
 
   const totalPledged = pledges.reduce((s, p) => s + p.amount_sgd, 0);
   const uniqueProjects = new Set(pledges.map((p) => p.project_id)).size;
-
-  const statusVariant: Record<string, "violet" | "lime" | "coral" | "neutral" | "amber"> = {
-    draft: "neutral", pending_review: "amber", active: "violet",
-    funded: "lime", failed: "coral", cancelled: "neutral", removed: "coral",
-  };
-  const statusLabel: Record<string, string> = {
-    pending_review: "Under review", active: "Live", funded: "Funded",
-    failed: "Failed", cancelled: "Cancelled", draft: "Draft",
-  };
 
   return (
     <div className="flex flex-col gap-8">
@@ -112,8 +104,8 @@ async function BackerDashboard({ userId, displayName, email }: { userId: string;
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-[var(--color-ink)] truncate">{project.title}</p>
                     <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                      <Badge variant={statusVariant[project.status] ?? "neutral"}>
-                        {statusLabel[project.status] ?? project.status}
+                      <Badge variant={getProjectStatusVariant(project.status)}>
+                        {getProjectStatusLabel(project.status)}
                       </Badge>
                       <span className="text-xs text-[var(--color-ink-subtle)]">
                         Pledged {formatSgd(pledge.amount_sgd)} · {formatDate(pledge.created_at)}
@@ -172,15 +164,6 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
     recentPledges = (pledges as unknown as PledgeWithBacker[]) ?? [];
   }
 
-  const statusVariant: Record<string, "violet" | "lime" | "coral" | "neutral" | "amber"> = {
-    draft: "neutral", pending_review: "amber", active: "violet",
-    funded: "lime", failed: "coral", cancelled: "neutral", removed: "coral",
-  };
-  const statusLabel: Record<string, string> = {
-    pending_review: "Pending review", active: "Live", funded: "Funded",
-    failed: "Failed", cancelled: "Rejected", removed: "Removed", draft: "Draft",
-  };
-
   return (
     <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between flex-wrap gap-4">
@@ -228,8 +211,8 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
                 <div>
                   <h2 className="font-bold text-[var(--color-ink)]">{activeProject.title}</h2>
                   <div className="flex items-center gap-2 mt-1">
-                    <Badge variant={statusVariant[activeProject.status] ?? "neutral"}>
-                      {statusLabel[activeProject.status] ?? activeProject.status}
+                    <Badge variant={getProjectStatusVariant(activeProject.status)}>
+                      {getProjectStatusLabel(activeProject.status)}
                     </Badge>
                     <span className="text-xs text-[var(--color-ink-subtle)]">Ends {formatDate(activeProject.deadline)}</span>
                   </div>
@@ -264,7 +247,7 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
                       <p className="font-bold text-[var(--color-ink)] truncate">{p.title}</p>
                       <p className="text-xs text-[var(--color-ink-muted)] mt-0.5">Ends {formatDate(p.deadline)}</p>
                     </div>
-                    <Badge variant={statusVariant[p.status] ?? "neutral"}>{statusLabel[p.status] ?? p.status}</Badge>
+                    <Badge variant={getProjectStatusVariant(p.status)}>{getProjectStatusLabel(p.status)}</Badge>
                     <div className="flex items-center gap-2 shrink-0">
                       <Link href={`/projects/${p.slug}/edit`} className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface-overlay)] hover:bg-[var(--color-border)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors">
                         <Pencil className="w-3 h-3" /> Edit

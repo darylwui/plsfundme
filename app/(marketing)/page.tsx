@@ -93,6 +93,10 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     },
   ];
 
+  // Hide empty-state stats until platform has meaningful traction.
+  // Nothing kills trust faster than a homepage of zeros.
+  const showLiveStats = platformStats.activeCampaigns >= 3;
+
   return (
     <div>
       {/* ── Hero ─────────────────────────────────────────────── */}
@@ -107,8 +111,8 @@ export default async function HomePage({ searchParams }: HomePageProps) {
               </div>
 
               <h1 className="text-[52px] md:text-[60px] font-black tracking-tight leading-[1.05]">
-                <span className="block" style={{ color: "#d97706" }}>Empowering founders to</span>
-                <span className="block" style={{ color: "#f2c480" }}>get that bread.</span>
+                <span className="block text-[#b45309] dark:text-amber-300">Empowering founders to</span>
+                <span className="block text-[#9a3412] dark:text-orange-300">get that bread.</span>
               </h1>
 
               <p className="mt-6 text-xl text-[var(--color-ink-muted)] max-w-lg leading-relaxed">
@@ -153,66 +157,118 @@ export default async function HomePage({ searchParams }: HomePageProps) {
               </div>
             </div>
 
-            {/* Right — platform stats card */}
-            <div className="hidden lg:flex justify-end">
-              <div className="w-full max-w-sm">
-                {/* Outer bezel */}
-                <div className="p-[3px] rounded-[calc(var(--radius-card)+4px)] bg-[var(--color-surface-overlay)] ring-1 ring-[var(--color-border)] shadow-[var(--shadow-card-hover)]">
-                  <div className="rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.7)] overflow-hidden">
+            {/* Right — platform stats card (shown once platform has live data) */}
+            {showLiveStats ? (
+              <div className="hidden lg:flex justify-end">
+                <div className="w-full max-w-sm">
+                  {/* Outer bezel */}
+                  <div className="p-[3px] rounded-[calc(var(--radius-card)+4px)] bg-[var(--color-surface-overlay)] ring-1 ring-[var(--color-border)] shadow-[var(--shadow-card-hover)]">
+                    <div className="rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.7)] overflow-hidden">
 
-                    {/* Card header */}
-                    <div className="px-6 pt-6 pb-4 border-b border-[var(--color-border)]">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="w-2 h-2 rounded-full bg-[var(--color-brand-lime)] animate-pulse" />
-                        <span className="text-xs uppercase tracking-[0.12em] font-medium text-[var(--color-ink-subtle)]">
-                          Platform at a glance
+                      {/* Card header */}
+                      <div className="px-6 pt-6 pb-4 border-b border-[var(--color-border)]">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="w-2 h-2 rounded-full bg-[var(--color-brand-lime)] animate-pulse" />
+                          <span className="text-xs uppercase tracking-[0.12em] font-medium text-[var(--color-ink-subtle)]">
+                            Platform at a glance
+                          </span>
+                        </div>
+                        <p className="text-sm md:text-xs text-[var(--color-ink-subtle)]">Live data · updated in real time</p>
+                      </div>
+
+                      {/* Stats grid */}
+                      <div className="grid grid-cols-2 divide-x divide-y divide-[var(--color-border)]">
+                        <div className="p-5 flex flex-col gap-1">
+                          <span className="font-mono font-black text-2xl text-[var(--color-ink)]">
+                            S{formatStatValue(platformStats.totalRaisedSGD, "$")}
+                          </span>
+                          <span className="text-sm md:text-xs text-[var(--color-ink-muted)]">Total raised</span>
+                        </div>
+                        <div className="p-5 flex flex-col gap-1">
+                          <span className="font-mono font-black text-2xl text-[var(--color-ink)]">
+                            {formatStatValue(platformStats.totalBackers)}
+                          </span>
+                          <span className="text-sm md:text-xs text-[var(--color-ink-muted)]">Backers</span>
+                        </div>
+                        <div className="p-5 flex flex-col gap-1">
+                          <span className="font-mono font-black text-2xl text-[var(--color-ink)]">
+                            {platformStats.activeCampaigns}
+                          </span>
+                          <span className="text-sm md:text-xs text-[var(--color-ink-muted)]">Live campaigns</span>
+                        </div>
+                        <div className="p-5 flex flex-col gap-1">
+                          <span className="font-mono font-black text-2xl text-[var(--color-brand-lime)]">5%</span>
+                          <span className="text-sm md:text-xs text-[var(--color-ink-muted)]">Platform fee</span>
+                        </div>
+                      </div>
+
+                      {/* Card footer */}
+                      <div className="px-6 py-4 bg-[var(--color-surface-raised)] border-t border-[var(--color-border)] flex items-center gap-2">
+                        <Shield className="w-3.5 h-3.5 text-[var(--color-brand-violet)] shrink-0" />
+                        <span className="text-sm md:text-xs text-[var(--color-ink-muted)]">
+                          All-or-nothing · funds held in escrow
                         </span>
                       </div>
-                      <p className="text-sm md:text-xs text-[var(--color-ink-subtle)]">Live data · updated in real time</p>
                     </div>
+                  </div>
 
-                    {/* Stats grid */}
-                    <div className="grid grid-cols-2 divide-x divide-y divide-[var(--color-border)]">
-                      <div className="p-5 flex flex-col gap-1">
-                        <span className="font-mono font-black text-2xl text-[var(--color-ink)]">
-                          S{formatStatValue(platformStats.totalRaisedSGD, "$")}
-                        </span>
-                        <span className="text-sm md:text-xs text-[var(--color-ink-muted)]">Total raised</span>
+                  {/* Floating label below card */}
+                  <p className="text-center text-sm md:text-xs text-[var(--color-ink-subtle)] mt-4">
+                    No risk to backers — ever.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              // Pre-launch placeholder — aspirational, not empty.
+              <div className="hidden lg:flex justify-end">
+                <div className="w-full max-w-sm">
+                  <div className="p-[3px] rounded-[calc(var(--radius-card)+4px)] bg-[var(--color-surface-overlay)] ring-1 ring-[var(--color-border)] shadow-[var(--shadow-card-hover)]">
+                    <div className="rounded-[var(--radius-card)] bg-[var(--color-surface)] overflow-hidden">
+                      <div className="px-6 pt-6 pb-4 border-b border-[var(--color-border)]">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="w-2 h-2 rounded-full bg-[var(--color-brand-amber)] animate-pulse" />
+                          <span className="text-xs uppercase tracking-[0.12em] font-medium text-[var(--color-ink-subtle)]">
+                            Launching soon
+                          </span>
+                        </div>
+                        <p className="text-sm md:text-xs text-[var(--color-ink-subtle)]">
+                          Be among our founding creators
+                        </p>
                       </div>
-                      <div className="p-5 flex flex-col gap-1">
-                        <span className="font-mono font-black text-2xl text-[var(--color-ink)]">
-                          {formatStatValue(platformStats.totalBackers)}
-                        </span>
-                        <span className="text-sm md:text-xs text-[var(--color-ink-muted)]">Backers</span>
-                      </div>
-                      <div className="p-5 flex flex-col gap-1">
-                        <span className="font-mono font-black text-2xl text-[var(--color-ink)]">
-                          {platformStats.activeCampaigns}
-                        </span>
-                        <span className="text-sm md:text-xs text-[var(--color-ink-muted)]">Live campaigns</span>
-                      </div>
-                      <div className="p-5 flex flex-col gap-1">
-                        <span className="font-mono font-black text-2xl text-[var(--color-brand-lime)]">5%</span>
-                        <span className="text-sm md:text-xs text-[var(--color-ink-muted)]">Platform fee</span>
-                      </div>
-                    </div>
 
-                    {/* Card footer */}
-                    <div className="px-6 py-4 bg-[var(--color-surface-raised)] border-t border-[var(--color-border)] flex items-center gap-2">
-                      <Shield className="w-3.5 h-3.5 text-[var(--color-brand-violet)] shrink-0" />
-                      <span className="text-sm md:text-xs text-[var(--color-ink-muted)]">
-                        All-or-nothing · funds held in escrow
-                      </span>
+                      <div className="px-6 py-8 flex flex-col gap-4">
+                        <p className="text-lg font-bold text-[var(--color-ink)] leading-snug">
+                          We&apos;re onboarding Singapore&apos;s first wave of creators right now.
+                        </p>
+                        <ul className="text-sm text-[var(--color-ink-muted)] space-y-2">
+                          <li className="flex items-start gap-2">
+                            <Shield className="w-4 h-4 text-[var(--color-brand-violet)] shrink-0 mt-0.5" />
+                            All-or-nothing funding — no risk to backers
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <Lock className="w-4 h-4 text-[var(--color-brand-amber)] shrink-0 mt-0.5" />
+                            Secure escrow — funds held until goal met
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <Globe className="w-4 h-4 text-[var(--color-brand-teal)] shrink-0 mt-0.5" />
+                            PayNow and card — made for Singapore
+                          </li>
+                        </ul>
+                      </div>
+
+                      <div className="px-6 py-4 bg-[var(--color-surface-raised)] border-t border-[var(--color-border)]">
+                        <Link
+                          href="/projects/create"
+                          className="text-sm font-semibold text-[var(--color-brand-violet)] hover:underline inline-flex items-center gap-1"
+                        >
+                          Launch your campaign <ArrowRight className="w-3.5 h-3.5" />
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </div>
-
-                {/* Floating label below card */}
-                <p className="text-center text-sm md:text-xs text-[var(--color-ink-subtle)] mt-4">
-                  No risk to backers — ever.
-                </p>
               </div>
-            </div>
+            )}
 
           </div>
         </div>
@@ -224,8 +280,8 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         />
       </section>
 
-      {/* ── Stats band ───────────────────────────────────────── */}
-      <StatsBar stats={stats} />
+      {/* ── Stats band (only once we have real traction) ─────── */}
+      {showLiveStats && <StatsBar stats={stats} />}
 
       {/* ── Discovery section ────────────────────────────────── */}
       <section className="bg-[var(--color-surface-raised)] border-t border-[var(--color-border)]">

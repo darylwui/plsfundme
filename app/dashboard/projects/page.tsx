@@ -6,8 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { ShareButtons } from "@/components/sharing/ShareButtons";
 import { formatDate, daysRemaining } from "@/lib/utils/dates";
 import { formatSgd, fundingPercent } from "@/lib/utils/currency";
+import { REJECTION_REASONS } from "@/types/admin";
+import { getProjectStatusLabel, getProjectStatusVariant } from "@/lib/utils/project-status";
 
-const BASE_URL = "https://getthatbread.vercel.app";
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://getthatbread.sg";
 
 interface Props {
   searchParams: Promise<{ submitted?: string; slug?: string; resubmitted?: string }>;
@@ -22,29 +24,17 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: projects } = await (supabase as any)
     .from("projects")
-    .select("id, title, slug, status, rejection_reason, funding_goal_sgd, amount_pledged_sgd, backer_count, deadline, created_at, cover_image_url")
+    .select("id, title, slug, status, rejection_reason, rejection_reason_code, funding_goal_sgd, amount_pledged_sgd, backer_count, deadline, created_at, cover_image_url")
     .eq("creator_id", user.id)
     .order("created_at", { ascending: false }) as { data: any[] | null };
 
-  const statusVariant: Record<string, "violet" | "lime" | "coral" | "neutral" | "amber"> = {
-    draft: "neutral",
-    pending_review: "amber",
-    active: "violet",
-    funded: "lime",
-    failed: "coral",
-    cancelled: "neutral",
-    removed: "coral",
-  };
-
-  const statusLabel: Record<string, string> = {
-    draft: "Draft",
-    pending_review: "Pending review",
-    active: "Live",
-    funded: "Funded",
-    failed: "Failed",
-    cancelled: "Rejected",
-    removed: "Removed",
-  };
+  // Only show "New campaign" button when the user is actually able to create.
+  const { data: pmProfile } = await supabase
+    .from("project_manager_profiles")
+    .select("status")
+    .eq("id", user.id)
+    .single();
+  const canCreate = pmProfile?.status === "approved";
 
   return (
     <div className="flex flex-col gap-6">
@@ -89,12 +79,29 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
 
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-black text-[var(--color-ink)]">My projects</h1>
-        <Link href="/projects/create">
-          <Button>
+        {canCreate ? (
+          <Link href="/projects/create">
+            <Button>
+              <PlusCircle className="w-4 h-4" />
+              New campaign
+            </Button>
+          </Link>
+        ) : pmProfile?.status === "pending_review" ? (
+          <span
+            title="Your creator application is still under review. You'll be able to launch once approved."
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-[var(--radius-btn)] border border-amber-300 bg-amber-50 dark:bg-amber-900/20 text-xs font-semibold text-amber-700 dark:text-amber-300"
+          >
             <PlusCircle className="w-4 h-4" />
-            New campaign
-          </Button>
-        </Link>
+            New campaign · Awaiting approval
+          </span>
+        ) : (
+          <Link href="/apply/pm">
+            <Button variant="secondary">
+              <PlusCircle className="w-4 h-4" />
+              Apply to launch campaigns
+            </Button>
+          </Link>
+        )}
       </div>
 
       {!projects || projects.length === 0 ? (
@@ -123,7 +130,11 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
             const days = daysRemaining(project.deadline);
             const isShareable = project.status === "active" || project.status === "pending_review";
             const isRejected = project.status === "cancelled";
-            const rejectionReason = (project as any).rejection_reason as string | null;
+            const rejectionReasonCode = (project as any).rejection_reason_code as string | null;
+            const rejectionMessage = (project as any).rejection_reason as string | null;
+            const reasonLabel = rejectionReasonCode
+              ? Object.values(REJECTION_REASONS).find((r) => r.code === rejectionReasonCode)?.label
+              : null;
 
             return (
               <div
@@ -150,8 +161,8 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
                       <p className="font-bold text-[var(--color-ink)] truncate">{project.title}</p>
-                      <Badge variant={statusVariant[project.status] ?? "neutral"}>
-                        {statusLabel[project.status] ?? project.status}
+                      <Badge variant={getProjectStatusVariant(project.status)}>
+                        {getProjectStatusLabel(project.status)}
                       </Badge>
                     </div>
                     <p className="text-xs text-[var(--color-ink-subtle)]">
@@ -203,16 +214,24 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
                 )}
 
                 {/* Rejection reason strip */}
-                {isRejected && rejectionReason && (
-                  <div className="border-t border-red-200 dark:border-red-800 px-5 py-3 bg-red-50 dark:bg-red-900/20 flex items-start gap-2">
-                    <XCircle className="w-3.5 h-3.5 text-[var(--color-brand-coral)] shrink-0 mt-0.5" />
-                    <div className="min-w-0">
-                      <span className="text-xs font-bold text-red-600 dark:text-red-400 uppercase tracking-wider">Reviewer feedback: </span>
-                      <span className="text-xs text-red-700 dark:text-red-300">{rejectionReason}</span>
+                {isRejected && (rejectionMessage || rejectionReasonCode) && (
+                  <div className="border-t border-amber-200 dark:border-amber-700 px-5 py-3 bg-amber-50 dark:bg-amber-900/20 flex flex-col gap-2">
+                    <div className="flex items-start gap-2">
+                      <XCircle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                      <div className="min-w-0 flex-1">
+                        {reasonLabel && (
+                          <p className="text-xs font-bold text-amber-800 dark:text-amber-300 mb-1">
+                            📋 {reasonLabel}
+                          </p>
+                        )}
+                        {rejectionMessage && (
+                          <p className="text-xs text-amber-700 dark:text-amber-400">{rejectionMessage}</p>
+                        )}
+                      </div>
                     </div>
                     <Link
                       href={`/projects/${project.slug}/edit`}
-                      className="ml-auto shrink-0 text-xs font-semibold text-[var(--color-brand-violet)] hover:underline"
+                      className="text-xs font-semibold text-amber-700 dark:text-amber-400 hover:underline self-start"
                     >
                       Edit &amp; resubmit →
                     </Link>

@@ -90,56 +90,15 @@ export function FundingWidget({ project }: FundingWidgetProps) {
                   </div>
                 )}
               </div>
-              {eligibleRewards.length > 0 && (
-                <div className="animate-fade-in text-xs font-semibold text-[var(--color-brand-violet)] flex items-center gap-1">
-                  ✨ {eligibleRewards.length} reward{eligibleRewards.length !== 1 ? "s" : ""} unlocked
-                </div>
-              )}
               <p className="text-xs text-[var(--color-ink-subtle)]">
                 You are pledging {format(convert(pledgeAmount))}
+                {eligibleRewards.length > 0 && (
+                  <span className="ml-1 font-semibold text-[var(--color-brand-violet)]">
+                    · {eligibleRewards.length} reward{eligibleRewards.length !== 1 ? "s" : ""} unlocked ↓
+                  </span>
+                )}
               </p>
             </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="reward-select" className="text-sm font-semibold text-[var(--color-ink)]">
-                Select reward
-              </label>
-              <select
-                id="reward-select"
-                value={selectedReward?.id ?? ""}
-                onChange={(e) => {
-                  const next = eligibleRewards.find((r) => r.id === e.target.value) ?? null;
-                  setSelectedReward(next);
-                }}
-                className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)]"
-              >
-                <option value="">No reward selected</option>
-                {eligibleRewards.map((reward) => (
-                  <option key={reward.id} value={reward.id}>
-                    {reward.title} (min S${reward.minimum_pledge_sgd})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {eligibleRewards.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {eligibleRewards.slice(0, 3).map((reward) => (
-                  <button
-                    key={reward.id}
-                    type="button"
-                    onClick={() => setSelectedReward(reward)}
-                    className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
-                      selectedReward?.id === reward.id
-                        ? "border-[var(--color-brand-violet)] bg-[var(--color-brand-violet)]/10 text-[var(--color-brand-violet)]"
-                        : "border-[var(--color-border)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
-                    }`}
-                  >
-                    {reward.title}
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
         )}
 
@@ -231,23 +190,15 @@ export function FundingWidget({ project }: FundingWidgetProps) {
           <h3 className="font-bold text-sm text-[var(--color-ink-muted)] uppercase tracking-wider">
             Choose a reward
           </h3>
-          {activeRewards
-            .map((reward) => {
-              const isEligible = pledgeAmount >= reward.minimum_pledge_sgd;
-              return (
-                <div
-                  key={reward.id}
-                  className={isEligible ? "animate-pulse-glow" : ""}
-                >
-                  <RewardTierCard
-                    reward={reward}
-                    selected={selectedReward?.id === reward.id}
-                    onSelect={isClosed ? undefined : setSelectedReward}
-                    disabled={isClosed}
-                  />
-                </div>
-              );
-            })}
+          {activeRewards.map((reward) => (
+            <RewardTierCard
+              key={reward.id}
+              reward={reward}
+              selected={selectedReward?.id === reward.id}
+              onSelect={isClosed ? undefined : setSelectedReward}
+              disabled={isClosed}
+            />
+          ))}
         </div>
       )}
     </div>

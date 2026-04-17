@@ -28,7 +28,7 @@ export async function POST(_request: Request, { params }: RouteContext) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await (supabase as any)
     .from("projects")
-    .update({ status: "pending_review", rejection_reason: null })
+    .update({ status: "pending_review", rejection_reason: null, rejection_reason_code: null })
     .eq("id", id);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

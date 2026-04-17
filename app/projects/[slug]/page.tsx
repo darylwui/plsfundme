@@ -4,13 +4,14 @@ import Link from "next/link";
 import { ArrowLeft, Pencil, Clock, CalendarDays, Building2, Globe, Link2 } from "lucide-react";
 import { ShareButtons } from "@/components/sharing/ShareButtons";
 
-const BASE_URL = "https://getthatbread.vercel.app";
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://getthatbread.sg";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { FundingWidget } from "@/components/projects/FundingWidget";
 import { ProjectPageSections } from "@/components/projects/ProjectPageSections";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { daysRemaining, formatDate } from "@/lib/utils/dates";
+import { toEmbedUrl } from "@/lib/utils/video-embed";
 import type { ProjectWithRelations } from "@/types/project";
 import type { Metadata } from "next";
 
@@ -272,19 +273,38 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               </div>
             </div>
 
-            {/* Cover image */}
-            {project.cover_image_url && (
-              <div className="relative w-full aspect-[16/9] rounded-[var(--radius-card)] border border-amber-200 dark:border-amber-800/50 bg-[var(--color-surface-overlay)] overflow-hidden">
-                <Image
-                  src={project.cover_image_url}
-                  alt={project.title}
-                  fill
-                  priority
-                  className="object-cover"
-                  sizes="(max-width: 1024px) 100vw, 66vw"
-                />
-              </div>
-            )}
+            {/* Pitch video (if provided), else cover image */}
+            {(() => {
+              const embedUrl = toEmbedUrl(project.video_url);
+              if (embedUrl) {
+                return (
+                  <div className="relative w-full aspect-[16/9] rounded-[var(--radius-card)] border border-amber-200 dark:border-amber-800/50 bg-black overflow-hidden">
+                    <iframe
+                      src={embedUrl}
+                      title={`${project.title} pitch video`}
+                      className="absolute inset-0 w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                );
+              }
+              if (project.cover_image_url) {
+                return (
+                  <div className="relative w-full aspect-[16/9] rounded-[var(--radius-card)] border border-amber-200 dark:border-amber-800/50 bg-[var(--color-surface-overlay)] overflow-hidden">
+                    <Image
+                      src={project.cover_image_url}
+                      alt={project.title}
+                      fill
+                      priority
+                      className="object-cover"
+                      sizes="(max-width: 1024px) 100vw, 66vw"
+                    />
+                  </div>
+                );
+              }
+              return null;
+            })()}
 
             {/* Creator PM profile card */}
             {creatorPmProfile && (

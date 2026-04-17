@@ -31,7 +31,7 @@ export async function PATCH(request: Request, { params }: RouteContext) {
   const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const { action, reason } = await request.json() as { action: string; reason?: string };
+  const { action, reasonCode, message, reason } = await request.json() as { action: string; reasonCode?: string; message?: string; reason?: string };
 
   const service = createServiceClient();
 
@@ -68,12 +68,18 @@ export async function PATCH(request: Request, { params }: RouteContext) {
   }
 
   if (action === "reject") {
-    if (!reason?.trim()) return NextResponse.json({ error: "Reason is required" }, { status: 400 });
+    if (!reasonCode?.trim() || !message?.trim()) {
+      return NextResponse.json({ error: "Reason category and message are required" }, { status: 400 });
+    }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error } = await (service as any)
       .from("projects")
-      .update({ status: "cancelled", rejection_reason: reason.trim() })
+      .update({
+        status: "cancelled",
+        rejection_reason_code: reasonCode.trim(),
+        rejection_reason: message.trim(),
+      })
       .eq("id", id);
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -85,7 +91,8 @@ export async function PATCH(request: Request, { params }: RouteContext) {
         creatorEmail: creatorAuth.email,
         creatorName: (profile as any).display_name,
         projectTitle: project.title,
-        reason: reason,
+        reasonCode: reasonCode.trim(),
+        message: message.trim(),
       }).catch(console.error);
     }
 

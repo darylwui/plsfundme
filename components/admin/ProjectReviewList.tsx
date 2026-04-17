@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatSgd } from "@/lib/utils/currency";
 import { formatDate } from "@/lib/utils/dates";
+import { REJECTION_REASONS } from "@/types/admin";
 
 interface ProjectRow {
   id: string;
@@ -83,7 +84,8 @@ export function ProjectReviewList({ pendingProjects, allProjects }: ProjectRevie
 
   // Per-card open state for rejection/removal reason inputs
   const [rejectingId, setRejectingId] = useState<string | null>(null);
-  const [rejectReason, setRejectReason] = useState("");
+  const [rejectReasonCode, setRejectReasonCode] = useState("");
+  const [rejectMessage, setRejectMessage] = useState("");
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [removeReason, setRemoveReason] = useState("");
 
@@ -92,12 +94,12 @@ export function ProjectReviewList({ pendingProjects, allProjects }: ProjectRevie
   const otherProjects = allProjects.filter((p) => !pendingIds.has(p.id));
   const projects = [...pendingProjects, ...otherProjects];
 
-  async function callAction(projectId: string, action: string, reason?: string) {
+  async function callAction(projectId: string, action: string, reasonCode?: string, message?: string) {
     setLoading(projectId + action);
     const res = await fetch(`/api/admin/projects/${projectId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action, reason }),
+      body: JSON.stringify({ action, reasonCode, message }),
     });
     setLoading(null);
     if (res.ok) {
@@ -253,25 +255,59 @@ export function ProjectReviewList({ pendingProjects, allProjects }: ProjectRevie
                   </Button>
 
                   {isRejectingThis ? (
-                    <div className="flex flex-col gap-2 flex-1 min-w-0">
-                      <textarea
-                        autoFocus
-                        rows={2}
-                        placeholder="Tell the creator why their campaign was rejected (required)…"
-                        value={rejectReason}
-                        onChange={(e) => setRejectReason(e.target.value)}
-                        className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3 py-2 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-coral)] resize-none"
-                      />
+                    <div className="flex flex-col gap-3 flex-1 min-w-0">
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-bold text-[var(--color-ink-muted)] uppercase">
+                          Rejection category
+                        </label>
+                        <select
+                          autoFocus
+                          value={rejectReasonCode}
+                          onChange={(e) => setRejectReasonCode(e.target.value)}
+                          className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3 py-2 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-coral)]"
+                        >
+                          <option value="">Select a reason…</option>
+                          {Object.entries(REJECTION_REASONS).map(([key, { code, label }]) => (
+                            <option key={code} value={code}>
+                              {label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {rejectReasonCode && Object.values(REJECTION_REASONS).find((r) => r.code === rejectReasonCode) && (
+                        <div className="rounded-[var(--radius-btn)] bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 p-3 text-sm text-amber-800 dark:text-amber-300">
+                          <p className="font-semibold mb-1">💡 How to give constructive feedback:</p>
+                          <p>
+                            {Object.values(REJECTION_REASONS).find((r) => r.code === rejectReasonCode)?.tip}
+                          </p>
+                        </div>
+                      )}
+
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-bold text-[var(--color-ink-muted)] uppercase">
+                          Message to creator
+                        </label>
+                        <textarea
+                          rows={3}
+                          placeholder="Be constructive. Suggest what to improve and how they can resubmit."
+                          value={rejectMessage}
+                          onChange={(e) => setRejectMessage(e.target.value)}
+                          className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3 py-2 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-coral)] resize-none"
+                        />
+                      </div>
+
                       <div className="flex gap-2">
                         <Button
                           size="sm"
                           variant="danger"
                           loading={loading === project.id + "reject"}
-                          disabled={!rejectReason.trim()}
+                          disabled={!rejectReasonCode.trim() || !rejectMessage.trim()}
                           onClick={async () => {
-                            await callAction(project.id, "reject", rejectReason);
+                            await callAction(project.id, "reject", rejectReasonCode, rejectMessage);
                             setRejectingId(null);
-                            setRejectReason("");
+                            setRejectReasonCode("");
+                            setRejectMessage("");
                           }}
                         >
                           Send rejection
@@ -279,7 +315,11 @@ export function ProjectReviewList({ pendingProjects, allProjects }: ProjectRevie
                         <Button
                           size="sm"
                           variant="ghost"
-                          onClick={() => { setRejectingId(null); setRejectReason(""); }}
+                          onClick={() => {
+                            setRejectingId(null);
+                            setRejectReasonCode("");
+                            setRejectMessage("");
+                          }}
                         >
                           Cancel
                         </Button>
@@ -292,6 +332,8 @@ export function ProjectReviewList({ pendingProjects, allProjects }: ProjectRevie
                       onClick={() => {
                         setRejectingId(project.id);
                         setRemovingId(null);
+                        setRejectReasonCode("");
+                        setRejectMessage("");
                       }}
                     >
                       <XCircle className="w-3.5 h-3.5" />

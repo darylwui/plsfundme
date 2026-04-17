@@ -69,8 +69,7 @@ export function Step3_Rewards({
           Build your reward tiers
         </h2>
         <p className="mt-1 text-sm text-[var(--color-ink-muted)]">
-          Give backers something exciting to unlock. You can always add more
-          after launch.
+          Give backers something exciting to unlock at different pledge levels. Start with an affordable "entry-level" reward — more backers = more momentum. You can always add more after launch.
         </p>
       </div>
 
@@ -181,6 +180,9 @@ export function Step3_Rewards({
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)] resize-none"
             />
+            <p className="text-xs text-[var(--color-ink-subtle)]">
+              Explain exactly what backers get. Include delivery date. Example: "Digital ebook (20 pages) + lifetime access to updates"
+            </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

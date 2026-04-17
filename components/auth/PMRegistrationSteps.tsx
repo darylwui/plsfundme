@@ -233,6 +233,7 @@ export function PMRegistrationSteps({ onBack }: PMRegistrationStepsProps) {
             onChange={(e) => setPassword(e.target.value)}
             error={errors.password}
             hint="Must be at least 8 characters"
+            showPasswordToggle
             required
           />
 
