@@ -123,6 +123,43 @@ export function ProjectReviewList({ pendingProjects, allProjects }: ProjectRevie
     }
   }
 
+  async function handleForceDelete(projectId: string, title: string) {
+    const first = confirm(
+      `FORCE DELETE "${title}"?\n\n` +
+        `This will:\n` +
+        `  • Cancel every card hold on Stripe\n` +
+        `  • Refund every captured pledge to the backer\n` +
+        `  • Reverse any processed creator payouts\n` +
+        `  • Hard-delete the project and all its pledges/payouts\n\n` +
+        `Only use this for test projects or an agreed cancellation. Continue?`
+    );
+    if (!first) return;
+    const confirmText = prompt(
+      `Type the project title exactly to confirm:\n\n${title}`
+    );
+    if (confirmText !== title) {
+      if (confirmText !== null) alert("Title did not match. Aborted.");
+      return;
+    }
+    setLoading(projectId + "force-delete");
+    const res = await fetch(`/api/admin/projects/${projectId}?force=true`, {
+      method: "DELETE",
+    });
+    setLoading(null);
+    const body = await res.json().catch(() => ({}));
+    if (res.ok) {
+      const warn = body.stripeErrors?.length
+        ? `\n\nSome Stripe reversals failed — check server logs:\n${body.stripeErrors.join("\n")}`
+        : "";
+      alert(
+        `Deleted. Reversed ${body.pledgesReversed ?? 0} pledge(s) and ${body.payoutsReversed ?? 0} payout(s).${warn}`
+      );
+      router.refresh();
+    } else {
+      alert(body.error ?? "Force delete failed.");
+    }
+  }
+
   if (projects.length === 0) {
     return (
       <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border-2 border-dashed border-[var(--color-border)] p-16 text-center">
@@ -403,6 +440,20 @@ export function ProjectReviewList({ pendingProjects, allProjects }: ProjectRevie
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                       Delete permanently
+                    </Button>
+                  )}
+
+                  {!isDeletable && !isRemovingThis && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      loading={loading === project.id + "force-delete"}
+                      onClick={() => handleForceDelete(project.id, project.title)}
+                      className="text-[var(--color-brand-danger)] hover:text-red-700 hover:bg-red-50 border border-red-200 border-dashed"
+                      title="Refunds every pledge on Stripe and hard-deletes. Use for test projects or agreed cancellations."
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      Force delete (refund + wipe)
                     </Button>
                   )}
                 </div>
