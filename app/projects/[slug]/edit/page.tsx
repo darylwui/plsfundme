@@ -20,6 +20,13 @@ export default async function EditProjectPage({ params }: EditProjectPageProps) 
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
+  const { data: viewerProfile } = await supabase
+    .from("profiles")
+    .select("is_admin")
+    .eq("id", user.id)
+    .single();
+  const isAdmin = Boolean((viewerProfile as { is_admin?: boolean } | null)?.is_admin);
+
   // Fetch project with relations
   const { data: raw } = await supabase
     .from("projects")
@@ -33,8 +40,8 @@ export default async function EditProjectPage({ params }: EditProjectPageProps) 
 
   const project = raw as unknown as ProjectWithRelations;
 
-  // Only the creator can edit
-  if (project.creator.id !== user.id) notFound();
+  // Only the creator (or an admin) can edit
+  if (project.creator.id !== user.id && !isAdmin) notFound();
 
   // Fetch categories for the dropdown
   const { data: categories } = await supabase
@@ -129,6 +136,7 @@ export default async function EditProjectPage({ params }: EditProjectPageProps) 
           rewards={project.rewards as Reward[]}
           pledgeCountByReward={pledgeCountByReward}
           hasPledges={hasPledges}
+          isAdmin={isAdmin}
         />
       </div>
     </div>

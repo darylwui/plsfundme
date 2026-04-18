@@ -5,7 +5,13 @@ interface RouteContext {
   params: Promise<{ id: string }>;
 }
 
-const DELETABLE_STATUSES = new Set(["draft", "pending_review", "failed", "cancelled"]);
+const DELETABLE_STATUSES = new Set([
+  "draft",
+  "pending_review",
+  "failed",
+  "cancelled",
+  "removed",
+]);
 
 /**
  * POST /api/projects/[id]/delete
