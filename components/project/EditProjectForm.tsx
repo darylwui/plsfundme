@@ -88,9 +88,9 @@ export function EditProjectForm({
   const [rewardFormErrors, setRewardFormErrors] = useState<Record<string, string>>({});
   const [rewardSaving, setRewardSaving] = useState(false);
 
-  const canDelete = (["draft", "pending_review", "failed", "cancelled"] as const).includes(
-    project.status as "draft" | "pending_review" | "failed" | "cancelled"
-  );
+  const DELETABLE_STATUSES = ["draft", "pending_review", "failed", "cancelled", "removed"] as const;
+  type DeletableStatus = (typeof DELETABLE_STATUSES)[number];
+  const canDelete = DELETABLE_STATUSES.includes(project.status as DeletableStatus);
 
   function showSaved(t: Tab) {
     setSaved(t);
