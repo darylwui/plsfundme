@@ -6,7 +6,7 @@ export const metadata: Metadata = {
 };
 
 const LAST_UPDATED = "10 April 2026";
-const CONTACT_EMAIL = "support@getthatbread.sg";
+const CONTACT_EMAIL = "hello@getthatbread.sg";
 
 export default function TermsPage() {
   return (
@@ -235,7 +235,7 @@ export default function TermsPage() {
           <Section title="13. Contact Us">
             <p>
               If you have questions about these Terms or wish to report a violation, please contact us at:{" "}
-              <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+              <a href={`mailto:${CONTACT_EMAIL}`} className="font-semibold text-[var(--color-brand-crust)] hover:underline">{CONTACT_EMAIL}</a>
             </p>
           </Section>
         </div>

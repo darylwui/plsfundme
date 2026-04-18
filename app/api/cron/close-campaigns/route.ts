@@ -20,6 +20,7 @@ export async function GET(request: Request) {
     .from("projects")
     .select("id, amount_pledged_sgd, funding_goal_sgd")
     .eq("status", "active")
+    .is("deleted_at", null)
     .lt("deadline", new Date().toISOString());
 
   if (projectsError) {

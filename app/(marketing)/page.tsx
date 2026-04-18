@@ -106,7 +106,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
             {/* Left — headline + CTAs */}
             <div className="max-w-xl">
-              <div className="inline-flex items-center px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 text-xs uppercase tracking-[0.12em] font-medium mb-6">
+              <div className="inline-flex items-center px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] text-xs uppercase tracking-[0.12em] font-medium mb-6">
                 Made for Singapore entrepreneurs
               </div>
 
