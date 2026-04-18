@@ -20,6 +20,7 @@ interface EditProjectFormProps {
   rewards: Reward[];
   pledgeCountByReward: Record<string, number>;
   hasPledges: boolean;
+  isAdmin?: boolean;
 }
 
 type Tab = "details" | "funding" | "rewards";
@@ -40,6 +41,7 @@ export function EditProjectForm({
   rewards: initialRewards,
   pledgeCountByReward,
   hasPledges,
+  isAdmin = false,
 }: EditProjectFormProps) {
   const router = useRouter();
   const supabase = createClient();
@@ -222,6 +224,47 @@ export function EditProjectForm({
         setDeleteError(body?.error ?? "Something went wrong. Please try again.");
         return;
       }
+      router.push("/dashboard/projects");
+    } catch (e) {
+      setDeleting(false);
+      setDeleteError(e instanceof Error ? e.message : "Network error");
+    }
+  }
+
+  async function adminForceDelete() {
+    const first = confirm(
+      `ADMIN FORCE DELETE "${project.title}"?\n\n` +
+        `This will:\n` +
+        `  • Cancel every card hold on Stripe\n` +
+        `  • Refund every captured pledge to the backer\n` +
+        `  • Reverse any processed creator payouts\n` +
+        `  • Hard-delete the project and all its pledges/payouts\n\n` +
+        `Only use this for test projects or an agreed cancellation. Continue?`
+    );
+    if (!first) return;
+    const confirmText = prompt(`Type the project title exactly to confirm:\n\n${project.title}`);
+    if (confirmText !== project.title) {
+      if (confirmText !== null) alert("Title did not match. Aborted.");
+      return;
+    }
+    setDeleting(true);
+    setDeleteError("");
+    try {
+      const res = await fetch(`/api/admin/projects/${project.id}?force=true`, {
+        method: "DELETE",
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setDeleting(false);
+        setDeleteError(body?.error ?? "Force delete failed.");
+        return;
+      }
+      const warn = body.stripeErrors?.length
+        ? `\n\nSome Stripe reversals failed — check server logs:\n${body.stripeErrors.join("\n")}`
+        : "";
+      alert(
+        `Deleted. Reversed ${body.pledgesReversed ?? 0} pledge(s) and ${body.payoutsReversed ?? 0} payout(s).${warn}`
+      );
       router.push("/dashboard/projects");
     } catch (e) {
       setDeleting(false);
@@ -693,6 +736,29 @@ export function EditProjectForm({
             <Trash2 className="w-4 h-4" />
             Delete campaign
           </button>
+        )}
+
+        {!canDelete && isAdmin && (
+          <div className="flex flex-col gap-2 border-t border-red-200 dark:border-red-900/50 pt-4">
+            <p className="text-xs font-bold uppercase tracking-wider text-[var(--color-brand-danger)]">
+              Admin override
+            </p>
+            <p className="text-sm text-[var(--color-ink-muted)]">
+              Force delete refunds every pledge via Stripe, reverses any processed creator payouts, and hard-deletes the campaign. Use only for test data or an agreed cancellation.
+            </p>
+            {deleteError && (
+              <p className="text-xs text-[var(--color-brand-danger)]">{deleteError}</p>
+            )}
+            <button
+              type="button"
+              onClick={adminForceDelete}
+              disabled={deleting}
+              className="self-start inline-flex items-center gap-2 px-4 py-2 rounded-[var(--radius-btn)] border border-dashed border-red-400 dark:border-red-700 text-sm font-semibold text-[var(--color-brand-danger)] hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <Trash2 className="w-4 h-4" />
+              {deleting ? "Working…" : "Force delete (admin)"}
+            </button>
+          </div>
         )}
 
         {canDelete && showDeleteConfirm && (
