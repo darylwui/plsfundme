@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-const SUPPORT_EMAIL = "support@getthatbread.sg";
+const SUPPORT_EMAIL = "hello@getthatbread.sg";
 
 export default function NotFound() {
   const subject = encodeURIComponent("404 Page Not Found");

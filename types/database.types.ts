@@ -6,410 +6,879 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export type UserRole = 'backer' | 'project_manager'
-export type PmStatus = 'pending_review' | 'approved' | 'rejected'
-export type ProjectStatus = 'draft' | 'pending_review' | 'active' | 'funded' | 'failed' | 'cancelled' | 'removed'
-export type PledgeStatus = 'pending' | 'authorized' | 'paynow_captured' | 'captured' | 'released' | 'refunded' | 'failed'
-export type PaymentMethodType = 'card' | 'paynow'
-export type FulfillmentStatus = 'unfulfilled' | 'shipped' | 'delivered'
-export type KycStatus = 'unverified' | 'pending' | 'approved' | 'rejected'
-export type PayoutMode = 'manual' | 'automatic'
-export type PayoutStatus = 'pending' | 'processing' | 'paid' | 'failed'
+// ── Hand-maintained named aliases for the generated enums.
+// Keep these in sync with the `Enums` block of `Database` below whenever
+// you regenerate via `supabase gen types`.
+export type UserRole = Database["public"]["Enums"]["user_role"]
+export type PmStatus = Database["public"]["Enums"]["pm_status"]
+export type ProjectStatus = Database["public"]["Enums"]["project_status"]
+export type PledgeStatus = Database["public"]["Enums"]["pledge_status"]
+export type PaymentMethodType = Database["public"]["Enums"]["payment_method_type"]
+export type FulfillmentStatus = Database["public"]["Enums"]["fulfillment_status"]
+export type KycStatus = Database["public"]["Enums"]["kyc_status"]
+export type PayoutMode = Database["public"]["Enums"]["payout_mode"]
+export type PayoutStatus = Database["public"]["Enums"]["payout_status"]
 
-export interface Database {
+export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.5"
+  }
   public: {
     Tables: {
-      profiles: {
-        Relationships: []
+      campaign_drafts: {
         Row: {
+          draft_data: Json
           id: string
-          display_name: string
-          avatar_url: string | null
-          bio: string | null
-          website_url: string | null
-          kyc_status: KycStatus
-          kyc_submitted_at: string | null
-          kyc_reviewed_at: string | null
-          kyc_rejection_reason: string | null
-          stripe_account_id: string | null
-          stripe_customer_id: string | null
-          is_admin: boolean
-          role: UserRole
-          created_at: string
+          rewards_data: Json
+          step: number
           updated_at: string
+          user_id: string
         }
         Insert: {
-          id: string
-          display_name: string
-          avatar_url?: string | null
-          bio?: string | null
-          website_url?: string | null
-          kyc_status?: KycStatus
-          kyc_submitted_at?: string | null
-          kyc_reviewed_at?: string | null
-          kyc_rejection_reason?: string | null
-          stripe_account_id?: string | null
-          stripe_customer_id?: string | null
-          is_admin?: boolean
-          role?: UserRole
-          created_at?: string
+          draft_data?: Json
+          id?: string
+          rewards_data?: Json
+          step?: number
           updated_at?: string
+          user_id: string
         }
-        Update: Partial<Database['public']['Tables']['profiles']['Insert']>
-      }
-      project_manager_profiles: {
+        Update: {
+          draft_data?: Json
+          id?: string
+          rewards_data?: Json
+          step?: number
+          updated_at?: string
+          user_id?: string
+        }
         Relationships: []
-        Row: {
-          id: string
-          bio: string
-          linkedin_url: string | null
-          company_name: string | null
-          company_website: string | null
-          project_type: string
-          project_description: string
-          id_document_url: string | null
-          singpass_verified: boolean
-          singpass_sub: string | null
-          status: PmStatus
-          rejection_reason: string | null
-          submitted_at: string
-          reviewed_at: string | null
-          reviewed_by: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id: string
-          bio: string
-          linkedin_url?: string | null
-          company_name?: string | null
-          company_website?: string | null
-          project_type: string
-          project_description: string
-          id_document_url?: string | null
-          singpass_verified?: boolean
-          singpass_sub?: string | null
-          status?: PmStatus
-          rejection_reason?: string | null
-          submitted_at?: string
-          reviewed_at?: string | null
-          reviewed_by?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: Partial<Database['public']['Tables']['project_manager_profiles']['Insert']>
       }
       categories: {
-        Relationships: []
         Row: {
-          id: string
-          name: string
-          slug: string
+          created_at: string
           description: string | null
+          display_order: number
           icon_name: string | null
+          id: string
           is_active: boolean
-          display_order: number
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
           name: string
           slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
           description?: string | null
+          display_order?: number
           icon_name?: string | null
+          id?: string
           is_active?: boolean
-          display_order?: number
-          created_at?: string
+          name: string
+          slug: string
           updated_at?: string
         }
-        Update: Partial<Database['public']['Tables']['categories']['Insert']>
-      }
-      projects: {
-        Relationships: []
-        Row: {
-          id: string
-          creator_id: string
-          category_id: string
-          title: string
-          slug: string
-          short_description: string
-          full_description: string
-          cover_image_url: string | null
-          video_url: string | null
-          funding_goal_sgd: number
-          amount_pledged_sgd: number
-          backer_count: number
-          payout_mode: PayoutMode
-          status: ProjectStatus
-          is_featured: boolean
-          rejection_reason: string | null
-          rejection_reason_code: string | null
-          start_date: string | null
-          deadline: string
-          launched_at: string | null
-          funded_at: string | null
-          failed_at: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          creator_id: string
-          category_id: string
-          title: string
-          slug: string
-          short_description: string
-          full_description?: string
-          cover_image_url?: string | null
-          video_url?: string | null
-          funding_goal_sgd: number
-          amount_pledged_sgd?: number
-          backer_count?: number
-          payout_mode?: PayoutMode
-          status?: ProjectStatus
-          is_featured?: boolean
-          rejection_reason?: string | null
-          rejection_reason_code?: string | null
-          start_date?: string | null
-          deadline: string
-          launched_at?: string | null
-          funded_at?: string | null
-          failed_at?: string | null
+        Update: {
           created_at?: string
-          updated_at?: string
-        }
-        Update: Partial<Database['public']['Tables']['projects']['Insert']>
-      }
-      rewards: {
-        Relationships: []
-        Row: {
-          id: string
-          project_id: string
-          title: string
-          description: string | null
-          minimum_pledge_sgd: number
-          estimated_delivery_date: string | null
-          max_backers: number | null
-          claimed_count: number
-          includes_physical_item: boolean
-          is_active: boolean
-          display_order: number
-          image_url: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          project_id: string
-          title: string
           description?: string | null
-          minimum_pledge_sgd: number
-          estimated_delivery_date?: string | null
-          max_backers?: number | null
-          claimed_count?: number
-          includes_physical_item?: boolean
+          display_order?: number
+          icon_name?: string | null
+          id?: string
           is_active?: boolean
-          display_order?: number
-          image_url?: string | null
-          created_at?: string
+          name?: string
+          slug?: string
           updated_at?: string
         }
-        Update: Partial<Database['public']['Tables']['rewards']['Insert']>
-      }
-      stretch_goals: {
         Relationships: []
-        Row: {
-          id: string
-          project_id: string
-          title: string
-          description: string | null
-          goal_amount_sgd: number
-          reached_at: string | null
-          display_order: number
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          project_id: string
-          title: string
-          description?: string | null
-          goal_amount_sgd: number
-          reached_at?: string | null
-          display_order?: number
-          created_at?: string
-          updated_at?: string
-        }
-        Update: Partial<Database['public']['Tables']['stretch_goals']['Insert']>
-      }
-      pledges: {
-        Relationships: []
-        Row: {
-          id: string
-          project_id: string
-          backer_id: string
-          reward_id: string | null
-          amount_sgd: number
-          platform_fee_sgd: number
-          stripe_payment_intent_id: string | null
-          stripe_setup_intent_id: string | null
-          stripe_payment_method_id: string | null
-          payment_method: PaymentMethodType
-          status: PledgeStatus
-          fulfillment_status: FulfillmentStatus
-          shipped_at: string | null
-          delivered_at: string | null
-          tracking_url: string | null
-          is_anonymous: boolean
-          backer_note: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          project_id: string
-          backer_id: string
-          reward_id?: string | null
-          amount_sgd: number
-          platform_fee_sgd?: number
-          stripe_payment_intent_id?: string | null
-          stripe_setup_intent_id?: string | null
-          stripe_payment_method_id?: string | null
-          payment_method: PaymentMethodType
-          status?: PledgeStatus
-          fulfillment_status?: FulfillmentStatus
-          shipped_at?: string | null
-          delivered_at?: string | null
-          tracking_url?: string | null
-          is_anonymous?: boolean
-          backer_note?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: Partial<Database['public']['Tables']['pledges']['Insert']>
       }
       payouts: {
-        Relationships: []
         Row: {
-          id: string
-          project_id: string
-          creator_id: string
           amount_sgd: number
-          platform_fee_sgd: number
+          created_at: string
+          creator_id: string
+          id: string
           net_amount_sgd: number
-          stripe_transfer_id: string | null
-          status: PayoutStatus
-          requested_at: string
+          platform_fee_sgd: number
           processed_at: string | null
-          created_at: string
+          project_id: string
+          requested_at: string
+          status: Database["public"]["Enums"]["payout_status"]
+          stripe_transfer_id: string | null
           updated_at: string
         }
         Insert: {
-          id?: string
-          project_id: string
-          creator_id: string
           amount_sgd: number
-          platform_fee_sgd: number
-          net_amount_sgd: number
-          stripe_transfer_id?: string | null
-          status?: PayoutStatus
-          requested_at?: string
-          processed_at?: string | null
           created_at?: string
+          creator_id: string
+          id?: string
+          net_amount_sgd: number
+          platform_fee_sgd: number
+          processed_at?: string | null
+          project_id: string
+          requested_at?: string
+          status?: Database["public"]["Enums"]["payout_status"]
+          stripe_transfer_id?: string | null
           updated_at?: string
         }
-        Update: Partial<Database['public']['Tables']['payouts']['Insert']>
+        Update: {
+          amount_sgd?: number
+          created_at?: string
+          creator_id?: string
+          id?: string
+          net_amount_sgd?: number
+          platform_fee_sgd?: number
+          processed_at?: string | null
+          project_id?: string
+          requested_at?: string
+          status?: Database["public"]["Enums"]["payout_status"]
+          stripe_transfer_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payouts_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payouts_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
-      project_updates: {
-        Relationships: []
+      pledges: {
         Row: {
-          id: string
-          project_id: string
-          creator_id: string
-          title: string
-          body: string
-          is_backers_only: boolean
+          amount_sgd: number
+          backer_id: string
+          backer_note: string | null
           created_at: string
+          delivered_at: string | null
+          fulfillment_status: Database["public"]["Enums"]["fulfillment_status"]
+          id: string
+          is_anonymous: boolean
+          payment_method: Database["public"]["Enums"]["payment_method_type"]
+          platform_fee_sgd: number
+          project_id: string
+          reward_id: string | null
+          shipped_at: string | null
+          status: Database["public"]["Enums"]["pledge_status"]
+          stripe_payment_intent_id: string | null
+          stripe_payment_method_id: string | null
+          stripe_setup_intent_id: string | null
+          tracking_url: string | null
           updated_at: string
         }
         Insert: {
-          id?: string
-          project_id: string
-          creator_id: string
-          title: string
-          body: string
-          is_backers_only?: boolean
+          amount_sgd: number
+          backer_id: string
+          backer_note?: string | null
           created_at?: string
+          delivered_at?: string | null
+          fulfillment_status?: Database["public"]["Enums"]["fulfillment_status"]
+          id?: string
+          is_anonymous?: boolean
+          payment_method: Database["public"]["Enums"]["payment_method_type"]
+          platform_fee_sgd?: number
+          project_id: string
+          reward_id?: string | null
+          shipped_at?: string | null
+          status?: Database["public"]["Enums"]["pledge_status"]
+          stripe_payment_intent_id?: string | null
+          stripe_payment_method_id?: string | null
+          stripe_setup_intent_id?: string | null
+          tracking_url?: string | null
           updated_at?: string
         }
-        Update: Partial<Database['public']['Tables']['project_updates']['Insert']>
+        Update: {
+          amount_sgd?: number
+          backer_id?: string
+          backer_note?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          fulfillment_status?: Database["public"]["Enums"]["fulfillment_status"]
+          id?: string
+          is_anonymous?: boolean
+          payment_method?: Database["public"]["Enums"]["payment_method_type"]
+          platform_fee_sgd?: number
+          project_id?: string
+          reward_id?: string | null
+          shipped_at?: string | null
+          status?: Database["public"]["Enums"]["pledge_status"]
+          stripe_payment_intent_id?: string | null
+          stripe_payment_method_id?: string | null
+          stripe_setup_intent_id?: string | null
+          tracking_url?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pledges_backer_id_fkey"
+            columns: ["backer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pledges_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pledges_reward_id_fkey"
+            columns: ["reward_id"]
+            isOneToOne: false
+            referencedRelation: "rewards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          display_name: string
+          id: string
+          is_admin: boolean
+          kyc_rejection_reason: string | null
+          kyc_reviewed_at: string | null
+          kyc_status: Database["public"]["Enums"]["kyc_status"]
+          kyc_submitted_at: string | null
+          role: Database["public"]["Enums"]["user_role"]
+          stripe_account_id: string | null
+          stripe_customer_id: string | null
+          updated_at: string
+          website_url: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name: string
+          id: string
+          is_admin?: boolean
+          kyc_rejection_reason?: string | null
+          kyc_reviewed_at?: string | null
+          kyc_status?: Database["public"]["Enums"]["kyc_status"]
+          kyc_submitted_at?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          stripe_account_id?: string | null
+          stripe_customer_id?: string | null
+          updated_at?: string
+          website_url?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string
+          id?: string
+          is_admin?: boolean
+          kyc_rejection_reason?: string | null
+          kyc_reviewed_at?: string | null
+          kyc_status?: Database["public"]["Enums"]["kyc_status"]
+          kyc_submitted_at?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          stripe_account_id?: string | null
+          stripe_customer_id?: string | null
+          updated_at?: string
+          website_url?: string | null
+        }
+        Relationships: []
       }
       project_feedback: {
-        Relationships: []
         Row: {
-          id: string
-          project_id: string
           author_id: string
-          parent_id: string | null
-          message: string
           created_at: string
+          id: string
+          message: string
+          parent_id: string | null
+          project_id: string
           updated_at: string
         }
         Insert: {
-          id?: string
-          project_id: string
           author_id: string
-          parent_id?: string | null
-          message: string
           created_at?: string
+          id?: string
+          message: string
+          parent_id?: string | null
+          project_id: string
           updated_at?: string
         }
-        Update: Partial<Database['public']['Tables']['project_feedback']['Insert']>
+        Update: {
+          author_id?: string
+          created_at?: string
+          id?: string
+          message?: string
+          parent_id?: string | null
+          project_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_feedback_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_feedback_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "project_feedback"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_feedback_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_manager_profiles: {
+        Row: {
+          bio: string
+          company_name: string | null
+          company_website: string | null
+          created_at: string
+          id: string
+          id_document_url: string | null
+          linkedin_url: string | null
+          project_description: string
+          project_type: string
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          singpass_sub: string | null
+          singpass_verified: boolean
+          status: Database["public"]["Enums"]["pm_status"]
+          submitted_at: string
+          updated_at: string
+        }
+        Insert: {
+          bio: string
+          company_name?: string | null
+          company_website?: string | null
+          created_at?: string
+          id: string
+          id_document_url?: string | null
+          linkedin_url?: string | null
+          project_description: string
+          project_type: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          singpass_sub?: string | null
+          singpass_verified?: boolean
+          status?: Database["public"]["Enums"]["pm_status"]
+          submitted_at?: string
+          updated_at?: string
+        }
+        Update: {
+          bio?: string
+          company_name?: string | null
+          company_website?: string | null
+          created_at?: string
+          id?: string
+          id_document_url?: string | null
+          linkedin_url?: string | null
+          project_description?: string
+          project_type?: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          singpass_sub?: string | null
+          singpass_verified?: boolean
+          status?: Database["public"]["Enums"]["pm_status"]
+          submitted_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_manager_profiles_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_manager_profiles_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_updates: {
+        Row: {
+          body: string
+          created_at: string
+          creator_id: string
+          id: string
+          is_backers_only: boolean
+          project_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          creator_id: string
+          id?: string
+          is_backers_only?: boolean
+          project_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          creator_id?: string
+          id?: string
+          is_backers_only?: boolean
+          project_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_updates_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_updates_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          amount_pledged_sgd: number
+          backer_count: number
+          category_id: string
+          cover_image_url: string | null
+          created_at: string
+          creator_id: string
+          deadline: string
+          deleted_at: string | null
+          failed_at: string | null
+          full_description: string
+          funded_at: string | null
+          funding_goal_sgd: number
+          id: string
+          is_featured: boolean
+          launched_at: string | null
+          payout_mode: Database["public"]["Enums"]["payout_mode"]
+          rejection_reason: string | null
+          rejection_reason_code: string | null
+          short_description: string
+          slug: string
+          start_date: string | null
+          status: Database["public"]["Enums"]["project_status"]
+          title: string
+          updated_at: string
+          video_url: string | null
+        }
+        Insert: {
+          amount_pledged_sgd?: number
+          backer_count?: number
+          category_id: string
+          cover_image_url?: string | null
+          created_at?: string
+          creator_id: string
+          deadline: string
+          deleted_at?: string | null
+          failed_at?: string | null
+          full_description?: string
+          funded_at?: string | null
+          funding_goal_sgd: number
+          id?: string
+          is_featured?: boolean
+          launched_at?: string | null
+          payout_mode?: Database["public"]["Enums"]["payout_mode"]
+          rejection_reason?: string | null
+          rejection_reason_code?: string | null
+          short_description: string
+          slug: string
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["project_status"]
+          title: string
+          updated_at?: string
+          video_url?: string | null
+        }
+        Update: {
+          amount_pledged_sgd?: number
+          backer_count?: number
+          category_id?: string
+          cover_image_url?: string | null
+          created_at?: string
+          creator_id?: string
+          deadline?: string
+          deleted_at?: string | null
+          failed_at?: string | null
+          full_description?: string
+          funded_at?: string | null
+          funding_goal_sgd?: number
+          id?: string
+          is_featured?: boolean
+          launched_at?: string | null
+          payout_mode?: Database["public"]["Enums"]["payout_mode"]
+          rejection_reason?: string | null
+          rejection_reason_code?: string | null
+          short_description?: string
+          slug?: string
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["project_status"]
+          title?: string
+          updated_at?: string
+          video_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rewards: {
+        Row: {
+          claimed_count: number
+          created_at: string
+          description: string | null
+          display_order: number
+          estimated_delivery_date: string | null
+          id: string
+          image_url: string | null
+          includes_physical_item: boolean
+          is_active: boolean
+          max_backers: number | null
+          minimum_pledge_sgd: number
+          project_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          claimed_count?: number
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          estimated_delivery_date?: string | null
+          id?: string
+          image_url?: string | null
+          includes_physical_item?: boolean
+          is_active?: boolean
+          max_backers?: number | null
+          minimum_pledge_sgd: number
+          project_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          claimed_count?: number
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          estimated_delivery_date?: string | null
+          id?: string
+          image_url?: string | null
+          includes_physical_item?: boolean
+          is_active?: boolean
+          max_backers?: number | null
+          minimum_pledge_sgd?: number
+          project_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rewards_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stretch_goals: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number
+          goal_amount_sgd: number
+          id: string
+          project_id: string
+          reached_at: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          goal_amount_sgd: number
+          id?: string
+          project_id: string
+          reached_at?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          goal_amount_sgd?: number
+          id?: string
+          project_id?: string
+          reached_at?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stretch_goals_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
-    Views: Record<string, never>
-    CompositeTypes: Record<string, never>
+    Views: {
+      [_ in never]: never
+    }
     Functions: {
-      increment_pledge_totals: {
-        Args: { p_project_id: string; p_amount_sgd: number }
-        Returns: void
-      }
-      decrement_pledge_totals: {
-        Args: { p_project_id: string; p_amount_sgd: number }
-        Returns: void
-      }
-      claim_reward_slot: {
-        Args: { p_reward_id: string }
-        Returns: boolean
-      }
-      release_reward_slot: {
-        Args: { p_reward_id: string }
-        Returns: void
-      }
       calculate_platform_fee: {
         Args: { p_amount_sgd: number }
         Returns: number
       }
       check_stretch_goals: {
         Args: { p_project_id: string }
-        Returns: void
+        Returns: undefined
       }
-      is_admin: {
-        Args: Record<string, never>
-        Returns: boolean
+      claim_reward_slot: { Args: { p_reward_id: string }; Returns: boolean }
+      decrement_pledge_totals: {
+        Args: { p_amount_sgd: number; p_project_id: string }
+        Returns: undefined
       }
+      increment_pledge_totals: {
+        Args: { p_amount_sgd: number; p_project_id: string }
+        Returns: undefined
+      }
+      is_admin: { Args: never; Returns: boolean }
+      process_expired_campaigns: {
+        Args: never
+        Returns: {
+          goal: number
+          outcome: string
+          project_id: string
+          total_pledged: number
+        }[]
+      }
+      release_reward_slot: { Args: { p_reward_id: string }; Returns: undefined }
     }
     Enums: {
-      project_status: ProjectStatus
-      pledge_status: PledgeStatus
-      payment_method_type: PaymentMethodType
-      fulfillment_status: FulfillmentStatus
-      kyc_status: KycStatus
-      payout_mode: PayoutMode
-      payout_status: PayoutStatus
-      user_role: UserRole
-      pm_status: PmStatus
+      fulfillment_status: "unfulfilled" | "shipped" | "delivered"
+      kyc_status: "unverified" | "pending" | "approved" | "rejected"
+      payment_method_type: "card" | "paynow"
+      payout_mode: "manual" | "automatic"
+      payout_status: "pending" | "processing" | "paid" | "failed"
+      pledge_status:
+        | "pending"
+        | "authorized"
+        | "paynow_captured"
+        | "captured"
+        | "released"
+        | "refunded"
+        | "failed"
+      pm_status: "pending_review" | "approved" | "rejected"
+      project_status:
+        | "draft"
+        | "active"
+        | "funded"
+        | "failed"
+        | "cancelled"
+        | "pending_review"
+        | "removed"
+      user_role: "backer" | "project_manager"
+    }
+    CompositeTypes: {
+      [_ in never]: never
     }
   }
 }
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  public: {
+    Enums: {
+      fulfillment_status: ["unfulfilled", "shipped", "delivered"],
+      kyc_status: ["unverified", "pending", "approved", "rejected"],
+      payment_method_type: ["card", "paynow"],
+      payout_mode: ["manual", "automatic"],
+      payout_status: ["pending", "processing", "paid", "failed"],
+      pledge_status: [
+        "pending",
+        "authorized",
+        "paynow_captured",
+        "captured",
+        "released",
+        "refunded",
+        "failed",
+      ],
+      pm_status: ["pending_review", "approved", "rejected"],
+      project_status: [
+        "draft",
+        "active",
+        "funded",
+        "failed",
+        "cancelled",
+        "pending_review",
+        "removed",
+      ],
+      user_role: ["backer", "project_manager"],
+    },
+  },
+} as const

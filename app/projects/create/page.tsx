@@ -120,7 +120,7 @@ export default async function CreateProjectPage() {
               Re-apply as Creator
             </Link>
             <a
-              href="mailto:support@getthatbread.sg"
+              href="mailto:hello@getthatbread.sg"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] text-sm font-semibold text-[var(--color-ink)] hover:bg-[var(--color-surface-raised)] transition-colors"
             >
               Contact support

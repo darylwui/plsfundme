@@ -6,7 +6,7 @@ export const metadata: Metadata = {
 };
 
 const LAST_UPDATED = "10 April 2026";
-const CONTACT_EMAIL = "support@getthatbread.sg";
+const CONTACT_EMAIL = "hello@getthatbread.sg";
 
 export default function PrivacyPage() {
   return (
@@ -136,7 +136,7 @@ export default function PrivacyPage() {
             </ul>
             <p>
               To exercise any of these rights, please email us at{" "}
-              <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. We will respond within 30 days.
+              <a href={`mailto:${CONTACT_EMAIL}`} className="font-semibold text-[var(--color-brand-crust)] hover:underline">{CONTACT_EMAIL}</a>. We will respond within 30 days.
             </p>
           </Section>
 
@@ -176,7 +176,7 @@ export default function PrivacyPage() {
             <p>
               If you have any questions about this Privacy Policy or wish to exercise your PDPA rights,
               please contact us at:{" "}
-              <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+              <a href={`mailto:${CONTACT_EMAIL}`} className="font-semibold text-[var(--color-brand-crust)] hover:underline">{CONTACT_EMAIL}</a>
             </p>
           </Section>
 

@@ -83,7 +83,7 @@ const FEES = [
   { label: "If goal not reached", value: "Free — backers refunded in full", highlight: true },
 ];
 
-const FAQS: { q: string; a: string }[] = [
+const FAQS: { q: string; a: React.ReactNode }[] = [
   {
     q: "When am I charged for my pledge?",
     a: "It depends on the payment method. With a credit or debit card, we place a hold on your card and only charge it if the campaign reaches its goal by the deadline. With PayNow, the payment is collected immediately — if the campaign doesn't hit its goal, we refund the full amount to you.",
@@ -98,7 +98,18 @@ const FAQS: { q: string; a: string }[] = [
   },
   {
     q: "What if the creator doesn't deliver their rewards?",
-    a: "Creators are legally responsible for fulfilling their promises to backers. We vet every campaign before it goes live, and we step in if a creator goes dark — including pausing payouts and facilitating refunds where possible. If you have a concern about a campaign you've backed, email hello@getthatbread.sg.",
+    a: (
+      <>
+        Creators are legally responsible for fulfilling their promises to backers. We vet every campaign before it goes live, and we step in if a creator goes dark — including pausing payouts and facilitating refunds where possible. If you have a concern about a campaign you&apos;ve backed, email{" "}
+        <a
+          href="mailto:hello@getthatbread.sg"
+          className="font-semibold text-[var(--color-brand-crust)] hover:underline"
+        >
+          hello@getthatbread.sg
+        </a>
+        .
+      </>
+    ),
   },
   {
     q: "Is my pledge tax-deductible?",
@@ -124,7 +135,7 @@ export default function HowItWorksPage() {
       {/* ── Hero ─────────────────────────────────────────────── */}
       <section className="bg-gradient-to-br from-amber-50 via-[#FFFBF5] to-orange-50 dark:from-[#0f0f0f] dark:via-[#0a0a0a] dark:to-[#111111] border-b border-[var(--color-border)]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24">
-          <div className="inline-flex items-center px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 text-xs uppercase tracking-[0.12em] font-medium mb-6">
+          <div className="inline-flex items-center px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] text-xs uppercase tracking-[0.12em] font-medium mb-6">
             The model
           </div>
           <h1 className="text-[40px] md:text-[52px] font-black tracking-tight leading-[1.1] mb-4">

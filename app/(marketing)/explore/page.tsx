@@ -76,16 +76,16 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
       {/* Page hero */}
       <section className="bg-gradient-to-br from-amber-50 via-[#FFFBF5] to-orange-50 dark:from-[#0f0f0f] dark:via-[#0a0a0a] dark:to-[#111111] border-b border-[var(--color-border)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-          <div className="inline-flex items-center px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 text-[11px] uppercase tracking-[0.15em] font-medium mb-4">
+          <div className="inline-flex items-center px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] text-xs uppercase tracking-[0.12em] font-medium mb-4">
             Singapore campaigns
           </div>
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
             <div>
-              <h1 className="text-3xl md:text-4xl font-black tracking-tight" style={{ color: "#d97706" }}>
+              <h1 className="text-3xl md:text-4xl font-black tracking-tight text-[var(--color-ink)]">
                 Explore projects
               </h1>
               <p className="text-[var(--color-ink-muted)] mt-1.5">
-                <span className="font-mono font-bold" style={{ color: "#d97706" }}>{typedProjects.length}</span> active campaign{typedProjects.length !== 1 ? "s" : ""} live right now
+                <span className="font-mono font-bold text-[var(--color-brand-crust)] dark:text-[var(--color-brand-golden)]">{typedProjects.length}</span> active campaign{typedProjects.length !== 1 ? "s" : ""} live right now
               </p>
             </div>
           </div>

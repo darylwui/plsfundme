@@ -88,6 +88,10 @@ export function EditProjectForm({
   const [rewardFormErrors, setRewardFormErrors] = useState<Record<string, string>>({});
   const [rewardSaving, setRewardSaving] = useState(false);
 
+  const canDelete = (["draft", "pending_review", "failed", "cancelled"] as const).includes(
+    project.status as "draft" | "pending_review" | "failed" | "cancelled"
+  );
+
   function showSaved(t: Tab) {
     setSaved(t);
     setTimeout(() => setSaved(null), 3000);
@@ -210,17 +214,18 @@ export function EditProjectForm({
   async function deleteProject() {
     setDeleting(true);
     setDeleteError("");
-    const { error } = await supabase.from("projects").delete().eq("id", project.id);
-    setDeleting(false);
-    if (error) {
-      if (error.code === "23503") {
-        // Foreign key violation — pledges exist
-        setDeleteError("Your project has pledged funds, please contact support for assistance.");
-      } else {
-        setDeleteError(error.message);
+    try {
+      const res = await fetch(`/api/projects/${project.id}/delete`, { method: "POST" });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setDeleting(false);
+        setDeleteError(body?.error ?? "Something went wrong. Please try again.");
+        return;
       }
-    } else {
       router.push("/dashboard/projects");
+    } catch (e) {
+      setDeleting(false);
+      setDeleteError(e instanceof Error ? e.message : "Network error");
     }
   }
 
@@ -672,14 +677,14 @@ export function EditProjectForm({
           <div>
             <h3 className="font-bold text-[var(--color-ink)]">Delete campaign</h3>
             <p className="text-sm text-[var(--color-ink-muted)] mt-0.5">
-              {hasPledges
-                ? "Your project has pledged funds, please contact support for assistance."
-                : "Permanently remove this campaign and all its data. This cannot be undone."}
+              {canDelete
+                ? "Remove this campaign from your dashboard and the public site. Pledge records are kept for audit, but the campaign stops being visible."
+                : "Live or funded campaigns can't be deleted here — please contact support for assistance."}
             </p>
           </div>
         </div>
 
-        {!hasPledges && !showDeleteConfirm && (
+        {canDelete && !showDeleteConfirm && (
           <button
             type="button"
             onClick={() => setShowDeleteConfirm(true)}
@@ -690,7 +695,7 @@ export function EditProjectForm({
           </button>
         )}
 
-        {!hasPledges && showDeleteConfirm && (
+        {canDelete && showDeleteConfirm && (
           <div className="flex flex-col gap-3">
             <p className="text-sm text-[var(--color-ink-muted)]">
               Type <span className="font-mono font-bold text-[var(--color-ink)]">DELETE</span> to confirm.

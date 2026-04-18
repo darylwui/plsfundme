@@ -7,6 +7,7 @@ import { ShareButtons } from "@/components/sharing/ShareButtons";
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://getthatbread.sg";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { FundingWidget } from "@/components/projects/FundingWidget";
+import { FeaturedSticker } from "@/components/projects/FeaturedSticker";
 import { ProjectPageSections } from "@/components/projects/ProjectPageSections";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -237,12 +238,6 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                 {project.short_description}
               </p>
 
-              {project.is_featured && (
-                <div className="mt-4 inline-flex items-center gap-2 px-4 py-3 rounded-[var(--radius-card)] bg-amber-100/40 dark:bg-amber-900/20 border border-amber-300 dark:border-amber-700/50 text-sm font-semibold text-amber-800 dark:text-amber-300">
-                  🍞 The get that bread team loves this one
-                </div>
-              )}
-
               <div className="mt-5 inline-flex items-center gap-3 px-4 py-3 rounded-[var(--radius-card)] bg-amber-100/40 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50">
                 <div className="w-10 h-10 rounded-full bg-amber-200/70 dark:bg-amber-800/40 ring-1 ring-amber-300 dark:ring-amber-700 flex items-center justify-center font-bold text-amber-800 dark:text-amber-300 shrink-0 overflow-hidden">
                   {project.creator.avatar_url ? (
@@ -286,6 +281,9 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
                     />
+                    {project.is_featured && (
+                      <FeaturedSticker className="absolute bottom-4 left-4 z-10" size={112} />
+                    )}
                   </div>
                 );
               }
@@ -300,6 +298,9 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                       className="object-cover"
                       sizes="(max-width: 1024px) 100vw, 66vw"
                     />
+                    {project.is_featured && (
+                      <FeaturedSticker className="absolute bottom-4 left-4 z-10" size={112} />
+                    )}
                   </div>
                 );
               }
