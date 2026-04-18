@@ -1,5 +1,5 @@
 -- ============================================================
--- plsfundme — Initial Schema
+-- get that bread — Initial Schema
 -- Migration: 001_initial_schema.sql
 -- ============================================================
 

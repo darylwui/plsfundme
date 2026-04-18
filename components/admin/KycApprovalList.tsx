@@ -46,7 +46,7 @@ export function KycApprovalList({ profiles: initial }: { profiles: Profile[] }) 
           key={profile.id}
           className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-5 flex items-center gap-4"
         >
-          <div className="w-10 h-10 rounded-full bg-[var(--color-brand-violet)]/20 flex items-center justify-center font-bold text-[var(--color-brand-violet)] shrink-0">
+          <div className="w-10 h-10 rounded-full bg-[var(--color-brand-crust)]/20 flex items-center justify-center font-bold text-[var(--color-brand-crust)] shrink-0">
             {profile.display_name.charAt(0).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">

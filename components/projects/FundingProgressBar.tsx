@@ -27,10 +27,10 @@ export function FundingProgressBar({
   const nearFunded = percent >= 90;
 
   const barColor = funded
-    ? "bg-[var(--color-brand-lime)]"
+    ? "bg-[var(--color-brand-success)]"
     : days <= 3
-    ? "bg-[var(--color-brand-coral)]"
-    : "bg-[var(--color-brand-violet)]";
+    ? "bg-[var(--color-brand-danger)]"
+    : "bg-[var(--color-brand-crust)]";
 
   const barGlow = nearFunded || funded
     ? funded
@@ -86,7 +86,7 @@ export function FundingProgressBar({
           <span>
             <strong
               className={`font-mono ${
-                days <= 3 ? "text-[var(--color-brand-coral)]" : "text-[var(--color-ink)]"
+                days <= 3 ? "text-[var(--color-brand-danger)]" : "text-[var(--color-ink)]"
               }`}
             >
               {days}d

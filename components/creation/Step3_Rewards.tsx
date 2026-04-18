@@ -91,7 +91,7 @@ export function Step3_Rewards({
               )}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-black text-[var(--color-brand-violet)]">
+                  <span className="font-black text-[var(--color-brand-crust)]">
                     {formatSgd(reward.minimum_pledge_sgd)}+
                   </span>
                   <span className="font-bold text-[var(--color-ink)]">
@@ -112,7 +112,7 @@ export function Step3_Rewards({
               <button
                 type="button"
                 onClick={() => onRemove(i)}
-                className="p-1.5 rounded-lg text-[var(--color-ink-subtle)] hover:text-[var(--color-brand-coral)] hover:bg-red-50 transition-colors"
+                className="p-1.5 rounded-lg text-[var(--color-ink-subtle)] hover:text-[var(--color-brand-danger)] hover:bg-red-50 transition-colors"
               >
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -123,7 +123,7 @@ export function Step3_Rewards({
 
       {/* Add reward form */}
       {adding ? (
-        <div className="rounded-[var(--radius-card)] border-2 border-[var(--color-brand-violet)]/30 bg-violet-50/30 dark:bg-violet-900/10 p-5 flex flex-col gap-4">
+        <div className="rounded-[var(--radius-card)] border-2 border-[var(--color-brand-crust)]/30 bg-violet-50/30 dark:bg-violet-900/10 p-5 flex flex-col gap-4">
           <h3 className="font-bold text-[var(--color-ink)]">New reward tier</h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -156,13 +156,13 @@ export function Step3_Rewards({
                   className={`
                     w-full rounded-[var(--radius-btn)] border pl-9 pr-3.5 py-2.5 text-sm
                     bg-[var(--color-surface)] text-[var(--color-ink)]
-                    focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)]
-                    ${formErrors.minimum_pledge_sgd ? "border-[var(--color-brand-coral)]" : "border-[var(--color-border)]"}
+                    focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)]
+                    ${formErrors.minimum_pledge_sgd ? "border-[var(--color-brand-danger)]" : "border-[var(--color-border)]"}
                   `}
                 />
               </div>
               {formErrors.minimum_pledge_sgd && (
-                <p className="text-xs text-[var(--color-brand-coral)]">
+                <p className="text-xs text-[var(--color-brand-danger)]">
                   {formErrors.minimum_pledge_sgd}
                 </p>
               )}
@@ -178,7 +178,7 @@ export function Step3_Rewards({
               placeholder="What will backers receive? Be specific and exciting."
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
-              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)] resize-none"
+              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)] resize-none"
             />
             <p className="text-xs text-[var(--color-ink-subtle)]">
               Explain exactly what backers get. Include delivery date. Example: "Digital ebook (20 pages) + lifetime access to updates"
@@ -215,7 +215,7 @@ export function Step3_Rewards({
                       : null,
                   })
                 }
-                className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)]"
+                className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)]"
               />
             </div>
           </div>
@@ -235,7 +235,7 @@ export function Step3_Rewards({
               onChange={(e) =>
                 setForm({ ...form, includes_physical_item: e.target.checked })
               }
-              className="w-4 h-4 rounded accent-[var(--color-brand-violet)]"
+              className="w-4 h-4 rounded accent-[var(--color-brand-crust)]"
             />
             <span className="text-sm text-[var(--color-ink)]">
               This reward includes a physical item that needs to be shipped
@@ -260,7 +260,7 @@ export function Step3_Rewards({
         <button
           type="button"
           onClick={() => setAdding(true)}
-          className="rounded-[var(--radius-card)] border-2 border-dashed border-[var(--color-border)] hover:border-[var(--color-brand-violet)]/50 p-6 flex flex-col items-center gap-2 text-[var(--color-ink-muted)] hover:text-[var(--color-brand-violet)] transition-all group"
+          className="rounded-[var(--radius-card)] border-2 border-dashed border-[var(--color-border)] hover:border-[var(--color-brand-crust)]/50 p-6 flex flex-col items-center gap-2 text-[var(--color-ink-muted)] hover:text-[var(--color-brand-crust)] transition-all group"
         >
           <div className="w-10 h-10 rounded-full bg-[var(--color-surface-overlay)] group-hover:bg-violet-100 flex items-center justify-center transition-colors">
             <Plus className="w-5 h-5" />

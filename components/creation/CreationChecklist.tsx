@@ -98,7 +98,7 @@ export function CreationChecklist({ draft, rewards }: CreationChecklistProps) {
         <div className="flex items-center gap-2">
           <div className="flex-1 h-2 rounded-full bg-[var(--color-border)] overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-[var(--color-brand-violet)] to-[var(--color-brand-amber)] transition-all duration-300"
+              className="h-full bg-gradient-to-r from-[var(--color-brand-crust)] to-[var(--color-brand-golden)] transition-all duration-300"
               style={{ width: `${completionPercent}%` }}
             />
           </div>
@@ -115,12 +115,12 @@ export function CreationChecklist({ draft, rewards }: CreationChecklistProps) {
             {/* Icon */}
             <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5">
               {item.isComplete ? (
-                <div className="w-5 h-5 rounded-full bg-[var(--color-brand-lime)] flex items-center justify-center">
+                <div className="w-5 h-5 rounded-full bg-[var(--color-brand-success)] flex items-center justify-center">
                   <Check className="w-3 h-3 text-white" />
                 </div>
               ) : item.isRequired ? (
-                <div className="w-5 h-5 rounded-full border-2 border-[var(--color-brand-coral)] flex items-center justify-center">
-                  <X className="w-3 h-3 text-[var(--color-brand-coral)]" />
+                <div className="w-5 h-5 rounded-full border-2 border-[var(--color-brand-danger)] flex items-center justify-center">
+                  <X className="w-3 h-3 text-[var(--color-brand-danger)]" />
                 </div>
               ) : (
                 <div className="w-5 h-5 rounded-full border-2 border-[var(--color-border)] flex items-center justify-center">
@@ -131,7 +131,7 @@ export function CreationChecklist({ draft, rewards }: CreationChecklistProps) {
 
             {/* Text */}
             <div className="flex-1 min-w-0">
-              <p className={`text-xs font-bold ${item.isComplete ? "text-[var(--color-brand-lime)]" : item.isRequired ? "text-[var(--color-ink)]" : "text-[var(--color-ink-subtle)]"}`}>
+              <p className={`text-xs font-bold ${item.isComplete ? "text-[var(--color-brand-success)]" : item.isRequired ? "text-[var(--color-ink)]" : "text-[var(--color-ink-subtle)]"}`}>
                 {item.label}
               </p>
               <p className="text-xs text-[var(--color-ink-subtle)]">{item.description}</p>

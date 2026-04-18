@@ -44,7 +44,7 @@ function ToolbarButton({ onClick, active, disabled, title, children }: ToolbarBu
         p-1.5 rounded transition-colors
         ${
           active
-            ? "bg-[var(--color-brand-violet)]/15 text-[var(--color-brand-violet)]"
+            ? "bg-[var(--color-brand-crust)]/15 text-[var(--color-brand-crust)]"
             : "text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] hover:bg-[var(--color-surface-overlay)]"
         }
         disabled:opacity-40 disabled:cursor-not-allowed
@@ -89,10 +89,10 @@ export function CampaignEditor({
           "prose-h2:text-xl prose-h2:mt-6 prose-h2:mb-2",
           "prose-h3:text-base prose-h3:mt-4 prose-h3:mb-1 prose-h3:text-[var(--color-ink-muted)]",
           "prose-p:text-[var(--color-ink-muted)] prose-p:leading-relaxed prose-p:my-3",
-          "prose-a:text-[var(--color-brand-violet)] prose-a:no-underline hover:prose-a:underline",
+          "prose-a:text-[var(--color-brand-crust)] prose-a:no-underline hover:prose-a:underline",
           "prose-strong:text-[var(--color-ink)] prose-strong:font-semibold",
           "prose-ul:text-[var(--color-ink-muted)] prose-ol:text-[var(--color-ink-muted)] prose-li:my-1",
-          "prose-blockquote:border-l-[var(--color-brand-violet)] prose-blockquote:text-[var(--color-ink-muted)]",
+          "prose-blockquote:border-l-[var(--color-brand-crust)] prose-blockquote:text-[var(--color-ink-muted)]",
           "[&_.is-empty::before]:content-[attr(data-placeholder)] [&_.is-empty::before]:text-[var(--color-ink-subtle)] [&_.is-empty::before]:pointer-events-none [&_.is-empty::before]:float-left [&_.is-empty::before]:h-0",
         ].join(" "),
       },
@@ -128,8 +128,8 @@ export function CampaignEditor({
   return (
     <div
       className={`rounded-[var(--radius-card)] border ${
-        error ? "border-[var(--color-brand-coral)]" : "border-[var(--color-border)]"
-      } bg-[var(--color-surface)] overflow-hidden focus-within:ring-2 focus-within:ring-[var(--color-brand-violet)] transition-shadow`}
+        error ? "border-[var(--color-brand-danger)]" : "border-[var(--color-border)]"
+      } bg-[var(--color-surface)] overflow-hidden focus-within:ring-2 focus-within:ring-[var(--color-brand-crust)] transition-shadow`}
     >
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 border-b border-[var(--color-border)] bg-[var(--color-surface-raised)]">

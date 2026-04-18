@@ -33,7 +33,7 @@ export function AdminNav() {
             }`}
           >
             <Icon
-              className={`w-4 h-4 shrink-0 ${isActive ? "text-[var(--color-brand-violet)]" : ""}`}
+              className={`w-4 h-4 shrink-0 ${isActive ? "text-[var(--color-brand-crust)]" : ""}`}
             />
             <span className="hidden sm:block">{label}</span>
           </Link>

@@ -37,11 +37,11 @@ export function RewardTierCard({
         transition-[border-color,background-color,opacity,box-shadow,transform] duration-[160ms] ease-[cubic-bezier(0.23,1,0.32,1)]
         ${
           selected
-            ? "border-[var(--color-brand-violet)] bg-[var(--color-surface-overlay)]/60 shadow-[0_0_0_2px_rgba(146,64,14,0.15)]"
+            ? "border-[var(--color-brand-crust)] bg-[var(--color-surface-overlay)]/60 shadow-[0_0_0_2px_rgba(146,64,14,0.15)]"
             : isSoldOut
             ? "border-[var(--color-border)] bg-[var(--color-surface-raised)] opacity-60 cursor-not-allowed"
             : onSelect
-            ? "border-[var(--color-border)] hover:border-[var(--color-brand-violet)]/30 hover:shadow-[0_8px_24px_0_rgba(146,64,14,0.12)] hover:-translate-y-1 cursor-pointer"
+            ? "border-[var(--color-border)] hover:border-[var(--color-brand-crust)]/30 hover:shadow-[0_8px_24px_0_rgba(146,64,14,0.12)] hover:-translate-y-1 cursor-pointer"
             : "border-[var(--color-border)]"
         }
       `}
@@ -59,11 +59,11 @@ export function RewardTierCard({
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-black text-lg text-[var(--color-brand-violet)]">
+            <span className="font-black text-lg text-[var(--color-brand-crust)]">
               {format(convert(reward.minimum_pledge_sgd))}+
             </span>
             {isSoldOut && (
-              <span className="text-xs font-semibold text-[var(--color-brand-coral)] bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded-full">
+              <span className="text-xs font-semibold text-[var(--color-brand-danger)] bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded-full">
                 Sold out
               </span>
             )}
@@ -79,7 +79,7 @@ export function RewardTierCard({
         </div>
 
         {selected && (
-          <div className="w-5 h-5 rounded-full bg-[var(--color-brand-violet)] flex items-center justify-center shrink-0 mt-0.5 animate-pop">
+          <div className="w-5 h-5 rounded-full bg-[var(--color-brand-crust)] flex items-center justify-center shrink-0 mt-0.5 animate-pop">
             <svg className="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none">
               <path
                 d="M2 6l3 3 5-5"
@@ -111,7 +111,7 @@ export function RewardTierCard({
           </span>
         )}
         {spotsLeft !== null && !isSoldOut && (
-          <span className="flex items-center gap-1 text-[var(--color-brand-amber)]">
+          <span className="flex items-center gap-1 text-[var(--color-brand-golden)]">
             <Users className="w-3.5 h-3.5" />
             {spotsLeft} left
           </span>

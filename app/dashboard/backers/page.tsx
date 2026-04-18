@@ -69,7 +69,7 @@ export default async function DashboardBackersPage() {
         {pledges.length > 0 && (
           <div className="text-sm text-[var(--color-ink-muted)]">
             <span className="font-bold text-[var(--color-ink)]">{pledges.length}</span> total pledges ·{" "}
-            <span className="font-bold text-[var(--color-brand-violet)]">{formatSgd(totalRaised)}</span> raised
+            <span className="font-bold text-[var(--color-brand-crust)]">{formatSgd(totalRaised)}</span> raised
           </div>
         )}
       </div>
@@ -117,7 +117,7 @@ export default async function DashboardBackersPage() {
                         <span className="text-[var(--color-ink-subtle)] italic">Anonymous</span>
                       ) : (
                         <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-full bg-[var(--color-brand-violet)]/20 flex items-center justify-center text-xs font-bold text-[var(--color-brand-violet)] shrink-0">
+                          <div className="w-7 h-7 rounded-full bg-[var(--color-brand-crust)]/20 flex items-center justify-center text-xs font-bold text-[var(--color-brand-crust)] shrink-0">
                             {pledge.backer.display_name.charAt(0).toUpperCase()}
                           </div>
                           <span className="font-medium text-[var(--color-ink)]">
@@ -128,7 +128,7 @@ export default async function DashboardBackersPage() {
                     </td>
                     <td className="px-4 py-3">
                       {project && (
-                        <Link href={`/projects/${project.slug}`} className="text-[var(--color-brand-violet)] hover:underline font-medium">
+                        <Link href={`/projects/${project.slug}`} className="text-[var(--color-brand-crust)] hover:underline font-medium">
                           {project.title}
                         </Link>
                       )}

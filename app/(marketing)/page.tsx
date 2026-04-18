@@ -111,8 +111,8 @@ export default async function HomePage({ searchParams }: HomePageProps) {
               </div>
 
               <h1 className="text-[52px] md:text-[60px] font-black tracking-tight leading-[1.05]">
-                <span className="block text-[#b45309] dark:text-amber-300">Let&apos;s go</span>
-                <span className="block text-[#9a3412] dark:text-orange-300">get that bread.</span>
+                <span className="block">Let&apos;s go</span>
+                <span className="block text-[var(--color-brand-crust)] dark:text-[var(--color-brand-golden)]">get that bread.</span>
               </h1>
 
               <p className="mt-6 text-xl text-[var(--color-ink-muted)] max-w-lg leading-relaxed">
@@ -147,7 +147,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                       {/* Card header */}
                       <div className="px-6 pt-6 pb-4 border-b border-[var(--color-border)]">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="w-2 h-2 rounded-full bg-[var(--color-brand-lime)] animate-pulse" />
+                          <span className="w-2 h-2 rounded-full bg-[var(--color-brand-success)] animate-pulse" />
                           <span className="text-xs uppercase tracking-[0.12em] font-medium text-[var(--color-ink-subtle)]">
                             Platform at a glance
                           </span>
@@ -176,14 +176,14 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                           <span className="text-sm md:text-xs text-[var(--color-ink-muted)]">Live campaigns</span>
                         </div>
                         <div className="p-5 flex flex-col gap-1">
-                          <span className="font-mono font-black text-2xl text-[var(--color-brand-lime)]">5%</span>
+                          <span className="font-mono font-black text-2xl text-[var(--color-brand-success)]">5%</span>
                           <span className="text-sm md:text-xs text-[var(--color-ink-muted)]">Platform fee</span>
                         </div>
                       </div>
 
                       {/* Card footer */}
                       <div className="px-6 py-4 bg-[var(--color-surface-raised)] border-t border-[var(--color-border)] flex items-center gap-2">
-                        <Shield className="w-3.5 h-3.5 text-[var(--color-brand-violet)] shrink-0" />
+                        <Shield className="w-3.5 h-3.5 text-[var(--color-brand-crust)] shrink-0" />
                         <span className="text-sm md:text-xs text-[var(--color-ink-muted)]">
                           All-or-nothing · funds held in escrow
                         </span>
@@ -205,7 +205,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                     <div className="rounded-[var(--radius-card)] bg-[var(--color-surface)] overflow-hidden">
                       <div className="px-6 pt-6 pb-4 border-b border-[var(--color-border)]">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="w-2 h-2 rounded-full bg-[var(--color-brand-amber)] animate-pulse" />
+                          <span className="w-2 h-2 rounded-full bg-[var(--color-brand-golden)] animate-pulse" />
                           <span className="text-xs uppercase tracking-[0.12em] font-medium text-[var(--color-ink-subtle)]">
                             Launching soon
                           </span>
@@ -221,15 +221,15 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                         </p>
                         <ul className="text-sm text-[var(--color-ink-muted)] space-y-2">
                           <li className="flex items-start gap-2">
-                            <Shield className="w-4 h-4 text-[var(--color-brand-violet)] shrink-0 mt-0.5" />
+                            <Shield className="w-4 h-4 text-[var(--color-brand-crust)] shrink-0 mt-0.5" />
                             All-or-nothing funding — no risk to backers
                           </li>
                           <li className="flex items-start gap-2">
-                            <Lock className="w-4 h-4 text-[var(--color-brand-amber)] shrink-0 mt-0.5" />
+                            <Lock className="w-4 h-4 text-[var(--color-brand-golden)] shrink-0 mt-0.5" />
                             Secure escrow — funds held until goal met
                           </li>
                           <li className="flex items-start gap-2">
-                            <Globe className="w-4 h-4 text-[var(--color-brand-teal)] shrink-0 mt-0.5" />
+                            <Globe className="w-4 h-4 text-[var(--color-brand-info)] shrink-0 mt-0.5" />
                             PayNow and card — made for Singapore
                           </li>
                         </ul>
@@ -238,7 +238,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                       <div className="px-6 py-4 bg-[var(--color-surface-raised)] border-t border-[var(--color-border)]">
                         <Link
                           href="/projects/create"
-                          className="text-sm font-semibold text-[var(--color-brand-violet)] hover:underline inline-flex items-center gap-1"
+                          className="text-sm font-semibold text-[var(--color-brand-crust)] hover:underline inline-flex items-center gap-1"
                         >
                           Launch your campaign <ArrowRight className="w-3.5 h-3.5" />
                         </Link>
@@ -285,7 +285,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
             </div>
             <Link
               href="/explore"
-              className="text-sm font-semibold text-[var(--color-brand-violet)] hover:underline flex items-center gap-1"
+              className="text-sm font-semibold text-[var(--color-brand-crust)] hover:underline flex items-center gap-1"
             >
               View all <ArrowRight className="w-3.5 h-3.5" />
             </Link>

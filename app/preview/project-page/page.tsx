@@ -184,7 +184,7 @@ function SectionNav({ activeId }: { activeId: string }) {
             onClick={() => scrollTo(id)}
             className={`px-3.5 py-1.5 text-sm rounded-full border whitespace-nowrap transition-colors shrink-0 ${
               activeId === id
-                ? "bg-[var(--color-brand-violet)]/10 border-[var(--color-brand-violet)] text-[var(--color-brand-violet)] font-semibold"
+                ? "bg-[var(--color-brand-crust)]/10 border-[var(--color-brand-crust)] text-[var(--color-brand-crust)] font-semibold"
                 : "bg-transparent border-transparent text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] hover:bg-[var(--color-surface-raised)]"
             }`}
           >
@@ -316,7 +316,7 @@ export default function PreviewProjectPage() {
   return (
     <div className="min-h-screen bg-[var(--color-surface)]">
       {/* Preview badge */}
-      <div className="bg-[var(--color-brand-violet)]/10 border-b border-[var(--color-brand-violet)]/20 px-4 py-2 text-center text-xs text-[var(--color-brand-violet)] font-semibold tracking-wide">
+      <div className="bg-[var(--color-brand-crust)]/10 border-b border-[var(--color-brand-crust)]/20 px-4 py-2 text-center text-xs text-[var(--color-brand-crust)] font-semibold tracking-wide">
         Preview — redesigned project page layout · no live data
       </div>
 
@@ -396,7 +396,7 @@ export default function PreviewProjectPage() {
                       <a
                         key={h.id}
                         href={`#${h.id}`}
-                        className="text-xs rounded-full px-3 py-1 border border-[var(--color-border)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-violet)]/50 transition-colors"
+                        className="text-xs rounded-full px-3 py-1 border border-[var(--color-border)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-crust)]/50 transition-colors"
                       >
                         {h.text}
                       </a>
@@ -410,10 +410,10 @@ export default function PreviewProjectPage() {
                   prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-3 prose-h2:border-b prose-h2:border-[var(--color-border)] prose-h2:pb-2
                   prose-h3:text-base prose-h3:mt-6 prose-h3:mb-2 prose-h3:text-[var(--color-ink-muted)]
                   prose-p:text-[var(--color-ink-muted)] prose-p:leading-relaxed
-                  prose-a:text-[var(--color-brand-violet)] prose-a:no-underline hover:prose-a:underline
+                  prose-a:text-[var(--color-brand-crust)] prose-a:no-underline hover:prose-a:underline
                   prose-strong:text-[var(--color-ink)] prose-strong:font-semibold
                   prose-ul:text-[var(--color-ink-muted)] prose-li:my-1
-                  prose-blockquote:border-[var(--color-brand-violet)] prose-blockquote:text-[var(--color-ink-muted)]"
+                  prose-blockquote:border-[var(--color-brand-crust)] prose-blockquote:text-[var(--color-ink-muted)]"
                 dangerouslySetInnerHTML={{ __html: MOCK_CAMPAIGN_HTML }}
               />
             </section>
@@ -459,10 +459,10 @@ export default function PreviewProjectPage() {
                         window.scrollTo({ top, behavior: "smooth" });
                         setActiveSection("campaign");
                       }}
-                      className="group flex items-center justify-between gap-3 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-5 py-4 text-sm text-[var(--color-ink)] hover:border-[var(--color-brand-violet)]/60 hover:bg-[var(--color-surface-overlay)] transition-colors"
+                      className="group flex items-center justify-between gap-3 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-5 py-4 text-sm text-[var(--color-ink)] hover:border-[var(--color-brand-crust)]/60 hover:bg-[var(--color-surface-overlay)] transition-colors"
                     >
                       <span className="font-medium">{item.text}</span>
-                      <span className="text-[var(--color-brand-violet)] text-xs font-semibold shrink-0 group-hover:underline">
+                      <span className="text-[var(--color-brand-crust)] text-xs font-semibold shrink-0 group-hover:underline">
                         See answer →
                       </span>
                     </a>
@@ -474,7 +474,7 @@ export default function PreviewProjectPage() {
             {/* ── Updates section ── */}
             <section id="updates" className="scroll-mt-32 flex flex-col gap-5">
               <h2 className="text-2xl font-black text-[var(--color-ink)] tracking-tight border-b border-[var(--color-border)] pb-3 flex items-center gap-2">
-                <Megaphone className="w-5 h-5 text-[var(--color-brand-violet)]" />
+                <Megaphone className="w-5 h-5 text-[var(--color-brand-crust)]" />
                 Updates
                 <span className="font-mono text-sm font-semibold text-[var(--color-ink-muted)]">
                   ({MOCK_UPDATES.length})
@@ -488,7 +488,7 @@ export default function PreviewProjectPage() {
                       <div className="flex items-center gap-2 flex-wrap">
                         <h3 className="text-lg font-bold text-[var(--color-ink)]">{update.title}</h3>
                         {update.is_backers_only && (
-                          <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-[var(--color-brand-violet)] bg-[var(--color-brand-violet)]/10 px-2 py-0.5 rounded-full">
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-[var(--color-brand-crust)] bg-[var(--color-brand-crust)]/10 px-2 py-0.5 rounded-full">
                             <Lock className="w-2.5 h-2.5" />
                             Backers only
                           </span>
@@ -526,7 +526,7 @@ export default function PreviewProjectPage() {
             {/* ── Comments section ── */}
             <section id="comments" className="scroll-mt-32 flex flex-col gap-5 pb-16">
               <h2 className="text-2xl font-black text-[var(--color-ink)] tracking-tight border-b border-[var(--color-border)] pb-3 flex items-center gap-2">
-                <MessageCircle className="w-5 h-5 text-[var(--color-brand-violet)]" />
+                <MessageCircle className="w-5 h-5 text-[var(--color-brand-crust)]" />
                 Questions & feedback
                 <span className="font-mono text-sm font-semibold text-[var(--color-ink-muted)]">
                   ({MOCK_COMMENTS.length})
@@ -542,7 +542,7 @@ export default function PreviewProjectPage() {
                 <textarea
                   rows={3}
                   placeholder="Ask a question or share feedback..."
-                  className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)] resize-none"
+                  className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)] resize-none"
                 />
                 <div className="mt-2 flex justify-end">
                   <Button size="sm" variant="secondary">Post feedback</Button>
@@ -585,7 +585,7 @@ export default function PreviewProjectPage() {
                                   <p className="text-xs font-semibold text-[var(--color-ink)] flex items-center gap-1.5">
                                     {reply.author}
                                     {reply.isCreator && (
-                                      <span className="text-[10px] uppercase tracking-wide text-[var(--color-brand-violet)] font-bold">
+                                      <span className="text-[10px] uppercase tracking-wide text-[var(--color-brand-crust)] font-bold">
                                         · Creator
                                       </span>
                                     )}

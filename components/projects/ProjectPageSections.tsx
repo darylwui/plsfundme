@@ -249,7 +249,7 @@ export function ProjectPageSections({
                 <a
                   key={h.id}
                   href={`#${h.id}`}
-                  className="text-xs rounded-full px-3 py-1 border border-[var(--color-border)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-violet)]/50 transition-colors"
+                  className="text-xs rounded-full px-3 py-1 border border-[var(--color-border)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-crust)]/50 transition-colors"
                 >
                   {h.text}
                 </a>
@@ -264,11 +264,11 @@ export function ProjectPageSections({
               prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-3 prose-h2:border-b prose-h2:border-[var(--color-border)] prose-h2:pb-2
               prose-h3:text-base prose-h3:mt-6 prose-h3:mb-2 prose-h3:text-[var(--color-ink-muted)]
               prose-p:text-[var(--color-ink-muted)] prose-p:leading-relaxed
-              prose-a:text-[var(--color-brand-violet)] prose-a:no-underline hover:prose-a:underline
+              prose-a:text-[var(--color-brand-crust)] prose-a:no-underline hover:prose-a:underline
               prose-strong:text-[var(--color-ink)] prose-strong:font-semibold
               prose-ul:text-[var(--color-ink-muted)] prose-li:my-1
               prose-img:rounded-[var(--radius-card)] prose-img:border prose-img:border-[var(--color-border)]
-              prose-blockquote:border-l-[var(--color-brand-violet)] prose-blockquote:text-[var(--color-ink-muted)]"
+              prose-blockquote:border-l-[var(--color-brand-crust)] prose-blockquote:text-[var(--color-ink-muted)]"
             dangerouslySetInnerHTML={{ __html: processed.html }}
           />
         ) : (
@@ -341,10 +341,10 @@ export function ProjectPageSections({
               <a
                 key={item.id}
                 href={`#${item.id}`}
-                className="group flex items-center justify-between gap-3 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-5 py-4 text-sm text-[var(--color-ink)] hover:border-[var(--color-brand-violet)]/60 hover:bg-[var(--color-surface-overlay)] transition-colors"
+                className="group flex items-center justify-between gap-3 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-5 py-4 text-sm text-[var(--color-ink)] hover:border-[var(--color-brand-crust)]/60 hover:bg-[var(--color-surface-overlay)] transition-colors"
               >
                 <span className="font-medium">{item.text}</span>
-                <span className="text-[var(--color-brand-violet)] text-xs font-semibold shrink-0 group-hover:underline">
+                <span className="text-[var(--color-brand-crust)] text-xs font-semibold shrink-0 group-hover:underline">
                   See answer →
                 </span>
               </a>
@@ -356,7 +356,7 @@ export function ProjectPageSections({
       {/* ── Updates ── */}
       <section id="updates" className="scroll-mt-32 flex flex-col gap-5">
         <h2 className="text-2xl font-black text-[var(--color-ink)] tracking-tight border-b border-[var(--color-border)] pb-3 flex items-center gap-2">
-          <Megaphone className="w-5 h-5 text-[var(--color-brand-violet)]" />
+          <Megaphone className="w-5 h-5 text-[var(--color-brand-crust)]" />
           Updates
           <span className="font-mono text-sm font-semibold text-[var(--color-ink-muted)]">
             ({updates.length})
@@ -379,7 +379,7 @@ export function ProjectPageSections({
                   <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="text-lg font-bold text-[var(--color-ink)]">{update.title}</h3>
                     {update.is_backers_only && (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-[var(--color-brand-violet)] bg-[var(--color-brand-violet)]/10 px-2 py-0.5 rounded-full">
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-[var(--color-brand-crust)] bg-[var(--color-brand-crust)]/10 px-2 py-0.5 rounded-full">
                         <Lock className="w-2.5 h-2.5" />
                         Backers only
                       </span>
@@ -414,7 +414,7 @@ export function ProjectPageSections({
       {/* ── Comments ── */}
       <section id="comments" className="scroll-mt-32 flex flex-col gap-5">
         <h2 className="text-2xl font-black text-[var(--color-ink)] tracking-tight border-b border-[var(--color-border)] pb-3 flex items-center gap-2">
-          <MessageCircle className="w-5 h-5 text-[var(--color-brand-violet)]" />
+          <MessageCircle className="w-5 h-5 text-[var(--color-brand-crust)]" />
           Questions &amp; feedback
           <span className="font-mono text-sm font-semibold text-[var(--color-ink-muted)]">
             ({feedback.length})
@@ -430,7 +430,7 @@ export function ProjectPageSections({
           <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-4 text-sm text-[var(--color-ink-muted)]">
             <Link
               href={`/login?redirectTo=${encodeURIComponent(loginRedirectTo)}`}
-              className="font-semibold text-[var(--color-brand-violet)] hover:underline"
+              className="font-semibold text-[var(--color-brand-crust)] hover:underline"
             >
               Log in
             </Link>{" "}
@@ -458,9 +458,9 @@ export function ProjectPageSections({
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Ask a question, suggest an improvement, or share your feedback..."
-              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)] resize-none"
+              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)] resize-none"
             />
-            {error && <p className="text-xs text-[var(--color-brand-coral)]">{error}</p>}
+            {error && <p className="text-xs text-[var(--color-brand-danger)]">{error}</p>}
             <div className="flex justify-end">
               <Button size="sm" loading={loading} disabled={!message.trim()}>
                 <Send className="w-3.5 h-3.5" />
@@ -514,7 +514,7 @@ export function ProjectPageSections({
                                 setReplyMessage((prev) => ({ ...prev, [item.id]: e.target.value }))
                               }
                               placeholder="Reply as creator..."
-                              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3 py-2 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)] resize-none"
+                              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3 py-2 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)] resize-none"
                             />
                             <div className="flex items-center gap-2 justify-end">
                               <Button
@@ -538,7 +538,7 @@ export function ProjectPageSections({
                           <button
                             type="button"
                             onClick={() => setOpenReplyId(item.id)}
-                            className="text-xs font-semibold text-[var(--color-brand-violet)] hover:underline"
+                            className="text-xs font-semibold text-[var(--color-brand-crust)] hover:underline"
                           >
                             Reply as creator
                           </button>
@@ -558,7 +558,7 @@ export function ProjectPageSections({
                               <p className="text-xs font-semibold text-[var(--color-ink)] flex items-center gap-1.5">
                                 {reply.author?.display_name ?? "Creator"}
                                 {reply.author_id === creatorId && (
-                                  <span className="text-[10px] uppercase tracking-wide text-[var(--color-brand-violet)] font-bold">
+                                  <span className="text-[10px] uppercase tracking-wide text-[var(--color-brand-crust)] font-bold">
                                     · Creator
                                   </span>
                                 )}

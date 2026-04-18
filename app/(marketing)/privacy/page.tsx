@@ -21,7 +21,7 @@ export default function PrivacyPage() {
           </p>
         </div>
 
-        <div className="prose prose-sm max-w-none text-[var(--color-ink)] prose-headings:text-[var(--color-ink)] prose-headings:font-black prose-a:text-[var(--color-brand-violet)] space-y-8">
+        <div className="prose prose-sm max-w-none text-[var(--color-ink)] prose-headings:text-[var(--color-ink)] prose-headings:font-black prose-a:text-[var(--color-brand-crust)] space-y-8">
 
           <Section title="1. Introduction">
             <p>

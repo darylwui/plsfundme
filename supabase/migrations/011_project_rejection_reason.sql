@@ -1,5 +1,5 @@
 -- ============================================================
--- plsfundme — Project rejection reason
+-- get that bread — Project rejection reason
 -- Migration: 011_project_rejection_reason.sql
 -- ============================================================
 -- Stores the admin's rejection message on the project row so

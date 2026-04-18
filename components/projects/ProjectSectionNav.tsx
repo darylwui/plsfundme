@@ -72,14 +72,14 @@ export function ProjectSectionNav({ sections, offsetPx = 0 }: ProjectSectionNavP
               px-3.5 py-1.5 text-sm rounded-full border whitespace-nowrap transition-all duration-160 shrink-0 relative
               ${
                 activeId === id
-                  ? "bg-[var(--color-brand-violet)]/10 border-[var(--color-brand-violet)] text-[var(--color-brand-violet)] font-semibold shadow-[0_0_0_2px_rgba(146,64,14,0.15)]"
-                  : "bg-transparent border-transparent text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] hover:bg-[var(--color-surface-raised)] hover:border-[var(--color-brand-violet)]/30 hover:shadow-[0_4px_12px_0_rgba(146,64,14,0.08)]"
+                  ? "bg-[var(--color-brand-crust)]/10 border-[var(--color-brand-crust)] text-[var(--color-brand-crust)] font-semibold shadow-[0_0_0_2px_rgba(146,64,14,0.15)]"
+                  : "bg-transparent border-transparent text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] hover:bg-[var(--color-surface-raised)] hover:border-[var(--color-brand-crust)]/30 hover:shadow-[0_4px_12px_0_rgba(146,64,14,0.08)]"
               }
             `}
           >
             {label}
             {activeId === id && (
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 h-1.5 w-1 bg-[var(--color-brand-violet)] rounded-r animate-slide-in" />
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 h-1.5 w-1 bg-[var(--color-brand-crust)] rounded-r animate-slide-in" />
             )}
           </button>
         ))}

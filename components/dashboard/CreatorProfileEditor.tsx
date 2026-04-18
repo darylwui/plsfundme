@@ -119,14 +119,14 @@ export function CreatorProfileEditor({ userId, initial }: CreatorProfileEditorPr
 
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium text-[var(--color-ink)]">
-            Bio <span className="text-[var(--color-brand-coral)]">*</span>
+            Bio <span className="text-[var(--color-brand-danger)]">*</span>
           </label>
           <textarea
             rows={4}
             value={bio}
             onChange={(e) => setBio(e.target.value)}
             placeholder="Tell backers who you are, your background, and what drives your work..."
-            className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)] resize-none"
+            className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)] resize-none"
           />
           <p className="text-xs text-[var(--color-ink-subtle)]">Minimum 50 characters · {bio.length}/50</p>
         </div>
@@ -166,14 +166,14 @@ export function CreatorProfileEditor({ userId, initial }: CreatorProfileEditorPr
 
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium text-[var(--color-ink)]">
-            What you are building <span className="text-[var(--color-brand-coral)]">*</span>
+            What you are building <span className="text-[var(--color-brand-danger)]">*</span>
           </label>
           <textarea
             rows={5}
             value={projectDescription}
             onChange={(e) => setProjectDescription(e.target.value)}
             placeholder="Describe your project mission and what backers can expect..."
-            className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)] resize-none"
+            className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)] resize-none"
           />
           <p className="text-xs text-[var(--color-ink-subtle)]">Minimum 100 characters · {projectDescription.length}/100</p>
         </div>

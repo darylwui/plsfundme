@@ -72,7 +72,7 @@ export default async function PayoutsPage({ searchParams }: PayoutsPageProps) {
                     <td className="px-4 py-3 font-medium text-[var(--color-ink)]">{p.project?.title}</td>
                     <td className="px-4 py-3">{formatSgd(p.amount_sgd)}</td>
                     <td className="px-4 py-3 text-[var(--color-ink-muted)]">-{formatSgd(p.platform_fee_sgd)}</td>
-                    <td className="px-4 py-3 font-bold text-[var(--color-brand-lime)]">{formatSgd(p.net_amount_sgd)}</td>
+                    <td className="px-4 py-3 font-bold text-[var(--color-brand-success)]">{formatSgd(p.net_amount_sgd)}</td>
                     <td className="px-4 py-3">
                       <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
                         p.status === "paid" ? "bg-lime-100 text-lime-700" : "bg-amber-100 text-amber-700"

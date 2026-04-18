@@ -33,7 +33,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/20 dark:to-orange-900/20">
-                <span className="text-5xl font-black text-[var(--color-brand-violet)]/30 select-none">
+                <span className="text-5xl font-black text-[var(--color-brand-crust)]/30 select-none">
                   {initial}
                 </span>
               </div>
@@ -49,7 +49,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
             {/* Badges overlay */}
             <div className="absolute top-3 left-3 flex gap-1.5">
               {project.category && (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/90 text-[var(--color-brand-violet)] backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-0">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/90 text-[var(--color-brand-crust)] backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-0">
                   {project.category.name}
                 </span>
               )}
@@ -66,7 +66,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
           <div className="p-5 flex flex-col gap-3 flex-1">
             {/* Creator */}
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-[var(--color-brand-violet)]/15 ring-1 ring-[var(--color-border)] flex items-center justify-center text-xs font-bold text-[var(--color-brand-violet)] shrink-0">
+              <div className="w-7 h-7 rounded-full bg-[var(--color-brand-crust)]/15 ring-1 ring-[var(--color-border)] flex items-center justify-center text-xs font-bold text-[var(--color-brand-crust)] shrink-0">
                 {project.creator.display_name.charAt(0).toUpperCase()}
               </div>
               <span className="text-sm md:text-xs text-[var(--color-ink-muted)] truncate">
@@ -76,7 +76,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
             {/* Title + description */}
             <div className="flex-1 min-h-[5.5rem] sm:min-h-[5rem]">
-              <h3 className="font-bold text-[var(--color-ink)] leading-snug line-clamp-2 group-hover:text-[var(--color-brand-violet)] transition-colors duration-[160ms] ease-[cubic-bezier(0.23,1,0.32,1)]">
+              <h3 className="font-bold text-[var(--color-ink)] leading-snug line-clamp-2 group-hover:text-[var(--color-brand-crust)] transition-colors duration-[160ms] ease-[cubic-bezier(0.23,1,0.32,1)]">
                 {project.title}
               </h3>
               <p className="mt-1 text-sm text-[var(--color-ink-muted)] line-clamp-2">

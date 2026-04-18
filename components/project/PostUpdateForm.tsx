@@ -88,7 +88,7 @@ export function PostUpdateForm({ projectId, creatorId, onPosted }: PostUpdateFor
               value={body}
               onChange={(e) => setBody(e.target.value)}
               required
-              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)] resize-none"
+              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)] resize-none"
             />
           </div>
 
@@ -97,7 +97,7 @@ export function PostUpdateForm({ projectId, creatorId, onPosted }: PostUpdateFor
               type="checkbox"
               checked={backersOnly}
               onChange={(e) => setBackersOnly(e.target.checked)}
-              className="w-4 h-4 rounded accent-[var(--color-brand-violet)]"
+              className="w-4 h-4 rounded accent-[var(--color-brand-crust)]"
             />
             <span className="text-sm text-[var(--color-ink-muted)]">
               Backers only — hide from public
@@ -105,7 +105,7 @@ export function PostUpdateForm({ projectId, creatorId, onPosted }: PostUpdateFor
           </label>
 
           {error && (
-            <p className="text-xs text-[var(--color-brand-coral)]">{error}</p>
+            <p className="text-xs text-[var(--color-brand-danger)]">{error}</p>
           )}
 
           <div className="flex items-center justify-between">

@@ -50,7 +50,7 @@ function StatItem({ value, label }: Stat) {
 
   return (
     <div key={label} className="flex flex-col items-center text-center px-4 animate-fade-in">
-      <span className="font-mono font-black text-2xl text-[var(--color-brand-gold)]">
+      <span className="font-mono font-black text-2xl text-[var(--color-brand-golden)]">
         {prefix}
         {displayValue}
         {suffix}

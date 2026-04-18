@@ -64,10 +64,10 @@ export function ImageUpload({ value, onChange, label = "Cover image", hint, comp
           onDrop={handleDrop}
           onDragOver={(e) => e.preventDefault()}
           onClick={() => inputRef.current?.click()}
-          className={`rounded-[var(--radius-card)] border-2 border-dashed border-[var(--color-border)] hover:border-[var(--color-brand-violet)]/50 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors hover:bg-[var(--color-surface-overlay)] ${compact ? "w-32 h-32" : "aspect-video gap-3"}`}
+          className={`rounded-[var(--radius-card)] border-2 border-dashed border-[var(--color-border)] hover:border-[var(--color-brand-crust)]/50 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors hover:bg-[var(--color-surface-overlay)] ${compact ? "w-32 h-32" : "aspect-video gap-3"}`}
         >
           {loading ? (
-            <Loader2 className={`text-[var(--color-brand-violet)] animate-spin ${compact ? "w-6 h-6" : "w-8 h-8"}`} />
+            <Loader2 className={`text-[var(--color-brand-crust)] animate-spin ${compact ? "w-6 h-6" : "w-8 h-8"}`} />
           ) : (
             <>
               <div className={`rounded-full bg-[var(--color-surface-overlay)] flex items-center justify-center ${compact ? "w-9 h-9" : "w-12 h-12"}`}>
@@ -101,7 +101,7 @@ export function ImageUpload({ value, onChange, label = "Cover image", hint, comp
         }}
       />
 
-      {error && <p className="text-xs text-[var(--color-brand-coral)]">{error}</p>}
+      {error && <p className="text-xs text-[var(--color-brand-danger)]">{error}</p>}
       {hint && !error && <p className="text-xs text-[var(--color-ink-subtle)]">{hint}</p>}
     </div>
   );

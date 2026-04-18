@@ -73,7 +73,11 @@
       "Bash(pdftoppm -jpeg -r 150 /tmp/gtb-pdf/get-that-bread-business-plan.pdf /tmp/gtb-pages)",
       "Bash(head -5 ls /tmp/gtb-pages*)",
       "Bash(ls /tmp/gtb-pages*)",
-      "Bash(npx skills:*)"
+      "Bash(npx skills:*)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(xargs -r kill)",
+      "Bash(ln -s /Users/darylwui/plsfundme/.env.local .env.local)",
+      "Bash(git check-ignore *)"
     ]
   }
 }

@@ -89,7 +89,7 @@ export default async function DashboardAdminPMsPage({ searchParams }: PageProps)
               href={`/dashboard/admin/pms?tab=${t}`}
               className={`px-4 py-2.5 text-sm font-semibold border-b-2 transition-colors ${
                 isActive
-                  ? "border-[var(--color-brand-violet)] text-[var(--color-ink)]"
+                  ? "border-[var(--color-brand-crust)] text-[var(--color-ink)]"
                   : "border-transparent text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
               }`}
             >
@@ -98,7 +98,7 @@ export default async function DashboardAdminPMsPage({ searchParams }: PageProps)
                 <span
                   className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${
                     isActive
-                      ? "bg-[var(--color-brand-violet)] text-white"
+                      ? "bg-[var(--color-brand-crust)] text-white"
                       : "bg-[var(--color-border)] text-[var(--color-ink-muted)]"
                   }`}
                 >

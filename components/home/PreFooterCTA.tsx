@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 
 export function PreFooterCTA() {
   return (
-    <section className="bg-gradient-to-br from-[var(--color-brand-violet)] to-[#7A3409]">
+    <section className="bg-gradient-to-br from-[var(--color-brand-crust)] to-[#7A3409]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24">
         <div className="max-w-2xl">
           <div className="inline-flex items-center px-3 py-1 rounded-full bg-white/10 text-xs uppercase tracking-[0.12em] font-medium text-white/80 mb-6">

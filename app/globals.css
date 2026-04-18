@@ -9,22 +9,25 @@
    ============================================================ */
 
 @theme inline {
-  /* Brand palette — warm bakery tones */
-  --color-brand-violet:    #92400E;   /* Deep crust brown — primary CTA */
-  --color-brand-coral:     #C2410C;   /* Hot oven red-orange — urgency */
-  --color-brand-teal:      #0F766E;   /* Teal — info / secondary */
-  --color-brand-amber:     #D97706;   /* Golden crust — highlights */
-  --color-brand-lime:      #65A30D;   /* Success / funded */
-  --color-brand-gold:      #F2C480;   /* Bread gold — brand accent */
+  /* Brand palette — sampled from the loaf. Crust orange is the hero. */
+  --color-brand-crust:       #E07F14;   /* Primary brand orange */
+  --color-brand-crust-dark:  #AC5811;   /* Pressed state, text-on-cream */
+  --color-brand-golden:      #F5B03E;   /* Sunny highlight */
+  --color-brand-crumb:       #FFEBCA;   /* Soft cream accent */
+  --color-brand-crumb-light: #FFF7E8;   /* Lightest cream */
+  --color-brand-success:     #3E8E5B;   /* Funded, goal met */
+  --color-brand-danger:      #C4422E;   /* Failed, error, refund */
+  --color-brand-warning:     #D88A0F;   /* Ending soon */
+  --color-brand-info:        #2F6BB3;   /* Info */
 
-  /* Surfaces — warm flour/cream palette */
-  --color-surface:         #FFFBF5;
-  --color-surface-raised:  #FDF6E8;
-  --color-surface-overlay: #F7EDD4;
-  --color-border:          #E8D5B0;
-  --color-ink:             #1C1208;   /* Warm near-black */
-  --color-ink-muted:       #78603A;   /* Warm brown */
-  --color-ink-subtle:      #A68B5B;   /* Light warm brown */
+  /* Surfaces — warm off-white page, cream accents */
+  --color-surface:         #FAF6EE;   /* Page bg */
+  --color-surface-raised:  #FFF7E8;   /* Cards on cream sections */
+  --color-surface-overlay: #FFEBCA;   /* Accent section bg */
+  --color-border:          #E8DFD0;
+  --color-ink:             #14110D;   /* Warm near-black */
+  --color-ink-muted:       #6B5D4D;   /* Warm gray */
+  --color-ink-subtle:      #8E8070;   /* Lighter warm gray */
 
   /* Inverted surfaces — navbar & footer (dark crust) */
   --color-surface-invert:       #2C1A0E;
@@ -47,10 +50,10 @@
   --radius-btn:    0.625rem;
   --radius-pill:   9999px;
 
-  /* Shadows — warm amber-brown tones */
-  --shadow-card:        0 2px 12px 0 rgba(146, 64, 14, 0.08);
-  --shadow-card-hover:  0 8px 32px 0 rgba(146, 64, 14, 0.16);
-  --shadow-cta:         0 4px 20px 0 rgba(146, 64, 14, 0.35);
+  /* Shadows — warm-tinted ink, never pure black */
+  --shadow-card:        0 2px 12px 0 rgba(20, 17, 13, 0.06);
+  --shadow-card-hover:  0 8px 32px 0 rgba(20, 17, 13, 0.14);
+  --shadow-cta:         0 10px 30px -8px rgba(224, 127, 20, 0.45);
 
   /* Custom easing curves */
   --ease-out-strong:    cubic-bezier(0.23, 1, 0.32, 1);
@@ -88,8 +91,8 @@
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(146, 64, 14, 0); }
-  50% { box-shadow: 0 0 0 8px rgba(146, 64, 14, 0.1); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(224, 127, 20, 0); }
+  50% { box-shadow: 0 0 0 8px rgba(224, 127, 20, 0.1); }
 }
 
 @keyframes count-up {
@@ -104,25 +107,25 @@
    ============================================================ */
 
 :root {
-  --background:            #FFFBF5;
-  --foreground:            #1C1208;
-  --card:                  #FFFBF5;
-  --card-foreground:       #1C1208;
-  --popover:               #FFFBF5;
-  --popover-foreground:    #1C1208;
-  --primary:               #92400E;
+  --background:            #FAF6EE;
+  --foreground:            #14110D;
+  --card:                  #FAF6EE;
+  --card-foreground:       #14110D;
+  --popover:               #FAF6EE;
+  --popover-foreground:    #14110D;
+  --primary:               #E07F14;
   --primary-foreground:    #FFFFFF;
-  --secondary:             #FDF6E8;
-  --secondary-foreground:  #1C1208;
-  --muted:                 #F7EDD4;
-  --muted-foreground:      #78603A;
-  --accent:                #D97706;
-  --accent-foreground:     #FFFFFF;
-  --destructive:           #C2410C;
+  --secondary:             #FFF7E8;
+  --secondary-foreground:  #14110D;
+  --muted:                 #FFEBCA;
+  --muted-foreground:      #6B5D4D;
+  --accent:                #F5B03E;
+  --accent-foreground:     #14110D;
+  --destructive:           #C4422E;
   --destructive-foreground:#FFFFFF;
-  --border:                #E8D5B0;
-  --input:                 #E8D5B0;
-  --ring:                  #D97706;
+  --border:                #E8DFD0;
+  --input:                 #E8DFD0;
+  --ring:                  #F5B03E;
   --radius:                0.625rem;
 }
 
@@ -133,19 +136,19 @@
   --card-foreground:       #fafafa;
   --popover:               #111111;
   --popover-foreground:    #fafafa;
-  --primary:               #F2C480;
-  --primary-foreground:    #1C1208;
+  --primary:               #F5B03E;
+  --primary-foreground:    #14110D;
   --secondary:             #1c1c1c;
   --secondary-foreground:  #fafafa;
   --muted:                 #1c1c1c;
   --muted-foreground:      #a3a3a3;
-  --accent:                #D97706;
-  --accent-foreground:     #FFFFFF;
-  --destructive:           #C2410C;
+  --accent:                #F5B03E;
+  --accent-foreground:     #14110D;
+  --destructive:           #C4422E;
   --destructive-foreground:#FFFFFF;
   --border:                #2a2a2a;
   --input:                 #2a2a2a;
-  --ring:                  #D97706;
+  --ring:                  #F5B03E;
 }
 
 /* Dark mode — clean neutral dark */
@@ -178,7 +181,7 @@ body {
 
 /* Smooth focus ring */
 *:focus-visible {
-  outline: 2px solid var(--color-brand-amber);
+  outline: 2px solid var(--color-brand-golden);
   outline-offset: 2px;
   border-radius: 4px;
 }

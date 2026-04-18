@@ -40,7 +40,7 @@ function AvatarInitial({ name, avatarUrl }: { name: string; avatarUrl: string | 
     );
   }
   return (
-    <div className="w-10 h-10 rounded-full bg-[var(--color-brand-violet)] flex items-center justify-center shrink-0">
+    <div className="w-10 h-10 rounded-full bg-[var(--color-brand-crust)] flex items-center justify-center shrink-0">
       <span className="text-sm font-bold text-white">{name.charAt(0).toUpperCase()}</span>
     </div>
   );
@@ -118,7 +118,7 @@ function PMCard({
         <div>
           <div className="flex items-center gap-2 mb-1">
             <p className="text-xs font-semibold text-[var(--color-ink-muted)] uppercase tracking-wide">Campaign</p>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--color-brand-violet)]/10 text-[var(--color-brand-violet)] font-medium">
+            <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--color-brand-crust)]/10 text-[var(--color-brand-crust)] font-medium">
               {profile.project_type}
             </span>
           </div>
@@ -132,7 +132,7 @@ function PMCard({
               href={profile.linkedin_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 text-xs text-[var(--color-brand-violet)] hover:underline"
+              className="flex items-center gap-1 text-xs text-[var(--color-brand-crust)] hover:underline"
             >
               <ExternalLink className="w-3 h-3" />
               LinkedIn
@@ -148,7 +148,7 @@ function PMCard({
                     href={profile.company_website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[var(--color-brand-violet)] hover:underline"
+                    className="text-[var(--color-brand-crust)] hover:underline"
                   >
                     <ExternalLink className="w-3 h-3 inline" />
                   </a>
@@ -165,7 +165,7 @@ function PMCard({
               href={profile.id_document_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 text-xs text-[var(--color-brand-violet)] hover:underline"
+              className="flex items-center gap-1.5 text-xs text-[var(--color-brand-crust)] hover:underline"
             >
               <FileText className="w-3.5 h-3.5" />
               View ID document

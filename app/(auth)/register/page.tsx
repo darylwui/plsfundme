@@ -44,7 +44,7 @@ export default async function RegisterPage({ searchParams }: PageProps) {
         Already have an account?{" "}
         <Link
           href="/login"
-          className="font-semibold text-[var(--color-brand-violet)] hover:underline"
+          className="font-semibold text-[var(--color-brand-crust)] hover:underline"
         >
           Log in
         </Link>

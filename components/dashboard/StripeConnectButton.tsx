@@ -17,7 +17,7 @@ export function StripeConnectButton({ isConnected }: { isConnected: boolean }) {
 
   if (isConnected) {
     return (
-      <div className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-brand-lime)]">
+      <div className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-brand-success)]">
         <CheckCircle className="w-4 h-4" />
         Connected
       </div>

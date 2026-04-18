@@ -57,7 +57,7 @@ function RegisterSuccess({
           href={mailHost.url}
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center justify-center gap-2 rounded-[var(--radius-btn)] bg-[var(--color-brand-violet)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#7A3409] transition-colors w-full sm:w-auto"
+          className="inline-flex items-center justify-center gap-2 rounded-[var(--radius-btn)] bg-[var(--color-brand-crust)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--color-brand-crust-dark)] transition-colors w-full sm:w-auto"
         >
           {mailHost.label} →
         </a>
@@ -71,12 +71,12 @@ function RegisterSuccess({
           type="button"
           onClick={handleResend}
           disabled={resending || resent}
-          className="text-xs font-semibold text-[var(--color-brand-violet)] hover:underline disabled:opacity-60 disabled:no-underline"
+          className="text-xs font-semibold text-[var(--color-brand-crust)] hover:underline disabled:opacity-60 disabled:no-underline"
         >
           {resent ? "Sent — check your inbox again" : resending ? "Resending…" : "Resend confirmation email"}
         </button>
         {resendError && (
-          <p className="text-xs text-[var(--color-brand-coral)] mt-1">{resendError}</p>
+          <p className="text-xs text-[var(--color-brand-danger)] mt-1">{resendError}</p>
         )}
       </div>
     </div>
@@ -167,17 +167,17 @@ export function RegisterForm({ initialRole = null }: RegisterFormProps) {
           <button
             type="button"
             onClick={() => setSelectedRole("backer")}
-            className="flex flex-col gap-2 rounded-[var(--radius-card)] border-2 border-[var(--color-border)] bg-[var(--color-surface)] p-5 text-left hover:border-[var(--color-brand-violet)] hover:bg-[var(--color-surface-raised)] transition-all group"
+            className="flex flex-col gap-2 rounded-[var(--radius-card)] border-2 border-[var(--color-border)] bg-[var(--color-surface)] p-5 text-left hover:border-[var(--color-brand-crust)] hover:bg-[var(--color-surface-raised)] transition-all group"
           >
             <span className="text-3xl">🎁</span>
             <div>
-              <p className="font-bold text-sm text-[var(--color-ink)] group-hover:text-[var(--color-brand-violet)] transition-colors">
+              <p className="font-bold text-sm text-[var(--color-ink)] group-hover:text-[var(--color-brand-crust)] transition-colors">
                 I&apos;m a Backer
               </p>
               <p className="text-xs text-[var(--color-ink-muted)] mt-1 leading-relaxed">
                 Support ideas you believe in.
               </p>
-              <p className="text-xs text-[var(--color-brand-lime)] font-medium mt-1.5">
+              <p className="text-xs text-[var(--color-brand-success)] font-medium mt-1.5">
                 No approval needed.
               </p>
             </div>
@@ -186,17 +186,17 @@ export function RegisterForm({ initialRole = null }: RegisterFormProps) {
           <button
             type="button"
             onClick={() => setSelectedRole("project_manager")}
-            className="flex flex-col gap-2 rounded-[var(--radius-card)] border-2 border-[var(--color-border)] bg-[var(--color-surface)] p-5 text-left hover:border-[var(--color-brand-violet)] hover:bg-[var(--color-surface-raised)] transition-all group"
+            className="flex flex-col gap-2 rounded-[var(--radius-card)] border-2 border-[var(--color-border)] bg-[var(--color-surface)] p-5 text-left hover:border-[var(--color-brand-crust)] hover:bg-[var(--color-surface-raised)] transition-all group"
           >
             <span className="text-3xl">🚀</span>
             <div>
-              <p className="font-bold text-sm text-[var(--color-ink)] group-hover:text-[var(--color-brand-violet)] transition-colors">
+              <p className="font-bold text-sm text-[var(--color-ink)] group-hover:text-[var(--color-brand-crust)] transition-colors">
                 I want to raise funds
               </p>
               <p className="text-xs text-[var(--color-ink-muted)] mt-1 leading-relaxed">
                 Launch campaigns and raise funds for your projects.
               </p>
-              <p className="text-xs text-[var(--color-brand-amber)] font-medium mt-1.5">
+              <p className="text-xs text-[var(--color-brand-golden)] font-medium mt-1.5">
                 Application required.
               </p>
             </div>
@@ -225,7 +225,7 @@ export function RegisterForm({ initialRole = null }: RegisterFormProps) {
       </button>
 
       {errors.form && (
-        <div className="rounded-[var(--radius-btn)] bg-red-50 border border-red-200 px-4 py-3 text-sm text-[var(--color-brand-coral)]">
+        <div className="rounded-[var(--radius-btn)] bg-red-50 border border-red-200 px-4 py-3 text-sm text-[var(--color-brand-danger)]">
           {errors.form}
         </div>
       )}

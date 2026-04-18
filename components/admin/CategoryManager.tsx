@@ -156,7 +156,7 @@ export function CategoryManager({ categories: initial }: { categories: Category[
             onDragEnd={handleDragEnd}
             className={`bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-4 flex items-center gap-3 transition-all ${
               !cat.is_active && !isEditing ? "opacity-50" : ""
-            } ${isDragOver ? "ring-2 ring-[var(--color-brand-violet)]/40 border-[var(--color-brand-violet)]/30" : ""}`}
+            } ${isDragOver ? "ring-2 ring-[var(--color-brand-crust)]/40 border-[var(--color-brand-crust)]/30" : ""}`}
           >
             {/* Drag handle */}
             <div className="cursor-grab active:cursor-grabbing text-[var(--color-ink-subtle)] shrink-0">
@@ -242,7 +242,7 @@ export function CategoryManager({ categories: initial }: { categories: Category[
       })}
 
       {adding ? (
-        <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border-2 border-[var(--color-brand-violet)]/30 p-5 flex flex-col gap-3">
+        <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border-2 border-[var(--color-brand-crust)]/30 p-5 flex flex-col gap-3">
           <div className="grid grid-cols-2 gap-3">
             <Input
               label="Name"
@@ -268,7 +268,7 @@ export function CategoryManager({ categories: initial }: { categories: Category[
       ) : (
         <button
           onClick={() => setAdding(true)}
-          className="rounded-[var(--radius-card)] border-2 border-dashed border-[var(--color-border)] hover:border-[var(--color-brand-violet)]/50 p-4 flex items-center justify-center gap-2 text-sm font-semibold text-[var(--color-ink-muted)] hover:text-[var(--color-brand-violet)] transition-all"
+          className="rounded-[var(--radius-card)] border-2 border-dashed border-[var(--color-border)] hover:border-[var(--color-brand-crust)]/50 p-4 flex items-center justify-center gap-2 text-sm font-semibold text-[var(--color-ink-muted)] hover:text-[var(--color-brand-crust)] transition-all"
         >
           <Plus className="w-4 h-4" />
           Add category

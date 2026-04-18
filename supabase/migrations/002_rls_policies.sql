@@ -1,5 +1,5 @@
 -- ============================================================
--- plsfundme — Row Level Security Policies
+-- get that bread — Row Level Security Policies
 -- Migration: 002_rls_policies.sql
 -- ============================================================
 

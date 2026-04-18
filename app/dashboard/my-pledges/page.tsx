@@ -59,7 +59,7 @@ export default async function MyPledgesPage() {
     const days = daysRemaining(project.deadline);
     const isActive = project.status === "active";
     const isFunded = project.status === "funded";
-    const barColor = isFunded ? "bg-[var(--color-brand-lime)]" : "bg-[var(--color-brand-violet)]";
+    const barColor = isFunded ? "bg-[var(--color-brand-success)]" : "bg-[var(--color-brand-crust)]";
 
     return (
       <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] shadow-[var(--shadow-card)] overflow-hidden">
@@ -90,7 +90,7 @@ export default async function MyPledgesPage() {
           </div>
           <Link
             href={`/projects/${project.slug}`}
-            className="text-sm font-semibold text-[var(--color-brand-violet)] hover:underline flex items-center gap-1 shrink-0"
+            className="text-sm font-semibold text-[var(--color-brand-crust)] hover:underline flex items-center gap-1 shrink-0"
           >
             View <ArrowRight className="w-3.5 h-3.5" />
           </Link>
@@ -113,7 +113,7 @@ export default async function MyPledgesPage() {
               <span><span className="font-mono font-bold text-[var(--color-ink)]">{percent}%</span> funded</span>
               <span><span className="font-mono font-bold text-[var(--color-ink)]">{project.backer_count}</span> backers</span>
               {isActive && (
-                <span className={`font-mono font-bold ${days <= 3 ? "text-[var(--color-brand-coral)]" : "text-[var(--color-ink)]"}`}>
+                <span className={`font-mono font-bold ${days <= 3 ? "text-[var(--color-brand-danger)]" : "text-[var(--color-ink)]"}`}>
                   {days}d left
                 </span>
               )}
@@ -154,7 +154,7 @@ export default async function MyPledgesPage() {
         </div>
         <Link
           href={`/projects/${project.slug}`}
-          className="text-xs font-semibold text-[var(--color-ink-subtle)] hover:text-[var(--color-brand-violet)] flex items-center gap-1 shrink-0 transition-colors"
+          className="text-xs font-semibold text-[var(--color-ink-subtle)] hover:text-[var(--color-brand-crust)] flex items-center gap-1 shrink-0 transition-colors"
         >
           View <ArrowRight className="w-3 h-3" />
         </Link>
@@ -174,15 +174,15 @@ export default async function MyPledgesPage() {
         {activePledges.length > 0 && (
           <div className="text-sm text-[var(--color-ink-muted)]">
             <span className="font-mono font-bold text-[var(--color-ink)]">{activePledges.length}</span> active pledge{activePledges.length !== 1 ? "s" : ""}{" · "}
-            <span className="font-mono font-bold text-[var(--color-brand-violet)]">{formatSgd(totalActive)}</span> pledged
+            <span className="font-mono font-bold text-[var(--color-brand-crust)]">{formatSgd(totalActive)}</span> pledged
           </div>
         )}
       </div>
 
       {pledges.length === 0 ? (
         <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border-2 border-dashed border-[var(--color-border)] p-12 text-center flex flex-col items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-[var(--color-brand-violet)]/10 flex items-center justify-center">
-            <Heart className="w-8 h-8 text-[var(--color-brand-violet)]" />
+          <div className="w-16 h-16 rounded-full bg-[var(--color-brand-crust)]/10 flex items-center justify-center">
+            <Heart className="w-8 h-8 text-[var(--color-brand-crust)]" />
           </div>
           <div>
             <h2 className="text-lg font-bold text-[var(--color-ink)]">No pledges yet</h2>
@@ -212,7 +212,7 @@ export default async function MyPledgesPage() {
       )}
 
       <div className="text-center">
-        <Link href="/explore" className="text-sm font-semibold text-[var(--color-brand-violet)] hover:underline">
+        <Link href="/explore" className="text-sm font-semibold text-[var(--color-brand-crust)] hover:underline">
           Discover more projects →
         </Link>
       </div>

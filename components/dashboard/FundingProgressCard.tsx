@@ -33,8 +33,8 @@ export function FundingProgressCard({
     <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] shadow-[var(--shadow-card)] p-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-bold text-[var(--color-ink)]">Funding progress</h3>
-        <div className="flex items-center gap-1.5 text-xs font-semibold text-[var(--color-brand-lime)] bg-lime-50 dark:bg-lime-900/20 px-2.5 py-1 rounded-full">
-          <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-brand-lime)] animate-pulse" />
+        <div className="flex items-center gap-1.5 text-xs font-semibold text-[var(--color-brand-success)] bg-lime-50 dark:bg-lime-900/20 px-2.5 py-1 rounded-full">
+          <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-brand-success)] animate-pulse" />
           Live
         </div>
       </div>
@@ -53,7 +53,7 @@ export function FundingProgressCard({
       <div className="h-3 rounded-full bg-[var(--color-surface-overlay)] overflow-hidden mb-4">
         <div
           className={`h-full rounded-full transition-all duration-700 ${
-            isFunded ? "bg-[var(--color-brand-lime)]" : "bg-[var(--color-brand-violet)]"
+            isFunded ? "bg-[var(--color-brand-success)]" : "bg-[var(--color-brand-crust)]"
           }`}
           style={{ width: `${Math.min(percent, 100)}%` }}
         />
@@ -101,9 +101,9 @@ function Stat({
       <div
         className={`inline-flex items-center justify-center w-8 h-8 rounded-lg mb-1 ${
           highlight
-            ? "bg-lime-100 dark:bg-lime-900/20 text-[var(--color-brand-lime)]"
+            ? "bg-lime-100 dark:bg-lime-900/20 text-[var(--color-brand-success)]"
             : urgent
-            ? "bg-red-100 dark:bg-red-900/20 text-[var(--color-brand-coral)]"
+            ? "bg-red-100 dark:bg-red-900/20 text-[var(--color-brand-danger)]"
             : "bg-[var(--color-surface-overlay)] text-[var(--color-ink-muted)]"
         }`}
       >
@@ -112,9 +112,9 @@ function Stat({
       <p
         className={`text-lg font-black ${
           highlight
-            ? "text-[var(--color-brand-lime)]"
+            ? "text-[var(--color-brand-success)]"
             : urgent
-            ? "text-[var(--color-brand-coral)]"
+            ? "text-[var(--color-brand-danger)]"
             : "text-[var(--color-ink)]"
         }`}
       >

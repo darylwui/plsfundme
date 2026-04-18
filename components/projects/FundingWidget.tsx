@@ -73,13 +73,13 @@ export function FundingWidget({ project }: FundingWidgetProps) {
                   step={1}
                   value={pledgeAmount}
                   onChange={(e) => setPledgeAmount(Math.max(1, Number(e.target.value) || 1))}
-                  className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)]"
+                  className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)]"
                 />
                 {/* Threshold progress indicator */}
                 {activeRewards.length > 0 && (
-                  <div className="absolute bottom-0 left-0 right-0 h-1 rounded-b-[var(--radius-btn)] bg-[var(--color-brand-violet)]/10 overflow-hidden">
+                  <div className="absolute bottom-0 left-0 right-0 h-1 rounded-b-[var(--radius-btn)] bg-[var(--color-brand-crust)]/10 overflow-hidden">
                     <div
-                      className="h-full bg-[var(--color-brand-violet)] transition-all duration-300"
+                      className="h-full bg-[var(--color-brand-crust)] transition-all duration-300"
                       style={{
                         width: `${Math.min(
                           100,
@@ -93,7 +93,7 @@ export function FundingWidget({ project }: FundingWidgetProps) {
               <p className="text-xs text-[var(--color-ink-subtle)]">
                 You are pledging {format(convert(pledgeAmount))}
                 {eligibleRewards.length > 0 && (
-                  <span className="ml-1 font-semibold text-[var(--color-brand-violet)]">
+                  <span className="ml-1 font-semibold text-[var(--color-brand-crust)]">
                     · {eligibleRewards.length} reward{eligibleRewards.length !== 1 ? "s" : ""} unlocked ↓
                   </span>
                 )}
@@ -105,9 +105,9 @@ export function FundingWidget({ project }: FundingWidgetProps) {
         {isZeroState ? (
           /* ── Zero-state: be the first ── */
           <div className="flex flex-col gap-4">
-            <div className="rounded-[var(--radius-card)] border border-dashed border-[var(--color-brand-violet)]/40 bg-[var(--color-brand-violet)]/5 px-5 py-4 text-center flex flex-col items-center gap-2">
-              <div className="w-10 h-10 rounded-full bg-[var(--color-brand-violet)]/10 flex items-center justify-center">
-                <Flame className="w-5 h-5 text-[var(--color-brand-violet)]" />
+            <div className="rounded-[var(--radius-card)] border border-dashed border-[var(--color-brand-crust)]/40 bg-[var(--color-brand-crust)]/5 px-5 py-4 text-center flex flex-col items-center gap-2">
+              <div className="w-10 h-10 rounded-full bg-[var(--color-brand-crust)]/10 flex items-center justify-center">
+                <Flame className="w-5 h-5 text-[var(--color-brand-crust)]" />
               </div>
               <p className="font-bold text-[var(--color-ink)]">No backers yet — be the first.</p>
               <p className="text-sm text-[var(--color-ink-muted)]">
@@ -120,7 +120,7 @@ export function FundingWidget({ project }: FundingWidgetProps) {
             </div>
 
             {days <= 5 && days > 0 && (
-              <div className="flex items-center gap-2 text-sm text-[var(--color-brand-coral)] font-semibold bg-red-50 dark:bg-red-900/20 rounded-lg px-3 py-2">
+              <div className="flex items-center gap-2 text-sm text-[var(--color-brand-danger)] font-semibold bg-red-50 dark:bg-red-900/20 rounded-lg px-3 py-2">
                 <Clock className="w-4 h-4 shrink-0" />
                 Only {days} day{days !== 1 ? "s" : ""} left — don&apos;t miss out!
               </div>
@@ -148,7 +148,7 @@ export function FundingWidget({ project }: FundingWidgetProps) {
             />
 
             {!isClosed && days <= 5 && days > 0 && (
-              <div className="mt-4 flex items-center gap-2 text-sm text-[var(--color-brand-coral)] font-semibold bg-red-50 dark:bg-red-900/20 rounded-lg px-3 py-2">
+              <div className="mt-4 flex items-center gap-2 text-sm text-[var(--color-brand-danger)] font-semibold bg-red-50 dark:bg-red-900/20 rounded-lg px-3 py-2">
                 <Clock className="w-4 h-4 shrink-0" />
                 Only {days} day{days !== 1 ? "s" : ""} left — don&apos;t miss out!
               </div>
@@ -159,7 +159,7 @@ export function FundingWidget({ project }: FundingWidgetProps) {
                 <div className="text-center text-sm text-[var(--color-ink-muted)] py-2 flex items-center justify-center gap-2">
                   {project.status === "funded" ? (
                     <>
-                      <CheckCircle2 className="w-4 h-4 text-[var(--color-brand-lime)] shrink-0" />
+                      <CheckCircle2 className="w-4 h-4 text-[var(--color-brand-success)] shrink-0" />
                       This project was successfully funded!
                     </>
                   ) : (

@@ -44,7 +44,7 @@ async function BackerDashboard({ userId, displayName, email }: { userId: string;
       </div>
 
       {/* Apply as Creator CTA */}
-      <div className="bg-gradient-to-r from-[var(--color-brand-amber)]/10 to-[var(--color-brand-violet)]/10 rounded-[var(--radius-card)] border border-[var(--color-brand-amber)]/30 p-6 flex items-center justify-between gap-4">
+      <div className="bg-gradient-to-r from-[var(--color-brand-golden)]/10 to-[var(--color-brand-crust)]/10 rounded-[var(--radius-card)] border border-[var(--color-brand-golden)]/30 p-6 flex items-center justify-between gap-4">
         <div>
           <h3 className="font-bold text-[var(--color-ink)] mb-1">Ready to launch your own campaign?</h3>
           <p className="text-sm text-[var(--color-ink-muted)]">Become a creator and bring your ideas to life on get that bread.</p>
@@ -65,7 +65,7 @@ async function BackerDashboard({ userId, displayName, email }: { userId: string;
           </div>
           <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-5">
             <p className="text-xs font-bold uppercase tracking-widest text-[var(--color-ink-subtle)] mb-1">Total pledged</p>
-            <p className="text-3xl font-black text-[var(--color-brand-violet)]">{formatSgd(totalPledged)}</p>
+            <p className="text-3xl font-black text-[var(--color-brand-crust)]">{formatSgd(totalPledged)}</p>
           </div>
         </div>
       )}
@@ -114,7 +114,7 @@ async function BackerDashboard({ userId, displayName, email }: { userId: string;
                   </div>
                   <Link
                     href={`/projects/${project.slug}`}
-                    className="text-sm font-semibold text-[var(--color-brand-violet)] hover:underline flex items-center gap-1 shrink-0"
+                    className="text-sm font-semibold text-[var(--color-brand-crust)] hover:underline flex items-center gap-1 shrink-0"
                   >
                     View <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
@@ -221,7 +221,7 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
                   <Link href={`/projects/${activeProject.slug}/edit`} className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface-overlay)] hover:bg-[var(--color-border)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors">
                     <Pencil className="w-3 h-3" /> Edit
                   </Link>
-                  <Link href={`/projects/${activeProject.slug}`} className="text-sm font-semibold text-[var(--color-brand-violet)] hover:underline flex items-center gap-1">
+                  <Link href={`/projects/${activeProject.slug}`} className="text-sm font-semibold text-[var(--color-brand-crust)] hover:underline flex items-center gap-1">
                     View <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>

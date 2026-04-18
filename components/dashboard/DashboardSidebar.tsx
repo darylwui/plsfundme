@@ -54,7 +54,7 @@ export function DashboardSidebar({ role, isAdmin }: DashboardSidebarProps) {
             : "text-[var(--color-ink-muted)] hover:bg-[var(--color-surface)] hover:text-[var(--color-ink)]"
         }`}
       >
-        <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-[var(--color-brand-violet)]" : ""}`} />
+        <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-[var(--color-brand-crust)]" : ""}`} />
         <span className="hidden sm:block">{label}</span>
       </Link>
     );

@@ -67,7 +67,7 @@ function ResetPasswordContent() {
   if (stage === "verifying") {
     return (
       <Card padding="lg" className="flex flex-col items-center gap-4 text-center py-10">
-        <div className="w-8 h-8 rounded-full border-2 border-[var(--color-brand-violet)] border-t-transparent animate-spin" />
+        <div className="w-8 h-8 rounded-full border-2 border-[var(--color-brand-crust)] border-t-transparent animate-spin" />
         <p className="text-sm text-[var(--color-ink-muted)]">Verifying your reset link…</p>
       </Card>
     );
@@ -164,7 +164,7 @@ export default function ResetPasswordPage() {
   return (
     <Suspense fallback={
       <Card padding="lg" className="flex flex-col items-center gap-4 text-center py-10">
-        <div className="w-8 h-8 rounded-full border-2 border-[var(--color-brand-violet)] border-t-transparent animate-spin" />
+        <div className="w-8 h-8 rounded-full border-2 border-[var(--color-brand-crust)] border-t-transparent animate-spin" />
         <p className="text-sm text-[var(--color-ink-muted)]">Loading…</p>
       </Card>
     }>

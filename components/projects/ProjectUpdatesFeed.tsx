@@ -18,7 +18,7 @@ export function ProjectUpdatesFeed({ updates, isBacker }: ProjectUpdatesFeedProp
   return (
     <div>
       <h2 className="text-2xl font-black text-[var(--color-ink)] mb-5 tracking-tight flex items-center gap-2">
-        <Megaphone className="w-5 h-5 text-[var(--color-brand-violet)]" />
+        <Megaphone className="w-5 h-5 text-[var(--color-brand-crust)]" />
         Updates
         <span className="font-mono text-sm font-semibold text-[var(--color-ink-muted)]">
           ({updates.length})
@@ -32,7 +32,7 @@ export function ProjectUpdatesFeed({ updates, isBacker }: ProjectUpdatesFeedProp
               <div className="flex items-center gap-2 flex-wrap">
                 <h3 className="text-lg font-bold text-[var(--color-ink)]">{update.title}</h3>
                 {update.is_backers_only && (
-                  <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-[var(--color-brand-violet)] bg-[var(--color-brand-violet)]/10 px-2 py-0.5 rounded-full">
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-[var(--color-brand-crust)] bg-[var(--color-brand-crust)]/10 px-2 py-0.5 rounded-full">
                     <Lock className="w-2.5 h-2.5" />
                     Backers only
                   </span>

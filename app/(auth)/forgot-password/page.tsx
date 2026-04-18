@@ -53,7 +53,7 @@ export default function ForgotPasswordPage() {
             Didn&apos;t receive it? Check your spam folder or{" "}
             <button
               onClick={() => setSent(false)}
-              className="text-[var(--color-brand-violet)] hover:underline font-medium"
+              className="text-[var(--color-brand-crust)] hover:underline font-medium"
             >
               try again
             </button>

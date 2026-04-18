@@ -21,7 +21,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <div className="flex flex-col md:flex-row gap-8">
           <aside className="w-full md:w-52 shrink-0">
             <div className="mb-3 px-3">
-              <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-brand-coral)]">
+              <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-brand-danger)]">
                 Admin
               </span>
             </div>

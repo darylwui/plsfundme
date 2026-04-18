@@ -138,7 +138,7 @@ export function CheckoutForm({
               step={1}
               value={displayAmount}
               onChange={(e) => setDisplayAmount(parseFloat(e.target.value) || 0)}
-              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] pl-10 pr-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)]"
+              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] pl-10 pr-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)]"
             />
           </div>
           {currency === "USD" && (
@@ -191,7 +191,7 @@ export function CheckoutForm({
             type="checkbox"
             checked={isAnonymous}
             onChange={(e) => setIsAnonymous(e.target.checked)}
-            className="w-4 h-4 rounded accent-[var(--color-brand-violet)]"
+            className="w-4 h-4 rounded accent-[var(--color-brand-crust)]"
           />
           <span className="text-sm text-[var(--color-ink)]">
             Back anonymously (your name won&apos;t appear on the project page)
@@ -211,13 +211,13 @@ export function CheckoutForm({
             placeholder="Share your excitement or a personal message…"
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)] resize-none"
+            className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)] resize-none"
           />
         </div>
       </div>
 
       {error && (
-        <div className="rounded-[var(--radius-btn)] bg-red-50 border border-red-200 px-4 py-3 text-sm text-[var(--color-brand-coral)]">
+        <div className="rounded-[var(--radius-btn)] bg-red-50 border border-red-200 px-4 py-3 text-sm text-[var(--color-brand-danger)]">
           {error}
         </div>
       )}

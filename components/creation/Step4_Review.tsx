@@ -163,7 +163,7 @@ export function Step4_Review({ draft, rewards, categories, onBack, onSuccess }: 
       {/* Header */}
       <div>
         <div className="flex items-center gap-2 mb-1">
-          <Eye className="w-4 h-4 text-[var(--color-brand-violet)]" />
+          <Eye className="w-4 h-4 text-[var(--color-brand-crust)]" />
           <h2 className="text-2xl font-black text-[var(--color-ink)]">
             Preview &amp; submit
           </h2>
@@ -174,7 +174,7 @@ export function Step4_Review({ draft, rewards, categories, onBack, onSuccess }: 
       </div>
 
       {error && (
-        <div className="rounded-[var(--radius-btn)] bg-red-50 border border-red-200 px-4 py-3 text-sm text-[var(--color-brand-coral)]">
+        <div className="rounded-[var(--radius-btn)] bg-red-50 border border-red-200 px-4 py-3 text-sm text-[var(--color-brand-danger)]">
           {error}
         </div>
       )}
@@ -228,7 +228,7 @@ export function Step4_Review({ draft, rewards, categories, onBack, onSuccess }: 
 
               {/* Creator chip */}
               <div className="mt-4 inline-flex items-center gap-3 px-4 py-2.5 rounded-[var(--radius-card)] bg-[var(--color-surface-raised)] border border-[var(--color-border)]">
-                <div className="w-8 h-8 rounded-full bg-[var(--color-brand-violet)]/15 ring-1 ring-[var(--color-border)] flex items-center justify-center font-bold text-[var(--color-brand-violet)] text-sm shrink-0">
+                <div className="w-8 h-8 rounded-full bg-[var(--color-brand-crust)]/15 ring-1 ring-[var(--color-border)] flex items-center justify-center font-bold text-[var(--color-brand-crust)] text-sm shrink-0">
                   Y
                 </div>
                 <div>
@@ -253,7 +253,7 @@ export function Step4_Review({ draft, rewards, categories, onBack, onSuccess }: 
             {/* Description — sanitized before render */}
             {draft.full_description && (
               <div
-                className="prose prose-sm max-w-none text-[var(--color-ink)] prose-headings:text-[var(--color-ink)] prose-a:text-[var(--color-brand-violet)]"
+                className="prose prose-sm max-w-none text-[var(--color-ink)] prose-headings:text-[var(--color-ink)] prose-a:text-[var(--color-brand-crust)]"
                 dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(draft.full_description) }}
               />
             )}

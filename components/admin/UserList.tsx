@@ -75,7 +75,7 @@ export function UserList({ users: initial, currentUserId }: UserListProps) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by name or email…"
-          className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] pl-9 pr-4 py-2.5 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)]"
+          className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] pl-9 pr-4 py-2.5 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)]"
         />
       </div>
 
@@ -111,7 +111,7 @@ export function UserList({ users: initial, currentUserId }: UserListProps) {
                     {/* Name + admin badge */}
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-[var(--color-brand-violet)]/15 flex items-center justify-center text-xs font-bold text-[var(--color-brand-violet)] shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-[var(--color-brand-crust)]/15 flex items-center justify-center text-xs font-bold text-[var(--color-brand-crust)] shrink-0">
                           {user.display_name.charAt(0).toUpperCase()}
                         </div>
                         <div>
@@ -122,7 +122,7 @@ export function UserList({ users: initial, currentUserId }: UserListProps) {
                             )}
                           </p>
                           {user.is_admin && (
-                            <span className="inline-flex items-center gap-0.5 text-xs text-[var(--color-brand-violet)] font-semibold">
+                            <span className="inline-flex items-center gap-0.5 text-xs text-[var(--color-brand-crust)] font-semibold">
                               <ShieldCheck className="w-3 h-3" />
                               Admin
                             </span>
@@ -151,7 +151,7 @@ export function UserList({ users: initial, currentUserId }: UserListProps) {
                       <div className="flex items-center gap-2">
                         <a
                           href={`mailto:${user.email}`}
-                          className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface-overlay)] hover:bg-[var(--color-brand-violet)] hover:text-white hover:border-[var(--color-brand-violet)] text-[var(--color-ink-muted)] transition-colors"
+                          className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface-overlay)] hover:bg-[var(--color-brand-crust)] hover:text-white hover:border-[var(--color-brand-crust)] text-[var(--color-ink-muted)] transition-colors"
                         >
                           <Mail className="w-3.5 h-3.5" />
                           Email
@@ -162,8 +162,8 @@ export function UserList({ users: initial, currentUserId }: UserListProps) {
                           title={isSelf ? "Cannot change your own admin status" : user.is_admin ? "Remove admin" : "Make admin"}
                           className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-[var(--radius-btn)] border transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
                             user.is_admin
-                              ? "border-[var(--color-brand-violet)]/40 bg-[var(--color-brand-violet)]/10 text-[var(--color-brand-violet)] hover:bg-red-50 hover:border-red-300 hover:text-red-600"
-                              : "border-[var(--color-border)] bg-[var(--color-surface-overlay)] text-[var(--color-ink-muted)] hover:bg-[var(--color-brand-violet)]/10 hover:border-[var(--color-brand-violet)]/40 hover:text-[var(--color-brand-violet)]"
+                              ? "border-[var(--color-brand-crust)]/40 bg-[var(--color-brand-crust)]/10 text-[var(--color-brand-crust)] hover:bg-red-50 hover:border-red-300 hover:text-red-600"
+                              : "border-[var(--color-border)] bg-[var(--color-surface-overlay)] text-[var(--color-ink-muted)] hover:bg-[var(--color-brand-crust)]/10 hover:border-[var(--color-brand-crust)]/40 hover:text-[var(--color-brand-crust)]"
                           }`}
                         >
                           {user.is_admin ? (

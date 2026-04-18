@@ -29,7 +29,7 @@ export function ResubmitButton({ projectId }: { projectId: string }) {
         <Send className="w-4 h-4" />
         Resubmit for review
       </Button>
-      {error && <p className="text-xs text-[var(--color-brand-coral)]">{error}</p>}
+      {error && <p className="text-xs text-[var(--color-brand-danger)]">{error}</p>}
     </div>
   );
 }

@@ -46,7 +46,7 @@ export function ShareButtons({ url, title, compact = false }: ShareButtonsProps)
         onClick={handleCopy}
         className={`${btnBase} ${
           copied
-            ? "bg-[var(--color-brand-lime)]/10 border-[var(--color-brand-lime)] text-[var(--color-brand-lime)]"
+            ? "bg-[var(--color-brand-success)]/10 border-[var(--color-brand-success)] text-[var(--color-brand-success)]"
             : "bg-[var(--color-surface-overlay)] border-[var(--color-border)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] hover:border-[var(--color-ink-muted)]"
         }`}
       >

@@ -25,8 +25,8 @@ export default async function CreateProjectPage() {
     return (
       <main className="flex-1 bg-[var(--color-surface-raised)] flex items-center justify-center px-4 py-16">
         <div className="max-w-md w-full text-center flex flex-col items-center gap-5">
-            <div className="w-16 h-16 rounded-full bg-[var(--color-brand-violet)]/10 flex items-center justify-center">
-              <Rocket className="w-8 h-8 text-[var(--color-brand-violet)]" />
+            <div className="w-16 h-16 rounded-full bg-[var(--color-brand-crust)]/10 flex items-center justify-center">
+              <Rocket className="w-8 h-8 text-[var(--color-brand-crust)]" />
             </div>
             <div>
               <h1 className="text-xl font-bold text-[var(--color-ink)]">
@@ -38,7 +38,7 @@ export default async function CreateProjectPage() {
             </div>
             <Link
               href="/apply/pm"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-[var(--radius-btn)] bg-[var(--color-brand-violet)] text-white text-sm font-semibold hover:opacity-90 transition-opacity"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-[var(--radius-btn)] bg-[var(--color-brand-crust)] text-white text-sm font-semibold hover:opacity-90 transition-opacity"
             >
               <Rocket className="w-4 h-4" />
               Apply as Project Manager
@@ -115,7 +115,7 @@ export default async function CreateProjectPage() {
             )}
             <Link
               href="/apply/pm"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-[var(--radius-btn)] bg-[var(--color-brand-violet)] text-white text-sm font-semibold hover:opacity-90 transition-opacity"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-[var(--radius-btn)] bg-[var(--color-brand-crust)] text-white text-sm font-semibold hover:opacity-90 transition-opacity"
             >
               Re-apply as Creator
             </Link>

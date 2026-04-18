@@ -69,7 +69,7 @@ export function LoginForm({ redirectTo = "/dashboard" }: LoginFormProps) {
         <div className="flex justify-end">
           <Link
             href="/forgot-password"
-            className="text-xs text-[var(--color-brand-violet)] hover:underline"
+            className="text-xs text-[var(--color-brand-crust)] hover:underline"
           >
             Forgot password?
           </Link>

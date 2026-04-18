@@ -106,8 +106,8 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
 
       {!projects || projects.length === 0 ? (
         <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border-2 border-dashed border-[var(--color-border)] p-16 flex flex-col items-center text-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-[var(--color-brand-violet)]/10 flex items-center justify-center">
-            <Rocket className="w-8 h-8 text-[var(--color-brand-violet)]" />
+          <div className="w-16 h-16 rounded-full bg-[var(--color-brand-crust)]/10 flex items-center justify-center">
+            <Rocket className="w-8 h-8 text-[var(--color-brand-crust)]" />
           </div>
           <div>
             <h2 className="text-xl font-black text-[var(--color-ink)]">No projects yet</h2>
@@ -174,7 +174,7 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
                     <div className="mt-2 flex items-center gap-3">
                       <div className="flex-1 h-1.5 rounded-full bg-[var(--color-surface-overlay)] overflow-hidden">
                         <div
-                          className="h-full rounded-full bg-[var(--color-brand-violet)]"
+                          className="h-full rounded-full bg-[var(--color-brand-crust)]"
                           style={{ width: `${Math.min(percent, 100)}%` }}
                         />
                       </div>

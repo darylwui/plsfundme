@@ -103,7 +103,7 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
             name="q"
             defaultValue={q}
             placeholder="Search projects…"
-            className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] pl-10 pr-4 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)]"
+            className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] pl-10 pr-4 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)]"
           />
           {category && <input type="hidden" name="category" value={category} />}
           {sort && <input type="hidden" name="sort" value={sort} />}
@@ -133,7 +133,7 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
             href={buildUrl({ category: undefined })}
             className={`px-3 py-1.5 rounded-full text-sm font-semibold transition-colors duration-[150ms] ${
               !category
-                ? "bg-[var(--color-brand-violet)] text-white"
+                ? "bg-[var(--color-brand-crust)] text-white"
                 : "bg-[var(--color-surface-overlay)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
             }`}
           >
@@ -145,7 +145,7 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
               href={buildUrl({ category: cat.slug })}
               className={`px-3 py-1.5 rounded-full text-sm font-semibold transition-colors duration-[150ms] ${
                 category === cat.slug
-                  ? "bg-[var(--color-brand-violet)] text-white"
+                  ? "bg-[var(--color-brand-crust)] text-white"
                   : "bg-[var(--color-surface-overlay)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
               }`}
             >

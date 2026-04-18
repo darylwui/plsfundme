@@ -1,5 +1,5 @@
 -- ============================================================
--- plsfundme — Database Functions & Scheduled Jobs
+-- get that bread — Database Functions & Scheduled Jobs
 -- Migration: 003_functions.sql
 -- ============================================================
 

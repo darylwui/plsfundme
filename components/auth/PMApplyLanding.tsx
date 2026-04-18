@@ -20,7 +20,7 @@ export function PMApplyLanding({ userId }: PMApplyLandingProps) {
         </p>
         <a
           href="/dashboard"
-          className="mt-2 text-sm font-semibold text-[var(--color-brand-violet)] hover:underline"
+          className="mt-2 text-sm font-semibold text-[var(--color-brand-crust)] hover:underline"
         >
           Go to dashboard →
         </a>

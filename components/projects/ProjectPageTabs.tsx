@@ -223,7 +223,7 @@ export function ProjectPageTabs({
               onClick={() => setActiveTab(key)}
               className={`px-3 py-1.5 text-sm rounded-full border whitespace-nowrap transition-colors ${
                 activeTab === key
-                  ? "bg-[var(--color-brand-violet)]/10 border-[var(--color-brand-violet)] text-[var(--color-brand-violet)]"
+                  ? "bg-[var(--color-brand-crust)]/10 border-[var(--color-brand-crust)] text-[var(--color-brand-crust)]"
                   : "bg-[var(--color-surface-raised)] border-[var(--color-border)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
               }`}
             >
@@ -254,7 +254,7 @@ export function ProjectPageTabs({
               </div>
             )}
             <div
-              className="prose prose-sm max-w-none text-[var(--color-ink)] prose-headings:text-[var(--color-ink)] prose-a:text-[var(--color-brand-violet)]"
+              className="prose prose-sm max-w-none text-[var(--color-ink)] prose-headings:text-[var(--color-ink)] prose-a:text-[var(--color-brand-crust)]"
               dangerouslySetInnerHTML={{ __html: processedCampaign.html }}
             />
           </div>
@@ -305,7 +305,7 @@ export function ProjectPageTabs({
                     key={item.id}
                     href={`#${item.id}`}
                     onClick={() => setActiveTab("campaign")}
-                    className="rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-4 py-3 text-sm text-[var(--color-ink)] hover:border-[var(--color-brand-violet)]"
+                    className="rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-4 py-3 text-sm text-[var(--color-ink)] hover:border-[var(--color-brand-crust)]"
                   >
                     {item.text}
                   </a>
@@ -334,7 +334,7 @@ export function ProjectPageTabs({
           <div className="flex flex-col gap-5">
             <div>
               <h2 className="text-xl font-bold text-[var(--color-ink)] mb-1 tracking-tight flex items-center gap-2">
-                <MessageCircle className="w-5 h-5 text-[var(--color-brand-violet)]" />
+                <MessageCircle className="w-5 h-5 text-[var(--color-brand-crust)]" />
                 Questions & feedback
               </h2>
               <p className="text-sm text-[var(--color-ink-muted)]">
@@ -344,7 +344,7 @@ export function ProjectPageTabs({
 
             {!currentUserId && (
               <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-4 text-sm text-[var(--color-ink-muted)]">
-                <Link href={`/login?redirectTo=${encodeURIComponent(loginRedirectTo)}`} className="font-semibold text-[var(--color-brand-violet)] hover:underline">
+                <Link href={`/login?redirectTo=${encodeURIComponent(loginRedirectTo)}`} className="font-semibold text-[var(--color-brand-crust)] hover:underline">
                   Log in
                 </Link>{" "}
                 to post a question or feedback.
@@ -370,9 +370,9 @@ export function ProjectPageTabs({
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Ask a question, suggest an improvement, or share your feedback..."
-                  className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)] resize-none"
+                  className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)] resize-none"
                 />
-                {error && <p className="text-xs text-[var(--color-brand-coral)]">{error}</p>}
+                {error && <p className="text-xs text-[var(--color-brand-danger)]">{error}</p>}
                 <div className="flex justify-end">
                   <Button size="sm" loading={loading} disabled={!message.trim()}>
                     <Send className="w-3.5 h-3.5" />
@@ -416,7 +416,7 @@ export function ProjectPageTabs({
                                   value={replyMessage[item.id] ?? ""}
                                   onChange={(e) => setReplyMessage((prev) => ({ ...prev, [item.id]: e.target.value }))}
                                   placeholder="Reply as creator..."
-                                  className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3 py-2 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)] resize-none"
+                                  className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3 py-2 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)] resize-none"
                                 />
                                 <div className="flex items-center gap-2 justify-end">
                                   <Button type="button" variant="ghost" size="sm" onClick={() => setOpenReplyId(null)}>
@@ -431,7 +431,7 @@ export function ProjectPageTabs({
                               <button
                                 type="button"
                                 onClick={() => setOpenReplyId(item.id)}
-                                className="text-xs font-semibold text-[var(--color-brand-violet)] hover:underline"
+                                className="text-xs font-semibold text-[var(--color-brand-crust)] hover:underline"
                               >
                                 Reply as creator
                               </button>
@@ -447,7 +447,7 @@ export function ProjectPageTabs({
                                   <p className="text-xs font-semibold text-[var(--color-ink)]">
                                     {reply.author?.display_name ?? "Creator"}
                                     {reply.author_id === creatorId && (
-                                      <span className="ml-1 text-[10px] uppercase tracking-wide text-[var(--color-brand-violet)]">
+                                      <span className="ml-1 text-[10px] uppercase tracking-wide text-[var(--color-brand-crust)]">
                                         Creator
                                       </span>
                                     )}

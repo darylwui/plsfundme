@@ -88,7 +88,7 @@ export default async function EditProjectPage({ params }: EditProjectPageProps) 
         {isRejected && (
           <div className="mb-8 rounded-[var(--radius-card)] border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 overflow-hidden">
             <div className="px-5 py-4 flex items-start gap-3 border-b border-red-200 dark:border-red-800">
-              <XCircle className="w-5 h-5 text-[var(--color-brand-coral)] shrink-0 mt-0.5" />
+              <XCircle className="w-5 h-5 text-[var(--color-brand-danger)] shrink-0 mt-0.5" />
               <div>
                 <p className="font-bold text-red-800 dark:text-red-300">Your campaign was not approved</p>
                 <p className="text-sm text-red-700 dark:text-red-400 mt-0.5">

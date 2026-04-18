@@ -72,13 +72,13 @@ export function Step2_Funding({ draft, onUpdate, onNext, onBack }: Step2Props) {
             className={`
               w-full rounded-[var(--radius-btn)] border pl-9 pr-3.5 py-2.5 text-sm
               bg-[var(--color-surface)] text-[var(--color-ink)]
-              focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)] focus:border-transparent
-              ${errors.funding_goal_sgd ? "border-[var(--color-brand-coral)]" : "border-[var(--color-border)]"}
+              focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)] focus:border-transparent
+              ${errors.funding_goal_sgd ? "border-[var(--color-brand-danger)]" : "border-[var(--color-border)]"}
             `}
           />
         </div>
         {errors.funding_goal_sgd && (
-          <p className="text-xs text-[var(--color-brand-coral)]">
+          <p className="text-xs text-[var(--color-brand-danger)]">
             {errors.funding_goal_sgd}
           </p>
         )}
@@ -104,7 +104,7 @@ export function Step2_Funding({ draft, onUpdate, onNext, onBack }: Step2Props) {
           <hr className="border-[var(--color-border)]" />
           <div className="flex justify-between font-bold text-[var(--color-ink)]">
             <span>You receive</span>
-            <span className="text-[var(--color-brand-lime)]">
+            <span className="text-[var(--color-brand-success)]">
               {formatSgd(creatorReceives)}
             </span>
           </div>
@@ -156,8 +156,8 @@ export function Step2_Funding({ draft, onUpdate, onNext, onBack }: Step2Props) {
                 rounded-[var(--radius-card)] border-2 p-4 text-left transition-all
                 ${
                   draft.payout_mode === mode
-                    ? "border-[var(--color-brand-violet)] bg-violet-50/50 dark:bg-violet-900/10"
-                    : "border-[var(--color-border)] hover:border-[var(--color-brand-violet)]/50"
+                    ? "border-[var(--color-brand-crust)] bg-violet-50/50 dark:bg-violet-900/10"
+                    : "border-[var(--color-border)] hover:border-[var(--color-brand-crust)]/50"
                 }
               `}
             >

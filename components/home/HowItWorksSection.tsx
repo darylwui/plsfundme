@@ -41,7 +41,7 @@ export function HowItWorksSection() {
           </div>
           <Link
             href="/how-it-works"
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--color-brand-violet)] hover:underline shrink-0"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--color-brand-crust)] hover:underline shrink-0"
           >
             Full guide <ArrowRight className="w-3.5 h-3.5" />
           </Link>
@@ -53,7 +53,7 @@ export function HowItWorksSection() {
             <div key={step} className="relative flex flex-col gap-4 animate-fade-up" style={{ animationDelay: `${index * 120}ms` }}>
               {/* Step number + icon */}
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-[var(--radius-card)] bg-[var(--color-brand-violet)] flex items-center justify-center shrink-0 shadow-[var(--shadow-cta)]">
+                <div className="w-12 h-12 rounded-[var(--radius-card)] bg-[var(--color-brand-crust)] flex items-center justify-center shrink-0 shadow-[var(--shadow-cta)]">
                   <Icon className="w-5 h-5 text-white" />
                 </div>
                 <span className="font-mono text-sm md:text-[15px] font-bold text-[var(--color-ink-subtle)] uppercase tracking-[0.2em]">

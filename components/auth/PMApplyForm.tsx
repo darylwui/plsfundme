@@ -128,7 +128,7 @@ export function PMApplyForm({ userId, onSuccess }: PMApplyFormProps) {
         </div>
         <div className="h-1.5 rounded-full bg-[var(--color-border)] overflow-hidden">
           <div
-            className="h-full rounded-full bg-[var(--color-brand-violet)] transition-all duration-300"
+            className="h-full rounded-full bg-[var(--color-brand-crust)] transition-all duration-300"
             style={{ width: `${(step / totalSteps) * 100}%` }}
           />
         </div>
@@ -154,22 +154,22 @@ export function PMApplyForm({ userId, onSuccess }: PMApplyFormProps) {
 
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-[var(--color-ink)]">
-              Bio <span className="text-[var(--color-brand-coral)]">*</span>
+              Bio <span className="text-[var(--color-brand-danger)]">*</span>
             </label>
             <textarea
               rows={4}
               placeholder="Tell us who you are, your background, and what drives you..."
               value={bio}
               onChange={(e) => setBio(e.target.value)}
-              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)] resize-none"
+              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)] resize-none"
             />
             <div className="flex justify-between">
               {errors.bio ? (
-                <p className="text-xs text-[var(--color-brand-coral)]">{errors.bio}</p>
+                <p className="text-xs text-[var(--color-brand-danger)]">{errors.bio}</p>
               ) : (
                 <p className="text-xs text-[var(--color-ink-subtle)]">Minimum 50 characters</p>
               )}
-              <p className={`text-xs ${bio.length < 50 ? "text-[var(--color-ink-subtle)]" : "text-[var(--color-brand-lime)]"}`}>
+              <p className={`text-xs ${bio.length < 50 ? "text-[var(--color-ink-subtle)]" : "text-[var(--color-brand-success)]"}`}>
                 {bio.length}/50
               </p>
             </div>
@@ -220,12 +220,12 @@ export function PMApplyForm({ userId, onSuccess }: PMApplyFormProps) {
 
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-[var(--color-ink)]">
-              Project type <span className="text-[var(--color-brand-coral)]">*</span>
+              Project type <span className="text-[var(--color-brand-danger)]">*</span>
             </label>
             <select
               value={projectType}
               onChange={(e) => setProjectType(e.target.value)}
-              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)]"
+              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)]"
             >
               <option value="">Select a category...</option>
               {PROJECT_TYPES.map((type) => (
@@ -233,28 +233,28 @@ export function PMApplyForm({ userId, onSuccess }: PMApplyFormProps) {
               ))}
             </select>
             {errors.projectType && (
-              <p className="text-xs text-[var(--color-brand-coral)]">{errors.projectType}</p>
+              <p className="text-xs text-[var(--color-brand-danger)]">{errors.projectType}</p>
             )}
           </div>
 
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-[var(--color-ink)]">
-              Project description <span className="text-[var(--color-brand-coral)]">*</span>
+              Project description <span className="text-[var(--color-brand-danger)]">*</span>
             </label>
             <textarea
               rows={5}
               placeholder="Describe your project idea, what you plan to build, and why it matters..."
               value={projectDescription}
               onChange={(e) => setProjectDescription(e.target.value)}
-              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)] resize-none"
+              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)] resize-none"
             />
             <div className="flex justify-between">
               {errors.projectDescription ? (
-                <p className="text-xs text-[var(--color-brand-coral)]">{errors.projectDescription}</p>
+                <p className="text-xs text-[var(--color-brand-danger)]">{errors.projectDescription}</p>
               ) : (
                 <p className="text-xs text-[var(--color-ink-subtle)]">Minimum 100 characters</p>
               )}
-              <p className={`text-xs ${projectDescription.length < 100 ? "text-[var(--color-ink-subtle)]" : "text-[var(--color-brand-lime)]"}`}>
+              <p className={`text-xs ${projectDescription.length < 100 ? "text-[var(--color-ink-subtle)]" : "text-[var(--color-brand-success)]"}`}>
                 {projectDescription.length}/100
               </p>
             </div>
@@ -278,7 +278,7 @@ export function PMApplyForm({ userId, onSuccess }: PMApplyFormProps) {
           </div>
 
           {errors.form && (
-            <div className="rounded-[var(--radius-btn)] bg-red-50 border border-red-200 px-4 py-3 text-sm text-[var(--color-brand-coral)]">
+            <div className="rounded-[var(--radius-btn)] bg-red-50 border border-red-200 px-4 py-3 text-sm text-[var(--color-brand-danger)]">
               {errors.form}
             </div>
           )}

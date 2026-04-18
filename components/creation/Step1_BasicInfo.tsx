@@ -76,8 +76,8 @@ export function Step1_BasicInfo({
           className={`
             w-full rounded-[var(--radius-btn)] border px-3.5 py-2.5 text-sm
             bg-[var(--color-surface)] text-[var(--color-ink)]
-            focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)] focus:border-transparent
-            ${errors.category_id ? "border-[var(--color-brand-coral)]" : "border-[var(--color-border)]"}
+            focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)] focus:border-transparent
+            ${errors.category_id ? "border-[var(--color-brand-danger)]" : "border-[var(--color-border)]"}
           `}
         >
           <option value="">Select a category…</option>
@@ -88,7 +88,7 @@ export function Step1_BasicInfo({
           ))}
         </select>
         {errors.category_id && (
-          <p className="text-xs text-[var(--color-brand-coral)]">
+          <p className="text-xs text-[var(--color-brand-danger)]">
             {errors.category_id}
           </p>
         )}
@@ -116,8 +116,8 @@ export function Step1_BasicInfo({
             w-full rounded-[var(--radius-btn)] border px-3.5 py-2.5 text-sm resize-none
             bg-[var(--color-surface)] text-[var(--color-ink)]
             placeholder:text-[var(--color-ink-subtle)]
-            focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)] focus:border-transparent
-            ${errors.short_description ? "border-[var(--color-brand-coral)]" : "border-[var(--color-border)]"}
+            focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)] focus:border-transparent
+            ${errors.short_description ? "border-[var(--color-brand-danger)]" : "border-[var(--color-border)]"}
           `}
         />
         <div className="flex items-start justify-between gap-4">
@@ -129,7 +129,7 @@ export function Step1_BasicInfo({
           </p>
         </div>
         {errors.short_description && (
-          <p className="text-xs text-[var(--color-brand-coral)]">
+          <p className="text-xs text-[var(--color-brand-danger)]">
             {errors.short_description}
           </p>
         )}
@@ -148,7 +148,7 @@ export function Step1_BasicInfo({
           error={errors.full_description}
         />
         {errors.full_description && (
-          <p className="text-xs text-[var(--color-brand-coral)]">
+          <p className="text-xs text-[var(--color-brand-danger)]">
             {errors.full_description}
           </p>
         )}

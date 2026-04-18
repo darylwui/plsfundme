@@ -243,7 +243,7 @@ export function EditProjectForm({
             onClick={() => { setTab(t.id); setErrors({}); }}
             className={`flex-1 py-2 text-sm font-semibold rounded-[var(--radius-btn)] transition-all ${
               tab === t.id
-                ? "bg-[var(--color-brand-violet)] text-white shadow-sm"
+                ? "bg-[var(--color-brand-crust)] text-white shadow-sm"
                 : "text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
             }`}
           >
@@ -254,7 +254,7 @@ export function EditProjectForm({
 
       {/* Global error */}
       {errors._ && (
-        <p className="text-sm text-[var(--color-brand-coral)] bg-red-50 dark:bg-red-900/20 px-4 py-3 rounded-[var(--radius-card)]">
+        <p className="text-sm text-[var(--color-brand-danger)] bg-red-50 dark:bg-red-900/20 px-4 py-3 rounded-[var(--radius-card)]">
           {errors._}
         </p>
       )}
@@ -275,8 +275,8 @@ export function EditProjectForm({
             <select
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
-              className={`w-full rounded-[var(--radius-btn)] border px-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)] focus:border-transparent ${
-                errors.category_id ? "border-[var(--color-brand-coral)]" : "border-[var(--color-border)]"
+              className={`w-full rounded-[var(--radius-btn)] border px-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)] focus:border-transparent ${
+                errors.category_id ? "border-[var(--color-brand-danger)]" : "border-[var(--color-border)]"
               }`}
             >
               <option value="">Select a category…</option>
@@ -285,7 +285,7 @@ export function EditProjectForm({
               ))}
             </select>
             {errors.category_id && (
-              <p className="text-xs text-[var(--color-brand-coral)]">{errors.category_id}</p>
+              <p className="text-xs text-[var(--color-brand-danger)]">{errors.category_id}</p>
             )}
           </div>
 
@@ -299,13 +299,13 @@ export function EditProjectForm({
               maxLength={200}
               value={shortDesc}
               onChange={(e) => setShortDesc(e.target.value)}
-              className={`w-full rounded-[var(--radius-btn)] border px-3.5 py-2.5 text-sm resize-none bg-[var(--color-surface)] text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)] focus:border-transparent ${
-                errors.short_description ? "border-[var(--color-brand-coral)]" : "border-[var(--color-border)]"
+              className={`w-full rounded-[var(--radius-btn)] border px-3.5 py-2.5 text-sm resize-none bg-[var(--color-surface)] text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)] focus:border-transparent ${
+                errors.short_description ? "border-[var(--color-brand-danger)]" : "border-[var(--color-border)]"
               }`}
             />
             <div className="flex justify-between">
               {errors.short_description ? (
-                <p className="text-xs text-[var(--color-brand-coral)]">{errors.short_description}</p>
+                <p className="text-xs text-[var(--color-brand-danger)]">{errors.short_description}</p>
               ) : <span />}
               <p className="text-xs text-[var(--color-ink-subtle)]">{shortDesc.length}/200</p>
             </div>
@@ -319,7 +319,7 @@ export function EditProjectForm({
               error={errors.full_description}
             />
             {errors.full_description && (
-              <p className="text-xs text-[var(--color-brand-coral)]">{errors.full_description}</p>
+              <p className="text-xs text-[var(--color-brand-danger)]">{errors.full_description}</p>
             )}
           </div>
 
@@ -340,7 +340,7 @@ export function EditProjectForm({
 
           <div className="flex items-center justify-between pt-2 border-t border-[var(--color-border)]">
             {saved === "details" ? (
-              <span className="inline-flex items-center gap-1.5 text-sm text-[var(--color-brand-lime)] font-semibold">
+              <span className="inline-flex items-center gap-1.5 text-sm text-[var(--color-brand-success)] font-semibold">
                 <CheckCircle2 className="w-4 h-4" /> Saved!
               </span>
             ) : <span />}
@@ -375,13 +375,13 @@ export function EditProjectForm({
                 disabled={hasPledges}
                 value={fundingGoal || ""}
                 onChange={(e) => setFundingGoal(parseFloat(e.target.value) || 0)}
-                className={`w-full rounded-[var(--radius-btn)] border pl-9 pr-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)] focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed ${
-                  errors.funding_goal_sgd ? "border-[var(--color-brand-coral)]" : "border-[var(--color-border)]"
+                className={`w-full rounded-[var(--radius-btn)] border pl-9 pr-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)] focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed ${
+                  errors.funding_goal_sgd ? "border-[var(--color-brand-danger)]" : "border-[var(--color-border)]"
                 }`}
               />
             </div>
             {errors.funding_goal_sgd && (
-              <p className="text-xs text-[var(--color-brand-coral)]">{errors.funding_goal_sgd}</p>
+              <p className="text-xs text-[var(--color-brand-danger)]">{errors.funding_goal_sgd}</p>
             )}
           </div>
 
@@ -400,7 +400,7 @@ export function EditProjectForm({
               <hr className="border-[var(--color-border)]" />
               <div className="flex justify-between font-bold text-[var(--color-ink)]">
                 <span>You receive</span>
-                <span className="text-[var(--color-brand-lime)]">{formatSgd(fundingGoal - platformFee)}</span>
+                <span className="text-[var(--color-brand-success)]">{formatSgd(fundingGoal - platformFee)}</span>
               </div>
             </div>
           )}
@@ -425,8 +425,8 @@ export function EditProjectForm({
                   onClick={() => setPayoutMode(mode)}
                   className={`rounded-[var(--radius-card)] border-2 p-4 text-left transition-all ${
                     payoutMode === mode
-                      ? "border-[var(--color-brand-violet)] bg-violet-50/50 dark:bg-violet-900/10"
-                      : "border-[var(--color-border)] hover:border-[var(--color-brand-violet)]/50"
+                      ? "border-[var(--color-brand-crust)] bg-violet-50/50 dark:bg-violet-900/10"
+                      : "border-[var(--color-border)] hover:border-[var(--color-brand-crust)]/50"
                   }`}
                 >
                   <p className="font-bold text-sm text-[var(--color-ink)]">
@@ -444,7 +444,7 @@ export function EditProjectForm({
 
           <div className="flex items-center justify-between pt-2 border-t border-[var(--color-border)]">
             {saved === "funding" ? (
-              <span className="inline-flex items-center gap-1.5 text-sm text-[var(--color-brand-lime)] font-semibold">
+              <span className="inline-flex items-center gap-1.5 text-sm text-[var(--color-brand-success)] font-semibold">
                 <CheckCircle2 className="w-4 h-4" /> Saved!
               </span>
             ) : <span />}
@@ -495,7 +495,7 @@ export function EditProjectForm({
                       )}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-black text-[var(--color-brand-violet)]">
+                          <span className="font-black text-[var(--color-brand-crust)]">
                             {formatSgd(reward.minimum_pledge_sgd)}+
                           </span>
                           <span className="font-bold text-[var(--color-ink)]">{reward.title}</span>
@@ -518,7 +518,7 @@ export function EditProjectForm({
                         type="button"
                         disabled={locked}
                         onClick={() => deleteReward(reward.id)}
-                        className="p-1.5 rounded-lg text-[var(--color-ink-subtle)] hover:text-[var(--color-brand-coral)] hover:bg-red-50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                        className="p-1.5 rounded-lg text-[var(--color-ink-subtle)] hover:text-[var(--color-brand-danger)] hover:bg-red-50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                         title={locked ? "Cannot delete — has active pledges" : "Delete reward"}
                       >
                         <Trash2 className="w-4 h-4" />
@@ -535,7 +535,7 @@ export function EditProjectForm({
 
           {/* Add reward form */}
           {addingReward ? (
-            <div className="rounded-[var(--radius-card)] border-2 border-[var(--color-brand-violet)]/30 bg-violet-50/30 dark:bg-violet-900/10 p-5 flex flex-col gap-4">
+            <div className="rounded-[var(--radius-card)] border-2 border-[var(--color-brand-crust)]/30 bg-violet-50/30 dark:bg-violet-900/10 p-5 flex flex-col gap-4">
               <h3 className="font-bold text-[var(--color-ink)]">New reward tier</h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -562,13 +562,13 @@ export function EditProjectForm({
                       onChange={(e) =>
                         setRewardForm({ ...rewardForm, minimum_pledge_sgd: parseFloat(e.target.value) || 0 })
                       }
-                      className={`w-full rounded-[var(--radius-btn)] border pl-9 pr-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)] ${
-                        rewardFormErrors.minimum_pledge_sgd ? "border-[var(--color-brand-coral)]" : "border-[var(--color-border)]"
+                      className={`w-full rounded-[var(--radius-btn)] border pl-9 pr-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)] ${
+                        rewardFormErrors.minimum_pledge_sgd ? "border-[var(--color-brand-danger)]" : "border-[var(--color-border)]"
                       }`}
                     />
                   </div>
                   {rewardFormErrors.minimum_pledge_sgd && (
-                    <p className="text-xs text-[var(--color-brand-coral)]">{rewardFormErrors.minimum_pledge_sgd}</p>
+                    <p className="text-xs text-[var(--color-brand-danger)]">{rewardFormErrors.minimum_pledge_sgd}</p>
                   )}
                 </div>
               </div>
@@ -580,7 +580,7 @@ export function EditProjectForm({
                   placeholder="What will backers receive?"
                   value={rewardForm.description}
                   onChange={(e) => setRewardForm({ ...rewardForm, description: e.target.value })}
-                  className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)] resize-none"
+                  className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)] resize-none"
                 />
               </div>
 
@@ -605,7 +605,7 @@ export function EditProjectForm({
                     onChange={(e) =>
                       setRewardForm({ ...rewardForm, max_backers: e.target.value ? parseInt(e.target.value) : null })
                     }
-                    className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)]"
+                    className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)]"
                   />
                 </div>
               </div>
@@ -623,7 +623,7 @@ export function EditProjectForm({
                   type="checkbox"
                   checked={rewardForm.includes_physical_item}
                   onChange={(e) => setRewardForm({ ...rewardForm, includes_physical_item: e.target.checked })}
-                  className="w-4 h-4 rounded accent-[var(--color-brand-violet)]"
+                  className="w-4 h-4 rounded accent-[var(--color-brand-crust)]"
                 />
                 <span className="text-sm text-[var(--color-ink)]">
                   This reward includes a physical item that needs to be shipped
@@ -631,7 +631,7 @@ export function EditProjectForm({
               </label>
 
               {rewardFormErrors._ && (
-                <p className="text-xs text-[var(--color-brand-coral)]">{rewardFormErrors._}</p>
+                <p className="text-xs text-[var(--color-brand-danger)]">{rewardFormErrors._}</p>
               )}
 
               <div className="flex gap-3 pt-1">
@@ -654,7 +654,7 @@ export function EditProjectForm({
             <button
               type="button"
               onClick={() => setAddingReward(true)}
-              className="rounded-[var(--radius-card)] border-2 border-dashed border-[var(--color-border)] hover:border-[var(--color-brand-violet)]/50 p-6 flex flex-col items-center gap-2 text-[var(--color-ink-muted)] hover:text-[var(--color-brand-violet)] transition-all group"
+              className="rounded-[var(--radius-card)] border-2 border-dashed border-[var(--color-border)] hover:border-[var(--color-brand-crust)]/50 p-6 flex flex-col items-center gap-2 text-[var(--color-ink-muted)] hover:text-[var(--color-brand-crust)] transition-all group"
             >
               <div className="w-10 h-10 rounded-full bg-[var(--color-surface-overlay)] group-hover:bg-violet-100 flex items-center justify-center transition-colors">
                 <Plus className="w-5 h-5" />
@@ -668,7 +668,7 @@ export function EditProjectForm({
       {/* ── Danger zone ──────────────────────────────── */}
       <div className="rounded-[var(--radius-card)] border border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-900/10 p-5 flex flex-col gap-4">
         <div className="flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-[var(--color-brand-coral)] shrink-0 mt-0.5" />
+          <AlertTriangle className="w-5 h-5 text-[var(--color-brand-danger)] shrink-0 mt-0.5" />
           <div>
             <h3 className="font-bold text-[var(--color-ink)]">Delete campaign</h3>
             <p className="text-sm text-[var(--color-ink-muted)] mt-0.5">
@@ -683,7 +683,7 @@ export function EditProjectForm({
           <button
             type="button"
             onClick={() => setShowDeleteConfirm(true)}
-            className="self-start inline-flex items-center gap-2 px-4 py-2 rounded-[var(--radius-btn)] border border-red-300 dark:border-red-700 text-sm font-semibold text-[var(--color-brand-coral)] hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+            className="self-start inline-flex items-center gap-2 px-4 py-2 rounded-[var(--radius-btn)] border border-red-300 dark:border-red-700 text-sm font-semibold text-[var(--color-brand-danger)] hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
           >
             <Trash2 className="w-4 h-4" />
             Delete campaign
@@ -700,10 +700,10 @@ export function EditProjectForm({
               value={deleteInput}
               onChange={(e) => setDeleteInput(e.target.value)}
               placeholder="DELETE"
-              className="w-full max-w-xs rounded-[var(--radius-btn)] border border-red-300 dark:border-red-700 px-3.5 py-2 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-coral)]"
+              className="w-full max-w-xs rounded-[var(--radius-btn)] border border-red-300 dark:border-red-700 px-3.5 py-2 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-danger)]"
             />
             {deleteError && (
-              <p className="text-xs text-[var(--color-brand-coral)]">{deleteError}</p>
+              <p className="text-xs text-[var(--color-brand-danger)]">{deleteError}</p>
             )}
             <div className="flex gap-2">
               <button

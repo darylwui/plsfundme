@@ -39,7 +39,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         Don&apos;t have an account?{" "}
         <Link
           href={`/register${redirectTo ? `?redirectTo=${encodeURIComponent(redirectTo)}` : ""}`}
-          className="font-semibold text-[var(--color-brand-violet)] hover:underline"
+          className="font-semibold text-[var(--color-brand-crust)] hover:underline"
         >
           Sign up free
         </Link>

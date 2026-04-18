@@ -41,9 +41,9 @@ export function StepIndicator({ current, saveState, onGoTo }: StepIndicatorProps
                       w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all
                       ${
                         isComplete
-                          ? "bg-[var(--color-brand-violet)] text-white"
+                          ? "bg-[var(--color-brand-crust)] text-white"
                           : isActive
-                          ? "bg-[var(--color-brand-violet)]/10 border-2 border-[var(--color-brand-violet)] text-[var(--color-brand-violet)]"
+                          ? "bg-[var(--color-brand-crust)]/10 border-2 border-[var(--color-brand-crust)] text-[var(--color-brand-crust)]"
                           : "bg-[var(--color-surface-overlay)] border-2 border-[var(--color-border)] text-[var(--color-ink-subtle)]"
                       }
                     `}
@@ -69,7 +69,7 @@ export function StepIndicator({ current, saveState, onGoTo }: StepIndicatorProps
                   <div
                     className={`h-0.5 w-8 sm:w-12 mx-2 rounded-full transition-all ${
                       step.number < current
-                        ? "bg-[var(--color-brand-violet)]"
+                        ? "bg-[var(--color-brand-crust)]"
                         : "bg-[var(--color-border)]"
                     }`}
                   />
@@ -91,14 +91,14 @@ export function StepIndicator({ current, saveState, onGoTo }: StepIndicatorProps
           )}
           {saveState === "saved" && (
             <>
-              <Cloud className="w-3.5 h-3.5 text-[var(--color-brand-lime)]" />
-              <span className="text-[var(--color-brand-lime)]">Draft saved</span>
+              <Cloud className="w-3.5 h-3.5 text-[var(--color-brand-success)]" />
+              <span className="text-[var(--color-brand-success)]">Draft saved</span>
             </>
           )}
           {saveState === "error" && (
             <>
-              <CloudOff className="w-3.5 h-3.5 text-[var(--color-brand-coral)]" />
-              <span className="text-[var(--color-brand-coral)]">Save failed</span>
+              <CloudOff className="w-3.5 h-3.5 text-[var(--color-brand-danger)]" />
+              <span className="text-[var(--color-brand-danger)]">Save failed</span>
             </>
           )}
           {saveState === "idle" && (

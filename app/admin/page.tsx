@@ -27,7 +27,7 @@ export default async function AdminOverviewPage() {
           <Link
             key={label}
             href={href}
-            className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-6 hover:shadow-[var(--shadow-card-hover)] hover:border-[var(--color-brand-violet)]/30 transition-all"
+            className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-6 hover:shadow-[var(--shadow-card-hover)] hover:border-[var(--color-brand-crust)]/30 transition-all"
           >
             <div className="text-3xl mb-2">{emoji}</div>
             <p className="text-3xl font-black text-[var(--color-ink)]">{value}</p>

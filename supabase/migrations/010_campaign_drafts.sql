@@ -1,5 +1,5 @@
 -- ============================================================
--- plsfundme — Campaign Drafts
+-- get that bread — Campaign Drafts
 -- Migration: 010_campaign_drafts.sql
 -- ============================================================
 -- One draft per user. Upserted on every step change.

@@ -61,7 +61,7 @@ export function Navbar() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search projects…"
-              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border-invert)] bg-[var(--color-surface-invert-raised)] pl-9 pr-4 py-2 text-sm text-[var(--color-ink-invert)] placeholder:text-[var(--color-ink-invert-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-gold)]"
+              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border-invert)] bg-[var(--color-surface-invert-raised)] pl-9 pr-4 py-2 text-sm text-[var(--color-ink-invert)] placeholder:text-[var(--color-ink-invert-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-golden)]"
             />
           </form>
 
@@ -74,7 +74,7 @@ export function Navbar() {
                 className={cn(
                   "text-sm font-medium transition-colors duration-[160ms]",
                   pathname === href
-                    ? "text-[var(--color-brand-gold)]"
+                    ? "text-[var(--color-brand-golden)]"
                     : "text-[var(--color-ink-invert-muted)] hover:text-[var(--color-ink-invert)]"
                 )}
               >
@@ -94,7 +94,7 @@ export function Navbar() {
                   className={cn(
                     "px-2.5 py-1.5 transition-colors duration-[160ms]",
                     currency === cur
-                      ? "bg-[var(--color-brand-gold)] text-[#4A2208]"
+                      ? "bg-[var(--color-brand-golden)] text-[#4A2208]"
                       : "bg-transparent text-[var(--color-ink-invert)]/90 hover:bg-[var(--color-surface-invert)] hover:text-[var(--color-ink-invert)]"
                   )}
                 >
@@ -162,7 +162,7 @@ export function Navbar() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search projects…"
-              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border-invert)] bg-[var(--color-surface-invert-raised)] pl-9 pr-4 py-2.5 text-sm text-[var(--color-ink-invert)] placeholder:text-[var(--color-ink-invert-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-gold)]"
+              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border-invert)] bg-[var(--color-surface-invert-raised)] pl-9 pr-4 py-2.5 text-sm text-[var(--color-ink-invert)] placeholder:text-[var(--color-ink-invert-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-golden)]"
             />
           </form>
 
@@ -196,7 +196,7 @@ export function Navbar() {
                   className={cn(
                     "px-3 py-1.5 transition-colors duration-[160ms]",
                     currency === cur
-                      ? "bg-[var(--color-brand-gold)] text-[#4A2208]"
+                      ? "bg-[var(--color-brand-golden)] text-[#4A2208]"
                       : "bg-transparent text-[var(--color-ink-invert)]/90 hover:bg-[var(--color-surface-invert)] hover:text-[var(--color-ink-invert)]"
                   )}
                 >

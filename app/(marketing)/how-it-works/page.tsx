@@ -128,9 +128,9 @@ export default function HowItWorksPage() {
             The model
           </div>
           <h1 className="text-[40px] md:text-[52px] font-black tracking-tight leading-[1.1] mb-4">
-            <span className="text-[#b45309] dark:text-amber-300">How </span>
-            <span className="text-[#9a3412] dark:text-orange-300">get that bread</span>
-            <span className="text-[#b45309] dark:text-amber-300"> works</span>
+            <span>How </span>
+            <span className="text-[var(--color-brand-crust)] dark:text-[var(--color-brand-golden)]">get that bread</span>
+            <span> works</span>
           </h1>
           <p className="text-lg text-[var(--color-ink-muted)] leading-relaxed">
             All-or-nothing crowdfunding for Singapore entrepreneurs. Simple, safe, and transparent.
@@ -143,7 +143,7 @@ export default function HowItWorksPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="p-[3px] rounded-[calc(var(--radius-card)+3px)] bg-[var(--color-surface-overlay)] ring-1 ring-[var(--color-border)]">
             <div className="rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] p-8 flex gap-5">
-              <div className="w-12 h-12 rounded-[var(--radius-card)] bg-[var(--color-brand-violet)] flex items-center justify-center shrink-0 shadow-[var(--shadow-cta)]">
+              <div className="w-12 h-12 rounded-[var(--radius-card)] bg-[var(--color-brand-crust)] flex items-center justify-center shrink-0 shadow-[var(--shadow-cta)]">
                 <Shield className="w-5 h-5 text-white" />
               </div>
               <div className="w-full">
@@ -163,7 +163,7 @@ export default function HowItWorksPage() {
             <div className="p-[3px] rounded-[calc(var(--radius-card)+3px)] bg-[var(--color-surface-overlay)] ring-1 ring-[var(--color-border)]">
               <div className="rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] p-5 h-full flex items-start gap-4">
                 <div className="w-10 h-10 rounded-[var(--radius-btn)] bg-[var(--color-surface-overlay)] border border-[var(--color-border)] flex items-center justify-center shrink-0 mt-0.5">
-                  <CreditCard className="w-4.5 h-4.5 text-[var(--color-brand-amber)]" />
+                  <CreditCard className="w-4.5 h-4.5 text-[var(--color-brand-golden)]" />
                 </div>
                 <div className="min-w-0">
                   <h3 className="font-bold mb-1.5 text-[var(--color-ink)]">
@@ -181,7 +181,7 @@ export default function HowItWorksPage() {
             <div className="p-[3px] rounded-[calc(var(--radius-card)+3px)] bg-[var(--color-surface-overlay)] ring-1 ring-[var(--color-border)]">
               <div className="rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] p-5 h-full flex items-start gap-4">
                 <div className="w-10 h-10 rounded-[var(--radius-btn)] bg-[var(--color-surface-overlay)] border border-[var(--color-border)] flex items-center justify-center shrink-0 mt-0.5">
-                  <Lock className="w-4.5 h-4.5 text-[var(--color-brand-violet)]" />
+                  <Lock className="w-4.5 h-4.5 text-[var(--color-brand-crust)]" />
                 </div>
                 <div className="min-w-0">
                   <h3 className="font-bold mb-1.5 text-[var(--color-ink)]">
@@ -204,7 +204,7 @@ export default function HowItWorksPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
           {/* Section header */}
           <div className="flex items-center gap-3 mb-12">
-            <div className="w-11 h-11 rounded-[var(--radius-card)] bg-[var(--color-brand-violet)] flex items-center justify-center shadow-[var(--shadow-cta)]">
+            <div className="w-11 h-11 rounded-[var(--radius-card)] bg-[var(--color-brand-crust)] flex items-center justify-center shadow-[var(--shadow-cta)]">
               <Rocket className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -222,7 +222,7 @@ export default function HowItWorksPage() {
                 <div className="rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] p-6 h-full flex flex-col gap-4">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-[var(--radius-btn)] bg-[var(--color-surface-overlay)] border border-[var(--color-border)] flex items-center justify-center shrink-0">
-                      <Icon className="w-4.5 h-4.5 text-[var(--color-brand-violet)]" />
+                      <Icon className="w-4.5 h-4.5 text-[var(--color-brand-crust)]" />
                     </div>
                     <span className="font-mono text-xs font-bold text-[var(--color-ink-subtle)] uppercase tracking-[0.12em]">
                       Step {step}
@@ -243,7 +243,7 @@ export default function HowItWorksPage() {
             <Link href="/projects/create">
               <Button size="lg">
                 Start your campaign
-                <span className="w-7 h-7 rounded-full bg-[var(--color-brand-violet)]/10 flex items-center justify-center shrink-0">
+                <span className="w-7 h-7 rounded-full bg-[var(--color-brand-crust)]/10 flex items-center justify-center shrink-0">
                   <ArrowRight className="w-3.5 h-3.5" />
                 </span>
               </Button>
@@ -257,7 +257,7 @@ export default function HowItWorksPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
           {/* Section header */}
           <div className="flex items-center gap-3 mb-12">
-            <div className="w-11 h-11 rounded-[var(--radius-card)] bg-[var(--color-brand-amber)] flex items-center justify-center shadow-[0_4px_20px_0_rgba(217,119,6,0.35)]">
+            <div className="w-11 h-11 rounded-[var(--radius-card)] bg-[var(--color-brand-golden)] flex items-center justify-center shadow-[0_4px_20px_0_rgba(217,119,6,0.35)]">
               <Users className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -275,7 +275,7 @@ export default function HowItWorksPage() {
                 <div className="rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] p-6 h-full flex flex-col gap-4">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-[var(--radius-btn)] bg-[var(--color-surface-overlay)] border border-[var(--color-border)] flex items-center justify-center shrink-0">
-                      <Icon className="w-4.5 h-4.5 text-[var(--color-brand-amber)]" />
+                      <Icon className="w-4.5 h-4.5 text-[var(--color-brand-golden)]" />
                     </div>
                     <span className="font-mono text-xs font-bold text-[var(--color-ink-subtle)] uppercase tracking-[0.12em]">
                       Step {step}
@@ -296,7 +296,7 @@ export default function HowItWorksPage() {
             <Link href="/explore">
               <Button variant="secondary" size="lg">
                 Explore projects
-                <span className="w-7 h-7 rounded-full bg-[var(--color-brand-violet)]/10 flex items-center justify-center shrink-0">
+                <span className="w-7 h-7 rounded-full bg-[var(--color-brand-crust)]/10 flex items-center justify-center shrink-0">
                   <ArrowRight className="w-3.5 h-3.5" />
                 </span>
               </Button>
@@ -309,7 +309,7 @@ export default function HowItWorksPage() {
       <section className="border-b border-[var(--color-border)] bg-[var(--color-surface-raised)]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
           <div className="flex items-center gap-3 mb-10">
-            <div className="w-11 h-11 rounded-[var(--radius-card)] bg-[var(--color-brand-amber)] flex items-center justify-center shadow-[0_4px_20px_0_rgba(217,119,6,0.35)]">
+            <div className="w-11 h-11 rounded-[var(--radius-card)] bg-[var(--color-brand-golden)] flex items-center justify-center shadow-[0_4px_20px_0_rgba(217,119,6,0.35)]">
               <DollarSign className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -331,12 +331,12 @@ export default function HowItWorksPage() {
                   <span
                     className={`text-sm font-bold font-mono ${
                       highlight
-                        ? "text-[var(--color-brand-amber)]"
+                        ? "text-[var(--color-brand-golden)]"
                         : "text-[var(--color-ink)]"
                     }`}
                   >
                     {highlight && (
-                      <CheckCircle2 className="w-3.5 h-3.5 inline mr-1.5 text-[var(--color-brand-amber)]" />
+                      <CheckCircle2 className="w-3.5 h-3.5 inline mr-1.5 text-[var(--color-brand-golden)]" />
                     )}
                     {value}
                   </span>
@@ -351,7 +351,7 @@ export default function HowItWorksPage() {
       <section className="border-b border-[var(--color-border)] bg-[var(--color-surface)]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-11 h-11 rounded-[var(--radius-card)] bg-[var(--color-brand-violet)] flex items-center justify-center shadow-[var(--shadow-cta)]">
+            <div className="w-11 h-11 rounded-[var(--radius-card)] bg-[var(--color-brand-crust)] flex items-center justify-center shadow-[var(--shadow-cta)]">
               <CheckCircle2 className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -386,7 +386,7 @@ export default function HowItWorksPage() {
             Still have questions? Email us at{" "}
             <a
               href="mailto:hello@getthatbread.sg"
-              className="font-semibold text-[var(--color-brand-violet)] hover:underline"
+              className="font-semibold text-[var(--color-brand-crust)] hover:underline"
             >
               hello@getthatbread.sg
             </a>

@@ -36,7 +36,7 @@ export default function NotFound() {
           </p>
           <a
             href={`mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}`}
-            className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-brand-violet)] hover:underline"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-brand-crust)] hover:underline"
           >
             🐛 Report this issue
           </a>

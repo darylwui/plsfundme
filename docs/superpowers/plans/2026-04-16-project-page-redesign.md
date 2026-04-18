@@ -330,7 +330,7 @@ export function ProjectSectionNav({
               aria-current={isActive ? "true" : undefined}
               onClick={() => onNavigate(section.id)}
               className={isActive
-                ? "rounded-full border border-[var(--color-brand-violet)] bg-[var(--color-brand-violet)]/10 px-3 py-1.5 text-sm font-medium text-[var(--color-brand-violet)] whitespace-nowrap"
+                ? "rounded-full border border-[var(--color-brand-crust)] bg-[var(--color-brand-crust)]/10 px-3 py-1.5 text-sm font-medium text-[var(--color-brand-crust)] whitespace-nowrap"
                 : "rounded-full border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-3 py-1.5 text-sm text-[var(--color-ink-muted)] whitespace-nowrap hover:text-[var(--color-ink)]"
               }
             >
@@ -740,7 +740,7 @@ export function CampaignRichTextEditor({
       <p className="text-xs text-[var(--color-ink-subtle)]">
         First pass: support paragraphs, H2/H3, lists, quotes, links, and images.
       </p>
-      {error ? <p className="text-xs text-[var(--color-brand-coral)]">{error}</p> : null}
+      {error ? <p className="text-xs text-[var(--color-brand-danger)]">{error}</p> : null}
     </div>
   );
 }

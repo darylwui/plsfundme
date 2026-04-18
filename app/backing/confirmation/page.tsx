@@ -39,7 +39,7 @@ export default async function ConfirmationPage({
     <main className="flex-1 flex items-center justify-center bg-[var(--color-surface-raised)] px-4 py-16">
       <div className="max-w-md w-full bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] shadow-[var(--shadow-card)] p-8 text-center">
         <div className="w-16 h-16 rounded-full bg-lime-100 dark:bg-lime-900/20 flex items-center justify-center mx-auto mb-6">
-          <CheckCircle className="w-8 h-8 text-[var(--color-brand-lime)]" />
+          <CheckCircle className="w-8 h-8 text-[var(--color-brand-success)]" />
         </div>
 
         <h1 className="text-2xl font-black text-[var(--color-ink)]">
@@ -47,7 +47,7 @@ export default async function ConfirmationPage({
         </h1>
 
         {amount > 0 && (
-          <p className="mt-2 text-[var(--color-brand-violet)] font-black text-lg">
+          <p className="mt-2 text-[var(--color-brand-crust)] font-black text-lg">
             {formatSgd(amount)} pledged
           </p>
         )}

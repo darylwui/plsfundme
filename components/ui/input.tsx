@@ -39,11 +39,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               bg-[var(--color-surface)] text-[var(--color-ink)]
               placeholder:text-[var(--color-ink-subtle)]
               transition-colors duration-150
-              focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-violet)] focus:border-transparent
+              focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)] focus:border-transparent
               disabled:opacity-50 disabled:cursor-not-allowed
               ${showToggle ? "pr-10" : ""}
               ${error
-                ? "border-[var(--color-brand-coral)] focus:ring-[var(--color-brand-coral)]"
+                ? "border-[var(--color-brand-danger)] focus:ring-[var(--color-brand-danger)]"
                 : "border-[var(--color-border)] hover:border-[var(--color-ink-subtle)]"
               }
               ${className}
@@ -63,7 +63,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           )}
         </div>
         {error && (
-          <p className="text-xs text-[var(--color-brand-coral)]">{error}</p>
+          <p className="text-xs text-[var(--color-brand-danger)]">{error}</p>
         )}
         {hint && !error && (
           <p className="text-xs text-[var(--color-ink-subtle)]">{hint}</p>

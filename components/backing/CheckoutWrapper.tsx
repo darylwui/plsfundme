@@ -137,7 +137,7 @@ export function CheckoutWrapper({
             <button
               onClick={() => selectMethod("paynow")}
               disabled={loading}
-              className="flex flex-col items-center gap-3 rounded-[var(--radius-card)] border-2 border-[var(--color-border)] bg-[var(--color-surface-raised)] p-5 text-left transition-all hover:border-[var(--color-brand-amber)] hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed group"
+              className="flex flex-col items-center gap-3 rounded-[var(--radius-card)] border-2 border-[var(--color-border)] bg-[var(--color-surface-raised)] p-5 text-left transition-all hover:border-[var(--color-brand-golden)] hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed group"
             >
               <div className="w-12 h-12 rounded-xl bg-[#EB2226]/10 flex items-center justify-center">
                 <PayNowLogo />
@@ -148,7 +148,7 @@ export function CheckoutWrapper({
                   Scan QR to pay
                 </p>
               </div>
-              <span className="text-xs font-semibold text-[var(--color-brand-coral)] bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded-full">
+              <span className="text-xs font-semibold text-[var(--color-brand-danger)] bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded-full">
                 Charged now · refunded if goal fails
               </span>
             </button>
@@ -157,7 +157,7 @@ export function CheckoutWrapper({
             <button
               onClick={() => selectMethod("card")}
               disabled={loading}
-              className="flex flex-col items-center gap-3 rounded-[var(--radius-card)] border-2 border-[var(--color-border)] bg-[var(--color-surface-raised)] p-5 text-left transition-all hover:border-[var(--color-brand-amber)] hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed group"
+              className="flex flex-col items-center gap-3 rounded-[var(--radius-card)] border-2 border-[var(--color-border)] bg-[var(--color-surface-raised)] p-5 text-left transition-all hover:border-[var(--color-brand-golden)] hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed group"
             >
               <div className="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-2xl">
                 💳
@@ -168,7 +168,7 @@ export function CheckoutWrapper({
                   Visa, Mastercard, Amex
                 </p>
               </div>
-              <span className="text-xs font-semibold text-[var(--color-brand-lime)] bg-emerald-50 dark:bg-emerald-900/20 px-2 py-0.5 rounded-full">
+              <span className="text-xs font-semibold text-[var(--color-brand-success)] bg-emerald-50 dark:bg-emerald-900/20 px-2 py-0.5 rounded-full">
                 Only charged if goal is met
               </span>
             </button>
@@ -177,12 +177,12 @@ export function CheckoutWrapper({
 
         {loading && (
           <div className="flex items-center justify-center py-6">
-            <div className="w-7 h-7 rounded-full border-2 border-[var(--color-brand-violet)] border-t-transparent animate-spin" />
+            <div className="w-7 h-7 rounded-full border-2 border-[var(--color-brand-crust)] border-t-transparent animate-spin" />
           </div>
         )}
 
         {error && (
-          <div className="rounded-[var(--radius-btn)] bg-red-50 border border-red-200 px-4 py-3 text-sm text-[var(--color-brand-coral)]">
+          <div className="rounded-[var(--radius-btn)] bg-red-50 border border-red-200 px-4 py-3 text-sm text-[var(--color-brand-danger)]">
             {error}
           </div>
         )}
@@ -194,7 +194,7 @@ export function CheckoutWrapper({
   if (loading || !data) {
     return (
       <div className="flex flex-col items-center justify-center py-16 gap-3">
-        <div className="w-8 h-8 rounded-full border-2 border-[var(--color-brand-violet)] border-t-transparent animate-spin" />
+        <div className="w-8 h-8 rounded-full border-2 border-[var(--color-brand-crust)] border-t-transparent animate-spin" />
         <p className="text-sm text-[var(--color-ink-muted)]">
           Preparing secure checkout…
         </p>

@@ -198,7 +198,7 @@ export function ProjectReviewList({ pendingProjects, allProjects }: ProjectRevie
                   <Link
                     href={`/projects/${project.slug}`}
                     target="_blank"
-                    className="inline-flex items-center gap-1 text-xs text-[var(--color-brand-violet)] hover:underline shrink-0"
+                    className="inline-flex items-center gap-1 text-xs text-[var(--color-brand-crust)] hover:underline shrink-0"
                   >
                     Preview <ExternalLink className="w-3 h-3" />
                   </Link>
@@ -264,7 +264,7 @@ export function ProjectReviewList({ pendingProjects, allProjects }: ProjectRevie
                           autoFocus
                           value={rejectReasonCode}
                           onChange={(e) => setRejectReasonCode(e.target.value)}
-                          className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3 py-2 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-coral)]"
+                          className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3 py-2 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-danger)]"
                         >
                           <option value="">Select a reason…</option>
                           {Object.entries(REJECTION_REASONS).map(([key, { code, label }]) => (
@@ -293,7 +293,7 @@ export function ProjectReviewList({ pendingProjects, allProjects }: ProjectRevie
                           placeholder="Be constructive. Suggest what to improve and how they can resubmit."
                           value={rejectMessage}
                           onChange={(e) => setRejectMessage(e.target.value)}
-                          className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3 py-2 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-coral)] resize-none"
+                          className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3 py-2 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-danger)] resize-none"
                         />
                       </div>
 
@@ -354,7 +354,7 @@ export function ProjectReviewList({ pendingProjects, allProjects }: ProjectRevie
                         placeholder="Reason for removal (sent to creator by email)…"
                         value={removeReason}
                         onChange={(e) => setRemoveReason(e.target.value)}
-                        className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3 py-2 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-coral)] resize-none"
+                        className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3 py-2 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-danger)] resize-none"
                       />
                       <div className="flex gap-2">
                         <Button
@@ -399,7 +399,7 @@ export function ProjectReviewList({ pendingProjects, allProjects }: ProjectRevie
                       variant="ghost"
                       loading={loading === project.id + "delete"}
                       onClick={() => handleDelete(project.id)}
-                      className="text-[var(--color-brand-coral)] hover:text-red-700 hover:bg-red-50"
+                      className="text-[var(--color-brand-danger)] hover:text-red-700 hover:bg-red-50"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                       Delete permanently
