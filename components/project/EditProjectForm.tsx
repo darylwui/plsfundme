@@ -738,13 +738,13 @@ export function EditProjectForm({
           </button>
         )}
 
-        {!canDelete && isAdmin && (
+        {isAdmin && (
           <div className="flex flex-col gap-2 border-t border-red-200 dark:border-red-900/50 pt-4">
             <p className="text-xs font-bold uppercase tracking-wider text-[var(--color-brand-danger)]">
               Admin override
             </p>
             <p className="text-sm text-[var(--color-ink-muted)]">
-              Force delete refunds every pledge via Stripe, reverses any processed creator payouts, and hard-deletes the campaign. Use only for test data or an agreed cancellation.
+              Force delete refunds every pledge via Stripe, reverses any processed creator payouts, and hard-deletes the campaign. Works on any status — use only for test data or an agreed cancellation.
             </p>
             {deleteError && (
               <p className="text-xs text-[var(--color-brand-danger)]">{deleteError}</p>
