@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Navbar } from "@/components/layout/Navbar";
@@ -84,6 +85,7 @@ export default function RootLayout({
           </CurrencyProvider>
         </ThemeProvider>
       </body>
+      <GoogleAnalytics gaId="G-W93BB7060D" />
     </html>
   );
 }
