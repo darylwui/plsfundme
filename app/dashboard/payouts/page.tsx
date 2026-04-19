@@ -7,6 +7,8 @@ interface PayoutsPageProps {
   searchParams: Promise<{ connected?: string; refresh?: string }>;
 }
 
+export const metadata = { title: "Payouts" };
+
 export default async function PayoutsPage({ searchParams }: PayoutsPageProps) {
   const { connected } = await searchParams;
   const supabase = await createClient();

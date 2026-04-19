@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PMApplyLanding } from "@/components/auth/PMApplyLanding";
 
+export const metadata = { title: "Apply to be a project manager" };
+
 export default async function ApplyPMPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();

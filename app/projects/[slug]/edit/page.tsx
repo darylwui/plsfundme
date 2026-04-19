@@ -11,6 +11,8 @@ interface EditProjectPageProps {
   params: Promise<{ slug: string }>;
 }
 
+export const metadata = { title: "Edit project" };
+
 export default async function EditProjectPage({ params }: EditProjectPageProps) {
   const { slug } = await params;
   const supabase = await createClient();

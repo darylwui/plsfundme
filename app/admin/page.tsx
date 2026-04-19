@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
+export const metadata = { title: "Admin" };
+
 export default async function AdminOverviewPage() {
   const supabase = await createClient();
 

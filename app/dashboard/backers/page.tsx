@@ -7,6 +7,8 @@ import { formatSgd } from "@/lib/utils/currency";
 import { formatDate } from "@/lib/utils/dates";
 import type { PledgeWithBacker } from "@/types/pledge";
 
+export const metadata = { title: "Backers" };
+
 export default async function DashboardBackersPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();

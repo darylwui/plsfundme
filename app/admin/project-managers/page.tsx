@@ -27,6 +27,8 @@ interface PageProps {
   searchParams: Promise<{ tab?: string }>;
 }
 
+export const metadata = { title: "Project managers — Admin" };
+
 export default async function ProjectManagersPage({ searchParams }: PageProps) {
   const { tab } = await searchParams;
 

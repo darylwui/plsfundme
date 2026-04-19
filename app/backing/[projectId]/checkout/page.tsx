@@ -11,6 +11,8 @@ interface CheckoutPageProps {
   searchParams: Promise<{ reward?: string; amount?: string }>;
 }
 
+export const metadata = { title: "Checkout" };
+
 export default async function CheckoutPage({
   params,
   searchParams,

@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { CreatorProfileEditor } from "@/components/dashboard/CreatorProfileEditor";
 
+export const metadata = { title: "Creator profile" };
+
 export default async function CreatorProfilePage() {
   const supabase = await createClient();
   const {

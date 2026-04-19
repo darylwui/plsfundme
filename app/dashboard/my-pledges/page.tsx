@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { formatSgd, fundingPercent } from "@/lib/utils/currency";
 import { formatDate, daysRemaining } from "@/lib/utils/dates";
 
+export const metadata = { title: "My pledges" };
+
 export default async function MyPledgesPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();

@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { UserList } from "@/components/admin/UserList";
 
+export const metadata = { title: "Users — Admin" };
+
 export default async function DashboardAdminUsersPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
