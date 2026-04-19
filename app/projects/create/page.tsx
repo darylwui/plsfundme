@@ -5,6 +5,8 @@ import { ProjectCreationForm } from "@/components/creation/ProjectCreationForm";
 import type { Category } from "@/types/project";
 import { Clock, XCircle, Rocket } from "lucide-react";
 
+export const metadata = { title: "Create a project" };
+
 export default async function CreateProjectPage() {
   const supabase = await createClient();
 

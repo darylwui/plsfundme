@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ProjectReviewList } from "@/components/admin/ProjectReviewList";
 
+export const metadata = { title: "Projects — Admin" };
+
 export default async function DashboardAdminProjectsPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();

@@ -15,6 +15,8 @@ interface Props {
   searchParams: Promise<{ submitted?: string; slug?: string; resubmitted?: string }>;
 }
 
+export const metadata = { title: "My projects" };
+
 export default async function DashboardProjectsPage({ searchParams }: Props) {
   const { submitted, slug: submittedSlug, resubmitted } = await searchParams;
   const supabase = await createClient();

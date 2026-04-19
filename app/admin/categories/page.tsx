@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { CategoryManager } from "@/components/admin/CategoryManager";
 
+export const metadata = { title: "Categories — Admin" };
+
 export default async function CategoriesPage() {
   const supabase = await createClient();
   const { data: categories } = await supabase

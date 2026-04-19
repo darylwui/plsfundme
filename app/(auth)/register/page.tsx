@@ -10,6 +10,8 @@ interface PageProps {
   searchParams: Promise<{ role?: string }>;
 }
 
+export const metadata = { title: "Sign up" };
+
 export default async function RegisterPage({ searchParams }: PageProps) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();

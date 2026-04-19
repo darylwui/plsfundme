@@ -8,6 +8,8 @@ interface Props {
   searchParams: Promise<{ page?: string }>;
 }
 
+export const metadata = { title: "Projects — Admin" };
+
 export default async function AdminProjectsPage({ searchParams }: Props) {
   const supabase = await createClient();
   const { page: pageParam } = await searchParams;

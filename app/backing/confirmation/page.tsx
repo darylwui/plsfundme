@@ -11,6 +11,8 @@ interface ConfirmationPageProps {
   searchParams: Promise<{ pledge?: string; payment_intent?: string }>;
 }
 
+export const metadata = { title: "Pledge confirmed" };
+
 export default async function ConfirmationPage({
   searchParams,
 }: ConfirmationPageProps) {
