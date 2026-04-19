@@ -111,7 +111,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
               </div>
 
               <h1 className="text-[52px] md:text-[60px] font-black tracking-tight leading-[1.05]">
-                <span className="block">Let&apos;s go</span>
+                <span className="block">Let&apos;s go</span>{" "}
                 <span className="block text-[var(--color-brand-crust)] dark:text-[var(--color-brand-golden)]">get that bread.</span>
               </h1>
 
