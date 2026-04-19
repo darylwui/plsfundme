@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ShieldCheck, Clock, CreditCard, AlertCircle, Mail } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Refund guarantee — get that bread",
+  title: "Backer protection — get that bread",
   description:
     "How your pledge is protected on get that bread — Singapore's reward-based crowdfunding platform. All-or-nothing funding, clear refund rules, and a human on the other end of every question.",
 };
