@@ -11,7 +11,8 @@ interface ExplorePageProps {
 
 export const metadata = {
   title: "Explore projects — get that bread",
-  description: "Discover exciting campaigns from Singapore entrepreneurs.",
+  description:
+    "Browse crowdfunding campaigns from Singapore entrepreneurs on get that bread. Back ideas, rewards, and makers you believe in.",
 };
 
 export default async function ExplorePage({ searchParams }: ExplorePageProps) {
