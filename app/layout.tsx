@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     template: "%s — get that bread",
   },
   description:
-    "Singapore's reward-based crowdfunding platform for entrepreneurs. Launch your campaign, find your backers, bring your idea to life.",
+    "Let's go get that bread. Singapore's reward-based crowdfunding platform for entrepreneurs. Launch your campaign, find your backers, bring your idea to life.",
   icons: {
     icon: "/bread-icon.png",
     shortcut: "/favicon.ico",
