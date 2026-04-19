@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
+import { FeatureRequestCard } from "@/components/dashboard/FeatureRequestCard";
 
 export default async function DashboardLayout({
   children,
@@ -27,7 +28,10 @@ export default async function DashboardLayout({
           <aside className="w-full md:w-52 shrink-0">
             <DashboardSidebar role={role} isAdmin={isAdmin} />
           </aside>
-          <main className="flex-1 min-w-0">{children}</main>
+          <main className="flex-1 min-w-0 flex flex-col gap-8">
+            {children}
+            <FeatureRequestCard />
+          </main>
         </div>
       </div>
     </div>
