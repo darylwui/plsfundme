@@ -79,11 +79,11 @@ export default async function ConfirmationPage({
           </div>
 
           <Link
-            href="/refund-guarantee"
+            href="/backer-protection"
             className="mt-6 inline-flex items-center justify-center gap-1.5 text-xs text-[var(--color-ink-subtle)] hover:text-[var(--color-ink-muted)] transition-colors"
           >
             <ShieldCheck className="w-3.5 h-3.5" />
-            Protected by our refund guarantee
+            Covered by our backer protection
           </Link>
         </div>
 
