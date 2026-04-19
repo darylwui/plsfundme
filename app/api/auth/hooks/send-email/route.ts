@@ -13,6 +13,7 @@ import {
 type EmailActionType =
   | "signup"
   | "login"
+  | "magiclink"
   | "invite"
   | "recovery"
   | "email_change"
@@ -35,6 +36,7 @@ interface HookPayload {
 const VERIFY_TYPE: Record<EmailActionType, string> = {
   signup: "signup",
   login: "magiclink",
+  magiclink: "magiclink",
   invite: "invite",
   recovery: "recovery",
   email_change: "email_change",
@@ -83,6 +85,7 @@ export async function POST(request: NextRequest) {
       html = renderConfirmSignup({ confirmUrl: buildConfirmUrl("/dashboard") });
       break;
     case "login":
+    case "magiclink":
       subject = "Your sign-in link — get that bread";
       html = renderMagicLink({ confirmUrl: buildConfirmUrl("/dashboard") });
       break;
