@@ -174,12 +174,20 @@ export function CheckoutForm({
         </div>
         {paymentMethod === "paynow" && (
           <p className="mt-2 text-xs text-[var(--color-ink-subtle)]">
-            Open your bank app and scan the QR code to complete payment instantly.
+            Open your bank app and scan the QR code to complete payment instantly. Refunded automatically if the campaign misses its goal — see our{" "}
+            <a href="/refund-guarantee" className="underline hover:text-[var(--color-ink-muted)]">
+              refund guarantee
+            </a>
+            .
           </p>
         )}
         {paymentMethod === "card" && (
           <p className="mt-2 text-xs text-[var(--color-ink-subtle)]">
-            Your card will only be charged if the campaign reaches its goal.
+            Your card will only be charged if the campaign reaches its goal. See our{" "}
+            <a href="/refund-guarantee" className="underline hover:text-[var(--color-ink-muted)]">
+              refund guarantee
+            </a>
+            .
           </p>
         )}
       </div>
