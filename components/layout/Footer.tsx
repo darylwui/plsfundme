@@ -4,6 +4,7 @@ const LINKS = {
   Discover: [
     { href: "/explore", label: "Explore projects" },
     { href: "/how-it-works", label: "How it works" },
+    { href: "/refund-guarantee", label: "Refund guarantee" },
   ],
   Create: [
     { href: "/projects/create", label: "Start a project" },

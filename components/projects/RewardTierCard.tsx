@@ -1,6 +1,6 @@
 "use client";
 
-import { Package, Users, Calendar } from "lucide-react";
+import { Package, Users, Calendar, Flame } from "lucide-react";
 import { formatDateShort } from "@/lib/utils/dates";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import type { Reward } from "@/types/reward";
@@ -26,6 +26,7 @@ export function RewardTierCard({
     reward.max_backers !== null
       ? reward.max_backers - reward.claimed_count
       : null;
+  const isLowStock = spotsLeft !== null && !isSoldOut && spotsLeft <= 5;
 
   return (
     <button
@@ -111,10 +112,17 @@ export function RewardTierCard({
           </span>
         )}
         {spotsLeft !== null && !isSoldOut && (
-          <span className="flex items-center gap-1 text-[var(--color-brand-golden)]">
-            <Users className="w-3.5 h-3.5" />
-            {spotsLeft} left
-          </span>
+          isLowStock ? (
+            <span className="flex items-center gap-1 font-bold text-[var(--color-brand-danger)] bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded-full">
+              <Flame className="w-3.5 h-3.5" />
+              Only {spotsLeft} left!
+            </span>
+          ) : (
+            <span className="flex items-center gap-1 text-[var(--color-brand-golden)]">
+              <Users className="w-3.5 h-3.5" />
+              {spotsLeft} left
+            </span>
+          )
         )}
       </div>
     </button>
