@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 export const metadata = {
   title: "How it works",
   description:
-    "All-or-nothing crowdfunding for Singapore entrepreneurs. Simple, safe, and transparent.",
+    "How crowdfunding works on get that bread — launch a Singapore campaign, set your funding goal, and only get paid if you hit it.",
 };
 
 const CREATOR_STEPS = [

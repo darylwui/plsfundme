@@ -22,7 +22,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://getthatbread.sg";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "get that bread — Fund the future.",
+    default: "get that bread — Singapore crowdfunding for entrepreneurs",
     template: "%s — get that bread",
   },
   description:
@@ -73,6 +73,43 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem('theme');var p=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';if((t||p)==='dark')document.documentElement.classList.add('dark');}catch(e){}})();`,
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "Organization",
+                  "@id": `${SITE_URL}#organization`,
+                  name: "get that bread",
+                  alternateName: "getthatbread",
+                  url: SITE_URL,
+                  logo: `${SITE_URL}/bread-icon.png`,
+                  description:
+                    "Singapore's reward-based crowdfunding platform for entrepreneurs.",
+                  areaServed: { "@type": "Country", name: "Singapore" },
+                },
+                {
+                  "@type": "WebSite",
+                  "@id": `${SITE_URL}#website`,
+                  url: SITE_URL,
+                  name: "get that bread",
+                  publisher: { "@id": `${SITE_URL}#organization` },
+                  inLanguage: "en-SG",
+                  potentialAction: {
+                    "@type": "SearchAction",
+                    target: {
+                      "@type": "EntryPoint",
+                      urlTemplate: `${SITE_URL}/explore?q={search_term_string}`,
+                    },
+                    "query-input": "required name=search_term_string",
+                  },
+                },
+              ],
+            }),
           }}
         />
       </head>
