@@ -177,7 +177,7 @@ export function PMRegistrationSteps({ onBack }: PMRegistrationStepsProps) {
             {step === 1 && "Account details"}
             {step === 2 && "About you"}
             {step === 3 && "Your campaign plan"}
-            {step === 4 && "Identity verification"}
+            {step === 4 && "Almost done"}
           </span>
         </div>
         <div className="h-1.5 rounded-full bg-[var(--color-border)] overflow-hidden">
@@ -388,9 +388,9 @@ export function PMRegistrationSteps({ onBack }: PMRegistrationStepsProps) {
       {step === 4 && (
         <div className="flex flex-col gap-5">
           <div>
-            <h3 className="font-bold text-lg text-[var(--color-ink)]">Identity verification</h3>
+            <h3 className="font-bold text-lg text-[var(--color-ink)]">Almost done</h3>
             <p className="text-sm text-[var(--color-ink-muted)] mt-0.5">
-              Help us verify your identity. This keeps our platform trustworthy for everyone.
+              Optionally add an ID document to speed up review, then submit your application.
             </p>
           </div>
 
@@ -411,27 +411,9 @@ export function PMRegistrationSteps({ onBack }: PMRegistrationStepsProps) {
             />
           </div>
 
-          {/* Singpass placeholder */}
-          <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-4 flex flex-col gap-3">
-            <div className="flex items-center gap-2">
-              <span className="text-lg">🇸🇬</span>
-              <span className="font-semibold text-sm text-[var(--color-ink)]">Singpass / MyInfo</span>
-              <span className="ml-auto text-xs font-medium px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
-                Coming soon
-              </span>
-            </div>
-            <p className="text-xs text-[var(--color-ink-muted)] leading-relaxed">
-              Identity verification via Singpass is coming soon. We&apos;re completing our registration as a Singpass Relying Party. Once available, you&apos;ll verify your NRIC and personal details directly through Singpass — no documents needed.
-            </p>
-            <button
-              type="button"
-              disabled
-              className="w-full flex items-center justify-center gap-2 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2.5 text-sm font-medium text-[var(--color-ink-muted)] cursor-not-allowed opacity-60"
-            >
-              <span>🇸🇬</span>
-              Verify with Singpass (Coming soon)
-            </button>
-          </div>
+          <p className="text-xs text-[var(--color-ink-subtle)] leading-relaxed">
+            🇸🇬 Singpass verification is coming soon — once live, we&apos;ll invite you to verify in one click. No action needed now.
+          </p>
 
           <div className="flex gap-3 pt-1">
             <Button type="button" size="lg" variant="ghost" onClick={() => setStep(3)}>
