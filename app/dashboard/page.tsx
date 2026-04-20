@@ -3,6 +3,10 @@ import { PlusCircle, ArrowRight, Pencil, Heart } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { FundingProgressCard } from "@/components/dashboard/FundingProgressCard";
 import { BackerTable } from "@/components/dashboard/BackerTable";
+import {
+  SingpassVerificationCard,
+  SingpassVerifiedBadge,
+} from "@/components/dashboard/SingpassVerificationCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils/dates";
@@ -152,6 +156,13 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
   const typedProjects = (projects as unknown as ProjectWithRelations[]) ?? [];
   const activeProject = typedProjects.find((p) => p.status === "active") ?? typedProjects[0];
 
+  const { data: pmProfile } = await supabase
+    .from("project_manager_profiles")
+    .select("singpass_verified")
+    .eq("id", userId)
+    .single();
+  const singpassVerified = Boolean(pmProfile?.singpass_verified);
+
   let recentPledges: PledgeWithBacker[] = [];
   if (activeProject) {
     const { data: pledges } = await supabase
@@ -168,9 +179,12 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
     <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl font-black text-[var(--color-ink)]">
-            Hey, {displayName.split(" ")[0]} 👋
-          </h1>
+          <div className="flex items-center gap-3 flex-wrap">
+            <h1 className="text-2xl font-black text-[var(--color-ink)]">
+              Hey, {displayName.split(" ")[0]} 👋
+            </h1>
+            {singpassVerified && <SingpassVerifiedBadge />}
+          </div>
           <p className="text-sm text-[var(--color-ink-muted)] mt-0.5">
             Here&apos;s what&apos;s happening with your campaigns.
           </p>
@@ -191,6 +205,8 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
           </Link>
         </div>
       </div>
+
+      {!singpassVerified && <SingpassVerificationCard />}
 
       {typedProjects.length === 0 ? (
         <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border-2 border-dashed border-[var(--color-border)] p-12 text-center">

@@ -39,15 +39,8 @@ export function ProjectCard({ project }: ProjectCardProps) {
               </div>
             )}
 
-            {/* Bread stamp — featured */}
-            {project.is_featured && (
-              <span className="absolute top-2 left-2 z-10 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-400 dark:bg-amber-500 text-amber-900 animate-subtle-pulse">
-                🍞 Team pick
-              </span>
-            )}
-
-            {/* Badges overlay */}
-            <div className="absolute top-3 left-3 flex gap-1.5">
+            {/* Category + ending-soon stack — top-left */}
+            <div className="absolute top-3 left-3 z-10 flex gap-1.5">
               {project.category && (
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/90 text-[var(--color-brand-crust)] backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-0">
                   {project.category.name}
@@ -60,6 +53,13 @@ export function ProjectCard({ project }: ProjectCardProps) {
                 </span>
               )}
             </div>
+
+            {/* Bread stamp — featured, bottom-left so it never collides with category */}
+            {project.is_featured && (
+              <span className="absolute bottom-2 left-2 z-10 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-400 dark:bg-amber-500 text-amber-900 animate-subtle-pulse">
+                🍞 Team pick
+              </span>
+            )}
           </div>
 
           {/* Content */}
