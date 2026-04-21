@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { StatsBar } from "@/components/home/StatsBar";
 import { HowItWorksSection } from "@/components/home/HowItWorksSection";
 import { PreFooterCTA } from "@/components/home/PreFooterCTA";
+import { ScrollReveal } from "@/components/marketing/ScrollReveal";
 import type { ProjectWithRelations } from "@/types/project";
 
 type FilterTab = "trending" | "newest" | "ending_soon";
@@ -260,49 +261,57 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       </section>
 
       {/* ── Stats band (only once we have real traction) ─────── */}
-      {showLiveStats && <StatsBar stats={stats} />}
+      {showLiveStats && (
+        <ScrollReveal>
+          <StatsBar stats={stats} />
+        </ScrollReveal>
+      )}
 
       {/* ── Discovery section ────────────────────────────────── */}
-      <section className="bg-[var(--color-surface-raised)] border-t border-[var(--color-border)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-          {/* Filter tabs */}
-          <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
-            <div className="flex gap-1 p-1 bg-[var(--color-surface-overlay)] rounded-[var(--radius-btn)] border border-[var(--color-border)]">
-              {TABS.map(({ key, label, Icon }) => (
-                <Link
-                  key={key}
-                  href={`/?filter=${key}`}
-                  className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-[calc(var(--radius-btn)-2px)] text-sm font-semibold transition-colors duration-[150ms] ${
-                    activeFilter === key
-                      ? "bg-[var(--color-surface)] shadow-sm text-[var(--color-ink)]"
-                      : "text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
-                  }`}
-                >
-                  <Icon className="w-3.5 h-3.5" />
-                  {label}
-                </Link>
-              ))}
+      <ScrollReveal>
+        <section className="bg-[var(--color-surface-raised)] border-t border-[var(--color-border)]">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+            {/* Filter tabs */}
+            <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
+              <div className="flex gap-1 p-1 bg-[var(--color-surface-overlay)] rounded-[var(--radius-btn)] border border-[var(--color-border)]">
+                {TABS.map(({ key, label, Icon }) => (
+                  <Link
+                    key={key}
+                    href={`/?filter=${key}`}
+                    className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-[calc(var(--radius-btn)-2px)] text-sm font-semibold transition-colors duration-[150ms] ${
+                      activeFilter === key
+                        ? "bg-[var(--color-surface)] shadow-sm text-[var(--color-ink)]"
+                        : "text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
+                    }`}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                    {label}
+                  </Link>
+                ))}
+              </div>
+              <Link
+                href="/explore"
+                className="text-sm font-semibold text-[var(--color-brand-crust)] hover:underline flex items-center gap-1"
+              >
+                View all <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
             </div>
-            <Link
-              href="/explore"
-              className="text-sm font-semibold text-[var(--color-brand-crust)] hover:underline flex items-center gap-1"
-            >
-              View all <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
 
-          <ProjectGrid
-            projects={projects}
-            emptyMessage="No active projects yet — be the first to launch one!"
-          />
-        </div>
-      </section>
+            <ProjectGrid
+              projects={projects}
+              emptyMessage="No active projects yet — be the first to launch one!"
+            />
+          </div>
+        </section>
+      </ScrollReveal>
 
       {/* ── How it works ─────────────────────────────────────── */}
       <HowItWorksSection />
 
       {/* ── Pre-footer CTA ───────────────────────────────────── */}
-      <PreFooterCTA />
+      <ScrollReveal>
+        <PreFooterCTA />
+      </ScrollReveal>
     </div>
   );
 }
