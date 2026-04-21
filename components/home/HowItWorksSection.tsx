@@ -152,16 +152,16 @@ function StepCard({
       onMouseEnter={onHover}
       onFocus={onHover}
       tabIndex={0}
-      className={`relative flex flex-col gap-4 p-6 rounded-[var(--radius-card)] transition-all duration-300 outline-none ${
+      className={`relative flex flex-col gap-7 md:gap-8 p-6 md:p-7 rounded-[var(--radius-card)] transition-all duration-300 outline-none ${
         active
           ? "-translate-y-1 bg-[var(--color-surface)] shadow-[var(--shadow-card-hover)] ring-2 ring-[var(--color-brand-golden)]/40"
           : "bg-transparent ring-1 ring-transparent"
       } ${dimmed ? "opacity-55" : "opacity-100"}`}
     >
-      {/* Step number + icon */}
-      <div className="flex items-center gap-4">
+      {/* Icon (sits on the connector line as a node) */}
+      <div className="relative z-10">
         <div
-          className={`w-12 h-12 rounded-[var(--radius-card)] flex items-center justify-center shrink-0 transition-all duration-300 ${
+          className={`w-12 h-12 rounded-[var(--radius-card)] flex items-center justify-center transition-all duration-300 ring-[6px] ring-[var(--color-surface-raised)] ${
             active
               ? "bg-[var(--color-brand-golden)] scale-110 shadow-[0_12px_30px_-8px_rgba(217,119,6,0.55)]"
               : "bg-[var(--color-brand-crust)] shadow-[var(--shadow-cta)]"
@@ -169,13 +169,13 @@ function StepCard({
         >
           <Icon className="w-5 h-5 text-white" />
         </div>
-        <span className="font-mono text-sm md:text-[15px] font-bold text-[var(--color-ink-subtle)] uppercase tracking-[0.2em] tabular-nums">
-          Step {String(display).padStart(2, "0")}
-        </span>
       </div>
 
       {/* Content */}
       <div>
+        <span className="block font-mono text-xs md:text-[13px] font-bold text-[var(--color-ink-subtle)] uppercase tracking-[0.2em] tabular-nums mb-2">
+          Step {String(display).padStart(2, "0")}
+        </span>
         <h3
           className={`font-bold text-lg mb-2 transition-colors ${
             active ? "text-[var(--color-brand-crust)]" : "text-[var(--color-ink)]"
@@ -200,7 +200,7 @@ function ConnectingPath() {
       aria-hidden
       viewBox="0 0 1000 80"
       preserveAspectRatio="none"
-      className="hidden lg:block absolute left-0 right-0 top-[36px] w-full h-[80px] pointer-events-none"
+      className="hidden lg:block absolute left-0 right-0 top-[8px] w-full h-[80px] pointer-events-none z-0"
     >
       <motion.line
         x1="90"
