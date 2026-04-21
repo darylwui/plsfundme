@@ -142,9 +142,10 @@ export function Navbar() {
 
           {/* Mobile menu toggle */}
           <button
-            className="md:hidden p-2 rounded-lg text-[var(--color-ink-invert-muted)] hover:bg-[var(--color-surface-invert-raised)] transition-colors duration-[160ms]"
+            className="md:hidden min-h-11 min-w-11 inline-flex items-center justify-center rounded-lg text-[var(--color-ink-invert-muted)] hover:bg-[var(--color-surface-invert-raised)] transition-colors duration-[160ms]"
             onClick={() => setMenuOpen((o) => !o)}
             aria-label="Toggle menu"
+            aria-expanded={menuOpen}
           >
             {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>

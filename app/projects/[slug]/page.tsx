@@ -48,11 +48,14 @@ export async function generateMetadata({
 
   const ogImages = project.cover_image_url
     ? [{ url: project.cover_image_url, width: 1200, height: 630, alt: project.title }]
-    : [{ url: "/og-default.png", width: 1200, height: 630, alt: "get that bread" }];
+    : undefined;
+
+  const seoTitle = `${project.title} — Crowdfunding campaign in Singapore`;
 
   return {
-    title: project.title,
+    title: seoTitle,
     description: project.short_description,
+    alternates: { canonical: `${BASE_URL}/projects/${slug}` },
     openGraph: {
       title: `${project.title} — get that bread`,
       description: project.short_description,
@@ -60,13 +63,13 @@ export async function generateMetadata({
       type: "website",
       locale: "en_SG",
       siteName: "get that bread",
-      images: ogImages,
+      ...(ogImages ? { images: ogImages } : {}),
     },
     twitter: {
       card: "summary_large_image",
       title: project.title,
       description: project.short_description,
-      images: ogImages.map((img) => img.url),
+      ...(ogImages ? { images: ogImages.map((img) => img.url) } : {}),
     },
   };
 }

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Banknote, Pencil, Users, type LucideIcon } from "lucide-react";
-import { animate, motion, useInView } from "motion/react";
+import { animate, motion, useInView, useReducedMotion } from "motion/react";
 
 type Step = {
   Icon: LucideIcon;
@@ -73,6 +73,11 @@ export function HowItWorksSection() {
         <div
           className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-6 items-stretch"
           onMouseLeave={() => setHovered(null)}
+          onBlur={(e) => {
+            if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+              setHovered(null);
+            }
+          }}
         >
           {/* Desktop connecting path */}
           <ConnectingPath />
@@ -113,10 +118,15 @@ function StepCard({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.4 });
+  const reduceMotion = useReducedMotion();
   const [display, setDisplay] = useState(0);
 
   useEffect(() => {
     if (!inView) return;
+    if (reduceMotion) {
+      setDisplay(step.num);
+      return;
+    }
     const controls = animate(0, step.num, {
       duration: 0.9,
       delay: index * 0.15 + 0.2,
@@ -124,7 +134,7 @@ function StepCard({
       onUpdate: (v) => setDisplay(Math.round(v)),
     });
     return () => controls.stop();
-  }, [inView, step.num, index]);
+  }, [inView, step.num, index, reduceMotion]);
 
   const Icon = step.Icon;
 

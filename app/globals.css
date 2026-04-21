@@ -232,3 +232,18 @@ body {
 .delay-240 { animation-delay: 240ms; }
 .delay-300 { animation-delay: 300ms; }
 .delay-360 { animation-delay: 360ms; }
+
+/* Global reduced-motion guard: disables Tailwind's built-in animate-spin,
+   animate-ping, animate-pulse, animate-bounce + any third-party CSS
+   animations for users who opt out. Complements the JS-side checks on
+   motion/react imperative animations. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

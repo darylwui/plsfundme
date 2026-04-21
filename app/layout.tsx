@@ -40,20 +40,11 @@ export const metadata: Metadata = {
     url: SITE_URL,
     locale: "en_SG",
     type: "website",
-    images: [
-      {
-        url: "/og-default.png",
-        width: 1200,
-        height: 630,
-        alt: "get that bread — Singapore's crowdfunding platform for entrepreneurs",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "get that bread",
     description: "Singapore's crowdfunding platform for entrepreneurs.",
-    images: ["/og-default.png"],
   },
 };
 
