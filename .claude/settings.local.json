@@ -77,7 +77,13 @@
       "mcp__Claude_Preview__preview_start",
       "Bash(xargs -r kill)",
       "Bash(ln -s /Users/darylwui/plsfundme/.env.local .env.local)",
-      "Bash(git check-ignore *)"
+      "Bash(git check-ignore *)",
+      "Bash(gh pr create --title 'Remove Kickstarter reference from homepage hero' --body ' *)",
+      "Bash(git log *)",
+      "Bash(ln -sf /Users/darylwui/plsfundme/.env.local /Users/darylwui/plsfundme/.claude/worktrees/great-beaver-7ab169/.env.local)",
+      "Bash(gh pr *)",
+      "Bash(git fetch *)",
+      "Bash(git checkout *)"
     ]
   }
 }

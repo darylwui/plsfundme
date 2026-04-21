@@ -16,9 +16,9 @@ export default function RefundGuaranteePage() {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Hero */}
         <div className="mb-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-brand-success)]/10 border border-[var(--color-brand-success)]/30 mb-4">
-            <ShieldCheck className="w-4 h-4 text-[var(--color-brand-success)]" />
-            <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-brand-success)]">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 mb-4">
+            <ShieldCheck className="w-4 h-4 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)]" />
+            <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)]">
               Backer protection
             </span>
           </div>
@@ -151,7 +151,7 @@ function SummaryCard({
 }) {
   return (
     <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-5 flex flex-col gap-2">
-      <div className="w-9 h-9 rounded-full bg-[var(--color-brand-success)]/10 flex items-center justify-center text-[var(--color-brand-success)]">
+      <div className="w-9 h-9 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 flex items-center justify-center text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)]">
         {icon}
       </div>
       <p className="font-bold text-[var(--color-ink)] leading-tight">{title}</p>

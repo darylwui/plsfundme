@@ -1,202 +1,113 @@
 import Link from "next/link";
-import {
-  ArrowRight,
-  CheckCircle2,
-  DollarSign,
-  Rocket,
-  Shield,
-  Users,
-} from "lucide-react";
+import { ArrowRight, Gift, PlayCircle, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { BackerStepper } from "@/components/marketing/BackerStepper";
 import { PledgeTimelineDemo } from "@/components/marketing/PledgeTimelineDemo";
-import { CreatorTimelineScrub } from "@/components/marketing/CreatorTimelineScrub";
 import { ScrollReveal } from "@/components/marketing/ScrollReveal";
 import { ScrollDownCue } from "@/components/marketing/ScrollDownCue";
+import { WhyBackPillars } from "@/components/marketing/WhyBackPillars";
+import { RewardArchetypes } from "@/components/marketing/RewardArchetypes";
+import { CreatorRedirect } from "@/components/marketing/CreatorRedirect";
 
 export const metadata = {
-  title: "How it works",
+  title: "How it works — for backers",
   description:
-    "How crowdfunding works on get that bread — launch a Singapore campaign, set your funding goal, and only get paid if you hit it.",
+    "Back Singapore's next big thing on get that bread. Get exclusive rewards, zero-risk pledges, and only pay if the campaign hits its goal.",
 };
-
-const FEES = [
-  { label: "Platform fee", value: "5% of funds raised", highlight: false },
-  { label: "Payment processing", value: "Included", highlight: false },
-  {
-    label: "If goal not reached",
-    value: "Free — backers refunded in full",
-    highlight: true,
-  },
-];
 
 export default function HowItWorksPage() {
   return (
     <div>
       {/* ── Hero ─────────────────────────────────────────────── */}
       <section className="bg-gradient-to-br from-amber-50 via-[#FFFBF5] to-orange-50 dark:from-[#0f0f0f] dark:via-[#0a0a0a] dark:to-[#111111] border-b border-[var(--color-border)]">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24">
           <div className="inline-flex items-center px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] text-xs uppercase tracking-[0.12em] font-medium mb-6">
-            The model
+            For backers
           </div>
-          <h1 className="text-[40px] md:text-[52px] font-black tracking-tight leading-[1.1] mb-4">
-            <span>How </span>
+          <h1 className="text-[40px] md:text-[56px] font-black tracking-tight leading-[1.05] mb-5 max-w-4xl">
+            Back bold ideas.{" "}
             <span className="text-[var(--color-brand-crust)] dark:text-[var(--color-brand-golden)]">
-              get that bread
-            </span>
-            <span> works</span>
+              Get the rewards.
+            </span>{" "}
+            No goal, no charge.
           </h1>
-          <p className="text-lg text-[var(--color-ink-muted)] leading-relaxed">
-            All-or-nothing crowdfunding for Singapore entrepreneurs. Simple,
-            safe, and transparent.
+          <p className="text-lg text-[var(--color-ink-muted)] leading-relaxed max-w-2xl">
+            get that bread is Singapore&apos;s reward-based crowdfunding
+            platform. Pledge to creators you love — we only move your money
+            if they hit their goal.
           </p>
           <ScrollDownCue />
         </div>
       </section>
 
-      {/* ── 1. Live-clock pledge widget ──────────────────────── */}
+      {/* ── 1. Why back ──────────────────────────────────────── */}
       <ScrollReveal>
         <section className="border-b border-[var(--color-border)] bg-[var(--color-surface)]">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-11 h-11 rounded-[var(--radius-card)] bg-[var(--color-brand-crust)] flex items-center justify-center shadow-[var(--shadow-cta)]">
-                <Shield className="w-5 h-5 text-white" />
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+            <div className="max-w-2xl mb-10 md:mb-14">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] text-[11px] uppercase tracking-[0.15em] font-medium mb-4">
+                <Sparkles className="w-3.5 h-3.5" />
+                Why back a campaign
               </div>
-              <div>
-                <p className="text-xs uppercase tracking-[0.12em] font-medium text-[var(--color-ink-subtle)]">
-                  The safety net
-                </p>
-                <h2 className="text-2xl font-black text-[var(--color-ink)]">
-                  All-or-nothing funding
-                </h2>
-              </div>
+              <h2 className="text-3xl md:text-4xl font-black tracking-tight leading-[1.1] text-[var(--color-ink)]">
+                Three reasons pledging here hits different.
+              </h2>
             </div>
-            <p className="text-[var(--color-ink-muted)] leading-relaxed mb-8 max-w-2xl">
-              Backers are only charged if a campaign reaches its full funding
-              goal by the deadline. If the goal isn&apos;t met, no one pays a
-              cent. Try pledging below — or let the clock run out — to see both
-              outcomes.
-            </p>
+            <WhyBackPillars />
+          </div>
+        </section>
+      </ScrollReveal>
 
+      {/* ── 2. Try it yourself ───────────────────────────────── */}
+      <ScrollReveal>
+        <section className="border-b border-[var(--color-border)] bg-[var(--color-surface-raised)]">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+            <div className="max-w-2xl mb-10">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] text-[11px] uppercase tracking-[0.15em] font-medium mb-4">
+                <PlayCircle className="w-3.5 h-3.5" />
+                Try it yourself
+              </div>
+              <h2 className="text-3xl md:text-4xl font-black tracking-tight leading-[1.1] text-[var(--color-ink)]">
+                See how your pledge works.
+              </h2>
+              <p className="mt-4 text-[var(--color-ink-muted)] leading-relaxed">
+                Don&apos;t take our word for it. Try pledging below, or let
+                the clock run out — you&apos;ll see exactly how your money is
+                handled either way.
+              </p>
+            </div>
             <PledgeTimelineDemo />
           </div>
         </section>
       </ScrollReveal>
 
-      {/* ── 2. For creators ──────────────────────────────────── */}
-      <section className="border-b border-[var(--color-border)] bg-[var(--color-surface-raised)]">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-          <ScrollReveal>
-            <div className="flex items-center gap-3 mb-10">
-              <div className="w-11 h-11 rounded-[var(--radius-card)] bg-[var(--color-brand-crust)] flex items-center justify-center shadow-[var(--shadow-cta)]">
-                <Rocket className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <p className="text-xs uppercase tracking-[0.12em] font-medium text-[var(--color-ink-subtle)]">
-                  For creators
-                </p>
-                <h2 className="text-2xl font-black text-[var(--color-ink)]">
-                  Launch your campaign
-                </h2>
-              </div>
-            </div>
-          </ScrollReveal>
-
-          <CreatorTimelineScrub />
-
-          <ScrollReveal>
-            <div className="mt-10">
-              <Link href="/projects/create">
-                <Button size="lg">
-                  Start your campaign
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
-              </Link>
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* ── 3. For backers ───────────────────────────────────── */}
+      {/* ── 3. What you get back ─────────────────────────────── */}
       <ScrollReveal>
         <section className="border-b border-[var(--color-border)] bg-[var(--color-surface)]">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-            <div className="flex items-center gap-3 mb-12">
-              <div className="w-11 h-11 rounded-[var(--radius-card)] bg-[var(--color-brand-golden)] flex items-center justify-center shadow-[0_4px_20px_0_rgba(217,119,6,0.35)]">
-                <Users className="w-5 h-5 text-white" />
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+            <div className="max-w-2xl mb-10 md:mb-14">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] text-[11px] uppercase tracking-[0.15em] font-medium mb-4">
+                <Gift className="w-3.5 h-3.5" />
+                What you get back
               </div>
-              <div>
-                <p className="text-xs uppercase tracking-[0.12em] font-medium text-[var(--color-ink-subtle)]">
-                  For backers
-                </p>
-                <h2 className="text-2xl font-black text-[var(--color-ink)]">
-                  Support what you believe in
-                </h2>
-              </div>
+              <h2 className="text-3xl md:text-4xl font-black tracking-tight leading-[1.1] text-[var(--color-ink)]">
+                Backer rewards aren&apos;t just a thank-you.
+              </h2>
+              <p className="mt-4 text-[var(--color-ink-muted)] leading-relaxed">
+                They&apos;re the whole point. Every campaign on get that bread
+                ships tiered rewards — here&apos;s what you can usually
+                expect.
+              </p>
             </div>
-
-            <BackerStepper />
-
-            <div className="mt-8">
-              <Link href="/explore">
-                <Button variant="secondary" size="lg">
-                  Explore projects
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
-              </Link>
-            </div>
+            <RewardArchetypes />
           </div>
         </section>
       </ScrollReveal>
 
-      {/* ── 4. Fees ──────────────────────────────────────────── */}
+      {/* ── 4. Creator redirect ──────────────────────────────── */}
       <ScrollReveal>
         <section className="border-b border-[var(--color-border)] bg-[var(--color-surface-raised)]">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-            <div className="flex items-center gap-3 mb-10">
-              <div className="w-11 h-11 rounded-[var(--radius-card)] bg-[var(--color-brand-golden)] flex items-center justify-center shadow-[0_4px_20px_0_rgba(217,119,6,0.35)]">
-                <DollarSign className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <p className="text-xs uppercase tracking-[0.12em] font-medium text-[var(--color-ink-subtle)]">
-                  Transparent
-                </p>
-                <h2 className="text-2xl font-black text-[var(--color-ink)]">
-                  Simple, honest fees
-                </h2>
-              </div>
-            </div>
-
-            <div className="p-[3px] rounded-[calc(var(--radius-card)+3px)] bg-[var(--color-surface-overlay)] ring-1 ring-[var(--color-border)] max-w-lg">
-              <div className="rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] overflow-hidden">
-                {FEES.map(({ label, value, highlight }, i) => (
-                  <div
-                    key={label}
-                    className={`flex items-center justify-between px-6 py-4 ${
-                      i < FEES.length - 1
-                        ? "border-b border-[var(--color-border)]"
-                        : ""
-                    }`}
-                  >
-                    <span className="text-sm text-[var(--color-ink-muted)]">
-                      {label}
-                    </span>
-                    <span
-                      className={`text-sm font-bold font-mono ${
-                        highlight
-                          ? "text-[var(--color-brand-golden)]"
-                          : "text-[var(--color-ink)]"
-                      }`}
-                    >
-                      {highlight && (
-                        <CheckCircle2 className="w-3.5 h-3.5 inline mr-1.5 text-[var(--color-brand-golden)]" />
-                      )}
-                      {value}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-16">
+            <CreatorRedirect />
           </div>
         </section>
       </ScrollReveal>
@@ -204,26 +115,27 @@ export default function HowItWorksPage() {
       {/* ── 5. CTA ───────────────────────────────────────────── */}
       <ScrollReveal>
         <section className="bg-[var(--color-surface)]">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
             <div>
-              <h2 className="text-2xl font-black tracking-tight text-[var(--color-ink)]">
-                Ready to launch?
+              <h2 className="text-2xl md:text-3xl font-black tracking-tight text-[var(--color-ink)]">
+                Find something to back.
               </h2>
               <p className="text-[var(--color-ink-muted)] mt-1">
-                Start for free — no upfront costs, no risk to backers.
+                Browse the live campaigns and pick one that moves you.
               </p>
             </div>
-            <div className="flex gap-3 shrink-0">
-              <Link href="/projects/create">
+            <div className="flex items-center gap-5 shrink-0">
+              <Link href="/explore">
                 <Button size="lg" variant="inverse">
-                  Start a project
+                  Explore projects
                   <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
-              <Link href="/explore">
-                <Button size="lg" variant="secondary">
-                  Explore
-                </Button>
+              <Link
+                href="/for-creators"
+                className="text-sm font-medium text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
+              >
+                Or start a project of your own →
               </Link>
             </div>
           </div>
