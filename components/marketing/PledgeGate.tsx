@@ -56,7 +56,7 @@ export function PledgeDemo({ splitPanel }: { splitPanel: ReactNode }) {
             <div className="min-w-0">
               <div className="flex items-center justify-between gap-3">
                 <p className="text-sm font-semibold text-[var(--color-ink)]">
-                  Bread truck Kickstart
+                  The World&apos;s Best Idea
                 </p>
                 <p className="text-xs font-mono text-[var(--color-ink-subtle)] uppercase tracking-wider">
                   $25 per pledge
