@@ -526,7 +526,7 @@ git commit -m "feat(kyc): add sha256Uinfin + redactUinfin helpers"
 ```ts
 // lib/singpass/__tests__/config.test.ts
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { getSingpassConfig, SingpassConfigError } from "../config";
+import { getSingpassConfig, isSingpassLive, SingpassConfigError } from "../config";
 
 describe("getSingpassConfig", () => {
   const originalEnv = { ...process.env };
@@ -589,6 +589,39 @@ describe("getSingpassConfig", () => {
   it("throws when SINGPASS_ENV is an unknown value", () => {
     process.env.SINGPASS_ENV = "staging-weird";
     expect(() => getSingpassConfig()).toThrow(SingpassConfigError);
+  });
+});
+
+describe("isSingpassLive", () => {
+  const originalEnv = { ...process.env };
+
+  beforeEach(() => {
+    for (const k of Object.keys(process.env)) {
+      if (k.startsWith("SINGPASS_")) delete process.env[k];
+    }
+  });
+
+  afterEach(() => {
+    process.env = { ...originalEnv };
+  });
+
+  it("is false when SINGPASS_ENV is unset", () => {
+    expect(isSingpassLive()).toBe(false);
+  });
+
+  it("is false when SINGPASS_ENV=disabled", () => {
+    process.env.SINGPASS_ENV = "disabled";
+    expect(isSingpassLive()).toBe(false);
+  });
+
+  it("is true when SINGPASS_ENV=sandbox", () => {
+    process.env.SINGPASS_ENV = "sandbox";
+    expect(isSingpassLive()).toBe(true);
+  });
+
+  it("is true when SINGPASS_ENV=prod", () => {
+    process.env.SINGPASS_ENV = "prod";
+    expect(isSingpassLive()).toBe(true);
   });
 });
 ```
@@ -659,6 +692,24 @@ function parseJwk(name: string): Record<string, unknown> {
   } catch {
     throw new SingpassConfigError(`${name} is not valid JSON.`);
   }
+}
+
+/**
+ * Cheap check: is Singpass enabled in this environment at all?
+ *
+ * Safe to call from any server component. Use this as the top-level
+ * feature-flag gate — if false, render the pre-launch UX (no "Verify"
+ * CTA, no submit-for-review gate). Do NOT call from client components;
+ * it reads process.env.
+ *
+ * Relationship to getSingpassConfig():
+ *   - isSingpassLive() === false → getSingpassConfig() returns null
+ *   - isSingpassLive() === true  → getSingpassConfig() returns a config
+ *     OR throws SingpassConfigError if other SINGPASS_* vars are missing
+ */
+export function isSingpassLive(): boolean {
+  const env = process.env.SINGPASS_ENV;
+  return env === "sandbox" || env === "prod";
 }
 
 export function getSingpassConfig(): SingpassConfig | null {
@@ -2208,13 +2259,55 @@ git commit -m "feat(kyc): add consent page + four error pages + start button"
 
 - [ ] **Step 11: Rewrite `components/dashboard/SingpassVerificationCard.tsx`**
 
-Replace the whole file (keep `SingpassVerifiedBadge` as-is at the bottom):
+Replace the whole file (keep `SingpassVerifiedBadge` as-is at the bottom).
+The card has THREE states: Singpass-not-yet-live ("Coming soon" placeholder
+identical to today's UX), live-and-verified (green "Verified" chip), and
+live-but-not-yet-verified (the real "Verify with Singpass" CTA).
 
 ```tsx
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
 
-export function SingpassVerificationCard({ alreadyVerified }: { alreadyVerified: boolean }) {
+export function SingpassVerificationCard({
+  singpassLive,
+  alreadyVerified,
+}: {
+  singpassLive: boolean;
+  alreadyVerified: boolean;
+}) {
+  // Singpass not yet enabled in this environment → keep the pre-launch UX
+  // exactly as it looked before this feature landed. No broken "Verify"
+  // button that 503s, no missing CTA.
+  if (!singpassLive) {
+    return (
+      <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 flex flex-col gap-3">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-lg">🇸🇬</span>
+          <span className="font-bold text-[var(--color-ink)]">
+            Verify your identity with Singpass
+          </span>
+          <span className="ml-auto text-xs font-medium px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
+            Coming soon
+          </span>
+        </div>
+        <p className="text-sm text-[var(--color-ink-muted)] leading-relaxed">
+          We&apos;ll soon ask all creators to verify their NRIC through Singpass —
+          it takes under a minute and builds extra trust with your backers.
+          We&apos;ll email you as soon as it&apos;s live, then this card will
+          let you verify in one click.
+        </p>
+        <button
+          type="button"
+          disabled
+          className="self-start inline-flex items-center gap-2 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-4 py-2 text-sm font-semibold text-[var(--color-ink-muted)] cursor-not-allowed opacity-60"
+        >
+          <span>🇸🇬</span>
+          Verify with Singpass (Coming soon)
+        </button>
+      </div>
+    );
+  }
+
   if (alreadyVerified) {
     return (
       <div className="rounded-[var(--radius-card)] border border-[var(--color-brand-success)]/30 bg-[var(--color-brand-success)]/5 p-5 flex items-center gap-3">
@@ -2270,12 +2363,21 @@ export function SingpassVerifiedBadge() {
 
 - [ ] **Step 12: Update the card's caller(s)**
 
-Find callers: Run grep for `<SingpassVerificationCard`. For each call site, pass `alreadyVerified` — read `project_manager_profiles.singpass_verified` server-side where the card is rendered. If the caller is `app/dashboard/page.tsx`, the existing query already reads `singpass_verified`; just pass it through.
+Find callers: Run grep for `<SingpassVerificationCard`. For each call site, pass both `singpassLive` (from `isSingpassLive()`) and `alreadyVerified` (from `project_manager_profiles.singpass_verified`). Server-component only — `isSingpassLive()` reads `process.env`.
+
+At the top of each caller file:
+
+```tsx
+import { isSingpassLive } from "@/lib/singpass/config";
+```
 
 Example patch for `app/dashboard/page.tsx` (around the spot that renders the card):
 
 ```tsx
-<SingpassVerificationCard alreadyVerified={!!managerProfile?.singpass_verified} />
+<SingpassVerificationCard
+  singpassLive={isSingpassLive()}
+  alreadyVerified={!!managerProfile?.singpass_verified}
+/>
 ```
 
 - [ ] **Step 13: Commit sub-commit 3**
@@ -2296,6 +2398,7 @@ Create `app/dashboard/submit-project/action.ts`:
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { isSingpassLive } from "@/lib/singpass/config";
 import { slugifyUnique } from "@/lib/utils/slugify";
 import { sanitizeRichHtml } from "@/lib/utils/sanitize";
 import type { ProjectDraft } from "@/types/project";
@@ -2309,15 +2412,20 @@ export async function submitProjectForReview(args: {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { ok: false, reason: "not-authenticated" };
 
-  // Authority check: re-read from Postgres, not from client state.
-  const { data: manager } = await supabase
-    .from("project_manager_profiles")
-    .select("singpass_verified")
-    .eq("id", user.id)
-    .maybeSingle();
+  // Feature-flag gate: if Singpass isn't live in this environment, skip
+  // the verification check entirely and preserve the legacy submit flow.
+  // When SINGPASS_ENV=sandbox|prod, enforce the real check below.
+  if (isSingpassLive()) {
+    // Authority check: re-read from Postgres, not from client state.
+    const { data: manager } = await supabase
+      .from("project_manager_profiles")
+      .select("singpass_verified")
+      .eq("id", user.id)
+      .maybeSingle();
 
-  if (!manager?.singpass_verified) {
-    return { ok: false, reason: "not-verified" };
+    if (!manager?.singpass_verified) {
+      return { ok: false, reason: "not-verified" };
+    }
   }
 
   const slug = slugifyUnique(args.draft.title);
@@ -2478,19 +2586,25 @@ interface Step4Props {
 />
 ```
 
-4. Update the parent chain so `verified` flows from the server page down to `Step4_Review`:
+4. Update the parent chain so `verified` flows from the server page down to `Step4_Review`. When Singpass isn't live, force `verified=true` so the submit button shows as today (the server action also has a matching bypass, so this is a UX consistency guard rather than the authority):
    - **`app/projects/create/page.tsx`** (server component) — add:
 
      ```tsx
-     const { data: managerVerified } = await supabase
-       .from("project_manager_profiles")
-       .select("singpass_verified")
-       .eq("id", user.id)
-       .maybeSingle();
+     import { isSingpassLive } from "@/lib/singpass/config";
+     // ...inside the page component, AFTER the approved-PM checks:
+     let verified = true; // default: treat as verified so UI matches legacy flow
+     if (isSingpassLive()) {
+       const { data: managerVerified } = await supabase
+         .from("project_manager_profiles")
+         .select("singpass_verified")
+         .eq("id", user.id)
+         .maybeSingle();
+       verified = !!managerVerified?.singpass_verified;
+     }
      // ...then pass down:
      <ProjectCreationForm
        categories={(categories as Category[]) ?? []}
-       verified={!!managerVerified?.singpass_verified}
+       verified={verified}
      />
      ```
 
@@ -3002,7 +3116,13 @@ Run the full suite: `npm test` (runs `vitest run`). Target: every new file has a
 
 Each phase is reversible.
 
-- **Phase 1 rollback:** set `SINGPASS_ENV=disabled` in Vercel — the consent page + routes all return 503, the dashboard card hides the "Verify" CTA (the card code defaults to the `not alreadyVerified` branch, which just shows a disabled link — add a second env check if you want it fully hidden). No data is ever written.
+- **Phase 1 rollback / "merge safely before Singpass is ready":** leave `SINGPASS_ENV` unset (or `=disabled`) in Vercel — every user-facing surface gracefully degrades to the legacy behaviour:
+  - `isSingpassLive()` returns `false` → dashboard card falls back to the original "Coming soon" placeholder
+  - Submit-for-review server action skips the verification check and inserts into `projects` exactly as before
+  - All `/api/auth/singpass/*` routes + `/kyc/singpass/*` pages return 503, but no CTA links to them
+  - New DB column + RPC are present but unused
+  - No Singpass data is ever written
+  This is the intended state for the Phase 1 merge — users see zero change.
 - **Phase 2 rollback:** flip `SINGPASS_ENV` back to `disabled` on Preview. The helper library import stays in the codebase harmlessly.
 - **Phase 3 rollback:** flip `SINGPASS_ENV` back to `sandbox` (or `disabled`) in Production. Users already in `creator_verifications` stay verified — the data is durable.
 
