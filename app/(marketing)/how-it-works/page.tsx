@@ -5,53 +5,20 @@ import {
   Users,
   DollarSign,
   Shield,
-  FileText,
   Search,
-  Target,
-  Package,
   CreditCard,
   Lock,
   Gift,
   CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { CreatorTimeline } from "@/components/marketing/CreatorTimeline";
 
 export const metadata = {
   title: "How it works",
   description:
     "All-or-nothing crowdfunding for Singapore entrepreneurs. Simple, safe, and transparent.",
 };
-
-const CREATOR_STEPS = [
-  {
-    Icon: FileText,
-    step: "01",
-    title: "Create your campaign",
-    description:
-      "Set your funding goal, deadline, and reward tiers. Tell your story with a compelling description and cover image.",
-  },
-  {
-    Icon: Search,
-    step: "02",
-    title: "Submit for review",
-    description:
-      "Our team reviews your campaign within 1–2 business days. Once approved, you go live — then share with your network!",
-  },
-  {
-    Icon: Target,
-    step: "03",
-    title: "Hit your goal",
-    description:
-      "If your campaign reaches its funding goal by the deadline, you receive the funds minus our 5% platform fee.",
-  },
-  {
-    Icon: Package,
-    step: "04",
-    title: "Deliver your rewards",
-    description:
-      "Fulfill your promises to backers. Keep them updated with campaign posts along the way.",
-  },
-];
 
 const BACKER_STEPS = [
   {
@@ -224,31 +191,7 @@ export default function HowItWorksPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {CREATOR_STEPS.map(({ Icon, step, title, description }) => (
-              <div
-                key={step}
-                className="p-[3px] rounded-[calc(var(--radius-card)+3px)] bg-[var(--color-surface-overlay)] ring-1 ring-[var(--color-border)]"
-              >
-                <div className="rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] p-6 h-full flex flex-col gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-[var(--radius-btn)] bg-[var(--color-surface-overlay)] border border-[var(--color-border)] flex items-center justify-center shrink-0">
-                      <Icon className="w-4.5 h-4.5 text-[var(--color-brand-crust)]" />
-                    </div>
-                    <span className="font-mono text-xs font-bold text-[var(--color-ink-subtle)] uppercase tracking-[0.12em]">
-                      Step {step}
-                    </span>
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-[var(--color-ink)] mb-1.5">{title}</h3>
-                    <p className="text-sm text-[var(--color-ink-muted)] leading-relaxed max-w-[38ch] mx-auto">
-                      {description}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <CreatorTimeline />
 
           <div className="mt-8">
             <Link href="/projects/create">
