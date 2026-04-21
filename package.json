@@ -7,10 +7,12 @@
   },
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/check-db-types-aliases.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "vitest run"
+    "test": "vitest run",
+    "check:db-types": "node scripts/check-db-types-aliases.mjs"
   },
   "dependencies": {
     "@next/third-parties": "^16.2.4",
