@@ -1,11 +1,16 @@
 import { NextResponse } from "next/server";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
+import { maybeSweep, rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 const MAX_SIZE_MB = 5;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const BUCKET = "project-images";
 
 export async function POST(request: Request) {
+  maybeSweep();
+  const rl = rateLimit(request, "upload", { windowMs: 60_000, max: 20 });
+  if (!rl.ok) return rateLimitResponse(rl);
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

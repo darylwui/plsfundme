@@ -117,7 +117,7 @@ export function Step4_Review({ draft, rewards, categories, onBack, onSuccess }: 
         title: draft.title,
         slug,
         short_description: draft.short_description,
-        full_description: draft.full_description,
+        full_description: sanitizeRichHtml(draft.full_description ?? ""),
         cover_image_url: draft.cover_image_url,
         video_url: draft.video_url,
         funding_goal_sgd: draft.funding_goal_sgd,

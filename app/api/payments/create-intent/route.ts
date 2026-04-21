@@ -2,8 +2,16 @@ import { NextResponse } from "next/server";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { getStripe, toCents, calculateApplicationFee } from "@/lib/stripe/server";
 import { createPledgeSchema } from "@/lib/validations/pledge";
+import { maybeSweep, rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
+  maybeSweep();
+  const rl = rateLimit(request, "payments:create-intent", {
+    windowMs: 60_000,
+    max: 10,
+  });
+  if (!rl.ok) return rateLimitResponse(rl);
+
   const stripe = getStripe();
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();

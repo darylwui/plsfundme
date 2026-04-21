@@ -116,9 +116,11 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                 <span className="block text-[var(--color-brand-crust)] dark:text-[var(--color-brand-golden)]">get that bread.</span>
               </h1>
 
-              <p className="mt-6 text-xl text-[var(--color-ink-muted)] max-w-lg leading-relaxed">
-                Singapore&apos;s crowdfunding platform for entrepreneurs. Launch your campaign, find your backers, bring your idea to life.
-              </p>
+              <h2 className="mt-6 text-xl md:text-[22px] text-[var(--color-ink-muted)] max-w-lg leading-relaxed font-normal">
+                Singapore&apos;s reward-based crowdfunding platform for
+                entrepreneurs. Launch a Kickstarter-style campaign, raise
+                capital from your community, and bring your idea to life.
+              </h2>
 
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link href="/projects/create">

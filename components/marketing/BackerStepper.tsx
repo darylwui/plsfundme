@@ -47,7 +47,14 @@ export function BackerStepper() {
   return (
     <div className="relative">
       {/* Desktop: horizontal connected cards */}
-      <div className="hidden md:grid grid-cols-3 gap-0 relative items-stretch">
+      <div
+        className="hidden md:grid grid-cols-3 gap-0 relative items-stretch"
+        onBlur={(e) => {
+          if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+            setHovered(null);
+          }
+        }}
+      >
         <div className="absolute top-[58px] left-[8%] right-[8%] h-0.5 bg-gradient-to-r from-[var(--color-brand-golden)]/30 via-[var(--color-brand-golden)] to-[var(--color-brand-golden)]/30" />
 
         {STEPS.map(({ Icon, step, title, description }, i) => {
@@ -122,6 +129,7 @@ export function BackerStepper() {
               key={step}
               className="relative"
               onTouchStart={() => setHovered(i)}
+              onTouchEnd={() => setHovered(null)}
               onMouseEnter={() => setHovered(i)}
               onMouseLeave={() => setHovered(null)}
             >

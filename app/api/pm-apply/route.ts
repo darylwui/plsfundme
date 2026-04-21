@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
+import { maybeSweep, rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
+  maybeSweep();
+  const rl = rateLimit(req, "pm-apply", { windowMs: 60_000, max: 5 });
+  if (!rl.ok) return rateLimitResponse(rl);
+
   try {
     const body = await req.json();
     const {

@@ -21,6 +21,26 @@ export async function POST(request: Request) {
 
   const supabase = createServiceClient();
 
+  // Idempotency guard. Stripe retries failed deliveries; without this the
+  // pledge totals would get incremented multiple times for a single payment.
+  // DB types haven't been regenerated for the 016 migration yet, so we cast to
+  // `any` for this one call. The constraint itself (unique event_id PK) is
+  // enforced by Postgres regardless of client-side typing.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error: dedupeError } = await (supabase as any)
+    .from("processed_stripe_events")
+    .insert({ event_id: event.id, event_type: event.type });
+
+  if (dedupeError) {
+    // 23505 = unique_violation → this event was already handled. Ack so
+    // Stripe stops retrying. Any other error: surface 500 so Stripe retries.
+    if ((dedupeError as { code?: string }).code === "23505") {
+      return NextResponse.json({ received: true, duplicate: true });
+    }
+    console.error("Failed to record Stripe event for dedup:", dedupeError);
+    return NextResponse.json({ error: "Storage error" }, { status: 500 });
+  }
+
   switch (event.type) {
     case "setup_intent.succeeded": {
       const si = event.data.object;

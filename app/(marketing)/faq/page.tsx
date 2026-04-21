@@ -7,14 +7,20 @@ export const metadata: Metadata = {
     "Answers to the most common questions from backers and creators on get that bread — Singapore's reward-based crowdfunding platform.",
 };
 
-const BACKER_FAQS: { q: string; a: React.ReactNode }[] = [
+type Faq = { q: string; a: React.ReactNode; plain: string };
+
+const BACKER_FAQS: Faq[] = [
   {
     q: "When am I charged for my pledge?",
     a: "It depends on the payment method. With a credit or debit card, we place a hold on your card and only charge it if the campaign reaches its goal by the deadline. With PayNow, the payment is collected immediately — if the campaign doesn't hit its goal, we refund the full amount to you.",
+    plain:
+      "It depends on the payment method. With a credit or debit card, we place a hold on your card and only charge it if the campaign reaches its goal by the deadline. With PayNow, the payment is collected immediately — if the campaign doesn't hit its goal, we refund the full amount to you.",
   },
   {
     q: "What happens if the campaign doesn't reach its goal?",
     a: "All-or-nothing means no one is on the hook. Card holds are released automatically. PayNow pledges are refunded in full within 5–7 business days. Creators receive nothing.",
+    plain:
+      "All-or-nothing means no one is on the hook. Card holds are released automatically. PayNow pledges are refunded in full within 5–7 business days. Creators receive nothing.",
   },
   {
     q: "What if the creator doesn't deliver their rewards?",
@@ -30,35 +36,64 @@ const BACKER_FAQS: { q: string; a: React.ReactNode }[] = [
         .
       </>
     ),
+    plain:
+      "Creators are legally responsible for fulfilling their promises to backers. We vet every campaign before it goes live, and we step in if a creator goes dark — including pausing payouts and facilitating refunds where possible. If you have a concern about a campaign you've backed, email hello@getthatbread.sg.",
   },
   {
     q: "Can I cancel or change my pledge?",
     a: "Yes, you can change or cancel your pledge at any time before the campaign ends. Once the campaign successfully closes and funds are captured, refunds are at the creator's discretion.",
+    plain:
+      "Yes, you can change or cancel your pledge at any time before the campaign ends. Once the campaign successfully closes and funds are captured, refunds are at the creator's discretion.",
   },
   {
     q: "Is my pledge tax-deductible?",
     a: "No. Pledges on get that bread are not donations — they're pre-purchases of a product or experience in exchange for a reward. They're not tax-deductible in Singapore.",
+    plain:
+      "No. Pledges on get that bread are not donations — they're pre-purchases of a product or experience in exchange for a reward. They're not tax-deductible in Singapore.",
   },
 ];
 
-const CREATOR_FAQS: { q: string; a: React.ReactNode }[] = [
+const CREATOR_FAQS: Faq[] = [
   {
     q: "Who can launch a campaign?",
     a: "Anyone based in Singapore with a valid idea and the ability to fulfill rewards. Creators complete a short verification step before their first campaign goes live, usually within 1–2 business days.",
+    plain:
+      "Anyone based in Singapore with a valid idea and the ability to fulfill rewards. Creators complete a short verification step before their first campaign goes live, usually within 1–2 business days.",
   },
   {
     q: "When do I receive the funds?",
     a: "Once a campaign successfully closes, we hold funds briefly to guard against chargebacks and then release the net amount (total raised minus our 5% platform fee) to your verified Stripe account. Creators typically receive funds within 7–10 business days of a successful close.",
+    plain:
+      "Once a campaign successfully closes, we hold funds briefly to guard against chargebacks and then release the net amount (total raised minus our 5% platform fee) to your verified Stripe account. Creators typically receive funds within 7–10 business days of a successful close.",
   },
   {
     q: "What are the fees for creators?",
     a: "A flat 5% platform fee on the funds raised — only charged if the campaign reaches its goal. Standard payment processing is included. No setup fees, monthly fees, or hidden costs.",
+    plain:
+      "A flat 5% platform fee on the funds raised — only charged if the campaign reaches its goal. Standard payment processing is included. No setup fees, monthly fees, or hidden costs.",
   },
 ];
+
+const FAQ_JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [...BACKER_FAQS, ...CREATOR_FAQS].map(({ q, plain }) => ({
+    "@type": "Question",
+    name: q,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: plain,
+    },
+  })),
+};
 
 export default function FaqPage() {
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSON_LD) }}
+      />
       {/* ── Hero ─────────────────────────────────────────────── */}
       <section className="bg-gradient-to-br from-amber-50 via-[#FFFBF5] to-orange-50 dark:from-[#0f0f0f] dark:via-[#0a0a0a] dark:to-[#111111] border-b border-[var(--color-border)]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24">
@@ -140,7 +175,7 @@ function FaqGroup({
   heading: string;
   accent: "golden" | "crust";
   Icon: React.ComponentType<{ className?: string }>;
-  items: { q: string; a: React.ReactNode }[];
+  items: Faq[];
 }) {
   const accentColor =
     accent === "golden" ? "var(--color-brand-golden)" : "var(--color-brand-crust)";

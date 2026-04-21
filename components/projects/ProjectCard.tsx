@@ -42,12 +42,12 @@ export function ProjectCard({ project }: ProjectCardProps) {
             {/* Category + ending-soon stack — top-left */}
             <div className="absolute top-3 left-3 z-10 flex gap-1.5">
               {project.category && (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/90 text-[var(--color-brand-crust)] backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-0">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/90 text-[var(--color-brand-crust)] backdrop-blur-sm opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-300 delay-0">
                   {project.category.name}
                 </span>
               )}
               {isEndingSoon && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-600 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-600 text-white opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-300 delay-100">
                   <Clock className="w-3 h-3" />
                   Ending soon
                 </span>
