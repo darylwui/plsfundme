@@ -37,6 +37,13 @@ export default withSentryConfig(nextConfig, {
   // Don't spam local dev logs; only show build output in CI.
   silent: !process.env.CI,
 
+  // Required for Turbopack (Next.js 16 default). Source maps upload
+  // via Next's `runAfterProductionCompile` hook instead of the webpack
+  // plugin. Sentry's docs claim this is the Turbopack default, but in
+  // practice (@sentry/nextjs 10.49) the hook doesn't fire unless you
+  // set this explicitly.
+  useRunAfterProductionCompileHook: true,
+
   // Automatically upload source maps in CI and delete them from the
   // client bundle afterwards so they aren't served publicly.
   sourcemaps: {
