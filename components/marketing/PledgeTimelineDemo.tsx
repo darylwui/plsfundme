@@ -18,7 +18,7 @@ type Status = "running" | "success" | "missed";
 
 const GOAL = 100;
 const PLEDGE_STEP = 25;
-const DEMO_SECONDS = 7;
+const DEMO_SECONDS = 30;
 
 export function PledgeTimelineDemo() {
   const [progress, setProgress] = useState(0);
@@ -68,6 +68,24 @@ export function PledgeTimelineDemo() {
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Reset control (shown once outcome is decided) — lifted above the widget so it's reachable without scrolling past the outcome cards */}
+      {status !== "running" && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1">
+          <p className="text-sm text-[var(--color-ink-muted)]">
+            Want to see the {status === "success" ? "missed-goal" : "goal-reached"}{" "}
+            outcome too?
+          </p>
+          <button
+            type="button"
+            onClick={reset}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-[var(--radius-btn)] bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] font-semibold text-sm transition-all hover:brightness-95 dark:hover:brightness-110"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            Run it again
+          </button>
+        </div>
+      )}
+
       {/* Widget */}
       <div className="p-[3px] rounded-[calc(var(--radius-card)+3px)] bg-gradient-to-br from-[var(--color-brand-golden)]/50 to-[var(--color-brand-crust)]/50">
         <div className="rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] p-6 sm:p-8">
@@ -178,23 +196,6 @@ export function PledgeTimelineDemo() {
         </>
       )}
 
-      {/* Reset control (shown once outcome is decided) */}
-      {status !== "running" && (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1">
-          <p className="text-sm text-[var(--color-ink-muted)]">
-            Want to see the {status === "success" ? "missed-goal" : "goal-reached"}{" "}
-            outcome too?
-          </p>
-          <button
-            type="button"
-            onClick={reset}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-[var(--radius-btn)] bg-[var(--color-surface-overlay)] border border-[var(--color-border)] text-[var(--color-ink)] font-semibold text-sm transition-all hover:bg-[var(--color-surface)]"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            Run it again
-          </button>
-        </div>
-      )}
     </div>
   );
 }

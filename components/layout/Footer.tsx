@@ -3,11 +3,12 @@ import Link from "next/link";
 const LINKS = {
   Discover: [
     { href: "/explore", label: "Explore projects" },
-    { href: "/how-it-works", label: "How it works" },
+    { href: "/how-it-works", label: "For backers" },
     { href: "/backer-protection", label: "Backer protection" },
     { href: "/faq", label: "FAQ" },
   ],
   Create: [
+    { href: "/for-creators", label: "For creators" },
     { href: "/projects/create", label: "Start a project" },
     { href: "/dashboard", label: "Creator dashboard" },
   ],
