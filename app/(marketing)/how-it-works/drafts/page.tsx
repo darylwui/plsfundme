@@ -8,7 +8,7 @@ import {
   Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { BackerStepper } from "@/components/marketing/BackerStepper";
+import { BackerStepperDraft } from "@/components/marketing/BackerStepperDraft";
 import { PledgeTimelineDemo } from "@/components/marketing/PledgeTimelineDemo";
 import { CreatorTimelineScrub } from "@/components/marketing/CreatorTimelineScrub";
 import { ScrollReveal } from "@/components/marketing/ScrollReveal";
@@ -143,7 +143,7 @@ export default function HowItWorksDraftsPage() {
               </div>
             </div>
 
-            <BackerStepper />
+            <BackerStepperDraft />
 
             <div className="mt-8">
               <Link href="/explore">

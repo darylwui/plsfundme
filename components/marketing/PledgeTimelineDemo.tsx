@@ -18,7 +18,7 @@ type Status = "running" | "success" | "missed";
 
 const GOAL = 100;
 const PLEDGE_STEP = 25;
-const DEMO_SECONDS = 12;
+const DEMO_SECONDS = 7;
 
 export function PledgeTimelineDemo() {
   const [progress, setProgress] = useState(0);
@@ -158,9 +158,25 @@ export function PledgeTimelineDemo() {
         </div>
       </div>
 
-      {/* Outcome card */}
+      {/* Outcome card(s) */}
       {status === "success" && <SuccessCard />}
-      {status === "missed" && <MissCard />}
+      {status === "missed" && (
+        <>
+          <MissCard />
+          <div className="relative">
+            <div className="flex items-center gap-3 mb-3 px-1">
+              <div className="h-px flex-1 bg-[var(--color-border)]" />
+              <span className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-[var(--color-ink-subtle)]">
+                What would have happened if it hit
+              </span>
+              <div className="h-px flex-1 bg-[var(--color-border)]" />
+            </div>
+            <div className="opacity-55 grayscale-[30%] pointer-events-none select-none">
+              <SuccessCard />
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Reset control (shown once outcome is decided) */}
       {status !== "running" && (
