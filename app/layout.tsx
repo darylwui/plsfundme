@@ -46,6 +46,9 @@ export const metadata: Metadata = {
     title: "get that bread",
     description: "Singapore's crowdfunding platform for entrepreneurs.",
   },
+  verification: {
+    google: "rHunRAvO6MkAeJ5OnqB4mTd-MekqNbWpNWQjaSa-DYQ",
+  },
 };
 
 export default function RootLayout({
