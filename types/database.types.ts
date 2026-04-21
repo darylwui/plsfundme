@@ -6,19 +6,6 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-// ── Hand-maintained named aliases for the generated enums.
-// Keep these in sync with the `Enums` block of `Database` below whenever
-// you regenerate via `supabase gen types`.
-export type UserRole = Database["public"]["Enums"]["user_role"]
-export type PmStatus = Database["public"]["Enums"]["pm_status"]
-export type ProjectStatus = Database["public"]["Enums"]["project_status"]
-export type PledgeStatus = Database["public"]["Enums"]["pledge_status"]
-export type PaymentMethodType = Database["public"]["Enums"]["payment_method_type"]
-export type FulfillmentStatus = Database["public"]["Enums"]["fulfillment_status"]
-export type KycStatus = Database["public"]["Enums"]["kyc_status"]
-export type PayoutMode = Database["public"]["Enums"]["payout_mode"]
-export type PayoutStatus = Database["public"]["Enums"]["payout_status"]
-
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
@@ -89,6 +76,50 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      creator_verifications: {
+        Row: {
+          created_at: string
+          method: string
+          nationality: string | null
+          profile_id: string
+          residency: string | null
+          uinfin_hash: string
+          verified_at: string
+          verified_dob: string | null
+          verified_name: string
+        }
+        Insert: {
+          created_at?: string
+          method: string
+          nationality?: string | null
+          profile_id: string
+          residency?: string | null
+          uinfin_hash: string
+          verified_at?: string
+          verified_dob?: string | null
+          verified_name: string
+        }
+        Update: {
+          created_at?: string
+          method?: string
+          nationality?: string | null
+          profile_id?: string
+          residency?: string | null
+          uinfin_hash?: string
+          verified_at?: string
+          verified_dob?: string | null
+          verified_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_verifications_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       payouts: {
         Row: {
@@ -237,6 +268,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      processed_stripe_events: {
+        Row: {
+          event_id: string
+          event_type: string
+          processed_at: string
+        }
+        Insert: {
+          event_id: string
+          event_type: string
+          processed_at?: string
+        }
+        Update: {
+          event_id?: string
+          event_type?: string
+          processed_at?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
