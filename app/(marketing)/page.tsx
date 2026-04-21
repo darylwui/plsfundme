@@ -102,12 +102,12 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     <div>
       {/* ── Hero ─────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-gradient-to-br from-amber-50 via-[#FFFBF5] to-orange-50 dark:from-[#0f0f0f] dark:via-[#0a0a0a] dark:to-[#111111]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-14">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
             {/* Left — headline + CTAs */}
             <div className="max-w-xl">
-              <div className="inline-flex items-center px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] text-xs uppercase tracking-[0.12em] font-medium mb-6">
+              <div className="inline-flex items-center px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] text-xs uppercase tracking-[0.12em] font-medium mb-4 md:mb-6">
                 Made for Singapore entrepreneurs
               </div>
 
@@ -116,13 +116,13 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                 <span className="block text-[var(--color-brand-crust)] dark:text-[var(--color-brand-golden)]">get that bread.</span>
               </h1>
 
-              <h2 className="mt-6 text-xl md:text-[22px] text-[var(--color-ink-muted)] max-w-lg leading-relaxed font-normal">
+              <h2 className="mt-4 md:mt-6 text-xl md:text-[22px] text-[var(--color-ink-muted)] max-w-lg leading-relaxed font-normal">
                 Singapore&apos;s reward-based crowdfunding platform for
                 entrepreneurs. Launch a Kickstarter-style campaign, raise
                 capital from your community, and bring your idea to life.
               </h2>
 
-              <div className="mt-8 flex flex-wrap gap-3">
+              <div className="mt-6 md:mt-8 flex flex-wrap gap-3">
                 <Link href="/projects/create">
                   <Button size="lg" variant="inverse">
                     Start for free
@@ -141,8 +141,8 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
             {/* Right — platform stats card (shown once platform has live data) */}
             {showLiveStats ? (
-              <div className="hidden lg:flex justify-end">
-                <div className="w-full max-w-sm">
+              <div className="flex lg:justify-end">
+                <div className="w-full lg:max-w-sm">
                   {/* Outer bezel */}
                   <div className="p-[3px] rounded-[calc(var(--radius-card)+4px)] bg-[var(--color-surface-overlay)] ring-1 ring-[var(--color-border)] shadow-[var(--shadow-card-hover)]">
                     <div className="rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.7)] overflow-hidden">
@@ -202,8 +202,8 @@ export default async function HomePage({ searchParams }: HomePageProps) {
               </div>
             ) : (
               // Pre-launch placeholder — aspirational, not empty.
-              <div className="hidden lg:flex justify-end">
-                <div className="w-full max-w-sm">
+              <div className="flex lg:justify-end">
+                <div className="w-full lg:max-w-sm">
                   <div className="p-[3px] rounded-[calc(var(--radius-card)+4px)] bg-[var(--color-surface-overlay)] ring-1 ring-[var(--color-border)] shadow-[var(--shadow-card-hover)]">
                     <div className="rounded-[var(--radius-card)] bg-[var(--color-surface)] overflow-hidden">
                       <div className="px-6 pt-6 pb-4 border-b border-[var(--color-border)]">
@@ -272,7 +272,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       {/* ── Discovery section ────────────────────────────────── */}
       <ScrollReveal>
         <section className="bg-[var(--color-surface-raised)] border-t border-[var(--color-border)]">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 md:pt-10 pb-14">
             {/* Filter tabs */}
             <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
               <div className="flex gap-1 p-1 bg-[var(--color-surface-overlay)] rounded-[var(--radius-btn)] border border-[var(--color-border)]">
