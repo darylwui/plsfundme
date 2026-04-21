@@ -12,6 +12,7 @@ import { BackerStepper } from "@/components/marketing/BackerStepper";
 import { PledgeTimelineDemo } from "@/components/marketing/PledgeTimelineDemo";
 import { CreatorTimelineScrub } from "@/components/marketing/CreatorTimelineScrub";
 import { ScrollReveal } from "@/components/marketing/ScrollReveal";
+import { ScrollDownCue } from "@/components/marketing/ScrollDownCue";
 
 export const metadata = {
   title: "How it works",
@@ -49,6 +50,7 @@ export default function HowItWorksPage() {
             All-or-nothing crowdfunding for Singapore entrepreneurs. Simple,
             safe, and transparent.
           </p>
+          <ScrollDownCue />
         </div>
       </section>
 
