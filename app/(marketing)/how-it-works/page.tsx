@@ -107,9 +107,7 @@ export default function HowItWorksPage() {
               <Link href="/projects/create">
                 <Button size="lg">
                   Start your campaign
-                  <span className="w-7 h-7 rounded-full bg-[var(--color-brand-crust)]/10 flex items-center justify-center shrink-0">
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </span>
+                  <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
             </div>
@@ -141,9 +139,7 @@ export default function HowItWorksPage() {
               <Link href="/explore">
                 <Button variant="secondary" size="lg">
                   Explore projects
-                  <span className="w-7 h-7 rounded-full bg-[var(--color-brand-crust)]/10 flex items-center justify-center shrink-0">
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </span>
+                  <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
             </div>
@@ -219,9 +215,7 @@ export default function HowItWorksPage() {
               <Link href="/projects/create">
                 <Button size="lg" variant="inverse">
                   Start a project
-                  <span className="w-7 h-7 rounded-full bg-black/10 flex items-center justify-center shrink-0">
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </span>
+                  <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
               <Link href="/explore">
