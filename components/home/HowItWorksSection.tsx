@@ -152,7 +152,7 @@ function StepCard({
       onMouseEnter={onHover}
       onFocus={onHover}
       tabIndex={0}
-      className={`relative flex flex-col gap-7 md:gap-8 p-6 md:p-7 rounded-[var(--radius-card)] transition-all duration-300 outline-none ${
+      className={`relative flex flex-col items-center text-center gap-7 md:gap-8 p-6 md:p-7 rounded-[var(--radius-card)] transition-all duration-300 outline-none ${
         active
           ? "-translate-y-1 bg-[var(--color-surface)] shadow-[var(--shadow-card-hover)] ring-2 ring-[var(--color-brand-golden)]/40"
           : "bg-transparent ring-1 ring-transparent"
@@ -172,7 +172,7 @@ function StepCard({
       </div>
 
       {/* Content */}
-      <div>
+      <div className="max-w-sm">
         <span className="block font-mono text-xs md:text-[13px] font-bold text-[var(--color-ink-subtle)] uppercase tracking-[0.2em] tabular-nums mb-2">
           Step {String(display).padStart(2, "0")}
         </span>
@@ -203,9 +203,9 @@ function ConnectingPath() {
       className="hidden lg:block absolute left-0 right-0 top-[8px] w-full h-[80px] pointer-events-none z-0"
     >
       <motion.line
-        x1="90"
+        x1="160"
         y1="40"
-        x2="910"
+        x2="840"
         y2="40"
         stroke="var(--color-brand-golden)"
         strokeWidth="2"
@@ -216,24 +216,7 @@ function ConnectingPath() {
         viewport={{ once: true, amount: 0.4 }}
         transition={{ duration: 1.2, delay: 0.3, ease: [0.21, 0.62, 0.35, 1] }}
       />
-      {/* Waypoint dots that pop after the path draws */}
-      {[90, 500, 910].map((cx, i) => (
-        <motion.circle
-          key={cx}
-          cx={cx}
-          cy={40}
-          r={5}
-          fill="var(--color-brand-golden)"
-          initial={{ scale: 0, opacity: 0 }}
-          whileInView={{ scale: 1, opacity: 1 }}
-          viewport={{ once: true, amount: 0.4 }}
-          transition={{
-            duration: 0.35,
-            delay: 0.5 + i * 0.4,
-            ease: "backOut",
-          }}
-        />
-      ))}
+      {/* Waypoint dots removed — the step icons themselves are the nodes on this path */}
     </svg>
   );
 }
