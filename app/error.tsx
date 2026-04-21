@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
+import * as Sentry from "@sentry/nextjs";
 import { Button } from "@/components/ui/button";
 
 const SUPPORT_EMAIL = "hello@getthatbread.sg";
@@ -14,6 +15,9 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
+    // Send to Sentry so prod outages don't rely on the user hitting
+    // "report this issue". Keep console.error for local dev visibility.
+    Sentry.captureException(error);
     if (typeof window !== "undefined") {
       console.error(error);
     }
