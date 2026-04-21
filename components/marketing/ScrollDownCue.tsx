@@ -33,7 +33,7 @@ export function ScrollDownCue({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 8 }}
           transition={{ duration: 0.5, ease: [0.21, 0.62, 0.35, 1] }}
-          className="mt-12 md:mt-16 flex flex-col items-center md:items-start gap-4"
+          className="mt-12 md:mt-16 flex flex-col items-center gap-4"
           aria-hidden="true"
         >
           <motion.span
