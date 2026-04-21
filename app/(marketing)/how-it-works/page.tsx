@@ -5,44 +5,18 @@ import {
   Users,
   DollarSign,
   Shield,
-  Search,
-  CreditCard,
-  Lock,
-  Gift,
   CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CreatorTimeline } from "@/components/marketing/CreatorTimeline";
+import { BackerStepper } from "@/components/marketing/BackerStepper";
+import { AllOrNothingSplit } from "@/components/marketing/AllOrNothingSplit";
 
 export const metadata = {
   title: "How it works",
   description:
     "All-or-nothing crowdfunding for Singapore entrepreneurs. Simple, safe, and transparent.",
 };
-
-const BACKER_STEPS = [
-  {
-    Icon: Search,
-    step: "01",
-    title: "Discover projects",
-    description:
-      "Browse trending campaigns from Singapore entrepreneurs across all categories.",
-  },
-  {
-    Icon: CreditCard,
-    step: "02",
-    title: "Back with confidence",
-    description:
-      "Pledge via Credit Card (only charged if the campaign reaches its goal) or PayNow (charged instantly; refunded in full if the goal isn't met).",
-  },
-  {
-    Icon: Gift,
-    step: "03",
-    title: "Receive your rewards",
-    description:
-      "Get exclusive rewards from creators as a thank-you for your support.",
-  },
-];
 
 const FEES = [
   { label: "Platform fee", value: "5% of funds raised", highlight: false },
@@ -118,62 +92,27 @@ export default function HowItWorksPage() {
 
       {/* ── All-or-nothing explainer ──────────────────────────── */}
       <section className="border-b border-[var(--color-border)] bg-[var(--color-surface)]">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="p-[3px] rounded-[calc(var(--radius-card)+3px)] bg-[var(--color-surface-overlay)] ring-1 ring-[var(--color-border)]">
-            <div className="rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] p-8 flex gap-5">
-              <div className="w-12 h-12 rounded-[var(--radius-card)] bg-[var(--color-brand-crust)] flex items-center justify-center shrink-0 shadow-[var(--shadow-cta)]">
-                <Shield className="w-5 h-5 text-white" />
-              </div>
-              <div className="w-full">
-                <h2 className="text-xl font-black mb-2 text-[var(--color-ink)]">
-                  All-or-nothing funding
-                </h2>
-                <p className="text-[var(--color-ink-muted)] leading-relaxed text-left">
-                  Backers are only charged if a campaign reaches its full funding goal
-                  by the deadline. If the goal isn&apos;t met, no one pays a cent. This
-                  protects backers and motivates creators to set realistic, achievable goals.
-                </p>
-              </div>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-11 h-11 rounded-[var(--radius-card)] bg-[var(--color-brand-crust)] flex items-center justify-center shadow-[var(--shadow-cta)]">
+              <Shield className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <p className="text-xs uppercase tracking-[0.12em] font-medium text-[var(--color-ink-subtle)]">
+                The safety net
+              </p>
+              <h2 className="text-2xl font-black text-[var(--color-ink)]">
+                All-or-nothing funding
+              </h2>
             </div>
           </div>
+          <p className="text-[var(--color-ink-muted)] leading-relaxed mb-8 max-w-2xl">
+            Backers are only charged if a campaign reaches its full funding goal by the
+            deadline. If the goal isn&apos;t met, no one pays a cent. Here&apos;s exactly
+            what happens in each case:
+          </p>
 
-          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="p-[3px] rounded-[calc(var(--radius-card)+3px)] bg-[var(--color-surface-overlay)] ring-1 ring-[var(--color-border)]">
-              <div className="rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] p-5 h-full flex items-start gap-4">
-                <div className="w-10 h-10 rounded-[var(--radius-btn)] bg-[var(--color-surface-overlay)] border border-[var(--color-border)] flex items-center justify-center shrink-0 mt-0.5">
-                  <CreditCard className="w-4.5 h-4.5 text-[var(--color-brand-golden)]" />
-                </div>
-                <div className="min-w-0">
-                  <h3 className="font-bold mb-1.5 text-[var(--color-ink)]">
-                    PayNow &amp; Credit Card
-                  </h3>
-                  <p className="text-sm text-[var(--color-ink-muted)] leading-relaxed">
-                    Backers can pledge instantly using local PayNow or major credit cards.
-                    Creators benefit from lower checkout friction, so supporters can contribute
-                    quickly without complicated payment steps.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-[3px] rounded-[calc(var(--radius-card)+3px)] bg-[var(--color-surface-overlay)] ring-1 ring-[var(--color-border)]">
-              <div className="rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] p-5 h-full flex items-start gap-4">
-                <div className="w-10 h-10 rounded-[var(--radius-btn)] bg-[var(--color-surface-overlay)] border border-[var(--color-border)] flex items-center justify-center shrink-0 mt-0.5">
-                  <Lock className="w-4.5 h-4.5 text-[var(--color-brand-crust)]" />
-                </div>
-                <div className="min-w-0">
-                  <h3 className="font-bold mb-1.5 text-[var(--color-ink)]">
-                    Secured escrow transactions
-                  </h3>
-                  <p className="text-sm text-[var(--color-ink-muted)] leading-relaxed">
-                    Pledges are held securely until campaign end. If a project meets its goal,
-                    funds are released to the creator. If not, backers are not charged, giving
-                    both sides transparent, low-risk protection.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <AllOrNothingSplit />
         </div>
       </section>
 
@@ -220,31 +159,7 @@ export default function HowItWorksPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {BACKER_STEPS.map(({ Icon, step, title, description }) => (
-              <div
-                key={step}
-                className="p-[3px] rounded-[calc(var(--radius-card)+3px)] bg-[var(--color-surface-overlay)] ring-1 ring-[var(--color-border)]"
-              >
-                <div className="rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] p-6 h-full flex flex-col gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-[var(--radius-btn)] bg-[var(--color-surface-overlay)] border border-[var(--color-border)] flex items-center justify-center shrink-0">
-                      <Icon className="w-4.5 h-4.5 text-[var(--color-brand-golden)]" />
-                    </div>
-                    <span className="font-mono text-xs font-bold text-[var(--color-ink-subtle)] uppercase tracking-[0.12em]">
-                      Step {step}
-                    </span>
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-[var(--color-ink)] mb-1.5">{title}</h3>
-                    <p className="text-sm text-[var(--color-ink-muted)] leading-relaxed max-w-[38ch] mx-auto">
-                      {description}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <BackerStepper />
 
           <div className="mt-8">
             <Link href="/explore">
