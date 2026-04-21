@@ -118,8 +118,8 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
               <h2 className="mt-4 md:mt-6 text-xl md:text-[22px] text-[var(--color-ink-muted)] max-w-lg leading-relaxed font-normal">
                 Singapore&apos;s reward-based crowdfunding platform for
-                entrepreneurs. Launch a Kickstarter-style campaign, raise
-                capital from your community, and bring your idea to life.
+                entrepreneurs. Launch a campaign, raise capital from your
+                community, and bring your idea to life.
               </h2>
 
               <div className="mt-6 md:mt-8 flex flex-wrap gap-3">
