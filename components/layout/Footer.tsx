@@ -5,6 +5,7 @@ const LINKS = {
     { href: "/explore", label: "Explore projects" },
     { href: "/how-it-works", label: "How it works" },
     { href: "/backer-protection", label: "Backer protection" },
+    { href: "/faq", label: "FAQ" },
   ],
   Create: [
     { href: "/projects/create", label: "Start a project" },
