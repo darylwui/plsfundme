@@ -23,11 +23,7 @@ export async function POST(request: Request) {
 
   // Idempotency guard. Stripe retries failed deliveries; without this the
   // pledge totals would get incremented multiple times for a single payment.
-  // DB types haven't been regenerated for the 016 migration yet, so we cast to
-  // `any` for this one call. The constraint itself (unique event_id PK) is
-  // enforced by Postgres regardless of client-side typing.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error: dedupeError } = await (supabase as any)
+  const { error: dedupeError } = await supabase
     .from("processed_stripe_events")
     .insert({ event_id: event.id, event_type: event.type });
 
