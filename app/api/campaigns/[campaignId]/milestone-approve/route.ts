@@ -19,7 +19,26 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // TODO: Check if user is admin (add role-based access control)
+    // Verify user has admin privileges
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('is_admin')
+      .eq('id', user.id)
+      .single();
+
+    if (profileError) {
+      return NextResponse.json(
+        { error: 'Failed to verify admin status' },
+        { status: 500 }
+      );
+    }
+
+    if (!profile?.is_admin) {
+      return NextResponse.json(
+        { error: 'Only admins can approve milestones' },
+        { status: 403 }
+      );
+    }
 
     // Parse request
     const { submission_id, decision, feedback_text } = await req.json();
