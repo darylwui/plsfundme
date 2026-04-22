@@ -55,6 +55,13 @@ export async function releaseMilestonePayment(
     };
   }
 
+  if (!data || data.length === 0) {
+    return {
+      success: false,
+      error: 'Failed to insert escrow release',
+    };
+  }
+
   return {
     success: true,
     amount_released: amount_sgd,
@@ -90,6 +97,13 @@ export async function holdPaymentInEscrow(pledge_id: string): Promise<HoldPaymen
     };
   }
 
+  if (!data || data.length === 0) {
+    return {
+      success: false,
+      error: 'Failed to update pledge',
+    };
+  }
+
   return {
     success: true,
     held: true,
@@ -117,6 +131,13 @@ export async function refundPledgeFromEscrow(pledge_id: string, reason: string):
     return {
       success: false,
       error: error.message,
+    };
+  }
+
+  if (!data || data.length === 0) {
+    return {
+      success: false,
+      error: 'Failed to refund pledge',
     };
   }
 

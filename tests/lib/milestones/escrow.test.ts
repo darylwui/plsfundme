@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { releaseMilestonePayment, holdPaymentInEscrow } from '@/lib/milestones/escrow';
+import { releaseMilestonePayment, holdPaymentInEscrow, refundPledgeFromEscrow } from '@/lib/milestones/escrow';
 import { createClient } from '@/lib/supabase/server';
 
 // Mock Supabase
@@ -98,6 +98,47 @@ describe('Escrow Logic', () => {
       expect(result.success).toBe(false);
       expect(result.error).toBeDefined();
     });
+
+    it('should throw error for invalid milestone number', async () => {
+      const mockSupabase = {
+        from: vi.fn().mockReturnValue({
+          insert: vi.fn().mockReturnValue({
+            select: vi.fn().mockResolvedValue({ data: [{ id: 'release-1' }], error: null }),
+          }),
+        }),
+      };
+
+      vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
+
+      await expect(
+        releaseMilestonePayment({
+          campaign_id: 'campaign-1',
+          milestone_number: 999 as any,
+          campaign_total_sgd: 50000,
+        })
+      ).rejects.toThrow('Invalid milestone number');
+    });
+
+    it('should handle rounding correctly (SGD 33333 → 40% = SGD 13333.20)', async () => {
+      const mockSupabase = {
+        from: vi.fn().mockReturnValue({
+          insert: vi.fn().mockReturnValue({
+            select: vi.fn().mockResolvedValue({ data: [{ id: 'release-1' }], error: null }),
+          }),
+        }),
+      };
+
+      vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
+
+      const result = await releaseMilestonePayment({
+        campaign_id: 'campaign-1',
+        milestone_number: 1,
+        campaign_total_sgd: 33333,
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.amount_released).toBe(13333.2); // 40% of 33333
+    });
   });
 
   describe('holdPaymentInEscrow', () => {
@@ -118,6 +159,74 @@ describe('Escrow Logic', () => {
 
       expect(result.success).toBe(true);
       expect(result.held).toBe(true);
+    });
+
+    it('should return error if update fails', async () => {
+      const mockSupabase = {
+        from: vi.fn().mockReturnValue({
+          update: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              select: vi.fn().mockResolvedValue({
+                data: null,
+                error: { message: 'Database error' },
+              }),
+            }),
+          }),
+        }),
+      };
+
+      vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
+
+      const result = await holdPaymentInEscrow('pledge-1');
+
+      expect(result.success).toBe(false);
+      expect(result.error).toBeDefined();
+    });
+  });
+
+  describe('refundPledgeFromEscrow', () => {
+    it('should mark a pledge as refunded', async () => {
+      const mockSupabase = {
+        from: vi.fn().mockReturnValue({
+          update: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              select: vi.fn().mockResolvedValue({
+                data: [{ id: 'pledge-1', refunded: true, escrow_held: false }],
+                error: null,
+              }),
+            }),
+          }),
+        }),
+      };
+
+      vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
+
+      const result = await refundPledgeFromEscrow('pledge-1', 'milestone_missed');
+
+      expect(result.success).toBe(true);
+      expect(result.held).toBe(false);
+    });
+
+    it('should return error if refund fails', async () => {
+      const mockSupabase = {
+        from: vi.fn().mockReturnValue({
+          update: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              select: vi.fn().mockResolvedValue({
+                data: null,
+                error: { message: 'Refund failed' },
+              }),
+            }),
+          }),
+        }),
+      };
+
+      vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
+
+      const result = await refundPledgeFromEscrow('pledge-1', 'milestone_missed');
+
+      expect(result.success).toBe(false);
+      expect(result.error).toBeDefined();
     });
   });
 });
