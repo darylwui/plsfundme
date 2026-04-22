@@ -10,7 +10,7 @@ export type Json =
 // Keep these in sync with the `Enums` block of `Database` below whenever
 // you regenerate via `supabase gen types`.
 export type UserRole = Database["public"]["Enums"]["user_role"]
-export type PmStatus = Database["public"]["Enums"]["pm_status"]
+export type CreatorStatus = Database["public"]["Enums"]["creator_status"]
 export type ProjectStatus = Database["public"]["Enums"]["project_status"]
 export type PledgeStatus = Database["public"]["Enums"]["pledge_status"]
 export type PaymentMethodType = Database["public"]["Enums"]["payment_method_type"]
