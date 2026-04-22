@@ -30,17 +30,21 @@ Each phase is independently commit-and-merge-able.
 - `lib/singpass/config.ts` — reads `SINGPASS_ENV` and returns endpoints + credentials for the chosen environment.
 - `lib/singpass/errors.ts` — typed error subclasses: `UnderageError`, `ForeignerError`, `DuplicateUinfinError`, `StateMismatchError`, `SingpassUnavailableError`, `CryptoError`, `AlreadyVerifiedError`.
 - `lib/singpass/consent.ts` — list of Myinfo fields we request + human-readable labels (used in UI + linkup docs).
-- `lib/singpass/state-cookie.ts` — encodes/decodes the httpOnly state cookie (state + nonce + PKCE verifier).
+- `lib/singpass/state-cookie.ts` — encodes/decodes the httpOnly state cookie (state + nonce + PKCE verifier) used across the Singpass round-trip.
+- `lib/singpass/pending-cookie.ts` — encodes/decodes a **second** httpOnly cookie (`__Host-singpass-pending`, 5-min TTL) that carries the retrieved Myinfo payload from the callback route to the user-confirmation step. Keeps the Myinfo payload out of server-side session storage.
 - `lib/singpass/client.ts` — thin wrapper around the GovTech helper library; in Phase 1 exports stubs that the tests control.
-- `lib/singpass/persist.ts` — transactional writer: Myinfo response → `creator_verifications` + `project_manager_profiles.singpass_verified` + `profiles.kyc_status`.
+- `lib/singpass/persist.ts` — transactional writer: Myinfo response → `creator_verifications` + `project_manager_profiles.singpass_verified` + `profiles.kyc_status`. Called from the confirm route, not the callback route.
 - `lib/singpass/hash.ts` — `sha256Uinfin(raw)` helper (plus a `redactUinfin` helper used by the Sentry scrubber).
 - `lib/singpass/__tests__/*.test.ts` — unit tests colocated with the module.
 
 **App Router routes (server-only, `runtime = "nodejs"`)**
 - `app/kyc/singpass/start/page.tsx` — server component: consent screen.
 - `app/kyc/singpass/start/StartButton.tsx` — client component: form that POSTs to `/api/auth/singpass/start`.
+- `app/kyc/singpass/confirm/page.tsx` — server component: displays retrieved Myinfo data read-only (GovTech requirement). Reads the pending cookie, renders the data, and shows "Confirm and continue" + "Something's wrong" actions.
+- `app/kyc/singpass/confirm/ConfirmForm.tsx` — client component: the form that POSTs to `/api/auth/singpass/confirm`.
 - `app/api/auth/singpass/start/route.ts` — POST handler: builds auth URL, sets state cookie, 302s to Singpass.
-- `app/api/auth/singpass/callback/route.ts` — GET handler: code exchange → persist → 302.
+- `app/api/auth/singpass/callback/route.ts` — GET handler: code exchange + business-logic gates → **stash payload in pending cookie → 302 to /kyc/singpass/confirm** (no DB writes here).
+- `app/api/auth/singpass/confirm/route.ts` — POST handler: re-reads pending cookie, calls `persistVerification`, clears pending cookie, 302 to `/dashboard?verified=1`.
 - `app/.well-known/jwks.json/route.ts` — GET: publishes our public signing+encryption JWKS.
 - `app/kyc/singpass/error/page.tsx` — fallback error page (generic).
 - `app/kyc/singpass/underage/page.tsx`
@@ -984,6 +988,133 @@ git commit -m "feat(kyc): add encrypted state/nonce/PKCE cookie helper"
 
 ---
 
+### Task 9b: Write the pending-cookie module (Myinfo payload shuttle)
+
+**Context:** GovTech requires retrieved Myinfo data to be displayed to
+the user read-only before any record is written
+([data-display-guidelines](https://docs.developer.singpass.gov.sg/docs/products/singpass-myinfo/data-display-guidelines),
+FAQ: *"All data retrieved from Myinfo have to be displayed on the digital
+form for verification by the user, prior to form submission."*) So the
+callback route cannot write to the DB directly — it must stash the
+payload somewhere, redirect to a confirmation page, and only write once
+the user clicks Confirm. We use a second encrypted httpOnly cookie so
+we don't have to stand up server-side session storage. Different cookie
+name + different TTL (5 minutes) from the state cookie to keep crypto
+contexts cleanly separated.
+
+**Files:**
+- Create: `lib/singpass/pending-cookie.ts`
+- Test: `lib/singpass/__tests__/pending-cookie.test.ts`
+
+- [ ] **Step 1: Write the failing test**
+
+```ts
+// lib/singpass/__tests__/pending-cookie.test.ts
+import { describe, expect, it } from "vitest";
+import {
+  PENDING_COOKIE_NAME,
+  PENDING_COOKIE_MAX_AGE_SECONDS,
+  encodePendingCookie,
+  decodePendingCookie,
+} from "../pending-cookie";
+import type { MyinfoPayload } from "../client";
+
+const SECRET = "a".repeat(64);
+
+const okPayload: MyinfoPayload = {
+  uinfin: "S1234567D",
+  name: "JANE TAN",
+  dob: "1990-01-01",
+  nationality: "Singaporean",
+  residentialstatus: "Citizen",
+};
+
+describe("pending cookie", () => {
+  it("round-trips a Myinfo payload", async () => {
+    const encoded = await encodePendingCookie(okPayload, SECRET);
+    const decoded = await decodePendingCookie(encoded, SECRET);
+    expect(decoded).toEqual(okPayload);
+  });
+
+  it("rejects a tampered cookie", async () => {
+    const encoded = await encodePendingCookie(okPayload, SECRET);
+    const tampered = encoded.slice(0, -4) + "zzzz";
+    await expect(decodePendingCookie(tampered, SECRET)).rejects.toThrow();
+  });
+
+  it("rejects when secret differs", async () => {
+    const encoded = await encodePendingCookie(okPayload, SECRET);
+    await expect(decodePendingCookie(encoded, "b".repeat(64))).rejects.toThrow();
+  });
+
+  it("uses the __Host- prefix and 5-minute TTL", () => {
+    expect(PENDING_COOKIE_NAME).toBe("__Host-singpass-pending");
+    expect(PENDING_COOKIE_MAX_AGE_SECONDS).toBe(300);
+  });
+});
+```
+
+- [ ] **Step 2: Run test to verify it fails**
+
+Run: `npx vitest run lib/singpass/__tests__/pending-cookie.test.ts`
+Expected: FAIL.
+
+- [ ] **Step 3: Write the implementation**
+
+```ts
+// lib/singpass/pending-cookie.ts
+import { createHash } from "node:crypto";
+import { EncryptJWT, jwtDecrypt } from "jose";
+import type { MyinfoPayload } from "./client";
+
+export const PENDING_COOKIE_NAME = "__Host-singpass-pending";
+export const PENDING_COOKIE_MAX_AGE_SECONDS = 300; // 5 minutes
+
+function keyFromSecret(secret: string): Uint8Array {
+  return createHash("sha256").update(secret).digest();
+}
+
+export async function encodePendingCookie(
+  payload: MyinfoPayload,
+  secret: string
+): Promise<string> {
+  const key = keyFromSecret(secret);
+  return await new EncryptJWT(payload as unknown as Record<string, unknown>)
+    .setProtectedHeader({ alg: "dir", enc: "A256GCM" })
+    .setIssuedAt()
+    .setExpirationTime(`${PENDING_COOKIE_MAX_AGE_SECONDS}s`)
+    .encrypt(key);
+}
+
+export async function decodePendingCookie(
+  jwe: string,
+  secret: string
+): Promise<MyinfoPayload> {
+  const key = keyFromSecret(secret);
+  const { payload } = await jwtDecrypt(jwe, key);
+  const { uinfin, name, dob, nationality, residentialstatus } =
+    payload as unknown as MyinfoPayload;
+  if (!uinfin || !name) {
+    throw new Error("Invalid pending cookie payload.");
+  }
+  return { uinfin, name, dob, nationality, residentialstatus };
+}
+```
+
+- [ ] **Step 4: Run test to verify it passes**
+
+Run: `npx vitest run lib/singpass/__tests__/pending-cookie.test.ts`
+Expected: all 4 tests PASS.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add lib/singpass/pending-cookie.ts lib/singpass/__tests__/pending-cookie.test.ts
+git commit -m "feat(kyc): add encrypted pending cookie for Myinfo payload shuttle"
+```
+
+---
+
 ### Task 10: Write the client wrapper with stubbable interface
 
 **Files:**
@@ -1779,6 +1910,14 @@ This task is large on purpose — all six UI pieces change together and depend o
 
 #### Sub-commit 1 — Callback route (with tests)
 
+**Flow change vs. first-draft design:** Callback does NOT write to the
+DB. It runs the age + residency gates, then stashes the Myinfo payload
+in the `__Host-singpass-pending` cookie (5-min TTL, encrypted) and 302s
+to `/kyc/singpass/confirm`. The confirm route (Sub-commit 1b) is what
+calls `persistVerification` — only after the user has seen the
+retrieved data and clicked Confirm. This is a GovTech requirement
+([data-display-guidelines](https://docs.developer.singpass.gov.sg/docs/products/singpass-myinfo/data-display-guidelines)).
+
 - [ ] **Step 1: Write the failing callback test**
 
 ```ts
@@ -1786,23 +1925,20 @@ This task is large on purpose — all six UI pieces change together and depend o
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { MyinfoPayload } from "@/lib/singpass/client";
 
-// Mock supabase user + persist.
-const mockRpc = vi.fn();
+// Mock supabase user (callback only reads user, never writes).
 vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn(async () => ({
     auth: { getUser: vi.fn(async () => ({ data: { user: { id: "profile-1" } }, error: null })) },
-    rpc: mockRpc,
-    from: () => ({
-      select: () => ({
-        eq: () => ({ maybeSingle: async () => ({ data: null }) }),
-      }),
-    }),
   })),
 }));
 
 // We'll inject a stub Singpass client for each test.
 import { setSingpassClientForTests } from "@/lib/singpass/client";
 import { encodeStateCookie } from "@/lib/singpass/state-cookie";
+import {
+  PENDING_COOKIE_NAME,
+  decodePendingCookie,
+} from "@/lib/singpass/pending-cookie";
 
 const okPayload: MyinfoPayload = {
   uinfin: "S1234567D",
@@ -1820,6 +1956,18 @@ async function makeCookieHeader() {
   return `__Host-singpass-state=${cookie}`;
 }
 
+function extractSetCookie(res: Response, name: string): string | null {
+  // Response.headers.getSetCookie is Node 20+. Falls back to split on legacy runtimes.
+  const headers =
+    (res.headers as unknown as { getSetCookie?: () => string[] }).getSetCookie?.() ??
+    (res.headers.get("set-cookie")?.split(/,(?=\s*[^ ;]+=)/) ?? []);
+  for (const h of headers) {
+    const m = h.match(new RegExp(`^${name}=([^;]+)`));
+    if (m) return m[1];
+  }
+  return null;
+}
+
 beforeEach(() => {
   for (const k of Object.keys(process.env)) if (k.startsWith("SINGPASS_")) delete process.env[k];
   process.env.APP_SECRET = "x".repeat(64);
@@ -1830,14 +1978,11 @@ beforeEach(() => {
   process.env.SINGPASS_ENCRYPTION_KID = "enc-1";
   process.env.SINGPASS_SIGNING_PRIVATE_JWK = JSON.stringify({ kty: "EC", crv: "P-256", kid: "sig-1" });
   process.env.SINGPASS_ENCRYPTION_PRIVATE_JWK = JSON.stringify({ kty: "EC", crv: "P-256", kid: "enc-1" });
-
-  mockRpc.mockReset();
-  mockRpc.mockResolvedValue({ error: null });
 });
 afterEach(() => setSingpassClientForTests(null));
 
 describe("GET /api/auth/singpass/callback", () => {
-  it("redirects to /dashboard?verified=1 on the happy path", async () => {
+  it("redirects to /kyc/singpass/confirm and stashes payload in pending cookie on the happy path", async () => {
     setSingpassClientForTests({
       exchangeCode: vi.fn(async () => ({ idToken: "idt", accessToken: "at" })),
       fetchUserInfo: vi.fn(async () => okPayload),
@@ -1846,14 +1991,16 @@ describe("GET /api/auth/singpass/callback", () => {
     const url = "http://localhost/api/auth/singpass/callback?state=S&code=abc";
     const res = await GET(new Request(url, { headers: { cookie: await makeCookieHeader() } }));
     expect(res.status).toBe(302);
-    expect(res.headers.get("location")).toContain("/dashboard?verified=1");
-    expect(mockRpc).toHaveBeenCalledWith(
-      "persist_creator_verification",
-      expect.objectContaining({ p_verified_name: "JANE TAN" })
-    );
+    expect(res.headers.get("location")).toContain("/kyc/singpass/confirm");
+
+    // The pending cookie must carry the Myinfo payload, encrypted.
+    const pendingJwe = extractSetCookie(res, PENDING_COOKIE_NAME);
+    expect(pendingJwe).toBeTruthy();
+    const decoded = await decodePendingCookie(pendingJwe!, "x".repeat(64));
+    expect(decoded).toEqual(okPayload);
   });
 
-  it("redirects to /kyc/singpass/underage when DOB < 18y ago", async () => {
+  it("redirects to /kyc/singpass/underage when DOB < 18y ago (no pending cookie set)", async () => {
     setSingpassClientForTests({
       exchangeCode: vi.fn(async () => ({ idToken: "idt", accessToken: "at" })),
       fetchUserInfo: vi.fn(async () => ({ ...okPayload, dob: "2015-01-01" })),
@@ -1863,9 +2010,10 @@ describe("GET /api/auth/singpass/callback", () => {
     const res = await GET(new Request(url, { headers: { cookie: await makeCookieHeader() } }));
     expect(res.status).toBe(302);
     expect(res.headers.get("location")).toContain("/kyc/singpass/underage");
+    expect(extractSetCookie(res, PENDING_COOKIE_NAME)).toBeNull();
   });
 
-  it("redirects to /kyc/singpass/foreigner when residency is 'Foreigner'", async () => {
+  it("redirects to /kyc/singpass/foreigner when residency is 'Foreigner' (no pending cookie set)", async () => {
     setSingpassClientForTests({
       exchangeCode: vi.fn(async () => ({ idToken: "idt", accessToken: "at" })),
       fetchUserInfo: vi.fn(async () => ({ ...okPayload, residentialstatus: "Foreigner" })),
@@ -1875,22 +2023,10 @@ describe("GET /api/auth/singpass/callback", () => {
     const res = await GET(new Request(url, { headers: { cookie: await makeCookieHeader() } }));
     expect(res.status).toBe(302);
     expect(res.headers.get("location")).toContain("/kyc/singpass/foreigner");
+    expect(extractSetCookie(res, PENDING_COOKIE_NAME)).toBeNull();
   });
 
-  it("redirects to /kyc/singpass/duplicate on DuplicateUinfinError", async () => {
-    setSingpassClientForTests({
-      exchangeCode: vi.fn(async () => ({ idToken: "idt", accessToken: "at" })),
-      fetchUserInfo: vi.fn(async () => okPayload),
-    });
-    mockRpc.mockResolvedValue({ error: { code: "23505", message: "duplicate key" } });
-    const { GET } = await import("../route");
-    const url = "http://localhost/api/auth/singpass/callback?state=S&code=abc";
-    const res = await GET(new Request(url, { headers: { cookie: await makeCookieHeader() } }));
-    expect(res.status).toBe(302);
-    expect(res.headers.get("location")).toContain("/kyc/singpass/duplicate");
-  });
-
-  it("returns 400 when state param doesn't match the cookie", async () => {
+  it("redirects to /kyc/singpass/error?reason=state when state param doesn't match the cookie", async () => {
     setSingpassClientForTests({
       exchangeCode: vi.fn(async () => ({ idToken: "idt", accessToken: "at" })),
       fetchUserInfo: vi.fn(async () => okPayload),
@@ -1912,6 +2048,9 @@ describe("GET /api/auth/singpass/callback", () => {
 });
 ```
 
+**Note on `DuplicateUinfinError`:** that check now lives in the confirm
+route (where the DB write happens), not here. See Sub-commit 1b tests.
+
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run app/api/auth/singpass/callback/__tests__/route.test.ts`
@@ -1927,16 +2066,20 @@ import { createClient } from "@/lib/supabase/server";
 import { getSingpassClient } from "@/lib/singpass/client";
 import { getSingpassConfig } from "@/lib/singpass/config";
 import {
-  DuplicateUinfinError,
   ForeignerError,
   UnderageError,
   isSingpassError,
 } from "@/lib/singpass/errors";
-import { persistVerification } from "@/lib/singpass/persist";
+import { runBusinessGates } from "@/lib/singpass/persist";
 import {
   COOKIE_NAME,
   decodeStateCookie,
 } from "@/lib/singpass/state-cookie";
+import {
+  PENDING_COOKIE_NAME,
+  PENDING_COOKIE_MAX_AGE_SECONDS,
+  encodePendingCookie,
+} from "@/lib/singpass/pending-cookie";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -1947,9 +2090,9 @@ function appSecret(): string {
   return s;
 }
 
+/** Leave this route: always clear the state cookie (it's one-shot). */
 function redirect(url: string, req: Request): NextResponse {
   const res = NextResponse.redirect(new URL(url, req.url), 302);
-  // Always clear the state cookie when we leave this route — it's one-shot.
   res.cookies.set(COOKIE_NAME, "", { httpOnly: true, secure: true, path: "/", maxAge: 0 });
   return res;
 }
@@ -2005,13 +2148,412 @@ export async function GET(req: Request) {
     });
     const payload = await client.fetchUserInfo({ accessToken, config: cfg });
 
-    await persistVerification({ supabase, profileId: user.id, payload });
-    return redirect("/dashboard?verified=1", req);
+    // Business-logic gates run BEFORE the display so we don't show
+    // retrieved data to someone we're about to reject anyway.
+    runBusinessGates(payload); // throws UnderageError / ForeignerError
+
+    // GovTech requirement: retrieved Myinfo data must be displayed to
+    // the user before any record is written. Stash the payload in an
+    // encrypted short-lived cookie; user sees it on /kyc/singpass/confirm
+    // and clicking "Confirm" is what triggers the DB write.
+    const pendingJwe = await encodePendingCookie(payload, appSecret());
+    const res = NextResponse.redirect(new URL("/kyc/singpass/confirm", req.url), 302);
+    res.cookies.set(COOKIE_NAME, "", { httpOnly: true, secure: true, path: "/", maxAge: 0 });
+    res.cookies.set(PENDING_COOKIE_NAME, pendingJwe, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      path: "/",
+      maxAge: PENDING_COOKIE_MAX_AGE_SECONDS,
+    });
+    return res;
   } catch (err: unknown) {
     if (err instanceof UnderageError) return redirect("/kyc/singpass/underage", req);
     if (err instanceof ForeignerError) return redirect("/kyc/singpass/foreigner", req);
+    if (isSingpassError(err)) {
+      Sentry.captureException(err);
+      return redirect(`/kyc/singpass/error?reason=${err.code.toLowerCase()}`, req);
+    }
+    Sentry.captureException(err);
+    return redirect("/kyc/singpass/error?reason=unknown", req);
+  }
+}
+```
+
+> **Persist module reminder:** `persist.ts` now exposes a
+> `runBusinessGates(payload)` helper that throws `UnderageError` /
+> `ForeignerError` **without** touching the DB, plus the existing
+> `persistVerification({ supabase, profileId, payload })` that does the
+> transactional DB write (called from the confirm route, not here).
+> Update `lib/singpass/persist.ts` accordingly if it doesn't already
+> export both — the age + residency checks were previously embedded in
+> `persistVerification`.
+
+- [ ] **Step 4: Run test to verify it passes**
+
+Run: `npx vitest run app/api/auth/singpass/callback/__tests__/route.test.ts`
+Expected: all 5 tests PASS.
+
+- [ ] **Step 5: Commit sub-commit 1**
+
+```bash
+git add app/api/auth/singpass/callback/route.ts app/api/auth/singpass/callback/__tests__/route.test.ts
+git commit -m "feat(kyc): callback stashes Myinfo payload in pending cookie + redirects to /confirm"
+```
+
+#### Sub-commit 1a — Split `runBusinessGates` out of `persistVerification`
+
+The callback route needs to run the age + residency gates *before* the
+confirm step (so we don't show retrieved data to a user we're about to
+reject anyway), but `persistVerification` runs them today as part of the
+same path that writes to the DB. Split the two.
+
+- [ ] **Step 1: Update `lib/singpass/persist.ts`**
+
+Add an exported `runBusinessGates(payload: MyinfoPayload): void` that
+throws `UnderageError` / `ForeignerError`. Have `persistVerification`
+call it first (so the confirm route's persist still enforces the same
+gates — defence in depth if the callback ever forgets).
+
+- [ ] **Step 2: Update `lib/singpass/__tests__/persist.test.ts`**
+
+Add tests for `runBusinessGates` directly (underage throws, foreigner
+throws, citizen + adult passes quietly). The existing `persistVerification`
+tests stay as-is.
+
+- [ ] **Step 3: Run tests**
+
+Run: `npx vitest run lib/singpass/__tests__/persist.test.ts`
+Expected: all tests pass.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add lib/singpass/persist.ts lib/singpass/__tests__/persist.test.ts
+git commit -m "refactor(kyc): expose runBusinessGates() for pre-persist gating"
+```
+
+#### Sub-commit 1b — Confirm page (displays retrieved Myinfo data read-only)
+
+**GovTech requirement:** retrieved Myinfo data must be displayed read-
+only to the user before any record is created. This is what the
+`/kyc/singpass/confirm` server component does.
+
+- [ ] **Step 1: Create `app/kyc/singpass/confirm/page.tsx`**
+
+```tsx
+import { redirect } from "next/navigation";
+import { ShieldCheck } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
+import { decodePendingCookie, PENDING_COOKIE_NAME } from "@/lib/singpass/pending-cookie";
+import { cookies } from "next/headers";
+import { ConfirmForm } from "./ConfirmForm";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+function appSecret(): string {
+  const s = process.env.APP_SECRET;
+  if (!s || s.length < 32) throw new Error("APP_SECRET must be set (>= 32 chars).");
+  return s;
+}
+
+export default async function Page() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login?next=/kyc/singpass/start");
+
+  const cookieStore = await cookies();
+  const jwe = cookieStore.get(PENDING_COOKIE_NAME)?.value;
+  if (!jwe) redirect("/kyc/singpass/error?reason=pending_missing");
+
+  let payload;
+  try {
+    payload = await decodePendingCookie(jwe, appSecret());
+  } catch {
+    redirect("/kyc/singpass/error?reason=pending_invalid");
+  }
+
+  return (
+    <main className="mx-auto max-w-2xl px-4 py-12 flex flex-col gap-6">
+      <div className="flex items-center gap-3">
+        <ShieldCheck className="w-8 h-8 text-[var(--color-brand-crust)]" />
+        <h1 className="text-2xl font-bold text-[var(--color-ink)]">
+          Confirm your details
+        </h1>
+      </div>
+
+      <p className="text-[var(--color-ink-muted)] leading-relaxed">
+        Singpass returned the following information. Please check that it&apos;s
+        correct. Nothing is saved to your Get That Bread account until you click
+        &quot;Confirm&quot;.
+      </p>
+
+      <dl className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 flex flex-col gap-3">
+        <div className="flex justify-between gap-4">
+          <dt className="font-semibold text-[var(--color-ink-muted)]">Legal name</dt>
+          <dd className="text-[var(--color-ink)] font-medium">{payload.name}</dd>
+        </div>
+        <div className="flex justify-between gap-4">
+          <dt className="font-semibold text-[var(--color-ink-muted)]">Date of birth</dt>
+          <dd className="text-[var(--color-ink)] font-medium">{payload.dob ?? "—"}</dd>
+        </div>
+        <div className="flex justify-between gap-4">
+          <dt className="font-semibold text-[var(--color-ink-muted)]">Nationality</dt>
+          <dd className="text-[var(--color-ink)] font-medium">{payload.nationality ?? "—"}</dd>
+        </div>
+        <div className="flex justify-between gap-4">
+          <dt className="font-semibold text-[var(--color-ink-muted)]">Residential status</dt>
+          <dd className="text-[var(--color-ink)] font-medium">{payload.residentialstatus ?? "—"}</dd>
+        </div>
+      </dl>
+
+      <p className="text-xs text-[var(--color-ink-subtle)]">
+        This data is retrieved directly from Singpass and cannot be edited here.
+        If something looks wrong, cancel below and email{" "}
+        <a href="mailto:hello@getthatbread.sg" className="underline">hello@getthatbread.sg</a>.
+      </p>
+
+      <ConfirmForm />
+    </main>
+  );
+}
+```
+
+- [ ] **Step 2: Create `app/kyc/singpass/confirm/ConfirmForm.tsx`**
+
+```tsx
+"use client";
+
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+
+export function ConfirmForm() {
+  return (
+    <div className="flex flex-col gap-3">
+      <form action="/api/auth/singpass/confirm" method="post">
+        <Button type="submit" size="lg">
+          Confirm and continue →
+        </Button>
+      </form>
+      <Link
+        href="/api/auth/singpass/confirm?cancel=1"
+        className="text-sm text-[var(--color-ink-muted)] underline self-start"
+      >
+        Something&apos;s wrong — cancel this verification
+      </Link>
+    </div>
+  );
+}
+```
+
+- [ ] **Step 3: Smoke build**
+
+Run: `npx next build`
+Expected: build succeeds.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add app/kyc/singpass/confirm
+git commit -m "feat(kyc): add /kyc/singpass/confirm page (read-only Myinfo display per GovTech)"
+```
+
+#### Sub-commit 1c — Confirm route (writes the DB when user clicks Confirm)
+
+- [ ] **Step 1: Write the failing confirm-route test**
+
+```ts
+// app/api/auth/singpass/confirm/__tests__/route.test.ts
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { MyinfoPayload } from "@/lib/singpass/client";
+import { encodePendingCookie, PENDING_COOKIE_NAME } from "@/lib/singpass/pending-cookie";
+
+const mockRpc = vi.fn();
+vi.mock("@/lib/supabase/server", () => ({
+  createClient: vi.fn(async () => ({
+    auth: { getUser: vi.fn(async () => ({ data: { user: { id: "profile-1" } }, error: null })) },
+    rpc: mockRpc,
+  })),
+}));
+
+const okPayload: MyinfoPayload = {
+  uinfin: "S1234567D",
+  name: "JANE TAN",
+  dob: "1990-01-01",
+  nationality: "Singaporean",
+  residentialstatus: "Citizen",
+};
+
+async function cookieHeaderWithPayload(payload: MyinfoPayload) {
+  const jwe = await encodePendingCookie(payload, "x".repeat(64));
+  return `${PENDING_COOKIE_NAME}=${jwe}`;
+}
+
+beforeEach(() => {
+  process.env.APP_SECRET = "x".repeat(64);
+  process.env.SINGPASS_ENV = "sandbox";
+  mockRpc.mockReset();
+  mockRpc.mockResolvedValue({ error: null });
+});
+afterEach(() => {
+  delete process.env.SINGPASS_ENV;
+});
+
+describe("POST /api/auth/singpass/confirm", () => {
+  it("writes verification and redirects to /dashboard?verified=1 on success", async () => {
+    const { POST } = await import("../route");
+    const res = await POST(
+      new Request("http://localhost/api/auth/singpass/confirm", {
+        method: "POST",
+        headers: { cookie: await cookieHeaderWithPayload(okPayload) },
+      })
+    );
+    expect(res.status).toBe(302);
+    expect(res.headers.get("location")).toContain("/dashboard?verified=1");
+    expect(mockRpc).toHaveBeenCalledWith(
+      "persist_creator_verification",
+      expect.objectContaining({ p_verified_name: "JANE TAN" })
+    );
+  });
+
+  it("redirects to /kyc/singpass/duplicate on unique-violation", async () => {
+    mockRpc.mockResolvedValue({ error: { code: "23505", message: "duplicate key" } });
+    const { POST } = await import("../route");
+    const res = await POST(
+      new Request("http://localhost/api/auth/singpass/confirm", {
+        method: "POST",
+        headers: { cookie: await cookieHeaderWithPayload(okPayload) },
+      })
+    );
+    expect(res.status).toBe(302);
+    expect(res.headers.get("location")).toContain("/kyc/singpass/duplicate");
+  });
+
+  it("redirects to error page when the pending cookie is missing", async () => {
+    const { POST } = await import("../route");
+    const res = await POST(
+      new Request("http://localhost/api/auth/singpass/confirm", { method: "POST" })
+    );
+    expect(res.status).toBe(302);
+    expect(res.headers.get("location")).toContain("/kyc/singpass/error?reason=pending_missing");
+  });
+
+  it("redirects to error page when the pending cookie is tampered", async () => {
+    const good = await cookieHeaderWithPayload(okPayload);
+    const tampered = good.slice(0, -4) + "zzzz";
+    const { POST } = await import("../route");
+    const res = await POST(
+      new Request("http://localhost/api/auth/singpass/confirm", {
+        method: "POST",
+        headers: { cookie: tampered },
+      })
+    );
+    expect(res.status).toBe(302);
+    expect(res.headers.get("location")).toContain("/kyc/singpass/error?reason=pending_invalid");
+  });
+
+  it("clears the pending cookie and redirects back to /start when user cancels (GET ?cancel=1)", async () => {
+    const { GET } = await import("../route");
+    const res = await GET(
+      new Request("http://localhost/api/auth/singpass/confirm?cancel=1", {
+        headers: { cookie: await cookieHeaderWithPayload(okPayload) },
+      })
+    );
+    expect(res.status).toBe(302);
+    expect(res.headers.get("location")).toContain("/kyc/singpass/start?cancelled_at_confirm=1");
+    // Pending cookie should be cleared (maxAge=0).
+    const setCookies =
+      (res.headers as unknown as { getSetCookie?: () => string[] }).getSetCookie?.() ?? [];
+    const cleared = setCookies.find((h) => h.startsWith(`${PENDING_COOKIE_NAME}=`));
+    expect(cleared).toContain("Max-Age=0");
+  });
+});
+```
+
+- [ ] **Step 2: Run test to verify it fails**
+
+Run: `npx vitest run app/api/auth/singpass/confirm/__tests__/route.test.ts`
+Expected: FAIL.
+
+- [ ] **Step 3: Write the confirm route**
+
+```ts
+// app/api/auth/singpass/confirm/route.ts
+import { NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
+import { createClient } from "@/lib/supabase/server";
+import { DuplicateUinfinError, isSingpassError } from "@/lib/singpass/errors";
+import { persistVerification } from "@/lib/singpass/persist";
+import {
+  PENDING_COOKIE_NAME,
+  decodePendingCookie,
+} from "@/lib/singpass/pending-cookie";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+function appSecret(): string {
+  const s = process.env.APP_SECRET;
+  if (!s || s.length < 32) throw new Error("APP_SECRET must be set (>= 32 chars).");
+  return s;
+}
+
+function clearPending(res: NextResponse): NextResponse {
+  res.cookies.set(PENDING_COOKIE_NAME, "", {
+    httpOnly: true,
+    secure: true,
+    path: "/",
+    maxAge: 0,
+  });
+  return res;
+}
+
+function redirect(url: string, req: Request): NextResponse {
+  return clearPending(NextResponse.redirect(new URL(url, req.url), 302));
+}
+
+function readPending(req: Request): string | null {
+  const cookieHeader = req.headers.get("cookie") ?? "";
+  const m = cookieHeader.match(new RegExp(`${PENDING_COOKIE_NAME}=([^;]+)`));
+  return m ? m[1] : null;
+}
+
+// Cancel path: the "Something's wrong" link is a GET so it works without
+// JS. Clears the pending cookie and bounces to the consent page.
+export async function GET(req: Request) {
+  const url = new URL(req.url);
+  if (url.searchParams.get("cancel") !== "1") {
+    return redirect("/kyc/singpass/error?reason=missing", req);
+  }
+  return redirect("/kyc/singpass/start?cancelled_at_confirm=1", req);
+}
+
+export async function POST(req: Request) {
+  const jwe = readPending(req);
+  if (!jwe) return redirect("/kyc/singpass/error?reason=pending_missing", req);
+
+  let payload;
+  try {
+    payload = await decodePendingCookie(jwe, appSecret());
+  } catch {
+    return redirect("/kyc/singpass/error?reason=pending_invalid", req);
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return redirect("/login?next=/kyc/singpass/start", req);
+
+  try {
+    await persistVerification({ supabase, profileId: user.id, payload });
+    return redirect("/dashboard?verified=1", req);
+  } catch (err: unknown) {
     if (err instanceof DuplicateUinfinError) {
-      Sentry.captureMessage("Duplicate UINFIN attempted", "warning");
+      Sentry.captureMessage("Duplicate UINFIN attempted at confirm", "warning");
       return redirect("/kyc/singpass/duplicate", req);
     }
     if (isSingpassError(err)) {
@@ -2026,14 +2568,29 @@ export async function GET(req: Request) {
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `npx vitest run app/api/auth/singpass/callback/__tests__/route.test.ts`
-Expected: all 6 tests PASS.
+Run: `npx vitest run app/api/auth/singpass/confirm/__tests__/route.test.ts`
+Expected: all 5 tests PASS.
 
-- [ ] **Step 5: Commit sub-commit 1**
+- [ ] **Step 5: Extend `app/kyc/singpass/error/page.tsx` REASONS map**
+
+Add these two keys to the existing REASONS record in the error page
+(see Sub-commit 2 Step 8):
+
+```ts
+pending_missing: "Your verification session expired. Please start over.",
+pending_invalid:
+  "We couldn't read your verification session securely. Please start over.",
+```
+
+Also extend `app/kyc/singpass/start/page.tsx` to show a toast when
+`searchParams.cancelled_at_confirm === "1"` (same as the existing
+`cancelled` branch, message: *"No problem — nothing was saved."*).
+
+- [ ] **Step 6: Commit sub-commit 1c**
 
 ```bash
-git add app/api/auth/singpass/callback/route.ts app/api/auth/singpass/callback/__tests__/route.test.ts
-git commit -m "feat(kyc): add GET /api/auth/singpass/callback route"
+git add app/api/auth/singpass/confirm app/kyc/singpass/error/page.tsx app/kyc/singpass/start/page.tsx
+git commit -m "feat(kyc): add POST /api/auth/singpass/confirm + cancel path + error reasons"
 ```
 
 #### Sub-commit 2 — Consent page + error pages
@@ -3002,7 +3559,7 @@ git commit -m "test(kyc): add end-to-end start→callback happy-path test"
 
 - [ ] **Step 2: Write `field-justifications.md`** — one paragraph per requested Myinfo field, copied from `SINGPASS_REQUESTED_FIELDS` in `lib/singpass/consent.ts`.
 
-- [ ] **Step 3: Write `pdpa-statement.md`** — 1 page covering (a) what we collect, (b) how long we retain it ("for the lifetime of your creator account + 5 years for tax/audit"), (c) withdrawal (Section 22 of PDPA: delete on request within 30 days), (d) DPO contact `hello@getthatbread.sg`, (e) incident notification commitment.
+- [ ] **Step 3: Write `pdpa-statement.md`** — 1 page covering (a) what we collect, (b) how long we retain it ("for the lifetime of your creator account + 5 years for tax/audit"), (c) withdrawal (Section 22 of PDPA: delete on request within 30 days), (d) DPO contact `hello@getthatbread.sg`, (e) incident notification commitment, (f) **explicit "no data reuse" framing** — Myinfo retrieval is one-time per verification event; the four stored fields are the attested verification outcome (not a reusable Myinfo snapshot), underlying OAuth tokens are discarded post-persist, and re-verification requires the user to re-authenticate through Singpass (aligns with the "no data reuse across sessions" rule in GovTech's [key principles](https://docs.developer.singpass.gov.sg/docs/products/singpass-myinfo/key-principles)).
 
 - [ ] **Step 4: Write `security-practices.md`** — bullet list: TLS 1.2+, JWK rotation cadence (11 months), private keys stored in Vercel encrypted env vars (never in git/logs/Sentry), Sentry UINFIN scrubber, transactional DB writes, hashed UINFIN only.
 

@@ -88,6 +88,13 @@ export function CreatorTimelineScrub() {
             progress={progress}
           />
         ))}
+
+        {/* Mobile-only scroll hint */}
+        <div className="sm:hidden flex justify-center pt-4 opacity-60">
+          <div className="text-xs text-[var(--color-ink-muted)] animate-bounce">
+            Scroll down
+          </div>
+        </div>
       </div>
     </div>
   );

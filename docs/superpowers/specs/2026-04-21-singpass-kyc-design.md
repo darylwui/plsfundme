@@ -19,11 +19,12 @@ nationality, and residential status for the authenticated user, and we
 use the (SHA-256-hashed) UINFIN as a uniqueness guarantee across our
 account base.
 
-GovTech requires a ~2–6 week approval process ("linkup application")
-before we can hit the production Singpass endpoints. The sandbox is
-self-serve. This spec covers both the sandbox build we can ship
-immediately and the paperwork we need to submit on day 1 so the
-approval clock starts now.
+GovTech's "linkup application" (the approval flow to hit the production
+Singpass endpoints) takes **~2 weeks for well-prepared applications**,
+stretching to ~6 weeks if GovTech comes back with questions. The
+sandbox is self-serve and doesn't wait on linkup. This spec covers both
+the sandbox build we can ship immediately and the paperwork we need to
+submit on day 1 so the approval clock starts now.
 
 ## Non-goals
 
@@ -70,11 +71,12 @@ lib/singpass/
 
 app/kyc/singpass/
 ├── start/page.tsx               # consent screen
-└── (no callback page — callback is API-only)
+└── confirm/page.tsx             # displays retrieved Myinfo data read-only (GovTech requirement)
 
 app/api/auth/singpass/
 ├── start/route.ts               # POST → generates state/nonce/PKCE → 302 to Singpass
-└── callback/route.ts            # GET — code exchange → persist → 302 to dashboard
+├── callback/route.ts            # GET — code exchange → stash payload in signed cookie → 302 to /confirm
+└── confirm/route.ts             # POST — user-confirmed → write creator_verifications + flip flags
 
 app/.well-known/jwks.json/
 └── route.ts                     # publishes our PUBLIC signing + encryption keys
@@ -150,25 +152,52 @@ Creator's browser           Our Next.js app                    Singpass
                          ├─ decrypt+verify userinfo JWE
                          └─ extract { uinfin, name, dob, nationality, residentialstatus }
 
-                         ── Business logic ──
+                         ── Business-logic gates (run BEFORE the display) ──
                          ├─ age check: DOB + 18y > today?      ──▶ [UnderageError]
-                         ├─ residency gate:
-                         │   "Citizen" or "Permanent Resident"? ──▶ continue
-                         │   "Foreigner" or blank (FIN-holder)  ──▶ [ForeignerError]
-                         ├─ uinfin_hash = sha256(uinfin)
-                         ├─ BEGIN transaction
-                         │   ├─ INSERT INTO creator_verifications
-                         │   │     (profile_id, method='singpass', uinfin_hash,
-                         │   │      verified_name, verified_dob, nationality, residency)
-                         │   │     ← unique-violation triggers [DuplicateUinfinError]
-                         │   ├─ UPDATE project_manager_profiles
-                         │   │     SET singpass_verified = true WHERE id = $auth.uid
-                         │   └─ UPDATE profiles
-                         │       SET kyc_status = 'approved' WHERE id = $auth.uid
-                         ├─ COMMIT
+                         └─ residency gate:
+                             "Citizen" or "Permanent Resident"? ──▶ continue
+                             "Foreigner" or blank (FIN-holder)  ──▶ [ForeignerError]
+
+                         ── Stash payload in short-lived signed cookie ──
+                         ├─ encrypt+sign payload into "__Host-singpass-pending" cookie
+                         │  (5-min TTL, httpOnly, SameSite=Lax)
                          ├─ clear state cookie
-                         └─ 302 ──▶ /dashboard?verified=1
+                         └─ 302 ──▶ /kyc/singpass/confirm
+
+  /kyc/singpass/confirm
+  ───────────────────── (server component)
+  Reads pending cookie → renders retrieved data READ-ONLY:
+    • Legal name:     JANE TAN
+    • Date of birth:  1990-01-15
+    • Nationality:    Singaporean
+    • Residency:      Singapore Citizen
+  + "Confirm and continue" button     ← POSTs to /api/auth/singpass/confirm
+  + "Something's wrong" link          ← mailto:hello@getthatbread.sg
+
+  POST /api/auth/singpass/confirm
+  ──────────────────────────────
+  ├─ re-read pending cookie (reject if expired/tampered/missing)
+  ├─ uinfin_hash = sha256(uinfin)
+  ├─ BEGIN transaction (via RPC)
+  │   ├─ INSERT INTO creator_verifications
+  │   │     (profile_id, method='singpass', uinfin_hash,
+  │   │      verified_name, verified_dob, nationality, residency)
+  │   │     ← unique-violation triggers [DuplicateUinfinError]
+  │   ├─ UPDATE project_manager_profiles
+  │   │     SET singpass_verified = true WHERE id = $auth.uid
+  │   └─ UPDATE profiles
+  │       SET kyc_status = 'approved' WHERE id = $auth.uid
+  ├─ COMMIT
+  ├─ clear pending cookie
+  └─ 302 ──▶ /dashboard?verified=1
 ```
+
+**Why two cookies (state + pending):** keeps crypto contexts separated.
+The state cookie covers the Singpass round-trip (10-min TTL); the pending
+cookie covers the user-confirmation step (5-min TTL) and holds the
+decrypted Myinfo payload only in encrypted form until the user clicks
+Confirm. Neither cookie's contents ever hit the DB in plaintext form
+beyond that instant.
 
 ### Key security properties
 
@@ -181,9 +210,20 @@ Creator's browser           Our Next.js app                    Singpass
 - **DB writes are a single transaction** across three tables. Failure
   rolls back all three.
 - **DPoP + PKCE + private_key_jwt** — FAPI-2.0-track from day 1.
-- **Government data is never displayed back to the creator.** We
-  store+act on Singpass fields server-side; no "confirm what we got"
-  step.
+- **Retrieved Myinfo data IS displayed back to the creator** for
+  verification before we commit the `creator_verifications` row. This is a
+  GovTech requirement — see the [Myinfo data-display
+  guidelines](https://docs.developer.singpass.gov.sg/docs/products/singpass-myinfo/data-display-guidelines)
+  and the FAQ rule *"All data retrieved from Myinfo have to be displayed
+  on the digital form for verification by the user, prior to form
+  submission."* The display is **read-only** (non-editable) — Principal
+  Name explicitly must not be editable, and per our legal-name / KYC use
+  case we make all four displayed fields read-only. The callback route
+  does NOT write to the DB; it stashes the payload in a short-lived
+  signed+encrypted cookie, redirects to `/kyc/singpass/confirm`, and only
+  `/api/auth/singpass/confirm` (triggered by the user clicking "Confirm")
+  writes the `creator_verifications` row. User can cancel from the
+  confirmation page (cookie cleared, no DB write).
 
 ## Error handling matrix
 
@@ -197,6 +237,9 @@ Creator's browser           Our Next.js app                    Singpass
 | ForeignerError (residency ≠ Citizen/PR, or blank for FIN-holders) | Dedicated page: *"Get That Bread is currently open to Singapore Citizens and PRs only. If you're based outside SG and interested in running a campaign, email hello@getthatbread.sg and we'll reach out."* | info | no |
 | DuplicateUinfinError | Dedicated page: *"This NRIC is already linked to another Get That Bread account. If that wasn't you, email hello@getthatbread.sg."* | **high** (possible fraud) | no, requires support |
 | DB write mid-transaction fails | Full-page: *"Something went wrong saving your verification. Please try again."* | **critical** (on-call) | yes |
+| Pending-cookie missing / tampered / decrypt-fail (at `/kyc/singpass/confirm` GET or `/api/auth/singpass/confirm` POST) | Full-page: *"Your verification session expired. Please start over."* + button to `/kyc/singpass/start` | warning | yes, restart |
+| Pending-cookie expired (>5 min gap between callback and user clicking Confirm) | Same as above — session-expired page. Cookie's own `exp` enforces this; no special code path. | info | yes, restart |
+| User cancels at `/kyc/singpass/confirm` (clicks "Something's wrong") | 302 to `/kyc/singpass/start?cancelled_at_confirm=1` → toast *"No problem — nothing was saved."* Clears pending cookie. No DB writes. | none (expected) | yes |
 | Already verified (re-entry) | 302 to `/dashboard?already_verified=1` + toast | none | N/A |
 
 **Sentry scrubber:** `beforeSend` hook regex-strips anything matching
@@ -423,8 +466,24 @@ Prose for the application:
 >
 > Raw UINFIN is not persisted at any point — it is SHA-256 hashed
 > immediately on retrieval and the plaintext is discarded with the
-> response object. Retrieved Myinfo fields are displayed read-only in
-> admin contexts and are not displayed to the creator themselves.
+> response object. Retrieved Myinfo fields are displayed read-only to
+> the creator on a confirmation screen (`/kyc/singpass/confirm`) for
+> their verification prior to record creation, and subsequently
+> displayed read-only to authorised administrators only.
+>
+> **No re-use of retrieved Myinfo data across sessions.** In accordance
+> with GovTech's Myinfo key principles, Get That Bread does not retrieve
+> Myinfo data on behalf of a user and cache it for re-use in a later
+> session or for a different purpose. Each Singpass authorization is a
+> one-time retrieval: the data is displayed to the user, used to create
+> a single `creator_verifications` record that captures the
+> *verification event* (not a cached copy of the user's Myinfo profile),
+> and the underlying OAuth tokens are discarded. The four retained
+> fields (legal name, DOB, nationality, residency) are the attested
+> verification outcome, not a reusable Myinfo snapshot. If an account's
+> verified identity needs to be refreshed or corrected, the user
+> re-authenticates through Singpass and a new verification record is
+> created.
 >
 > **Retention:** Verification records are retained for the lifetime of
 > the creator's account plus five years post-closure, consistent with
@@ -589,7 +648,8 @@ proceed in parallel as soon as step 3 is done.
 5. **When drafts are ready.** Review this spec's appendices, paste
    into the GovTech `.pptx` template + linkup form, attach pricing
    screenshot, submit. Clock starts.
-6. **When GovTech responds** (~2 weeks): iterate on any back-and-
+6. **When GovTech responds** (~2 weeks if the submission is clean; up
+   to ~6 if they come back with questions): iterate on any back-and-
    forth. Sign the API Services Agreement when sent.
 7. **When approved:** follow the sandbox → production cutover
    sequence in the "Keys, env vars, cutover" section above.
