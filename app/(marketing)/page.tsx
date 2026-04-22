@@ -2,7 +2,12 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { ArrowRight, Shield, Globe, Lock, TrendingUp, Star, Clock } from "lucide-react";
 import { unstable_cache } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
+// Marketing homepage: use the cookieless service-role client inside
+// `unstable_cache`. Next 16 throws if `cookies()` is called inside a cached
+// callback, so the per-request server client (which reads auth cookies) can't
+// be used here. The data we read is public (active projects + aggregate stats)
+// and is shared across all visitors, so service-role is the correct fit.
+import { createServiceClient } from "@/lib/supabase/server";
 import { ProjectGrid } from "@/components/projects/ProjectGrid";
 import { Button } from "@/components/ui/button";
 import { StatsBar } from "@/components/home/StatsBar";
@@ -20,7 +25,7 @@ interface HomePageProps {
 async function getProjects(filter: FilterTab): Promise<ProjectWithRelations[]> {
   return unstable_cache(
     async () => {
-      const supabase = await createClient();
+      const supabase = createServiceClient();
 
       let query = supabase
         .from("projects")
@@ -48,7 +53,7 @@ async function getProjects(filter: FilterTab): Promise<ProjectWithRelations[]> {
 
 const getPlatformStats = unstable_cache(
   async () => {
-    const supabase = await createClient();
+    const supabase = createServiceClient();
     const { data } = await supabase
       .from("projects")
       .select("amount_pledged_sgd, backer_count, status");
