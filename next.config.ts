@@ -2,6 +2,16 @@ import type { NextConfig } from "next";
 import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      // Legacy PM routes → creator equivalents (permanent 308)
+      { source: "/apply/pm", destination: "/apply/creator", permanent: true },
+      { source: "/api/pm-apply", destination: "/api/creator-apply", permanent: true },
+      { source: "/api/admin/pm/:id", destination: "/api/admin/creator/:id", permanent: true },
+      { source: "/admin/project-managers", destination: "/admin/creators", permanent: true },
+      { source: "/dashboard/admin/pms", destination: "/dashboard/admin/creators", permanent: true },
+    ];
+  },
   images: {
     remotePatterns: [
       {
