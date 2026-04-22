@@ -931,3 +931,9 @@ export const Constants = {
     },
   },
 } as const
+
+// Convenience type aliases for common enum types
+export type ProjectStatus = Database["public"]["Enums"]["project_status"]
+export type PaymentMethodType = Database["public"]["Enums"]["payment_method_type"]
+export type PayoutMode = Database["public"]["Enums"]["payout_mode"]
+export type CreatorStatus = Database["public"]["Enums"]["creator_status"]
