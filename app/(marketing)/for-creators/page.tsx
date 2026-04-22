@@ -50,14 +50,14 @@ export default function ForCreatorsPage() {
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <Link href="/projects/create">
-              <Button size="lg" variant="inverse">
+              <Button size="lg" variant="primary">
                 Start your campaign
                 <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
             <Link
               href="/how-it-works"
-              className="text-sm font-medium text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
+              className="text-sm font-semibold text-[var(--color-brand-crust)] dark:text-[var(--color-brand-golden)] hover:underline transition-colors"
             >
               Or see the backer side →
             </Link>
@@ -172,24 +172,23 @@ export default function ForCreatorsPage() {
 
       {/* ── 4. Final CTA ─────────────────────────────────────── */}
       <ScrollReveal>
-        <section className="bg-[var(--color-surface)]">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-            <div>
-              <h2 className="text-2xl md:text-3xl font-black tracking-tight text-[var(--color-ink)]">
-                Ready to launch?
-              </h2>
-              <p className="text-[var(--color-ink-muted)] mt-1">
-                Start for free. No upfront costs, no risk to your backers.
-              </p>
+        <section className="bg-gradient-to-br from-amber-50 via-[#FFFBF5] to-orange-50 dark:from-[#1a0f00] dark:via-[#0a0a0a] dark:to-[#1a0800] border-t border-[var(--color-border)]">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 text-center">
+            <div className="inline-flex items-center px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] text-xs uppercase tracking-[0.12em] font-medium mb-6">
+              🍞 Let&apos;s go
             </div>
-            <div className="flex gap-3 shrink-0">
-              <Link href="/projects/create">
-                <Button size="lg" variant="inverse">
-                  Start your campaign
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
-              </Link>
-            </div>
+            <h2 className="text-4xl md:text-5xl font-black tracking-tight leading-[1.05] text-[var(--color-ink)] mb-4">
+              Ready to launch?
+            </h2>
+            <p className="text-lg text-[var(--color-ink-muted)] max-w-md mx-auto mb-10 leading-relaxed">
+              Start for free. No upfront costs, no risk to your backers.
+            </p>
+            <Link href="/projects/create">
+              <Button size="lg" variant="primary">
+                Start your campaign
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+            </Link>
           </div>
         </section>
       </ScrollReveal>
