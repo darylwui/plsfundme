@@ -77,6 +77,81 @@ export type Database = {
         }
         Relationships: []
       }
+      creator_profiles: {
+        Row: {
+          bio: string
+          company_name: string | null
+          company_website: string | null
+          created_at: string
+          id: string
+          id_document_url: string | null
+          linkedin_url: string | null
+          project_description: string
+          project_type: string
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          singpass_sub: string | null
+          singpass_verified: boolean
+          status: Database["public"]["Enums"]["creator_status"]
+          submitted_at: string
+          updated_at: string
+        }
+        Insert: {
+          bio: string
+          company_name?: string | null
+          company_website?: string | null
+          created_at?: string
+          id: string
+          id_document_url?: string | null
+          linkedin_url?: string | null
+          project_description: string
+          project_type: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          singpass_sub?: string | null
+          singpass_verified?: boolean
+          status?: Database["public"]["Enums"]["creator_status"]
+          submitted_at?: string
+          updated_at?: string
+        }
+        Update: {
+          bio?: string
+          company_name?: string | null
+          company_website?: string | null
+          created_at?: string
+          id?: string
+          id_document_url?: string | null
+          linkedin_url?: string | null
+          project_description?: string
+          project_type?: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          singpass_sub?: string | null
+          singpass_verified?: boolean
+          status?: Database["public"]["Enums"]["creator_status"]
+          submitted_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_profiles_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creator_profiles_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       creator_verifications: {
         Row: {
           created_at: string
@@ -393,81 +468,6 @@ export type Database = {
           },
         ]
       }
-      project_manager_profiles: {
-        Row: {
-          bio: string
-          company_name: string | null
-          company_website: string | null
-          created_at: string
-          id: string
-          id_document_url: string | null
-          linkedin_url: string | null
-          project_description: string
-          project_type: string
-          rejection_reason: string | null
-          reviewed_at: string | null
-          reviewed_by: string | null
-          singpass_sub: string | null
-          singpass_verified: boolean
-          status: Database["public"]["Enums"]["pm_status"]
-          submitted_at: string
-          updated_at: string
-        }
-        Insert: {
-          bio: string
-          company_name?: string | null
-          company_website?: string | null
-          created_at?: string
-          id: string
-          id_document_url?: string | null
-          linkedin_url?: string | null
-          project_description: string
-          project_type: string
-          rejection_reason?: string | null
-          reviewed_at?: string | null
-          reviewed_by?: string | null
-          singpass_sub?: string | null
-          singpass_verified?: boolean
-          status?: Database["public"]["Enums"]["pm_status"]
-          submitted_at?: string
-          updated_at?: string
-        }
-        Update: {
-          bio?: string
-          company_name?: string | null
-          company_website?: string | null
-          created_at?: string
-          id?: string
-          id_document_url?: string | null
-          linkedin_url?: string | null
-          project_description?: string
-          project_type?: string
-          rejection_reason?: string | null
-          reviewed_at?: string | null
-          reviewed_by?: string | null
-          singpass_sub?: string | null
-          singpass_verified?: boolean
-          status?: Database["public"]["Enums"]["pm_status"]
-          submitted_at?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "project_manager_profiles_id_fkey"
-            columns: ["id"]
-            isOneToOne: true
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "project_manager_profiles_reviewed_by_fkey"
-            columns: ["reviewed_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       project_updates: {
         Row: {
           body: string
@@ -753,6 +753,7 @@ export type Database = {
       release_reward_slot: { Args: { p_reward_id: string }; Returns: undefined }
     }
     Enums: {
+      creator_status: "pending_review" | "approved" | "rejected"
       fulfillment_status: "unfulfilled" | "shipped" | "delivered"
       kyc_status: "unverified" | "pending" | "approved" | "rejected"
       payment_method_type: "card" | "paynow"
@@ -766,7 +767,6 @@ export type Database = {
         | "released"
         | "refunded"
         | "failed"
-      pm_status: "pending_review" | "approved" | "rejected"
       project_status:
         | "draft"
         | "active"
@@ -775,7 +775,7 @@ export type Database = {
         | "cancelled"
         | "pending_review"
         | "removed"
-      user_role: "backer" | "project_manager"
+      user_role: "backer" | "creator"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -903,6 +903,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      creator_status: ["pending_review", "approved", "rejected"],
       fulfillment_status: ["unfulfilled", "shipped", "delivered"],
       kyc_status: ["unverified", "pending", "approved", "rejected"],
       payment_method_type: ["card", "paynow"],
@@ -917,7 +918,6 @@ export const Constants = {
         "refunded",
         "failed",
       ],
-      pm_status: ["pending_review", "approved", "rejected"],
       project_status: [
         "draft",
         "active",
@@ -927,7 +927,7 @@ export const Constants = {
         "pending_review",
         "removed",
       ],
-      user_role: ["backer", "project_manager"],
+      user_role: ["backer", "creator"],
     },
   },
 } as const
