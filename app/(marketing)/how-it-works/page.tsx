@@ -20,9 +20,6 @@ export default function HowItWorksPage() {
       {/* ── Hero ─────────────────────────────────────────────── */}
       <section className="bg-gradient-to-br from-amber-50 via-[#FFFBF5] to-orange-50 dark:from-[#0f0f0f] dark:via-[#0a0a0a] dark:to-[#111111] border-b border-[var(--color-border)]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24">
-          <div className="inline-flex items-center px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] text-xs uppercase tracking-[0.12em] font-medium mb-6">
-            For backers
-          </div>
           <h1 className="text-[40px] md:text-[56px] font-black tracking-tight leading-[1.05] mb-5 max-w-4xl">
             Back bold ideas.{" "}
             <span className="text-[var(--color-brand-crust)] dark:text-[var(--color-brand-golden)]">

@@ -50,14 +50,14 @@ export default function ForCreatorsPage() {
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <Link href="/projects/create">
-              <Button size="lg" variant="inverse">
+              <Button size="lg" variant="primary">
                 Start your campaign
                 <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
             <Link
               href="/how-it-works"
-              className="text-sm font-medium text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
+              className="text-sm font-semibold text-[var(--color-brand-crust)] dark:text-[var(--color-brand-golden)] hover:underline transition-colors"
             >
               Or see the backer side →
             </Link>

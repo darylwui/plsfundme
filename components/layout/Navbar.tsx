@@ -32,6 +32,7 @@ type NavItem =
 const NAV_ITEMS: NavItem[] = [
   { type: "link", href: "/explore", label: "Explore" },
   { type: "link", href: "/how-it-works", label: "How it works" },
+  { type: "link", href: "/for-creators", label: "Creator guide" },
 ];
 
 export function Navbar() {
