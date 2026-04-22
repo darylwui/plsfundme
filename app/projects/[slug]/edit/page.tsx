@@ -70,12 +70,14 @@ export default async function EditProjectPage({ params }: EditProjectPageProps) 
     });
   }
 
-  // Count all non-cancelled pledges for this project (catches authorized/pre-auth too)
+  // Count all non-terminal pledges for this project (catches authorized/pre-auth too).
+  // Note: "cancelled" isn't a valid `pledge_status` enum value in the DB — if
+  // it's included here, PostgREST 400s the whole query.
   const { count: pledgeCount } = await supabase
     .from("pledges")
     .select("id", { count: "exact", head: true })
     .eq("project_id", project.id)
-    .not("status", "in", "(cancelled,failed)");
+    .not("status", "in", "(failed)");
 
   const hasPledges = (pledgeCount ?? 0) > 0;
   const isRejected = project.status === "cancelled";

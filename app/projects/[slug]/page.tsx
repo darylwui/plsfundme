@@ -104,7 +104,12 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           .select("id", { count: "exact", head: true })
           .eq("project_id", project.id)
           .eq("backer_id", user.id)
-          .not("status", "in", "(cancelled,failed,released,refunded)")
+          // "cancelled" was in the filter but isn't a valid `pledge_status`
+          // enum value in the DB — PostgREST 400s the whole query. The
+          // remaining statuses still cover every terminal / inactive state
+          // we want to exclude when checking "does this user have an
+          // active pledge on this project?".
+          .not("status", "in", "(failed,released,refunded)")
       : Promise.resolve({ count: 0 }),
   ]);
 
