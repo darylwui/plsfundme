@@ -159,32 +159,34 @@ export function Navbar() {
               {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
 
-            {!loading && (
-              <>
-                {user ? (
-                  <>
-                    <Link href="/projects/create">
-                      <Button variant="inverse" size="sm">
-                        <PlusCircle className="w-4 h-4" />
-                        Start a project
-                      </Button>
-                    </Link>
-                    <Link href="/dashboard">
-                      <Button variant="primary" size="sm">Dashboard</Button>
-                    </Link>
-                  </>
-                ) : (
-                  <>
-                    <Link href="/login">
-                      <Button variant="ghost" size="sm">Log in</Button>
-                    </Link>
-                    <Link href="/register">
-                      <Button variant="primary" size="sm">Get started</Button>
-                    </Link>
-                  </>
-                )}
-              </>
-            )}
+            <div className="min-w-[168px] flex items-center justify-end gap-2">
+              {!loading && (
+                <>
+                  {user ? (
+                    <>
+                      <Link href="/projects/create">
+                        <Button variant="inverse" size="sm">
+                          <PlusCircle className="w-4 h-4" />
+                          Start a project
+                        </Button>
+                      </Link>
+                      <Link href="/dashboard">
+                        <Button variant="primary" size="sm">Dashboard</Button>
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link href="/login">
+                        <Button variant="ghost" size="sm">Log in</Button>
+                      </Link>
+                      <Link href="/register">
+                        <Button variant="primary" size="sm">Get started</Button>
+                      </Link>
+                    </>
+                  )}
+                </>
+              )}
+            </div>
           </div>
 
           {/* Mobile menu toggle */}
@@ -270,32 +272,34 @@ export function Navbar() {
 
           <hr className="border-[var(--color-border-invert)]" />
 
-          {!loading && (
-            <>
-              {user ? (
-                <>
-                  <Link href="/projects/create" onClick={() => setMenuOpen(false)}>
-                    <Button variant="inverse" size="md" fullWidth>
-                      <PlusCircle className="w-4 h-4" />
-                      Start a project
-                    </Button>
-                  </Link>
-                  <Link href="/dashboard" onClick={() => setMenuOpen(false)}>
-                    <Button variant="primary" size="md" fullWidth>Dashboard</Button>
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <Link href="/login" onClick={() => setMenuOpen(false)}>
-                    <Button variant="ghost" size="md" fullWidth>Log in</Button>
-                  </Link>
-                  <Link href="/register" onClick={() => setMenuOpen(false)}>
-                    <Button variant="primary" size="md" fullWidth>Get started</Button>
-                  </Link>
-                </>
-              )}
-            </>
-          )}
+          <div className="min-h-[88px] flex flex-col gap-3 justify-start">
+            {!loading && (
+              <>
+                {user ? (
+                  <>
+                    <Link href="/projects/create" onClick={() => setMenuOpen(false)}>
+                      <Button variant="inverse" size="md" fullWidth>
+                        <PlusCircle className="w-4 h-4" />
+                        Start a project
+                      </Button>
+                    </Link>
+                    <Link href="/dashboard" onClick={() => setMenuOpen(false)}>
+                      <Button variant="primary" size="md" fullWidth>Dashboard</Button>
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link href="/login" onClick={() => setMenuOpen(false)}>
+                      <Button variant="ghost" size="md" fullWidth>Log in</Button>
+                    </Link>
+                    <Link href="/register" onClick={() => setMenuOpen(false)}>
+                      <Button variant="primary" size="md" fullWidth>Get started</Button>
+                    </Link>
+                  </>
+                )}
+              </>
+            )}
+          </div>
         </div>
       )}
     </nav>

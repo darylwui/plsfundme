@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { ArrowRight, Shield, Globe, Lock, TrendingUp, Star, Clock } from "lucide-react";
+import { cacheLife, cacheTag } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { ProjectGrid } from "@/components/projects/ProjectGrid";
 import { Button } from "@/components/ui/button";
@@ -16,6 +18,10 @@ interface HomePageProps {
 }
 
 async function getProjects(filter: FilterTab): Promise<ProjectWithRelations[]> {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag(`projects-${filter}`);
+
   const supabase = await createClient();
 
   let query = supabase
@@ -39,7 +45,17 @@ async function getProjects(filter: FilterTab): Promise<ProjectWithRelations[]> {
 }
 
 async function getPlatformStats() {
+  "use cache";
+  cacheLife({
+    stale: 60,        // serve stale for up to 1 minute
+    revalidate: 300,  // revalidate in the background every 5 minutes
+    expire: 3600,     // hard expiry after 1 hour
+  });
+  cacheTag("platform-stats");
+
   const supabase = await createClient();
+
+  // Aggregate in one pass on the DB side: sum pledged, sum backers, count active
   const { data } = await supabase
     .from("projects")
     .select("amount_pledged_sgd, backer_count, status");
@@ -65,15 +81,35 @@ const TABS: { key: FilterTab; label: string; Icon: React.ComponentType<{ classNa
   { key: "ending_soon", label: "Ending soon", Icon: Clock },
 ];
 
+// ── Extracted async server component so the hero renders immediately ─────────
+async function ProjectGridServer({ activeFilter }: { activeFilter: FilterTab }) {
+  const projects = await getProjects(activeFilter);
+  return (
+    <ProjectGrid
+      projects={projects}
+      emptyMessage="No active projects yet — be the first to launch one!"
+    />
+  );
+}
+
+// ── Project grid skeleton (matches loading.tsx cards) ────────────────────────
+function ProjectGridSkeleton() {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div key={i} className="h-80 rounded-2xl bg-amber-100/60 dark:bg-amber-900/20" />
+      ))}
+    </div>
+  );
+}
+
 export default async function HomePage({ searchParams }: HomePageProps) {
   const { filter } = await searchParams;
   const activeFilter: FilterTab =
     filter === "newest" || filter === "ending_soon" ? filter : "trending";
 
-  const [projects, platformStats] = await Promise.all([
-    getProjects(activeFilter),
-    getPlatformStats(),
-  ]);
+  // Stats can resolve in parallel while the project grid streams in
+  const platformStats = await getPlatformStats();
 
   const stats = [
     {
@@ -299,10 +335,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
               </Link>
             </div>
 
-            <ProjectGrid
-              projects={projects}
-              emptyMessage="No active projects yet — be the first to launch one!"
-            />
+            <Suspense fallback={<ProjectGridSkeleton />}>
+              <ProjectGridServer activeFilter={activeFilter} />
+            </Suspense>
           </div>
         </section>
       </ScrollReveal>

@@ -7,10 +7,10 @@ import {
   Rocket,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { CreatorTimelineScrub } from "@/components/marketing/CreatorTimelineScrub";
+import { CreatorTimelineScrub } from "@/components/marketing/CreatorTimelineScrubDynamic";
 import { CreatorReassurance } from "@/components/marketing/CreatorReassurance";
 import { ScrollReveal } from "@/components/marketing/ScrollReveal";
-import { ScrollDownCue } from "@/components/marketing/ScrollDownCue";
+import { ScrollDownCue } from "@/components/marketing/ScrollDownCueDynamic";
 
 export const metadata = {
   title: "For creators — get that bread",

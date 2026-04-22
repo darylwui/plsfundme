@@ -233,6 +233,33 @@ body {
 .delay-300 { animation-delay: 300ms; }
 .delay-360 { animation-delay: 360ms; }
 
+/* ── Scroll reveal ────────────────────────────────────────────
+   Transition-based (not @keyframes) so elements still paint at
+   opacity:0 and are visible to LCP crawlers — they just slide in
+   once IntersectionObserver fires. ScrollReveal.tsx adds the
+   scroll-reveal-visible class via JS.
+   ─────────────────────────────────────────────────────────── */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(var(--scroll-reveal-offset, 40px));
+  transition: opacity 0.6s cubic-bezier(0.21, 0.62, 0.35, 1),
+              transform 0.6s cubic-bezier(0.21, 0.62, 0.35, 1);
+}
+
+.scroll-reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Respect reduced motion — show content immediately, no animation */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
 /* Global reduced-motion guard: disables Tailwind's built-in animate-spin,
    animate-ping, animate-pulse, animate-bounce + any third-party CSS
    animations for users who opt out. Complements the JS-side checks on

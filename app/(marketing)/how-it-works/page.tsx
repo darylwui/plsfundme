@@ -3,7 +3,7 @@ import { ArrowRight, Gift, PlayCircle, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PledgeTimelineDemo } from "@/components/marketing/PledgeTimelineDemo";
 import { ScrollReveal } from "@/components/marketing/ScrollReveal";
-import { ScrollDownCue } from "@/components/marketing/ScrollDownCue";
+import { ScrollDownCue } from "@/components/marketing/ScrollDownCueDynamic";
 import { WhyBackPillars } from "@/components/marketing/WhyBackPillars";
 import { RewardArchetypes } from "@/components/marketing/RewardArchetypes";
 import { CreatorRedirect } from "@/components/marketing/CreatorRedirect";

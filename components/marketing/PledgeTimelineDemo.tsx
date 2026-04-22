@@ -28,6 +28,24 @@ export function PledgeTimelineDemo() {
   const clicksLeft = Math.ceil((GOAL - progress) / PLEDGE_STEP);
 
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const inViewRef = useRef(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Pause the interval when the component is scrolled out of view to avoid
+  // unnecessary setState calls inflating INP during off-screen interactions.
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        inViewRef.current = entry.isIntersecting;
+      },
+      { threshold: 0 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     if (status !== "running") {
@@ -35,6 +53,7 @@ export function PledgeTimelineDemo() {
       return;
     }
     tickRef.current = setInterval(() => {
+      if (!inViewRef.current) return;
       setTimeLeft((t) => Math.max(0, t - 1));
     }, 1000);
     return () => {
@@ -67,7 +86,7 @@ export function PledgeTimelineDemo() {
         : "from-[var(--color-brand-golden)] to-[var(--color-brand-crust)]";
 
   return (
-    <div className="flex flex-col gap-6">
+    <div ref={containerRef} className="flex flex-col gap-6">
       {/* Reset control (shown once outcome is decided) — lifted above the widget so it's reachable without scrolling past the outcome cards */}
       {status !== "running" && (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1">
