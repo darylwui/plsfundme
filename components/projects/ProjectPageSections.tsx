@@ -11,7 +11,7 @@ import { ProjectSectionNav } from "@/components/projects/ProjectSectionNav";
 import type { ProjectUpdatePost } from "@/types/project";
 import type { Reward } from "@/types/reward";
 import { formatDate } from "@/lib/utils/dates";
-import { sanitizeRichHtml } from "@/lib/utils/sanitize";
+import type { CampaignHeading } from "@/lib/utils/campaignHtml";
 
 type FeedbackAuthor = {
   display_name: string;
@@ -41,38 +41,8 @@ interface ProjectPageSectionsProps {
   isBacker: boolean;
   initialFeedback: ProjectFeedback[];
   descriptionHtml: string;
+  descriptionHeadings: CampaignHeading[];
   rewards: Reward[];
-}
-
-function slugify(input: string): string {
-  return input
-    .toLowerCase()
-    .replace(/<[^>]*>/g, "")
-    .replace(/&[^;]+;/g, "")
-    .replace(/[^a-z0-9\s-]/g, "")
-    .trim()
-    .replace(/\s+/g, "-")
-    .slice(0, 60);
-}
-
-/** Inject stable IDs into H2/H3 tags and extract heading metadata. */
-function processHtml(html: string) {
-  const headings: { id: string; text: string; level: 2 | 3 }[] = [];
-  let idx = 0;
-
-  const processed = html.replace(
-    /<h([23])([^>]*)>([\s\S]*?)<\/h\1>/gi,
-    (_m, level, attrs, inner) => {
-      const text = inner.replace(/<[^>]*>/g, "").trim();
-      if (!text) return _m;
-      const id = `section-${slugify(text)}-${idx++}`;
-      headings.push({ id, text, level: level === "2" ? 2 : 3 });
-      const cleanAttrs = String(attrs ?? "").replace(/\sid="[^"]*"/gi, "");
-      return `<h${level}${cleanAttrs} id="${id}">${inner}</h${level}>`;
-    }
-  );
-
-  return { html: processed, headings };
 }
 
 export function ProjectPageSections({
@@ -87,6 +57,7 @@ export function ProjectPageSections({
   isBacker,
   initialFeedback,
   descriptionHtml,
+  descriptionHeadings,
   rewards,
 }: ProjectPageSectionsProps) {
   const [feedback, setFeedback] = useState<ProjectFeedback[]>(initialFeedback);
@@ -110,18 +81,13 @@ export function ProjectPageSections({
     [activeRewards, selectedRewardId]
   );
 
-  const processed = useMemo(
-    () => processHtml(sanitizeRichHtml(descriptionHtml ?? "")),
-    [descriptionHtml]
-  );
-
   const faqItems = useMemo(
     () =>
-      processed.headings.filter((h) => {
+      descriptionHeadings.filter((h) => {
         const lower = h.text.toLowerCase();
         return h.text.includes("?") || lower.startsWith("faq") || lower.includes("question");
       }),
-    [processed.headings]
+    [descriptionHeadings]
   );
 
   const canPostFeedback = useMemo(
@@ -240,24 +206,26 @@ export function ProjectPageSections({
           Campaign
         </h2>
 
-        {/* Subsection chips from H2 headings */}
-        {processed.headings.filter((h) => h.level === 2).length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {processed.headings
-              .filter((h) => h.level === 2)
-              .map((h) => (
-                <a
-                  key={h.id}
-                  href={`#${h.id}`}
-                  className="text-sm font-semibold rounded-full px-4 py-1.5 border border-[var(--color-brand-crust)]/40 bg-[var(--color-brand-crust)]/10 text-[var(--color-brand-crust)] hover:bg-[var(--color-brand-crust)]/20 hover:border-[var(--color-brand-crust)] transition-colors"
-                >
-                  {h.text}
-                </a>
-              ))}
+        {/* Subsection chips — mobile only; desktop shows CampaignToc in the right rail. */}
+        {descriptionHeadings.length > 0 && (
+          <div className="flex flex-wrap gap-2 lg:hidden">
+            {descriptionHeadings.map((h) => (
+              <a
+                key={h.id}
+                href={`#${h.id}`}
+                className={
+                  h.level === 2
+                    ? "text-sm font-semibold rounded-full px-4 py-1.5 border border-[var(--color-brand-crust)]/40 bg-[var(--color-brand-crust)]/10 text-[var(--color-brand-crust)] hover:bg-[var(--color-brand-crust)]/20 hover:border-[var(--color-brand-crust)] transition-colors"
+                    : "text-xs font-medium rounded-full px-3 py-1 border border-[var(--color-border)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-crust)]/40 transition-colors"
+                }
+              >
+                {h.text}
+              </a>
+            ))}
           </div>
         )}
 
-        {processed.html ? (
+        {descriptionHtml ? (
           <div
             className="prose prose-base max-w-none text-[var(--color-ink)]
               prose-headings:text-[var(--color-ink)] prose-headings:font-bold prose-headings:tracking-tight
@@ -269,7 +237,7 @@ export function ProjectPageSections({
               prose-ul:text-[var(--color-ink-muted)] prose-li:my-1
               prose-img:rounded-[var(--radius-card)] prose-img:border prose-img:border-[var(--color-border)]
               prose-blockquote:border-l-[var(--color-brand-crust)] prose-blockquote:text-[var(--color-ink-muted)]"
-            dangerouslySetInnerHTML={{ __html: processed.html }}
+            dangerouslySetInnerHTML={{ __html: descriptionHtml }}
           />
         ) : (
           <div className="rounded-[var(--radius-card)] border-2 border-dashed border-[var(--color-border)] p-6 text-sm text-[var(--color-ink-muted)]">
