@@ -51,7 +51,8 @@ const getPlatformStats = unstable_cache(
     const supabase = await createClient();
     const { data } = await supabase
       .from("projects")
-      .select("amount_pledged_sgd, backer_count, status");
+      .select("amount_pledged_sgd, backer_count, status")
+      .limit(1000);
 
     const all = data ?? [];
     const totalRaisedSGD = all.reduce((sum, p) => sum + (p.amount_pledged_sgd ?? 0), 0);

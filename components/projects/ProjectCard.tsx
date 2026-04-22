@@ -7,9 +7,10 @@ import type { ProjectWithRelations } from "@/types/project";
 
 interface ProjectCardProps {
   project: ProjectWithRelations;
+  priority?: boolean;
 }
 
-export function ProjectCard({ project }: ProjectCardProps) {
+export function ProjectCard({ project, priority = false }: ProjectCardProps) {
   const days = daysRemaining(project.deadline);
   const isEndingSoon = days <= 5 && days > 0;
 
@@ -28,6 +29,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
                 src={project.cover_image_url}
                 alt={project.title}
                 fill
+                priority={priority}
                 className="card-img-zoom object-cover transition-transform duration-[400ms] ease-[cubic-bezier(0.23,1,0.32,1)]"
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               />
