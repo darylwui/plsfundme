@@ -75,3 +75,14 @@ CREATE TABLE creator_qualifications (
 
 CREATE INDEX idx_creator_qualifications_creator_id ON creator_qualifications(creator_id);
 CREATE INDEX idx_creator_qualifications_tier ON creator_qualifications(tier);
+
+-- Update pledges table to track escrow status
+ALTER TABLE pledges
+ADD COLUMN escrow_held BOOLEAN DEFAULT true,
+ADD COLUMN escrow_held_at TIMESTAMP,
+ADD COLUMN refunded BOOLEAN DEFAULT false,
+ADD COLUMN refund_reason TEXT,
+ADD COLUMN refunded_at TIMESTAMP;
+
+CREATE INDEX idx_pledges_escrow_held ON pledges(escrow_held);
+CREATE INDEX idx_pledges_refunded ON pledges(refunded);
