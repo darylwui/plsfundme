@@ -24,7 +24,10 @@ async function BackerDashboard({ userId, displayName, email }: { userId: string;
     .from("pledges")
     .select("*, project:projects(id, title, slug, status, funding_goal_sgd, amount_pledged_sgd, backer_count, deadline, cover_image_url)")
     .eq("backer_id", userId)
-    .not("status", "in", "(cancelled,failed,released,refunded)")
+    // "cancelled" isn't a valid `pledge_status` enum value in the DB — if
+    // included here PostgREST 400s the whole query. The remaining statuses
+    // cover every terminal state we want excluded from the "active" list.
+    .not("status", "in", "(failed,released,refunded)")
     .order("created_at", { ascending: false })
     .limit(20);
 
