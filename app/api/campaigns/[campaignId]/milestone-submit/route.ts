@@ -3,8 +3,12 @@ import { createClient } from '@/lib/supabase/server';
 import { validateMilestoneProof, normalizeMilestoneProof } from '@/lib/milestones/proofs';
 import type { MilestoneNumber, MilestoneProofData } from '@/lib/milestones/types';
 
-export async function POST(req: NextRequest, { params }: { params: { campaignId: string } }) {
-  const { campaignId } = params;
+interface RouteContext {
+  params: Promise<{ campaignId: string }>;
+}
+
+export async function POST(req: NextRequest, { params }: RouteContext) {
+  const { campaignId } = await params;
 
   try {
     // Get authenticated user
