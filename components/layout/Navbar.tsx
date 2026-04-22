@@ -31,23 +31,7 @@ type NavItem =
 
 const NAV_ITEMS: NavItem[] = [
   { type: "link", href: "/explore", label: "Explore" },
-  {
-    type: "group",
-    label: "How it works",
-    matchPaths: ["/how-it-works", "/for-creators"],
-    children: [
-      {
-        href: "/how-it-works",
-        label: "For backers",
-        description: "Back Singapore's next big thing — zero-risk pledges.",
-      },
-      {
-        href: "/for-creators",
-        label: "For creators",
-        description: "Launch a campaign and raise capital from your community.",
-      },
-    ],
-  },
+  { type: "link", href: "/how-it-works", label: "How it works" },
 ];
 
 export function Navbar() {
