@@ -3,14 +3,18 @@ type Props = {
   size?: number;
 };
 
-export function FeaturedSticker({ className = "", size = 112 }: Props) {
+export function FeaturedSticker({ className = "", size }: Props) {
   const pathId = "gtb-featured-sticker-path";
+  const wrapperStyle = size !== undefined ? { width: size, height: size } : undefined;
+  const emojiStyle = size !== undefined ? { fontSize: size * 0.3 } : undefined;
+  const emojiSizeClass = size === undefined ? "text-[30cqw]" : "";
+
   return (
     <div
       aria-label="Featured — a project we love"
       role="img"
-      className={`shrink-0 ${className}`}
-      style={{ width: size, height: size }}
+      className={`shrink-0 @container ${className}`}
+      style={wrapperStyle}
     >
       <div className="relative w-full h-full drop-shadow-[0_8px_16px_rgba(0,0,0,0.25)]">
       <svg viewBox="0 0 100 100" className="w-full h-full">
@@ -47,8 +51,8 @@ export function FeaturedSticker({ className = "", size = 112 }: Props) {
       </svg>
 
       <div
-        className="absolute inset-0 flex items-center justify-center select-none pointer-events-none"
-        style={{ fontSize: size * 0.3 }}
+        className={`absolute inset-0 flex items-center justify-center select-none pointer-events-none leading-none ${emojiSizeClass}`}
+        style={emojiStyle}
       >
         🍞
       </div>
