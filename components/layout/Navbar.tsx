@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -82,7 +83,7 @@ export function Navbar() {
             href="/"
             className="font-black text-xl tracking-tight hover:opacity-80 transition-opacity flex items-center gap-1.5 shrink-0"
           >
-            <img src="/bread-icon.png" alt="" className="w-6 h-6 object-contain" />
+            <Image src="/bread-icon.png" alt="" width={24} height={24} priority className="object-contain" />
             <span className="text-[var(--color-ink-invert)]">get that bread</span>
           </Link>
 
