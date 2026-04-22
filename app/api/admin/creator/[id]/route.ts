@@ -33,7 +33,7 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
   }
 
   const { error } = await service
-    .from("project_manager_profiles")
+    .from("creator_profiles")
     .update(
       action === "approve"
         ? { status: "approved", reviewed_at: new Date().toISOString(), reviewed_by: user.id }

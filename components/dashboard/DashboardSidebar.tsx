@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
-const PM_NAV = [
+const CREATOR_NAV = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
   { href: "/dashboard/projects", label: "My projects", icon: FolderOpen, exact: false },
   { href: "/dashboard/creator-profile", label: "Creator profile", icon: User, exact: false },
@@ -23,19 +23,19 @@ const BACKER_NAV = [
 
 const ADMIN_NAV = [
   { href: "/dashboard/admin/projects", label: "Review campaigns", icon: ClipboardList, exact: false },
-  { href: "/dashboard/admin/pms", label: "Creators", icon: UserCheck, exact: false },
+  { href: "/dashboard/admin/creators", label: "Creators", icon: UserCheck, exact: false },
   { href: "/dashboard/admin/users", label: "Users", icon: UsersRound, exact: false },
 ];
 
 interface DashboardSidebarProps {
-  role: "backer" | "project_manager" | string;
+  role: "backer" | "creator" | string;
   isAdmin?: boolean;
 }
 
 export function DashboardSidebar({ role, isAdmin }: DashboardSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const nav = role === "project_manager" ? PM_NAV : BACKER_NAV;
+  const nav = role === "creator" ? CREATOR_NAV : BACKER_NAV;
 
   async function handleLogout() {
     const supabase = createClient();

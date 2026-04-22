@@ -31,12 +31,12 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
     .order("created_at", { ascending: false }) as { data: any[] | null };
 
   // Only show "New campaign" button when the user is actually able to create.
-  const { data: pmProfile } = await supabase
-    .from("project_manager_profiles")
+  const { data: creatorProfile } = await supabase
+    .from("creator_profiles")
     .select("status")
     .eq("id", user.id)
     .single();
-  const canCreate = pmProfile?.status === "approved";
+  const canCreate = creatorProfile?.status === "approved";
 
   return (
     <div className="flex flex-col gap-6">
@@ -88,7 +88,7 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
               New campaign
             </Button>
           </Link>
-        ) : pmProfile?.status === "pending_review" ? (
+        ) : creatorProfile?.status === "pending_review" ? (
           <span
             title="Your creator application is still under review. You'll be able to launch once approved."
             className="inline-flex items-center gap-2 px-4 py-2 rounded-[var(--radius-btn)] border border-amber-300 bg-amber-50 dark:bg-amber-900/20 text-xs font-semibold text-amber-700 dark:text-amber-300"
@@ -97,7 +97,7 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
             New campaign · Awaiting approval
           </span>
         ) : (
-          <Link href="/apply/pm">
+          <Link href="/apply/creator">
             <Button variant="secondary">
               <PlusCircle className="w-4 h-4" />
               Apply to launch campaigns

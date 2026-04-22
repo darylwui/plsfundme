@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { PMRegistrationSteps } from "@/components/auth/PMRegistrationSteps";
+import { CreatorRegistrationSteps } from "@/components/auth/CreatorRegistrationSteps";
 
-type Role = "backer" | "project_manager" | null;
+type Role = "backer" | "creator" | null;
 
 function RegisterSuccess({
   email,
@@ -134,7 +134,7 @@ export function RegisterForm({ initialRole = null }: RegisterFormProps) {
     setSuccess(true);
   }
 
-  // PM success is handled inside PMRegistrationSteps
+  // PM success is handled inside CreatorRegistrationSteps
 
   if (success) {
     const provider = email.split("@")[1]?.toLowerCase() ?? "";
@@ -185,7 +185,7 @@ export function RegisterForm({ initialRole = null }: RegisterFormProps) {
 
           <button
             type="button"
-            onClick={() => setSelectedRole("project_manager")}
+            onClick={() => setSelectedRole("creator")}
             className="flex flex-col gap-2 rounded-[var(--radius-card)] border-2 border-[var(--color-border)] bg-[var(--color-surface)] p-5 text-left hover:border-[var(--color-brand-crust)] hover:bg-[var(--color-surface-raised)] transition-all group"
           >
             <span className="text-3xl">🚀</span>
@@ -207,9 +207,9 @@ export function RegisterForm({ initialRole = null }: RegisterFormProps) {
   }
 
   // PM registration flow
-  if (selectedRole === "project_manager") {
+  if (selectedRole === "creator") {
     return (
-      <PMRegistrationSteps onBack={() => setSelectedRole(null)} />
+      <CreatorRegistrationSteps onBack={() => setSelectedRole(null)} />
     );
   }
 

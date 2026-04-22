@@ -53,7 +53,7 @@ async function BackerDashboard({ userId, displayName, email }: { userId: string;
           <h3 className="font-bold text-[var(--color-ink)] mb-1">Ready to launch your own campaign?</h3>
           <p className="text-sm text-[var(--color-ink-muted)]">Become a creator and bring your ideas to life on get that bread.</p>
         </div>
-        <Link href="/apply/pm" className="shrink-0">
+        <Link href="/apply/creator" className="shrink-0">
           <Button variant="primary" size="sm">
             Apply as Creator
           </Button>
@@ -156,12 +156,12 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
   const typedProjects = (projects as unknown as ProjectWithRelations[]) ?? [];
   const activeProject = typedProjects.find((p) => p.status === "active") ?? typedProjects[0];
 
-  const { data: pmProfile } = await supabase
-    .from("project_manager_profiles")
+  const { data: creatorProfile } = await supabase
+    .from("creator_profiles")
     .select("singpass_verified")
     .eq("id", userId)
     .single();
-  const singpassVerified = Boolean(pmProfile?.singpass_verified);
+  const singpassVerified = Boolean(creatorProfile?.singpass_verified);
 
   let recentPledges: PledgeWithBacker[] = [];
   if (activeProject) {
@@ -299,8 +299,8 @@ export default async function DashboardPage() {
   const email = user?.email ?? "";
   const role = (profile?.role ?? "backer").toString().trim().toLowerCase();
 
-  // Backer shows backer dashboard for all non-project_manager roles
-  if (role === "project_manager") {
+  // Backer shows backer dashboard for all non-creator roles
+  if (role === "creator") {
     return <CreatorDashboard userId={user!.id} displayName={displayName} email={email} />;
   }
 

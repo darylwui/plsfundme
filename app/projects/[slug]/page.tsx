@@ -110,7 +110,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   const service = createServiceClient();
   const { data: creatorPmProfile } = await service
-    .from("project_manager_profiles")
+    .from("creator_profiles")
     .select("bio, linkedin_url, company_name, company_website, project_type, project_description")
     .eq("id", project.creator.id)
     .maybeSingle();

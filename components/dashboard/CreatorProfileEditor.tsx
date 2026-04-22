@@ -78,7 +78,7 @@ export function CreatorProfileEditor({ userId, initial }: CreatorProfileEditorPr
     }
 
     const { error: pmError } = await supabase
-      .from("project_manager_profiles")
+      .from("creator_profiles")
       .update({
         bio: bio.trim(),
         linkedin_url: linkedinUrl.trim() || null,

@@ -18,15 +18,15 @@ export default async function CreatorProfilePage() {
     .eq("id", user.id)
     .single();
 
-  if (profile?.role !== "project_manager") redirect("/dashboard");
+  if (profile?.role !== "creator") redirect("/dashboard");
 
-  const { data: pmProfile } = await supabase
-    .from("project_manager_profiles")
+  const { data: creatorProfile } = await supabase
+    .from("creator_profiles")
     .select("bio, linkedin_url, company_name, company_website, project_type, project_description, status")
     .eq("id", user.id)
     .single();
 
-  if (!pmProfile) redirect("/apply/pm");
+  if (!creatorProfile) redirect("/apply/creator");
 
   return (
     <div className="flex flex-col gap-6">
@@ -41,13 +41,13 @@ export default async function CreatorProfilePage() {
         userId={user.id}
         initial={{
           avatarUrl: profile?.avatar_url ?? null,
-          bio: pmProfile.bio,
-          linkedinUrl: pmProfile.linkedin_url,
-          companyName: pmProfile.company_name,
-          companyWebsite: pmProfile.company_website,
-          projectType: pmProfile.project_type,
-          projectDescription: pmProfile.project_description,
-          status: pmProfile.status,
+          bio: creatorProfile.bio,
+          linkedinUrl: creatorProfile.linkedin_url,
+          companyName: creatorProfile.company_name,
+          companyWebsite: creatorProfile.company_website,
+          projectType: creatorProfile.project_type,
+          projectDescription: creatorProfile.project_description,
+          status: creatorProfile.status,
         }}
       />
     </div>

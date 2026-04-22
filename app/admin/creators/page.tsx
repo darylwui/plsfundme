@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
-import { PMApprovalList } from "@/components/admin/PMApprovalList";
+import { CreatorApprovalList } from "@/components/admin/CreatorApprovalList";
 
-interface PMProfile {
+interface CreatorProfile {
   id: string;
   bio: string;
   linkedin_url: string | null;
@@ -51,7 +51,7 @@ export default async function ProjectManagersPage({ searchParams }: PageProps) {
   const service = createServiceClient();
 
   const { data: pmRaw } = await service
-    .from("project_manager_profiles")
+    .from("creator_profiles")
     .select("*")
     .order("submitted_at", { ascending: true });
 
@@ -71,7 +71,7 @@ export default async function ProjectManagersPage({ searchParams }: PageProps) {
 
   const emailMap = new Map(users.map((u) => [u.id, u.email ?? ""]));
 
-  const enriched: PMProfile[] = (pmRaw ?? []).map((p) => ({
+  const enriched: CreatorProfile[] = (pmRaw ?? []).map((p) => ({
     ...p,
     profile: profileMap.get(p.id) ?? null,
     email: emailMap.get(p.id) ?? "",
@@ -82,7 +82,7 @@ export default async function ProjectManagersPage({ searchParams }: PageProps) {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-bold text-[var(--color-ink)]">Project Manager Applications</h1>
+        <h1 className="text-2xl font-bold text-[var(--color-ink)]">Creator Applications</h1>
         <p className="text-sm text-[var(--color-ink-muted)] mt-1">
           Review and approve applications from aspiring campaign creators.
         </p>
@@ -97,7 +97,7 @@ export default async function ProjectManagersPage({ searchParams }: PageProps) {
           return (
             <a
               key={t}
-              href={`/admin/project-managers?tab=${t}`}
+              href={`/admin/creators?tab=${t}`}
               className={`px-4 py-2.5 text-sm font-semibold border-b-2 transition-colors ${
                 isActive
                   ? "border-[var(--color-brand-crust)] text-[var(--color-ink)]"
@@ -121,7 +121,7 @@ export default async function ProjectManagersPage({ searchParams }: PageProps) {
         })}
       </div>
 
-      <PMApprovalList pmProfiles={enriched} activeTab={activeTab} />
+      <CreatorApprovalList creatorProfiles={enriched} activeTab={activeTab} />
     </div>
   );
 }

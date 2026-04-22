@@ -5,7 +5,7 @@ import Image from "next/image";
 import { CheckCircle, XCircle, Clock, ExternalLink, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-interface PMProfile {
+interface CreatorProfile {
   id: string;
   bio: string;
   linkedin_url: string | null;
@@ -26,8 +26,8 @@ interface PMProfile {
   email?: string;
 }
 
-interface PMApprovalListProps {
-  pmProfiles: PMProfile[];
+interface CreatorApprovalListProps {
+  creatorProfiles: CreatorProfile[];
   activeTab: "pending_review" | "approved" | "rejected";
 }
 
@@ -46,12 +46,12 @@ function AvatarInitial({ name, avatarUrl }: { name: string; avatarUrl: string | 
   );
 }
 
-function PMCard({
+function CreatorCard({
   profile,
   onApprove,
   onReject,
 }: {
-  profile: PMProfile;
+  profile: CreatorProfile;
   onApprove: (id: string) => Promise<void>;
   onReject: (id: string, reason: string) => Promise<void>;
 }) {
@@ -255,13 +255,13 @@ function PMCard({
   );
 }
 
-export function PMApprovalList({ pmProfiles, activeTab }: PMApprovalListProps) {
-  const [profiles, setProfiles] = useState(pmProfiles);
+export function CreatorApprovalList({ creatorProfiles, activeTab }: CreatorApprovalListProps) {
+  const [profiles, setProfiles] = useState(creatorProfiles);
 
   const filtered = profiles.filter((p) => p.status === activeTab);
 
   async function handleApprove(id: string) {
-    const res = await fetch(`/api/admin/pm/${id}`, {
+    const res = await fetch(`/api/admin/creator/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "approve" }),
@@ -274,7 +274,7 @@ export function PMApprovalList({ pmProfiles, activeTab }: PMApprovalListProps) {
   }
 
   async function handleReject(id: string, reason: string) {
-    const res = await fetch(`/api/admin/pm/${id}`, {
+    const res = await fetch(`/api/admin/creator/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "reject", rejection_reason: reason }),
@@ -304,7 +304,7 @@ export function PMApprovalList({ pmProfiles, activeTab }: PMApprovalListProps) {
   return (
     <div className="grid gap-4 md:grid-cols-2">
       {filtered.map((profile) => (
-        <PMCard
+        <CreatorCard
           key={profile.id}
           profile={profile}
           onApprove={handleApprove}

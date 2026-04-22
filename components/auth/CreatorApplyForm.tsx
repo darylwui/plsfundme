@@ -20,12 +20,12 @@ const PROJECT_TYPES = [
   "Other",
 ];
 
-interface PMApplyFormProps {
+interface CreatorApplyFormProps {
   userId: string;
   onSuccess?: () => void;
 }
 
-export function PMApplyForm({ userId, onSuccess }: PMApplyFormProps) {
+export function CreatorApplyForm({ userId, onSuccess }: CreatorApplyFormProps) {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -80,7 +80,7 @@ export function PMApplyForm({ userId, onSuccess }: PMApplyFormProps) {
     setLoading(true);
     setErrors({});
     try {
-      const res = await fetch("/api/pm-apply", {
+      const res = await fetch("/api/creator-apply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
