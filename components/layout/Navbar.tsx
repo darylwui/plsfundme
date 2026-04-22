@@ -376,11 +376,13 @@ function NavDropdown({
         />
       </button>
 
-      {open && (
-        <div
-          role="menu"
-          className="absolute left-1/2 top-full -translate-x-1/2 mt-3 w-72 rounded-[var(--radius-card)] border border-[var(--color-border-invert)] bg-[var(--color-surface-invert)] shadow-[0_20px_60px_-20px_rgba(0,0,0,0.6)] p-1.5 z-50"
-        >
+      <div
+        role="menu"
+        className={cn(
+          "absolute left-1/2 top-full -translate-x-1/2 mt-3 w-72 rounded-[var(--radius-card)] border border-[var(--color-border-invert)] bg-[var(--color-surface-invert)] shadow-[0_20px_60px_-20px_rgba(0,0,0,0.6)] p-1.5 z-50 transition-all duration-200",
+          open ? "opacity-100 visible pointer-events-auto" : "opacity-0 invisible pointer-events-none"
+        )}
+      >
           {/* Invisible hover bridge so the cursor can travel from trigger to menu without closing */}
           <span
             aria-hidden
@@ -417,8 +419,7 @@ function NavDropdown({
               </Link>
             );
           })}
-        </div>
-      )}
+      </div>
     </div>
   );
 }

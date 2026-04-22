@@ -120,7 +120,7 @@ export function BackerStepper() {
         })}
       </div>
 
-      {/* Mobile: vertical with connectors */}
+      {/* Mobile: vertical with connectors + scroll hint */}
       <div className="md:hidden flex flex-col gap-3">
         {STEPS.map(({ Icon, step, title, description }, i) => {
           const active = hovered === i;
@@ -175,6 +175,12 @@ export function BackerStepper() {
             </div>
           );
         })}
+        {/* Mobile-only scroll hint */}
+        <div className="flex justify-center pt-2 opacity-60">
+          <div className="text-xs text-[var(--color-ink-muted)] animate-bounce">
+            Scroll down
+          </div>
+        </div>
       </div>
     </div>
   );
