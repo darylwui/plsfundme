@@ -24,7 +24,7 @@ const FILE = resolve(process.cwd(), "types/database.types.ts");
 // generated file.
 const REQUIRED_ALIASES = [
   "UserRole",
-  "PmStatus",
+  "CreatorStatus",
   "ProjectStatus",
   "PledgeStatus",
   "PaymentMethodType",
@@ -57,7 +57,7 @@ if (missing.length > 0) {
       "and the hand-maintained alias block at the top got wiped. Re-add it:\n" +
       "\n" +
       "  export type UserRole          = Database[\"public\"][\"Enums\"][\"user_role\"]\n" +
-      "  export type PmStatus          = Database[\"public\"][\"Enums\"][\"pm_status\"]\n" +
+      "  export type CreatorStatus     = Database[\"public\"][\"Enums\"][\"creator_status\"]\n" +
       "  export type ProjectStatus     = Database[\"public\"][\"Enums\"][\"project_status\"]\n" +
       "  export type PledgeStatus      = Database[\"public\"][\"Enums\"][\"pledge_status\"]\n" +
       "  export type PaymentMethodType = Database[\"public\"][\"Enums\"][\"payment_method_type\"]\n" +
