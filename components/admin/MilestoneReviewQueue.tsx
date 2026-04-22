@@ -14,7 +14,6 @@ export function MilestoneReviewQueue() {
   useEffect(() => {
     const loadSubmissions = async () => {
       try {
-        // TODO: Create GET /api/admin/milestones endpoint
         const res = await fetch('/api/admin/milestones?status=pending');
         const data = await res.json();
         setSubmissions(data.submissions || []);
