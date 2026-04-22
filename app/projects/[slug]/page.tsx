@@ -285,7 +285,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                       allowFullScreen
                     />
                     {project.is_featured && (
-                      <FeaturedSticker className="absolute bottom-4 left-4 z-10" size={112} />
+                      <FeaturedSticker className="absolute bottom-4 left-4 z-10" size={70} />
                     )}
                   </div>
                 );
@@ -302,7 +302,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                       sizes="(max-width: 1024px) 100vw, 66vw"
                     />
                     {project.is_featured && (
-                      <FeaturedSticker className="absolute bottom-4 left-4 z-10" size={112} />
+                      <FeaturedSticker className="absolute bottom-4 left-4 z-10" size={70} />
                     )}
                   </div>
                 );

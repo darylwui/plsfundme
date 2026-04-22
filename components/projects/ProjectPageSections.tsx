@@ -249,7 +249,7 @@ export function ProjectPageSections({
                 <a
                   key={h.id}
                   href={`#${h.id}`}
-                  className="text-xs rounded-full px-3 py-1 border border-[var(--color-border)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-crust)]/50 transition-colors"
+                  className="text-sm font-semibold rounded-full px-4 py-1.5 border border-[var(--color-brand-crust)]/40 bg-[var(--color-brand-crust)]/10 text-[var(--color-brand-crust)] hover:bg-[var(--color-brand-crust)]/20 hover:border-[var(--color-brand-crust)] transition-colors"
                 >
                   {h.text}
                 </a>
