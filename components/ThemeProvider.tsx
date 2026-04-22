@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 
 type Theme = "light" | "dark";
 
@@ -10,17 +10,13 @@ const ThemeContext = createContext<{ theme: Theme; toggle: () => void }>({
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("light");
-
-  useEffect(() => {
-    const stored = localStorage.getItem("theme") as Theme | null;
-    const preferred = window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light";
-    const initial = stored ?? preferred;
-    setTheme(initial);
-    document.documentElement.classList.toggle("dark", initial === "dark");
-  }, []);
+  // The root layout injects an inline <script> that sets the `dark` class on
+  // <html> before React hydrates, so we can read the DOM synchronously here
+  // instead of using a useEffect that causes an extra re-render cycle.
+  const [theme, setTheme] = useState<Theme>(() => {
+    if (typeof document === "undefined") return "light";
+    return document.documentElement.classList.contains("dark") ? "dark" : "light";
+  });
 
   function toggle() {
     setTheme((t) => {

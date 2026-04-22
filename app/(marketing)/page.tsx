@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { ArrowRight, Shield, Globe, Lock, TrendingUp, Star, Clock } from "lucide-react";
+import { unstable_cache } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { ProjectGrid } from "@/components/projects/ProjectGrid";
 import { Button } from "@/components/ui/button";
@@ -16,41 +18,51 @@ interface HomePageProps {
 }
 
 async function getProjects(filter: FilterTab): Promise<ProjectWithRelations[]> {
-  const supabase = await createClient();
+  return unstable_cache(
+    async () => {
+      const supabase = await createClient();
 
-  let query = supabase
-    .from("projects")
-    .select(
-      `*, category:categories(*), creator:profiles!creator_id(id, display_name, avatar_url), rewards(*), stretch_goals(*)`
-    )
-    .eq("status", "active")
-    .limit(12);
+      let query = supabase
+        .from("projects")
+        .select(
+          `*, category:categories(*), creator:profiles!creator_id(id, display_name, avatar_url), rewards(*), stretch_goals(*)`
+        )
+        .eq("status", "active")
+        .limit(12);
 
-  if (filter === "trending") {
-    query = query.order("backer_count", { ascending: false });
-  } else if (filter === "newest") {
-    query = query.order("launched_at", { ascending: false });
-  } else if (filter === "ending_soon") {
-    query = query.gt("deadline", new Date().toISOString()).order("deadline", { ascending: true });
-  }
+      if (filter === "trending") {
+        query = query.order("backer_count", { ascending: false });
+      } else if (filter === "newest") {
+        query = query.order("launched_at", { ascending: false });
+      } else if (filter === "ending_soon") {
+        query = query.gt("deadline", new Date().toISOString()).order("deadline", { ascending: true });
+      }
 
-  const { data } = await query;
-  return (data as unknown as ProjectWithRelations[]) ?? [];
+      const { data } = await query;
+      return (data as unknown as ProjectWithRelations[]) ?? [];
+    },
+    [`projects-${filter}`],
+    { revalidate: 60, tags: [`projects-${filter}`] }
+  )();
 }
 
-async function getPlatformStats() {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("projects")
-    .select("amount_pledged_sgd, backer_count, status");
+const getPlatformStats = unstable_cache(
+  async () => {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("projects")
+      .select("amount_pledged_sgd, backer_count, status");
 
-  const all = data ?? [];
-  const totalRaisedSGD = all.reduce((sum, p) => sum + (p.amount_pledged_sgd ?? 0), 0);
-  const totalBackers = all.reduce((sum, p) => sum + (p.backer_count ?? 0), 0);
-  const activeCampaigns = all.filter((p) => p.status === "active").length;
+    const all = data ?? [];
+    const totalRaisedSGD = all.reduce((sum, p) => sum + (p.amount_pledged_sgd ?? 0), 0);
+    const totalBackers = all.reduce((sum, p) => sum + (p.backer_count ?? 0), 0);
+    const activeCampaigns = all.filter((p) => p.status === "active").length;
 
-  return { totalRaisedSGD, totalBackers, activeCampaigns, totalCampaigns: all.length };
-}
+    return { totalRaisedSGD, totalBackers, activeCampaigns, totalCampaigns: all.length };
+  },
+  ["platform-stats"],
+  { revalidate: 300, tags: ["platform-stats"] }
+);
 
 function formatStatValue(n: number, prefix = "") {
   if (n === 0) return `${prefix}0`;
@@ -65,15 +77,35 @@ const TABS: { key: FilterTab; label: string; Icon: React.ComponentType<{ classNa
   { key: "ending_soon", label: "Ending soon", Icon: Clock },
 ];
 
+// ── Extracted async server component so the hero renders immediately ─────────
+async function ProjectGridServer({ activeFilter }: { activeFilter: FilterTab }) {
+  const projects = await getProjects(activeFilter);
+  return (
+    <ProjectGrid
+      projects={projects}
+      emptyMessage="No active projects yet — be the first to launch one!"
+    />
+  );
+}
+
+// ── Project grid skeleton (matches loading.tsx cards) ────────────────────────
+function ProjectGridSkeleton() {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div key={i} className="h-80 rounded-2xl bg-amber-100/60 dark:bg-amber-900/20" />
+      ))}
+    </div>
+  );
+}
+
 export default async function HomePage({ searchParams }: HomePageProps) {
   const { filter } = await searchParams;
   const activeFilter: FilterTab =
     filter === "newest" || filter === "ending_soon" ? filter : "trending";
 
-  const [projects, platformStats] = await Promise.all([
-    getProjects(activeFilter),
-    getPlatformStats(),
-  ]);
+  // Stats can resolve in parallel while the project grid streams in
+  const platformStats = await getPlatformStats();
 
   const stats = [
     {
@@ -299,10 +331,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
               </Link>
             </div>
 
-            <ProjectGrid
-              projects={projects}
-              emptyMessage="No active projects yet — be the first to launch one!"
-            />
+            <Suspense fallback={<ProjectGridSkeleton />}>
+              <ProjectGridServer activeFilter={activeFilter} />
+            </Suspense>
           </div>
         </section>
       </ScrollReveal>

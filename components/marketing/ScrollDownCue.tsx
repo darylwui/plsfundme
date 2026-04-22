@@ -37,7 +37,8 @@ export function ScrollDownCue({
           aria-hidden="true"
         >
           <motion.span
-            animate={{ y: [0, 6, 0] }}
+            whileInView={{ y: [0, 6, 0] }}
+            viewport={{ once: false }}
             transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
             className="text-sm md:text-base uppercase tracking-[0.22em] font-black text-[var(--color-brand-crust)] dark:text-[var(--color-brand-golden)]"
           >
@@ -48,12 +49,14 @@ export function ScrollDownCue({
             {/* Pulsing ring */}
             <motion.span
               className="absolute inset-0 rounded-full border-2 border-[var(--color-brand-crust)] dark:border-[var(--color-brand-golden)]"
-              animate={{ scale: [1, 1.6, 1.6], opacity: [0.7, 0, 0] }}
+              whileInView={{ scale: [1, 1.6, 1.6], opacity: [0.7, 0, 0] }}
+              viewport={{ once: false }}
               transition={{ duration: 1.8, repeat: Infinity, ease: "easeOut" }}
             />
             <motion.span
               className="absolute inset-0 rounded-full border-2 border-[var(--color-brand-crust)] dark:border-[var(--color-brand-golden)]"
-              animate={{ scale: [1, 1.6, 1.6], opacity: [0.5, 0, 0] }}
+              whileInView={{ scale: [1, 1.6, 1.6], opacity: [0.5, 0, 0] }}
+              viewport={{ once: false }}
               transition={{
                 duration: 1.8,
                 repeat: Infinity,
@@ -63,7 +66,8 @@ export function ScrollDownCue({
             />
             {/* Bouncing chevron */}
             <motion.span
-              animate={{ y: [0, 10, 0] }}
+              whileInView={{ y: [0, 10, 0] }}
+              viewport={{ once: false }}
               transition={{
                 duration: 1.4,
                 repeat: Infinity,
