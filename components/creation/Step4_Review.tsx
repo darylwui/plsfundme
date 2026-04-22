@@ -10,6 +10,7 @@ import { createClient } from "@/lib/supabase/client";
 import { slugifyUnique } from "@/lib/utils/slugify";
 import { formatDate } from "@/lib/utils/dates";
 import { sanitizeRichHtml } from "@/lib/utils/sanitize";
+import { CAMPAIGN_PROSE_CLASSES, processCampaignHtml } from "@/lib/utils/campaignHtml";
 import type { ProjectDraft, ProjectWithRelations, Category } from "@/types/project";
 import type { RewardFormData, Reward } from "@/types/reward";
 
@@ -250,11 +251,15 @@ export function Step4_Review({ draft, rewards, categories, onBack, onSuccess }: 
             {/* Funding widget */}
             <FundingWidget project={previewProject} />
 
-            {/* Description — sanitized before render */}
+            {/* Description — runs through the same pipeline as the public page
+                (sanitize + faux-heading promotion + prose classes) so this
+                preview matches the published view exactly. */}
             {draft.full_description && (
               <div
-                className="prose prose-sm max-w-none text-[var(--color-ink)] prose-headings:text-[var(--color-ink)] prose-a:text-[var(--color-brand-crust)]"
-                dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(draft.full_description) }}
+                className={CAMPAIGN_PROSE_CLASSES}
+                dangerouslySetInnerHTML={{
+                  __html: processCampaignHtml(draft.full_description).html,
+                }}
               />
             )}
           </div>

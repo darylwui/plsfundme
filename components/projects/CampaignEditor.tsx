@@ -5,6 +5,7 @@ import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import { useEffect, useCallback } from "react";
+import { CAMPAIGN_PROSE_CLASSES } from "@/lib/utils/campaignHtml";
 import {
   Bold,
   Italic,
@@ -83,16 +84,10 @@ export function CampaignEditor({
     editorProps: {
       attributes: {
         class: [
-          "prose prose-base max-w-none outline-none min-h-[inherit]",
-          "text-[var(--color-ink)]",
-          "prose-headings:text-[var(--color-ink)] prose-headings:font-bold",
-          "prose-h2:text-xl prose-h2:mt-6 prose-h2:mb-2",
-          "prose-h3:text-base prose-h3:mt-4 prose-h3:mb-1 prose-h3:text-[var(--color-ink-muted)]",
-          "prose-p:text-[var(--color-ink-muted)] prose-p:leading-relaxed prose-p:my-3",
-          "prose-a:text-[var(--color-brand-crust)] prose-a:no-underline hover:prose-a:underline",
-          "prose-strong:text-[var(--color-ink)] prose-strong:font-semibold",
-          "prose-ul:text-[var(--color-ink-muted)] prose-ol:text-[var(--color-ink-muted)] prose-li:my-1",
-          "prose-blockquote:border-l-[var(--color-brand-crust)] prose-blockquote:text-[var(--color-ink-muted)]",
+          CAMPAIGN_PROSE_CLASSES,
+          "outline-none min-h-[inherit]",
+          // TipTap placeholder plumbing — show the `data-placeholder` attribute
+          // as soft grey text when the editor is empty.
           "[&_.is-empty::before]:content-[attr(data-placeholder)] [&_.is-empty::before]:text-[var(--color-ink-subtle)] [&_.is-empty::before]:pointer-events-none [&_.is-empty::before]:float-left [&_.is-empty::before]:h-0",
         ].join(" "),
       },
@@ -152,7 +147,7 @@ export function CampaignEditor({
         <ToolbarDivider />
 
         <ToolbarButton
-          title="Heading 2"
+          title="Section heading (H2) — appears in the sidebar navigation on your public page"
           onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
           active={editor.isActive("heading", { level: 2 })}
         >
@@ -160,7 +155,7 @@ export function CampaignEditor({
         </ToolbarButton>
 
         <ToolbarButton
-          title="Heading 3"
+          title="Subsection heading (H3) — nested under the nearest Section heading"
           onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
           active={editor.isActive("heading", { level: 3 })}
         >
@@ -214,12 +209,21 @@ export function CampaignEditor({
         style={{ minHeight }}
       />
 
-      {/* Character count hint */}
-      <div className="px-4 py-1.5 border-t border-[var(--color-border)] bg-[var(--color-surface-raised)] flex items-center justify-between">
-        <span className="text-xs text-[var(--color-ink-subtle)]">
-          Tip: Use H2 headings with "?" to auto-generate FAQ entries on your public page.
-        </span>
-        <span className="text-xs text-[var(--color-ink-subtle)] font-mono tabular-nums">
+      {/* Formatting guide + character count */}
+      <div className="px-4 py-2 border-t border-[var(--color-border)] bg-[var(--color-surface-raised)] flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-0.5 text-[11px] text-[var(--color-ink-subtle)] leading-relaxed">
+          <span>
+            <strong className="font-semibold text-[var(--color-ink-muted)]">H2</strong> = section
+            (shows in the right-side nav).{" "}
+            <strong className="font-semibold text-[var(--color-ink-muted)]">H3</strong> = subsection
+            (indented under its H2). Use bold for emphasis, not as a heading — it won't appear in
+            navigation.
+          </span>
+          <span>
+            Section headings ending in <strong className="font-semibold text-[var(--color-ink-muted)]">?</strong> are auto-promoted into your FAQ.
+          </span>
+        </div>
+        <span className="text-xs text-[var(--color-ink-subtle)] font-mono tabular-nums shrink-0 pt-0.5">
           {editor.storage.characterCount?.characters?.() ?? editor.getText().length} chars
         </span>
       </div>
