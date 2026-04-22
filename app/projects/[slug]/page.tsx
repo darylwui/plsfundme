@@ -9,10 +9,12 @@ import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { FundingWidget } from "@/components/projects/FundingWidget";
 import { FeaturedSticker } from "@/components/projects/FeaturedSticker";
 import { ProjectPageSections } from "@/components/projects/ProjectPageSections";
+import { CampaignToc } from "@/components/projects/CampaignToc";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { daysRemaining, formatDate } from "@/lib/utils/dates";
 import { toEmbedUrl } from "@/lib/utils/video-embed";
+import { processCampaignHtml } from "@/lib/utils/campaignHtml";
 import type { ProjectWithRelations } from "@/types/project";
 import type { Metadata } from "next";
 
@@ -183,6 +185,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   const isPendingReview = project.status === "pending_review";
   if (isPendingReview && !isCreator) notFound();
+
+  const campaign = processCampaignHtml(project.full_description);
 
   return (
     <div className="min-h-screen bg-[var(--color-surface)]">
@@ -411,7 +415,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               updates={updates}
               isBacker={isBacker}
               initialFeedback={feedback}
-              descriptionHtml={project.full_description}
+              descriptionHtml={campaign.html}
+              descriptionHeadings={campaign.headings}
               rewards={project.rewards}
             />
           </div>
@@ -431,6 +436,9 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                   />
                 </div>
               )}
+
+              {/* Campaign section jumps */}
+              <CampaignToc headings={campaign.headings} />
             </div>
           </div>
         </div>
