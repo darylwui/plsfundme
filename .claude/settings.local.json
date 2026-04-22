@@ -83,7 +83,12 @@
       "Bash(ln -sf /Users/darylwui/plsfundme/.env.local /Users/darylwui/plsfundme/.claude/worktrees/great-beaver-7ab169/.env.local)",
       "Bash(gh pr *)",
       "Bash(git fetch *)",
-      "Bash(git checkout *)"
+      "Bash(git checkout *)",
+      "Bash(lsof -iTCP -sTCP:LISTEN -P)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:50712/how-it-works)",
+      "Bash(supabase db *)",
+      "Bash(npm test *)",
+      "Bash(find /Users/darylwui/plsfundme/.claude/worktrees/great-beaver-7ab169/app/api -name \"route.ts\" -exec head -7 {} +)"
     ]
   }
 }
