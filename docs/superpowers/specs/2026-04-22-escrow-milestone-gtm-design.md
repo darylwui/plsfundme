@@ -83,8 +83,20 @@ Creators with ≥1 successful campaign on GetThatBread + external credibility si
   - "Creator+" badge on campaign (prestige signal)
 
 **How to Achieve Creator+ Status:**
-1. Complete 1+ successful campaign on GetThatBread with on-time delivery
-2. Provide external credibility signals (portfolio, past success, endorsements) reviewed by platform
+
+*Criteria (both required):*
+1. **Platform history:** Complete ≥1 campaign on GetThatBread with on-time delivery (funded campaign ships all rewards within promised timeline)
+2. **External credibility:** Provide ≥1 of the following (reviewed by platform):
+   - Portfolio/case studies of past products shipped
+   - Proof of successful Kickstarter / Indiegogo campaign with delivery verification
+   - Manufacturing partnership letters or contracts (proving established factory relationships)
+   - Third-party endorsement (investor, accelerator, media feature validating credibility)
+
+*Approval Process:*
+- Creator applies via dashboard: uploads portfolio link + external proof documents
+- Platform reviews within 5 business days (automated check + manual verification if needed)
+- Decision: **Approved** → Creator+ tier unlocked, or **Needs More Info** → creator resubmits clarification
+- Timeline goal: most approvals within 5 days; edge cases (unclear proof) within 10 days
 
 ---
 
@@ -271,6 +283,15 @@ Creators submit proof at each milestone via dashboard forms. Platform verifies i
 - **Status:** To be explored with insurance provider; feasibility TBD
 - **Why:** Solves backer's #1 concern; creates recurring revenue; differentiates platform
 
+**Contingency (if insurance partnership is not feasible):**
+- Insurance remains optional for creators/backers; platform does not mandate it
+- Escrow + dispute resolution model is **viable without insurance**
+  - Backers are protected by escrow (funds held until milestone)
+  - Dispute resolution + legal recourse framework provides recovery path (Section 2)
+  - Messaging shifts to: "Our escrow system protects you" instead of "Insurance protects you"
+  - This is the *baseline* model; insurance is *additive* if available
+- Insurance exploration continues in parallel; if partnership materializes in Year 1–2, activate opt-in feature
+
 #### **Medium Priority: Manufacturing & Logistics Network** (Post-MVP, Year 2)
 - **What it is:** Curate vetted factories, freight forwarders, quality inspectors in SG/China/Vietnam
 - **Mechanics:**
@@ -331,6 +352,36 @@ Every escrow restriction ties to a specific risk you're solving. Messaging empha
 - **Speed signals trust:** "We reviewed this in 3 days" > "We reviewed this"
 - **Creator context:** Explain *why* milestone is delayed, not just that it is
 - **Backer empowerment:** Remind them they can file disputes; you're on their side
+
+---
+
+### Backer Education & Onboarding
+
+First-time backers need to understand the escrow model before pledging. Three-layer education approach:
+
+#### **Layer 1: Pre-Pledge Education (Campaign Page)**
+- **"How does this work?"** section above the pledge button
+  - Headline: "Your Money is Safe Until [Creator] Delivers"
+  - 3-step visual showing: Pledge → Escrow Holds → Creator Delivers → Release
+  - 60-second video: "How GetThatBread protects you"
+  - FAQ: "What if the creator disappears?" / "When do I get my money back?" / "What if the product is damaged?"
+
+#### **Layer 2: Post-Pledge Email**
+- Immediately after pledging: email titled "Your pledge is safe. Here's what happens next."
+  - Confirm pledge amount + tier
+  - Explain: creator must hit 3 milestones before your money transfers
+  - Show expected timeline: M1 (3 weeks) → M2 (8 weeks) → M3 (12 weeks)
+  - Reassure: "You'll get an update every time we verify a milestone."
+
+#### **Layer 3: Ongoing Campaign Updates**
+- Milestone status emails (as outlined in Section 6 messaging)
+- Dashboard widget showing progress: "✓ M1 Approved" → "⏳ M2 In Review" → "⏳ M3 Pending"
+- Option to opt-in to SMS updates (push notification of major milestones)
+
+#### **Layer 4: Dispute/Help (Reactive)**
+- If backer loses confidence: prominent "Report an Issue" button on campaign page
+- Links to guide: "File a dispute" (explains process, timeline)
+- Direct support: support@getthatbread.sg or live chat during SG business hours
 
 ---
 
