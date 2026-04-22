@@ -125,20 +125,12 @@ export default function HowItWorksPage() {
             <p className="text-lg text-[var(--color-ink-muted)] max-w-md mx-auto mb-10 leading-relaxed">
               Browse live campaigns and pledge to the ones that move you. No goal, no charge.
             </p>
-            <div className="flex items-center justify-center gap-5 flex-wrap">
-              <Link href="/explore">
-                <Button size="lg" variant="primary">
-                  Explore projects
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
-              </Link>
-              <Link
-                href="/for-creators"
-                className="text-sm font-semibold text-[var(--color-brand-crust)] dark:text-[var(--color-brand-golden)] hover:underline transition-colors"
-              >
-                Or launch your own →
-              </Link>
-            </div>
+            <Link href="/explore">
+              <Button size="lg" variant="primary">
+                Explore projects
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+            </Link>
           </div>
         </section>
       </ScrollReveal>
