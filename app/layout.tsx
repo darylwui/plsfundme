@@ -115,8 +115,8 @@ export default function RootLayout({
             <Footer />
           </CurrencyProvider>
         </ThemeProvider>
+        <GoogleAnalytics gaId="G-W93BB7060D" />
       </body>
-      <GoogleAnalytics gaId="G-W93BB7060D" />
     </html>
   );
 }
