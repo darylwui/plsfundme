@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { ArrowRight, Shield, Globe, Lock, TrendingUp, Star, Clock } from "lucide-react";
-import { cacheLife, cacheTag } from "next/cache";
+import { unstable_cache } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { ProjectGrid } from "@/components/projects/ProjectGrid";
 import { Button } from "@/components/ui/button";
@@ -18,55 +18,51 @@ interface HomePageProps {
 }
 
 async function getProjects(filter: FilterTab): Promise<ProjectWithRelations[]> {
-  "use cache";
-  cacheLife("minutes");
-  cacheTag(`projects-${filter}`);
+  return unstable_cache(
+    async () => {
+      const supabase = await createClient();
 
-  const supabase = await createClient();
+      let query = supabase
+        .from("projects")
+        .select(
+          `*, category:categories(*), creator:profiles!creator_id(id, display_name, avatar_url), rewards(*), stretch_goals(*)`
+        )
+        .eq("status", "active")
+        .limit(12);
 
-  let query = supabase
-    .from("projects")
-    .select(
-      `*, category:categories(*), creator:profiles!creator_id(id, display_name, avatar_url), rewards(*), stretch_goals(*)`
-    )
-    .eq("status", "active")
-    .limit(12);
+      if (filter === "trending") {
+        query = query.order("backer_count", { ascending: false });
+      } else if (filter === "newest") {
+        query = query.order("launched_at", { ascending: false });
+      } else if (filter === "ending_soon") {
+        query = query.gt("deadline", new Date().toISOString()).order("deadline", { ascending: true });
+      }
 
-  if (filter === "trending") {
-    query = query.order("backer_count", { ascending: false });
-  } else if (filter === "newest") {
-    query = query.order("launched_at", { ascending: false });
-  } else if (filter === "ending_soon") {
-    query = query.gt("deadline", new Date().toISOString()).order("deadline", { ascending: true });
-  }
-
-  const { data } = await query;
-  return (data as unknown as ProjectWithRelations[]) ?? [];
+      const { data } = await query;
+      return (data as unknown as ProjectWithRelations[]) ?? [];
+    },
+    [`projects-${filter}`],
+    { revalidate: 60, tags: [`projects-${filter}`] }
+  )();
 }
 
-async function getPlatformStats() {
-  "use cache";
-  cacheLife({
-    stale: 60,        // serve stale for up to 1 minute
-    revalidate: 300,  // revalidate in the background every 5 minutes
-    expire: 3600,     // hard expiry after 1 hour
-  });
-  cacheTag("platform-stats");
+const getPlatformStats = unstable_cache(
+  async () => {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("projects")
+      .select("amount_pledged_sgd, backer_count, status");
 
-  const supabase = await createClient();
+    const all = data ?? [];
+    const totalRaisedSGD = all.reduce((sum, p) => sum + (p.amount_pledged_sgd ?? 0), 0);
+    const totalBackers = all.reduce((sum, p) => sum + (p.backer_count ?? 0), 0);
+    const activeCampaigns = all.filter((p) => p.status === "active").length;
 
-  // Aggregate in one pass on the DB side: sum pledged, sum backers, count active
-  const { data } = await supabase
-    .from("projects")
-    .select("amount_pledged_sgd, backer_count, status");
-
-  const all = data ?? [];
-  const totalRaisedSGD = all.reduce((sum, p) => sum + (p.amount_pledged_sgd ?? 0), 0);
-  const totalBackers = all.reduce((sum, p) => sum + (p.backer_count ?? 0), 0);
-  const activeCampaigns = all.filter((p) => p.status === "active").length;
-
-  return { totalRaisedSGD, totalBackers, activeCampaigns, totalCampaigns: all.length };
-}
+    return { totalRaisedSGD, totalBackers, activeCampaigns, totalCampaigns: all.length };
+  },
+  ["platform-stats"],
+  { revalidate: 300, tags: ["platform-stats"] }
+);
 
 function formatStatValue(n: number, prefix = "") {
   if (n === 0) return `${prefix}0`;
