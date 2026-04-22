@@ -18,16 +18,16 @@ export default async function RegisterPage({ searchParams }: PageProps) {
   if (user) redirect("/dashboard");
 
   const { role } = await searchParams;
-  const initialRole = role === "pm" ? "project_manager" : null;
+  const initialRole = role === "creator" ? "creator" : null;
 
   return (
     <Card padding="lg" className="flex flex-col gap-6">
       <div className="flex flex-col gap-1.5">
         <h1 className="text-2xl font-black tracking-tight text-[var(--color-ink)]">
-          {initialRole === "project_manager" ? "Apply as Project Manager 🚀" : "Launch your idea 🚀"}
+          {initialRole === "creator" ? "Apply as a Creator 🚀" : "Launch your idea 🚀"}
         </h1>
         <p className="text-sm text-[var(--color-ink-muted)]">
-          {initialRole === "project_manager"
+          {initialRole === "creator"
             ? "Tell us about yourself and your campaign plan. We'll review your application within 1–2 business days."
             : "Create an account to start raising funds or back exciting projects."}
         </p>

@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { PMApplyForm } from "@/components/auth/PMApplyForm";
+import { CreatorApplyForm } from "@/components/auth/CreatorApplyForm";
 
-interface PMApplyLandingProps {
+interface CreatorApplyLandingProps {
   userId: string;
 }
 
-export function PMApplyLanding({ userId }: PMApplyLandingProps) {
+export function CreatorApplyLanding({ userId }: CreatorApplyLandingProps) {
   const [mode, setMode] = useState<"manual" | "success">("manual");
 
   if (mode === "success") {
@@ -32,13 +32,13 @@ export function PMApplyLanding({ userId }: PMApplyLandingProps) {
     <>
       <div className="mb-8">
         <h1 className="text-2xl font-black text-[var(--color-ink)] tracking-tight">
-          Apply as Project Manager 🚀
+          Apply as a Creator 🚀
         </h1>
         <p className="text-sm text-[var(--color-ink-muted)] mt-1.5">
           Tell us about yourself and your campaign plan. We&apos;ll review your application within 1–2 business days.
         </p>
       </div>
-      <PMApplyForm userId={userId} onSuccess={() => setMode("success")} />
+      <CreatorApplyForm userId={userId} onSuccess={() => setMode("success")} />
     </>
   );
 }

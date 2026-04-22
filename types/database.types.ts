@@ -393,7 +393,7 @@ export type Database = {
           },
         ]
       }
-      project_manager_profiles: {
+      creator_profiles: {
         Row: {
           bio: string
           company_name: string | null
@@ -409,7 +409,7 @@ export type Database = {
           reviewed_by: string | null
           singpass_sub: string | null
           singpass_verified: boolean
-          status: Database["public"]["Enums"]["pm_status"]
+          status: Database["public"]["Enums"]["creator_status"]
           submitted_at: string
           updated_at: string
         }
@@ -428,7 +428,7 @@ export type Database = {
           reviewed_by?: string | null
           singpass_sub?: string | null
           singpass_verified?: boolean
-          status?: Database["public"]["Enums"]["pm_status"]
+          status?: Database["public"]["Enums"]["creator_status"]
           submitted_at?: string
           updated_at?: string
         }
@@ -447,20 +447,20 @@ export type Database = {
           reviewed_by?: string | null
           singpass_sub?: string | null
           singpass_verified?: boolean
-          status?: Database["public"]["Enums"]["pm_status"]
+          status?: Database["public"]["Enums"]["creator_status"]
           submitted_at?: string
           updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "project_manager_profiles_id_fkey"
+            foreignKeyName: "creator_profiles_id_fkey"
             columns: ["id"]
             isOneToOne: true
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "project_manager_profiles_reviewed_by_fkey"
+            foreignKeyName: "creator_profiles_reviewed_by_fkey"
             columns: ["reviewed_by"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -766,7 +766,7 @@ export type Database = {
         | "released"
         | "refunded"
         | "failed"
-      pm_status: "pending_review" | "approved" | "rejected"
+      creator_status: "pending_review" | "approved" | "rejected"
       project_status:
         | "draft"
         | "active"
@@ -775,7 +775,7 @@ export type Database = {
         | "cancelled"
         | "pending_review"
         | "removed"
-      user_role: "backer" | "project_manager"
+      user_role: "backer" | "creator"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -917,7 +917,7 @@ export const Constants = {
         "refunded",
         "failed",
       ],
-      pm_status: ["pending_review", "approved", "rejected"],
+      creator_status: ["pending_review", "approved", "rejected"],
       project_status: [
         "draft",
         "active",
@@ -927,7 +927,7 @@ export const Constants = {
         "pending_review",
         "removed",
       ],
-      user_role: ["backer", "project_manager"],
+      user_role: ["backer", "creator"],
     },
   },
 } as const

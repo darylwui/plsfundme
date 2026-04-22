@@ -4,7 +4,7 @@ import { maybeSweep, rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
   maybeSweep();
-  const rl = rateLimit(req, "pm-apply", { windowMs: 60_000, max: 5 });
+  const rl = rateLimit(req, "creator-apply", { windowMs: 60_000, max: 5 });
   if (!rl.ok) return rateLimitResponse(rl);
 
   try {
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
 
     // Block re-submission if already approved or pending review
     const { data: existing } = await service
-      .from("project_manager_profiles")
+      .from("creator_profiles")
       .select("status")
       .eq("id", userId)
       .maybeSingle();
@@ -43,8 +43,8 @@ export async function POST(req: NextRequest) {
       .from("profiles")
       .update(
         photo_url
-          ? { role: "project_manager", avatar_url: photo_url }
-          : { role: "project_manager" }
+          ? { role: "creator", avatar_url: photo_url }
+          : { role: "creator" }
       )
       .eq("id", userId);
 
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Upsert PM profile — always reset to pending_review so rejected creators can re-apply
-    const { error } = await service.from("project_manager_profiles").upsert({
+    const { error } = await service.from("creator_profiles").upsert({
       id: userId,
       bio,
       linkedin_url: linkedin_url || null,

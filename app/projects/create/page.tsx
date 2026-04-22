@@ -23,7 +23,7 @@ export default async function CreateProjectPage() {
     .single();
 
   // Not a PM at all
-  if (profile?.role !== "project_manager") {
+  if (profile?.role !== "creator") {
     return (
       <main className="flex-1 bg-[var(--color-surface-raised)] flex items-center justify-center px-4 py-16">
         <div className="max-w-md w-full text-center flex flex-col items-center gap-5">
@@ -32,18 +32,18 @@ export default async function CreateProjectPage() {
             </div>
             <div>
               <h1 className="text-xl font-bold text-[var(--color-ink)]">
-                Project Manager account required
+                Creator account required
               </h1>
               <p className="text-sm text-[var(--color-ink-muted)] mt-2 leading-relaxed">
-                You need a Project Manager account to launch campaigns on get that bread. Apply now — it only takes a few minutes.
+                You need a Creator account to launch campaigns on get that bread. Apply now — it only takes a few minutes.
               </p>
             </div>
             <Link
-              href="/apply/pm"
+              href="/apply/creator"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-[var(--radius-btn)] bg-[var(--color-brand-crust)] text-white text-sm font-semibold hover:opacity-90 transition-opacity"
             >
               <Rocket className="w-4 h-4" />
-              Apply as Project Manager
+              Apply as a Creator
             </Link>
             <Link
               href="/"
@@ -57,14 +57,14 @@ export default async function CreateProjectPage() {
   }
 
   // Check PM profile status
-  const { data: pmProfile } = await supabase
-    .from("project_manager_profiles")
+  const { data: creatorProfile } = await supabase
+    .from("creator_profiles")
     .select("status, rejection_reason")
     .eq("id", user.id)
     .single();
 
   // No PM profile yet, or pending review
-  if (!pmProfile || pmProfile.status === "pending_review") {
+  if (!creatorProfile || creatorProfile.status === "pending_review") {
     return (
       <main className="flex-1 bg-[var(--color-surface-raised)] flex items-center justify-center px-4 py-16">
         <div className="max-w-md w-full text-center flex flex-col items-center gap-5">
@@ -76,7 +76,7 @@ export default async function CreateProjectPage() {
                 Application under review
               </h1>
               <p className="text-sm text-[var(--color-ink-muted)] mt-2 leading-relaxed">
-                Your Project Manager application is currently being reviewed by our team. We&apos;ll notify you within <strong>1–2 business days</strong>.
+                Your Creator application is currently being reviewed by our team. We&apos;ll notify you within <strong>1–2 business days</strong>.
               </p>
             </div>
             <div className="w-full rounded-[var(--radius-card)] border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700">
@@ -94,7 +94,7 @@ export default async function CreateProjectPage() {
   }
 
   // Rejected
-  if (pmProfile.status === "rejected") {
+  if (creatorProfile.status === "rejected") {
     return (
       <main className="flex-1 bg-[var(--color-surface-raised)] flex items-center justify-center px-4 py-16">
         <div className="max-w-md w-full text-center flex flex-col items-center gap-5">
@@ -106,17 +106,17 @@ export default async function CreateProjectPage() {
                 Application not approved
               </h1>
               <p className="text-sm text-[var(--color-ink-muted)] mt-2 leading-relaxed">
-                Unfortunately, your Project Manager application was not approved at this time.
+                Unfortunately, your Creator application was not approved at this time.
               </p>
             </div>
-            {pmProfile.rejection_reason && (
+            {creatorProfile.rejection_reason && (
               <div className="w-full rounded-[var(--radius-card)] border border-red-200 bg-red-50 px-4 py-3 text-left">
                 <p className="text-xs font-semibold text-red-700 mb-1">Reason</p>
-                <p className="text-xs text-red-600">{pmProfile.rejection_reason}</p>
+                <p className="text-xs text-red-600">{creatorProfile.rejection_reason}</p>
               </div>
             )}
             <Link
-              href="/apply/pm"
+              href="/apply/creator"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-[var(--radius-btn)] bg-[var(--color-brand-crust)] text-white text-sm font-semibold hover:opacity-90 transition-opacity"
             >
               Re-apply as Creator

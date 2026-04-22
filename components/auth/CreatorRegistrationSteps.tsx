@@ -20,11 +20,11 @@ const PROJECT_TYPES = [
   "Other",
 ];
 
-interface PMRegistrationStepsProps {
+interface CreatorRegistrationStepsProps {
   onBack: () => void;
 }
 
-export function PMRegistrationSteps({ onBack }: PMRegistrationStepsProps) {
+export function CreatorRegistrationSteps({ onBack }: CreatorRegistrationStepsProps) {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -102,7 +102,7 @@ export function PMRegistrationSteps({ onBack }: PMRegistrationStepsProps) {
         email,
         password,
         options: {
-          data: { full_name: displayName.trim(), role: "project_manager" },
+          data: { full_name: displayName.trim(), role: "creator" },
           emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
         },
       });
@@ -120,7 +120,7 @@ export function PMRegistrationSteps({ onBack }: PMRegistrationStepsProps) {
         return;
       }
 
-      const res = await fetch("/api/pm-apply", {
+      const res = await fetch("/api/creator-apply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
