@@ -20,7 +20,7 @@ export const CAMPAIGN_PROSE_CLASSES = [
   // Subsection heading (H3) — nested under H2, muted.
   "[&_h3]:text-base [&_h3]:font-bold [&_h3]:tracking-tight [&_h3]:mt-6 [&_h3]:mb-2 [&_h3]:text-[var(--color-ink-muted)]",
   // Paragraph body text.
-  "[&_p]:text-[var(--color-ink-muted)] [&_p]:leading-relaxed [&_p]:my-3",
+  "[&_p]:text-[var(--color-brand-crust-dark)] [&_p]:leading-relaxed [&_p]:my-3",
   // Inline marks.
   "[&_a]:text-[var(--color-brand-crust)] [&_a]:underline [&_a]:underline-offset-2 hover:[&_a]:text-[var(--color-brand-crust-dark)]",
   "[&_strong]:text-[var(--color-ink)] [&_strong]:font-semibold",
@@ -28,9 +28,9 @@ export const CAMPAIGN_PROSE_CLASSES = [
   "[&_u]:underline [&_u]:underline-offset-2",
   // Lists — restore browser defaults that Tailwind's preflight strips.
   "[&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3",
-  "[&_li]:my-1 [&_li]:text-[var(--color-ink-muted)]",
+  "[&_li]:my-1 [&_li]:text-[var(--color-brand-crust-dark)]",
   // Blockquotes — left rail in brand crust.
-  "[&_blockquote]:border-l-4 [&_blockquote]:border-l-[var(--color-brand-crust)] [&_blockquote]:pl-4 [&_blockquote]:my-4 [&_blockquote]:text-[var(--color-ink-muted)] [&_blockquote]:italic",
+  "[&_blockquote]:border-l-4 [&_blockquote]:border-l-[var(--color-brand-crust)] [&_blockquote]:pl-4 [&_blockquote]:my-4 [&_blockquote]:text-[var(--color-brand-crust-dark)] [&_blockquote]:italic",
   // Images + rules.
   "[&_img]:rounded-[var(--radius-card)] [&_img]:border [&_img]:border-[var(--color-border)] [&_img]:my-4",
   "[&_hr]:border-[var(--color-border)] [&_hr]:my-6",
