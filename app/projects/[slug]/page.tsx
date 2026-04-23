@@ -7,6 +7,7 @@ import { ShareButtons } from "@/components/sharing/ShareButtons";
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://getthatbread.sg";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { FundingWidget } from "@/components/projects/FundingWidget";
+import { BackerEducationSection } from "@/components/backer/BackerEducationSection";
 import { FeaturedSticker } from "@/components/projects/FeaturedSticker";
 import { ProjectPageSections } from "@/components/projects/ProjectPageSections";
 import { Badge } from "@/components/ui/badge";
@@ -394,6 +395,9 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
             {/* Funding widget — inline on mobile only */}
             <div className="lg:hidden">
+              <section className="max-w-2xl">
+                <BackerEducationSection />
+              </section>
               <FundingWidget project={project} />
             </div>
 
@@ -419,6 +423,9 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           {/* ── RIGHT COLUMN — sticky funding widget (desktop only) ── */}
           <div className="hidden lg:block">
             <div className="sticky top-[calc(4rem+3.5rem)] self-start">
+              <section className="max-w-2xl">
+                <BackerEducationSection />
+              </section>
               <FundingWidget project={project} />
 
               {/* Share below widget on desktop */}
