@@ -6,10 +6,7 @@ import { Rocket, Eye, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FundingWidget } from "@/components/projects/FundingWidget";
-import { createClient } from "@/lib/supabase/client";
-import { slugifyUnique } from "@/lib/utils/slugify";
 import { formatDate } from "@/lib/utils/dates";
-import { sanitizeRichHtml } from "@/lib/utils/sanitize";
 import { CAMPAIGN_PROSE_CLASSES, processCampaignHtml } from "@/lib/utils/campaignHtml";
 import type { ProjectDraft, ProjectWithRelations, Category } from "@/types/project";
 import type { RewardFormData, Reward } from "@/types/reward";
@@ -99,64 +96,34 @@ export function Step4_Review({ draft, rewards, categories, onBack, onSuccess }: 
     setLaunching(true);
     setError(null);
 
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      setError("You must be logged in to launch a project.");
-      setLaunching(false);
-      return;
-    }
-
-    const slug = slugifyUnique(draft.title);
-
-    const { data: project, error: projectError } = await supabase
-      .from("projects")
-      .insert({
-        creator_id: user.id,
+    const res = await fetch("/api/projects", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
         category_id: draft.category_id,
         title: draft.title,
-        slug,
         short_description: draft.short_description,
-        full_description: sanitizeRichHtml(draft.full_description ?? ""),
+        full_description: draft.full_description,
         cover_image_url: draft.cover_image_url,
         video_url: draft.video_url,
         funding_goal_sgd: draft.funding_goal_sgd,
         payout_mode: draft.payout_mode,
         start_date: draft.start_date,
         deadline: draft.deadline,
-        status: "pending_review",
-        launched_at: new Date().toISOString(),
-      })
-      .select()
-      .single();
+        rewards,
+      }),
+    });
 
-    if (projectError || !project) {
-      setError(projectError?.message ?? "Failed to create project.");
+    const json = await res.json();
+
+    if (!res.ok) {
+      setError(json.error ?? "Failed to create project.");
       setLaunching(false);
       return;
     }
 
-    if (rewards.length > 0) {
-      const rewardRows = rewards.map((r, i) => ({
-        project_id: project.id,
-        title: r.title,
-        description: r.description,
-        minimum_pledge_sgd: r.minimum_pledge_sgd,
-        estimated_delivery_date: r.estimated_delivery_date || null,
-        max_backers: r.max_backers,
-        includes_physical_item: r.includes_physical_item,
-        display_order: i,
-      }));
-
-      const { error: rewardError } = await supabase.from("rewards").insert(rewardRows);
-      if (rewardError) {
-        setError("Project created, but some rewards failed to save. Check your dashboard.");
-      }
-    }
-
     onSuccess?.();
-    router.push(`/dashboard/projects?submitted=1&slug=${slug}`);
+    router.push(`/dashboard/projects?submitted=1&slug=${json.slug}`);
   }
 
   return (
