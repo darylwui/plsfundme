@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 type Theme = "light" | "dark";
 
@@ -10,18 +10,30 @@ const ThemeContext = createContext<{ theme: Theme; toggle: () => void }>({
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  // The root layout injects an inline <script> that sets the `dark` class on
-  // <html> before React hydrates, so we can read the DOM synchronously here
-  // instead of using a useEffect that causes an extra re-render cycle.
+  // Initialise from localStorage first (explicit user preference), then fall
+  // back to the DOM class set by the inline <script> in the root layout
+  // (which reflects system preference on first visit).
+  // Reading localStorage directly prevents the class from "disappearing" if
+  // React reconciliation removes it before this initialiser runs.
   const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof document === "undefined") return "light";
+    if (typeof window === "undefined") return "light";
+    try {
+      const stored = localStorage.getItem("theme");
+      if (stored === "dark" || stored === "light") return stored;
+    } catch {}
     return document.documentElement.classList.contains("dark") ? "dark" : "light";
   });
+
+  // Re-sync the DOM class after every render — belt-and-suspenders guard
+  // against React hydration stripping the class the inline script set.
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", theme === "dark");
+  }, [theme]);
 
   function toggle() {
     setTheme((t) => {
       const next = t === "dark" ? "light" : "dark";
-      localStorage.setItem("theme", next);
+      try { localStorage.setItem("theme", next); } catch {}
       document.documentElement.classList.toggle("dark", next === "dark");
       return next;
     });
