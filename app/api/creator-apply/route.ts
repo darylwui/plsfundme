@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { maybeSweep, rateLimit, rateLimitResponse } from "@/lib/rate-limit";
-import { sendCreatorApplicationSubmittedEmail } from "@/lib/email/templates";
+import { sendCreatorApplicationSubmittedEmail, sendAdminNewCreatorApplicationEmail } from "@/lib/email/templates";
 
 export async function POST(req: NextRequest) {
   maybeSweep();
@@ -72,13 +72,22 @@ export async function POST(req: NextRequest) {
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-    // Send submission confirmation email (fire-and-forget, don't block response)
+    // Send emails (fire-and-forget, don't block response)
     const { data: { user: applicant } } = await service.auth.admin.getUserById(userId);
     const { data: applicantProfile } = await service.from("profiles").select("display_name").eq("id", userId).single();
     if (applicant?.email && applicantProfile) {
+      const name = (applicantProfile as { display_name: string }).display_name;
+      // Confirmation to applicant
       sendCreatorApplicationSubmittedEmail({
         creatorEmail: applicant.email,
-        creatorName: (applicantProfile as { display_name: string }).display_name,
+        creatorName: name,
+      }).catch(console.error);
+      // Alert to admin
+      sendAdminNewCreatorApplicationEmail({
+        applicantName: name,
+        applicantEmail: applicant.email,
+        projectType: project_type,
+        projectDescription: project_description,
       }).catch(console.error);
     }
 

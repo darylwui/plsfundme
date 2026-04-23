@@ -1,4 +1,4 @@
-import { getResend, FROM } from "./resend";
+import { getResend, FROM, ADMIN_EMAIL } from "./resend";
 import { formatSgd } from "@/lib/utils/currency";
 
 interface CampaignFundedArgs {
@@ -252,6 +252,65 @@ export async function sendCreatorRejectedEmail(args: CreatorRejectedArgs) {
       <p style="margin-top:24px;font-size:14px;color:#6b7280;">
         If you have questions, reply to this email or contact us at <a href="mailto:hello@getthatbread.sg">hello@getthatbread.sg</a>.
       </p>
+    `,
+  });
+}
+
+// ── Admin notification emails ─────────────────────────────────────────────────
+
+interface AdminNewCreatorApplicationArgs {
+  applicantName: string;
+  applicantEmail: string;
+  projectType: string;
+  projectDescription: string;
+}
+
+interface AdminNewProjectSubmittedArgs {
+  creatorName: string;
+  projectTitle: string;
+  projectSlug: string;
+  fundingGoal: number;
+}
+
+export async function sendAdminNewCreatorApplicationEmail(args: AdminNewCreatorApplicationArgs) {
+  return sendEmail({
+    from: FROM,
+    to: ADMIN_EMAIL,
+    subject: `🔔 New creator application — ${args.applicantName}`,
+    html: `
+      <h2>New creator application</h2>
+      <table style="border-collapse:collapse;width:100%;font-size:14px;">
+        <tr><td style="padding:6px 12px 6px 0;color:#6b7280;font-weight:600;">Name</td><td style="padding:6px 0;">${args.applicantName}</td></tr>
+        <tr><td style="padding:6px 12px 6px 0;color:#6b7280;font-weight:600;">Email</td><td style="padding:6px 0;">${args.applicantEmail}</td></tr>
+        <tr><td style="padding:6px 12px 6px 0;color:#6b7280;font-weight:600;">Project type</td><td style="padding:6px 0;">${args.projectType}</td></tr>
+      </table>
+      <p style="font-weight:600;margin-top:16px;">Project description:</p>
+      <p style="background:#f9fafb;border-left:3px solid #d1d5db;padding:12px;border-radius:4px;color:#374151;">${args.projectDescription}</p>
+      <a href="${appUrl}/admin/creators" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
+        Review in admin
+      </a>
+    `,
+  });
+}
+
+export async function sendAdminNewProjectSubmittedEmail(args: AdminNewProjectSubmittedArgs) {
+  return sendEmail({
+    from: FROM,
+    to: ADMIN_EMAIL,
+    subject: `🔔 New campaign for review — "${args.projectTitle}"`,
+    html: `
+      <h2>New campaign submitted for review</h2>
+      <table style="border-collapse:collapse;width:100%;font-size:14px;">
+        <tr><td style="padding:6px 12px 6px 0;color:#6b7280;font-weight:600;">Creator</td><td style="padding:6px 0;">${args.creatorName}</td></tr>
+        <tr><td style="padding:6px 12px 6px 0;color:#6b7280;font-weight:600;">Title</td><td style="padding:6px 0;">${args.projectTitle}</td></tr>
+        <tr><td style="padding:6px 12px 6px 0;color:#6b7280;font-weight:600;">Goal</td><td style="padding:6px 0;">${formatSgd(args.fundingGoal)}</td></tr>
+      </table>
+      <a href="${appUrl}/projects/${args.projectSlug}" style="background:#6b7280;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;margin-right:8px;">
+        Preview campaign
+      </a>
+      <a href="${appUrl}/admin/projects" style="background:#7C3AED;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
+        Review in admin
+      </a>
     `,
   });
 }
