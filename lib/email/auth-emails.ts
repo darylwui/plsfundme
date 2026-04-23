@@ -54,11 +54,11 @@ function linkSection(args: {
       <p style="margin:0 0 28px 0;font-size:16px;line-height:1.6;color:#6B5D4D;">${args.body}</p>
     </td></tr>
     <tr><td style="padding:0 40px 8px 40px;">
-      <a href="${esc(args.ctaUrl)}" style="display:inline-block;background:#E07F14;color:#FFF7E8;font-size:16px;font-weight:700;padding:14px 28px;border-radius:10px;text-decoration:none;letter-spacing:-0.01em;">${args.ctaLabel}</a>
+      <a href="${args.ctaUrl}" style="display:inline-block;background:#E07F14;color:#FFF7E8;font-size:16px;font-weight:700;padding:14px 28px;border-radius:10px;text-decoration:none;letter-spacing:-0.01em;">${args.ctaLabel}</a>
     </td></tr>
     <tr><td style="padding:24px 40px 0 40px;">
       <p style="margin:0 0 6px 0;font-size:13px;line-height:1.5;color:#8E8070;">Button not working? Paste this link into your browser:</p>
-      <p style="margin:0;font-size:13px;word-break:break-all;line-height:1.5;"><a href="${esc(args.ctaUrl)}" style="color:#AC5811;text-decoration:underline;">${esc(args.ctaUrl)}</a></p>
+      <p style="margin:0;font-size:13px;word-break:break-all;line-height:1.5;"><a href="${args.ctaUrl}" style="color:#AC5811;text-decoration:underline;">${esc(args.ctaUrl)}</a></p>
     </td></tr>
     <tr><td style="padding:20px 40px 0 40px;">
       <p style="margin:0;font-size:12px;line-height:1.5;color:#8E8070;">${args.footer}</p>
@@ -115,11 +115,11 @@ export function renderChangeEmail(args: { confirmUrl: string; newEmail: string }
       <p style="margin:0 0 28px 0;font-size:14px;line-height:1.6;color:#8E8070;">Your old email will stay active until the new one is confirmed.</p>
     </td></tr>
     <tr><td style="padding:0 40px 8px 40px;">
-      <a href="${esc(args.confirmUrl)}" style="display:inline-block;background:#E07F14;color:#FFF7E8;font-size:16px;font-weight:700;padding:14px 28px;border-radius:10px;text-decoration:none;letter-spacing:-0.01em;">Confirm new email →</a>
+      <a href="${args.confirmUrl}" style="display:inline-block;background:#E07F14;color:#FFF7E8;font-size:16px;font-weight:700;padding:14px 28px;border-radius:10px;text-decoration:none;letter-spacing:-0.01em;">Confirm new email →</a>
     </td></tr>
     <tr><td style="padding:24px 40px 0 40px;">
       <p style="margin:0 0 6px 0;font-size:13px;line-height:1.5;color:#8E8070;">Button not working? Paste this link into your browser:</p>
-      <p style="margin:0;font-size:13px;word-break:break-all;line-height:1.5;"><a href="${esc(args.confirmUrl)}" style="color:#AC5811;text-decoration:underline;">${esc(args.confirmUrl)}</a></p>
+      <p style="margin:0;font-size:13px;word-break:break-all;line-height:1.5;"><a href="${args.confirmUrl}" style="color:#AC5811;text-decoration:underline;">${esc(args.confirmUrl)}</a></p>
     </td></tr>
     <tr><td style="padding:20px 40px 0 40px;">
       <p style="margin:0;font-size:12px;line-height:1.5;color:#8E8070;">Didn't request this change? Secure your account immediately by resetting your password.</p>
