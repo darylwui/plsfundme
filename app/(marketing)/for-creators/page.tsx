@@ -48,18 +48,12 @@ export default function ForCreatorsPage() {
             Singapore-first, all-or-nothing, and you only pay a fee if you hit
             your goal.
           </p>
-          <div className="mt-8 flex flex-wrap items-center gap-4">
+          <div className="mt-8">
             <Link href="/projects/create">
               <Button size="lg" variant="primary">
                 Start your campaign
                 <ArrowRight className="w-4 h-4" />
               </Button>
-            </Link>
-            <Link
-              href="/how-it-works"
-              className="text-sm font-semibold text-[var(--color-brand-crust)] dark:text-[var(--color-brand-golden)] hover:underline transition-colors"
-            >
-              Or see the backer side →
             </Link>
           </div>
           <ScrollDownCue />

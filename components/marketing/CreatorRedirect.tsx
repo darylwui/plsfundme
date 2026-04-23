@@ -19,7 +19,7 @@ export function CreatorRedirect() {
         href="/for-creators"
         className="inline-flex items-center gap-1.5 shrink-0 text-sm font-bold text-[var(--color-brand-crust)] dark:text-[var(--color-brand-golden)] hover:gap-2 transition-all"
       >
-        See the creator guide
+        See our creator guide
         <ArrowRight className="w-4 h-4" />
       </Link>
     </div>
