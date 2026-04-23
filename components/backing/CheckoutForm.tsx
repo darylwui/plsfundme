@@ -47,8 +47,6 @@ export function CheckoutForm({
       ? Math.ceil(initialAmount * SGD_TO_USD)
       : initialAmount
   );
-  const [isAnonymous, setIsAnonymous] = useState(false);
-  const [note, setNote] = useState("");
 
   // The real SGD amount used for Stripe — always rounded to whole dollars
   const sgdAmount = currency === "USD"
@@ -190,38 +188,6 @@ export function CheckoutForm({
             .
           </p>
         )}
-      </div>
-
-      {/* Options */}
-      <div className="flex flex-col gap-3">
-        <label className="flex items-center gap-2.5 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={isAnonymous}
-            onChange={(e) => setIsAnonymous(e.target.checked)}
-            className="w-4 h-4 rounded accent-[var(--color-brand-crust)]"
-          />
-          <span className="text-sm text-[var(--color-ink)]">
-            Back anonymously (your name won&apos;t appear on the project page)
-          </span>
-        </label>
-
-        <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-[var(--color-ink)]">
-            Note to creator{" "}
-            <span className="font-normal text-[var(--color-ink-subtle)]">
-              (optional)
-            </span>
-          </label>
-          <textarea
-            rows={2}
-            maxLength={500}
-            placeholder="Share your excitement or a personal message…"
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)] resize-none"
-          />
-        </div>
       </div>
 
       {error && (
