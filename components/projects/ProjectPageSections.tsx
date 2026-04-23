@@ -11,7 +11,7 @@ import { ProjectSectionNav } from "@/components/projects/ProjectSectionNav";
 import type { ProjectUpdatePost } from "@/types/project";
 import type { Reward } from "@/types/reward";
 import { formatDate } from "@/lib/utils/dates";
-import type { CampaignHeading } from "@/lib/utils/campaignHtml";
+import { CAMPAIGN_PROSE_CLASSES, type CampaignHeading } from "@/lib/utils/campaignHtml";
 
 type FeedbackAuthor = {
   display_name: string;
@@ -227,16 +227,7 @@ export function ProjectPageSections({
 
         {descriptionHtml ? (
           <div
-            className="prose prose-base max-w-none text-[var(--color-ink)]
-              prose-headings:text-[var(--color-ink)] prose-headings:font-bold prose-headings:tracking-tight
-              prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-3 prose-h2:border-b prose-h2:border-[var(--color-border)] prose-h2:pb-2
-              prose-h3:text-base prose-h3:mt-6 prose-h3:mb-2 prose-h3:text-[var(--color-ink-muted)]
-              prose-p:text-[var(--color-ink-muted)] prose-p:leading-relaxed
-              prose-a:text-[var(--color-brand-crust)] prose-a:no-underline hover:prose-a:underline
-              prose-strong:text-[var(--color-ink)] prose-strong:font-semibold
-              prose-ul:text-[var(--color-ink-muted)] prose-li:my-1
-              prose-img:rounded-[var(--radius-card)] prose-img:border prose-img:border-[var(--color-border)]
-              prose-blockquote:border-l-[var(--color-brand-crust)] prose-blockquote:text-[var(--color-ink-muted)]"
+            className={CAMPAIGN_PROSE_CLASSES}
             dangerouslySetInnerHTML={{ __html: descriptionHtml }}
           />
         ) : (
