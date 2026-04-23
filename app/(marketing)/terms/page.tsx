@@ -91,8 +91,8 @@ export default function TermsPage() {
                 and you do not acquire equity or ownership in the creator&apos;s business.
               </li>
               <li>
-                get that bread uses an <strong>all-or-nothing</strong> funding model. Your payment is only collected
-                if the campaign reaches its funding goal by the deadline.
+                get that bread uses a <strong>milestone-based escrow</strong> funding model. Your payment is held securely
+                and released as the creator hits their milestones.
               </li>
               <li>
                 If a campaign is funded and the creator fails to deliver rewards, your dispute is with the
@@ -104,9 +104,9 @@ export default function TermsPage() {
             </ul>
           </Section>
 
-          <Section title="5. All-or-Nothing Funding Model">
+          <Section title="5. Milestone-Based Escrow Funding Model">
             <p>
-              get that bread operates on an all-or-nothing basis. This means:
+              get that bread operates on a milestone-based escrow model. This means:
             </p>
             <ul>
               <li>

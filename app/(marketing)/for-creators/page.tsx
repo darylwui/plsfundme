@@ -45,8 +45,8 @@ export default function ForCreatorsPage() {
           </h1>
           <p className="text-lg text-[var(--color-ink-muted)] leading-relaxed max-w-2xl">
             Raise capital from your community and bring your idea to life.
-            Singapore-first, all-or-nothing, and you only pay a fee if you hit
-            your goal.
+            Singapore-first, milestone-based funding, and you only pay a fee if
+            you hit your goal.
           </p>
           <div className="mt-8">
             <Link href="/projects/create">

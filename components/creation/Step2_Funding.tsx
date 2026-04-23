@@ -47,8 +47,8 @@ export function Step2_Funding({ draft, onUpdate, onNext, onBack }: Step2Props) {
           Set your funding goal
         </h2>
         <p className="mt-1 text-sm text-[var(--color-ink-muted)]">
-          This is an all-or-nothing campaign — you only receive funds if the
-          goal is met by the deadline.
+          Funds are held in escrow and released as you hit milestones. Backers
+          know their money is protected at every stage.
         </p>
       </div>
 

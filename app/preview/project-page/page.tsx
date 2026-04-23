@@ -245,7 +245,7 @@ function FundingWidgetPreview() {
 
           <p className="mt-3 text-xs text-center text-[var(--color-ink-subtle)] flex items-center justify-center gap-1.5">
             <Shield className="w-3.5 h-3.5" />
-            All-or-nothing — only charged if goal is reached
+            Milestone-protected escrow — funds released as creator delivers
           </p>
         </div>
       </div>
