@@ -4,7 +4,7 @@ import { CreatorApplyLanding } from "@/components/auth/CreatorApplyLanding";
 
 export const metadata = { title: "Apply to be a creator" };
 
-export default async function ApplyPMPage() {
+export default async function ApplyCreatorPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -26,7 +26,7 @@ export default async function ApplyPMPage() {
       .single();
 
     if (creatorProfile?.status === "approved") redirect("/projects/create");
-    if (creatorProfile?.status === "pending_review") redirect("/projects/create");
+    if (creatorProfile?.status === "pending_review") redirect("/dashboard");
     // If rejected, fall through to let them re-apply
   }
 

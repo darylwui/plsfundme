@@ -179,6 +179,59 @@ export async function sendProjectRemovedEmail(args: ProjectRemovedArgs) {
   });
 }
 
+interface CreatorApprovedArgs {
+  creatorEmail: string;
+  creatorName: string;
+}
+
+interface CreatorRejectedArgs {
+  creatorEmail: string;
+  creatorName: string;
+  rejectionReason: string;
+}
+
+export async function sendCreatorApprovedEmail(args: CreatorApprovedArgs) {
+  return sendEmail({
+    from: FROM,
+    to: args.creatorEmail,
+    subject: "🎉 You're approved — launch your first campaign!",
+    html: `
+      <h2>Welcome aboard, ${args.creatorName}! 🎉</h2>
+      <p>Great news — your creator application has been reviewed and <strong>approved</strong>.</p>
+      <p>You can now create and publish your first campaign on get that bread. Share your idea with backers and start raising funds today.</p>
+      <a href="${appUrl}/projects/create" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
+        Launch your first campaign
+      </a>
+      <p style="margin-top:24px;font-size:14px;color:#6b7280;">
+        Questions? Reply to this email or contact us at <a href="mailto:hello@getthatbread.sg">hello@getthatbread.sg</a>.
+      </p>
+    `,
+  });
+}
+
+export async function sendCreatorRejectedEmail(args: CreatorRejectedArgs) {
+  return sendEmail({
+    from: FROM,
+    to: args.creatorEmail,
+    subject: "Update on your creator application",
+    html: `
+      <h2>Hi ${args.creatorName},</h2>
+      <p>Thank you for applying to become a creator on get that bread. After reviewing your application, we're unable to approve it at this time.</p>
+      <div style="background:#fef2f2;border-left:4px solid #ef4444;padding:12px 16px;margin:16px 0;border-radius:4px;">
+        <p style="margin:0;font-weight:bold;color:#991b1b;">Feedback from our team:</p>
+        <p style="margin:8px 0 0;color:#b91c1c;">${args.rejectionReason}</p>
+      </div>
+      <p>You're welcome to address the feedback and re-apply at any time.</p>
+      <a href="${appUrl}/apply/creator" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
+        Re-apply as a Creator
+      </a>
+      <p style="margin-top:24px;font-size:14px;color:#6b7280;">
+        If you have questions, reply to this email or contact us at <a href="mailto:hello@getthatbread.sg">hello@getthatbread.sg</a>.
+      </p>
+    `,
+  });
+}
+
 export async function sendPledgeRefundedEmail(args: PledgeRefundedArgs) {
   return sendEmail({
     from: FROM,
