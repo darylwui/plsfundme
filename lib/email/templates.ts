@@ -1,4 +1,4 @@
-import { getResend, FROM } from "./resend";
+import { getResend, FROM, ADMIN_EMAIL } from "./resend";
 import { formatSgd } from "@/lib/utils/currency";
 
 interface CampaignFundedArgs {
@@ -175,6 +175,142 @@ export async function sendProjectRemovedEmail(args: ProjectRemovedArgs) {
       <p>We have removed your campaign <strong>${args.projectTitle}</strong> from get that bread due to a violation of our <a href="${appUrl}/terms">Terms of Service</a>.</p>
       <p><strong>Reason:</strong> ${args.reason}</p>
       <p>Any active pledges will be refunded to backers. If you believe this is a mistake, please contact us by replying to this email.</p>
+    `,
+  });
+}
+
+interface CreatorApplicationSubmittedArgs {
+  creatorEmail: string;
+  creatorName: string;
+}
+
+export async function sendCreatorApplicationSubmittedEmail(args: CreatorApplicationSubmittedArgs) {
+  return sendEmail({
+    from: FROM,
+    to: args.creatorEmail,
+    subject: "We received your creator application 🙌",
+    html: `
+      <h2>Hi ${args.creatorName},</h2>
+      <p>We've received your application to become a creator on get that bread. Our team reviews all applications within <strong>1–2 business days</strong>.</p>
+      <p>You'll get an email as soon as a decision is made. In the meantime, you can check your application status in your dashboard.</p>
+      <a href="${appUrl}/dashboard" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
+        View your dashboard
+      </a>
+      <p style="margin-top:24px;font-size:14px;color:#6b7280;">
+        Questions? Reply to this email or contact us at <a href="mailto:hello@getthatbread.sg">hello@getthatbread.sg</a>.
+      </p>
+    `,
+  });
+}
+
+interface CreatorApprovedArgs {
+  creatorEmail: string;
+  creatorName: string;
+}
+
+interface CreatorRejectedArgs {
+  creatorEmail: string;
+  creatorName: string;
+  rejectionReason: string;
+}
+
+export async function sendCreatorApprovedEmail(args: CreatorApprovedArgs) {
+  return sendEmail({
+    from: FROM,
+    to: args.creatorEmail,
+    subject: "🎉 You're approved — launch your first campaign!",
+    html: `
+      <h2>Welcome aboard, ${args.creatorName}! 🎉</h2>
+      <p>Great news — your creator application has been reviewed and <strong>approved</strong>.</p>
+      <p>You can now create and publish your first campaign on get that bread. Share your idea with backers and start raising funds today.</p>
+      <a href="${appUrl}/projects/create" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
+        Launch your first campaign
+      </a>
+      <p style="margin-top:24px;font-size:14px;color:#6b7280;">
+        Questions? Reply to this email or contact us at <a href="mailto:hello@getthatbread.sg">hello@getthatbread.sg</a>.
+      </p>
+    `,
+  });
+}
+
+export async function sendCreatorRejectedEmail(args: CreatorRejectedArgs) {
+  return sendEmail({
+    from: FROM,
+    to: args.creatorEmail,
+    subject: "Update on your creator application",
+    html: `
+      <h2>Hi ${args.creatorName},</h2>
+      <p>Thank you for applying to become a creator on get that bread. After reviewing your application, we're unable to approve it at this time.</p>
+      <div style="background:#fef2f2;border-left:4px solid #ef4444;padding:12px 16px;margin:16px 0;border-radius:4px;">
+        <p style="margin:0;font-weight:bold;color:#991b1b;">Feedback from our team:</p>
+        <p style="margin:8px 0 0;color:#b91c1c;">${args.rejectionReason}</p>
+      </div>
+      <p>You're welcome to address the feedback and re-apply at any time.</p>
+      <a href="${appUrl}/apply/creator" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
+        Re-apply as a Creator
+      </a>
+      <p style="margin-top:24px;font-size:14px;color:#6b7280;">
+        If you have questions, reply to this email or contact us at <a href="mailto:hello@getthatbread.sg">hello@getthatbread.sg</a>.
+      </p>
+    `,
+  });
+}
+
+// ── Admin notification emails ─────────────────────────────────────────────────
+
+interface AdminNewCreatorApplicationArgs {
+  applicantName: string;
+  applicantEmail: string;
+  projectType: string;
+  projectDescription: string;
+}
+
+interface AdminNewProjectSubmittedArgs {
+  creatorName: string;
+  projectTitle: string;
+  projectSlug: string;
+  fundingGoal: number;
+}
+
+export async function sendAdminNewCreatorApplicationEmail(args: AdminNewCreatorApplicationArgs) {
+  return sendEmail({
+    from: FROM,
+    to: ADMIN_EMAIL,
+    subject: `🔔 New creator application — ${args.applicantName}`,
+    html: `
+      <h2>New creator application</h2>
+      <table style="border-collapse:collapse;width:100%;font-size:14px;">
+        <tr><td style="padding:6px 12px 6px 0;color:#6b7280;font-weight:600;">Name</td><td style="padding:6px 0;">${args.applicantName}</td></tr>
+        <tr><td style="padding:6px 12px 6px 0;color:#6b7280;font-weight:600;">Email</td><td style="padding:6px 0;">${args.applicantEmail}</td></tr>
+        <tr><td style="padding:6px 12px 6px 0;color:#6b7280;font-weight:600;">Project type</td><td style="padding:6px 0;">${args.projectType}</td></tr>
+      </table>
+      <p style="font-weight:600;margin-top:16px;">Project description:</p>
+      <p style="background:#f9fafb;border-left:3px solid #d1d5db;padding:12px;border-radius:4px;color:#374151;">${args.projectDescription}</p>
+      <a href="${appUrl}/admin/creators" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
+        Review in admin
+      </a>
+    `,
+  });
+}
+
+export async function sendAdminNewProjectSubmittedEmail(args: AdminNewProjectSubmittedArgs) {
+  return sendEmail({
+    from: FROM,
+    to: ADMIN_EMAIL,
+    subject: `🔔 New campaign for review — "${args.projectTitle}"`,
+    html: `
+      <h2>New campaign submitted for review</h2>
+      <table style="border-collapse:collapse;width:100%;font-size:14px;">
+        <tr><td style="padding:6px 12px 6px 0;color:#6b7280;font-weight:600;">Creator</td><td style="padding:6px 0;">${args.creatorName}</td></tr>
+        <tr><td style="padding:6px 12px 6px 0;color:#6b7280;font-weight:600;">Title</td><td style="padding:6px 0;">${args.projectTitle}</td></tr>
+        <tr><td style="padding:6px 12px 6px 0;color:#6b7280;font-weight:600;">Goal</td><td style="padding:6px 0;">${formatSgd(args.fundingGoal)}</td></tr>
+      </table>
+      <a href="${appUrl}/projects/${args.projectSlug}" style="background:#6b7280;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;margin-right:8px;">
+        Preview campaign
+      </a>
+      <a href="${appUrl}/admin/projects" style="background:#7C3AED;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
+        Review in admin
+      </a>
     `,
   });
 }

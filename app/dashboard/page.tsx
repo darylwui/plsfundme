@@ -141,7 +141,7 @@ async function BackerDashboard({ userId, displayName, email }: { userId: string;
   );
 }
 
-// ─── Creator / PM Dashboard ──────────────────────────────────────────────────
+// ─── Creator Dashboard ───────────────────────────────────────────────────────
 
 async function CreatorDashboard({ userId, displayName, email }: { userId: string; displayName: string; email: string }) {
   const supabase = await createClient();
@@ -162,7 +162,7 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
     .eq("id", userId)
     .single();
   const singpassVerified = Boolean(creatorProfile?.singpass_verified);
-  const pmStatus = creatorProfile?.status ?? "pending_review";
+  const creatorStatus = creatorProfile?.status ?? "pending_review";
   const rejectionReason = creatorProfile?.rejection_reason ?? null;
 
   let recentPledges: PledgeWithBacker[] = [];
@@ -179,9 +179,9 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
 
   // Subtitle varies by application status
   const subtitle =
-    pmStatus === "pending_review"
+    creatorStatus === "pending_review"
       ? "Your creator application is under review."
-      : pmStatus === "rejected"
+      : creatorStatus === "rejected"
         ? "Your creator application needs attention."
         : "Here\u2019s what\u2019s happening with your campaigns.";
 
@@ -206,7 +206,7 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
               Edit creator card
             </Button>
           </Link>
-          {pmStatus === "approved" && (
+          {creatorStatus === "approved" && (
             <Link href="/projects/create">
               <Button>
                 <PlusCircle className="w-4 h-4" />
@@ -218,10 +218,10 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
       </div>
 
       {/* Singpass card — only relevant once approved */}
-      {pmStatus === "approved" && !singpassVerified && <SingpassVerificationCard />}
+      {creatorStatus === "approved" && !singpassVerified && <SingpassVerificationCard />}
 
       {/* ── Application pending ── */}
-      {pmStatus === "pending_review" && (
+      {creatorStatus === "pending_review" && (
         <div className="rounded-[var(--radius-card)] border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/20 p-8 text-center flex flex-col items-center gap-5">
           <div className="w-14 h-14 rounded-full bg-amber-100 dark:bg-amber-900/50 flex items-center justify-center">
             <Clock className="w-7 h-7 text-amber-600 dark:text-amber-400" />
@@ -241,7 +241,7 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
       )}
 
       {/* ── Application rejected ── */}
-      {pmStatus === "rejected" && (
+      {creatorStatus === "rejected" && (
         <div className="rounded-[var(--radius-card)] border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 overflow-hidden">
           <div className="px-5 py-4 flex items-start gap-3 border-b border-red-200 dark:border-red-800">
             <XCircle className="w-5 h-5 text-red-500 dark:text-red-400 shrink-0 mt-0.5" />
@@ -275,7 +275,7 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
       )}
 
       {/* ── Approved: show campaigns ── */}
-      {pmStatus === "approved" && (
+      {creatorStatus === "approved" && (
         typedProjects.length === 0 ? (
           <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border-2 border-dashed border-[var(--color-border)] p-12 text-center">
             <p className="text-4xl mb-4">🚀</p>

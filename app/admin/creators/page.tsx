@@ -27,9 +27,9 @@ interface PageProps {
   searchParams: Promise<{ tab?: string }>;
 }
 
-export const metadata = { title: "Project managers — Admin" };
+export const metadata = { title: "Creators — Admin" };
 
-export default async function ProjectManagersPage({ searchParams }: PageProps) {
+export default async function CreatorsPage({ searchParams }: PageProps) {
   const { tab } = await searchParams;
 
   // Verify admin access
@@ -47,7 +47,6 @@ export default async function ProjectManagersPage({ searchParams }: PageProps) {
 
   if (!adminProfile?.is_admin) redirect("/");
 
-  // Fetch PM profiles with service client
   const service = createServiceClient();
 
   const { data: pmRaw } = await service
