@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { validateMilestoneProof, normalizeMilestoneProof } from '@/lib/milestones/proofs';
 import type { MilestoneNumber, MilestoneProofData } from '@/lib/milestones/types';
+import type { Json } from '@/types/database.types';
 
 interface RouteContext {
   params: Promise<{ campaignId: string }>;
@@ -55,7 +56,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
         campaign_id: campaignId,
         creator_id: user.id,
         milestone_number,
-        proof_data: normalizedProof,
+        proof_data: normalizedProof as Json,
         status: 'pending',
       })
       .select()
