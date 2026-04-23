@@ -129,7 +129,7 @@ export function renderChangeEmail(args: { confirmUrl: string; newEmail: string }
 export function renderReauthentication(args: { token: string }) {
   return shell("Your verification code", `
     <tr><td style="padding:28px 40px 8px 40px;">
-      <h1 style="margin:0 0 12px 0;font-size:28px;line-height:1.2;font-weight:800;letter-spacing:-0.02em;color:#14110D;">Verify it's you</h1>
+      <h1 style="margin:0 0 12px 0;font-size:28px;line-height:1.2;font-weight:800;letter-spacing:-0.02em;color:#14110D;">Verify it&#39;s you</h1>
       <p style="margin:0 0 24px 0;font-size:16px;line-height:1.6;color:#6B5D4D;">Before we can finish this action on your ${BRAND} account, enter the 6-digit code below. It expires in 10 minutes.</p>
     </td></tr>
     <tr><td style="padding:0 40px 8px 40px;" align="center">
