@@ -71,7 +71,7 @@ export function CampaignToc({ headings }: CampaignTocProps) {
                   ${
                     active
                       ? "bg-[var(--color-brand-crust)]/10 text-[var(--color-brand-crust)]"
-                      : "text-[var(--color-ink-muted)] hover:bg-[var(--color-surface-raised)] hover:text-[var(--color-ink)]"
+                      : "text-[var(--color-brand-crust-dark)] hover:bg-[var(--color-surface-raised)] hover:text-[var(--color-brand-crust)]"
                   }
                 `}
               >

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { MessageCircle, Megaphone, Send, Lock } from "lucide-react";
+import { MessageCircle, Megaphone, Send, Lock, HelpCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { RewardTierCard } from "@/components/projects/RewardTierCard";
@@ -290,9 +290,18 @@ export function ProjectPageSections({
         </h2>
 
         {faqItems.length === 0 ? (
-          <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-5 text-sm text-[var(--color-ink-muted)]">
-            No FAQ entries yet. Creators can add question-style headings (ending in "?") in the
-            campaign body — they'll automatically appear here.
+          <div className="rounded-[var(--radius-card)] border-2 border-dashed border-[var(--color-border)] p-8 flex flex-col items-center text-center gap-2">
+            <div className="w-11 h-11 rounded-full bg-[var(--color-brand-crust)]/10 flex items-center justify-center">
+              <HelpCircle className="w-5 h-5 text-[var(--color-brand-crust)]" />
+            </div>
+            <p className="text-sm font-semibold text-[var(--color-ink)]">
+              No FAQ entries yet
+            </p>
+            <p className="text-xs text-[var(--color-ink-muted)] max-w-md leading-relaxed">
+              Creators can add question-style section headings (ending in{" "}
+              <span className="font-mono font-semibold text-[var(--color-ink)]">?</span>) to the
+              campaign body — they'll appear here automatically.
+            </p>
           </div>
         ) : (
           <div className="flex flex-col gap-2">
