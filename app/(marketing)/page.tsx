@@ -275,14 +275,6 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                         </ul>
                       </div>
 
-                      <div className="px-6 py-4 bg-[var(--color-surface-raised)] border-t border-[var(--color-border)]">
-                        <Link
-                          href="/projects/create"
-                          className="text-sm font-semibold text-[var(--color-brand-crust)] hover:underline inline-flex items-center gap-1"
-                        >
-                          Launch your campaign <ArrowRight className="w-3.5 h-3.5" />
-                        </Link>
-                      </div>
                     </div>
                   </div>
                 </div>
