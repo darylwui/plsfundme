@@ -49,10 +49,10 @@ export async function POST(request: Request) {
         })
         .eq("stripe_setup_intent_id", si.id);
 
-      // Update pledge totals
+      // Update pledge totals + send confirmation email
       const { data: pledge } = await supabase
         .from("pledges")
-        .select("project_id, amount_sgd")
+        .select("project_id, backer_id, amount_sgd, reward_id, project:projects!project_id(title, slug, deadline)")
         .eq("stripe_setup_intent_id", si.id)
         .single();
 
@@ -64,16 +64,27 @@ export async function POST(request: Request) {
         await supabase.rpc("check_stretch_goals", {
           p_project_id: pledge.project_id,
         });
-        // Claim reward slot if applicable
-        const { data: fullPledge } = await supabase
-          .from("pledges")
-          .select("reward_id")
-          .eq("stripe_setup_intent_id", si.id)
-          .single();
-        if (fullPledge?.reward_id) {
+        if ((pledge as any).reward_id) {
           await supabase.rpc("claim_reward_slot", {
-            p_reward_id: fullPledge.reward_id,
+            p_reward_id: (pledge as any).reward_id,
           });
+        }
+
+        // Confirmation email to backer
+        const project = (pledge as any).project as { title: string; slug: string; deadline: string } | null;
+        if (project) {
+          const { data: { user: backerAuth } } = await supabase.auth.admin.getUserById((pledge as any).backer_id);
+          const { data: backerProfile } = await supabase.from("profiles").select("display_name").eq("id", (pledge as any).backer_id).single();
+          if (backerAuth?.email && backerProfile) {
+            await sendPledgeConfirmedEmail({
+              backerEmail: backerAuth.email,
+              backerName: (backerProfile as any).display_name,
+              projectTitle: project.title,
+              projectSlug: project.slug,
+              amount: pledge.amount_sgd,
+              deadline: project.deadline,
+            }).catch(console.error);
+          }
         }
       }
       break;
@@ -93,7 +104,7 @@ export async function POST(request: Request) {
       if (newStatus === "paynow_captured") {
         const { data: pledge } = await supabase
           .from("pledges")
-          .select("project_id, amount_sgd, reward_id")
+          .select("project_id, backer_id, amount_sgd, reward_id, project:projects!project_id(title, slug, deadline)")
           .eq("stripe_payment_intent_id", pi.id)
           .single();
 
@@ -105,10 +116,27 @@ export async function POST(request: Request) {
           await supabase.rpc("check_stretch_goals", {
             p_project_id: pledge.project_id,
           });
-          if (pledge.reward_id) {
+          if ((pledge as any).reward_id) {
             await supabase.rpc("claim_reward_slot", {
-              p_reward_id: pledge.reward_id,
+              p_reward_id: (pledge as any).reward_id,
             });
+          }
+
+          // Confirmation email to backer
+          const project = (pledge as any).project as { title: string; slug: string; deadline: string } | null;
+          if (project) {
+            const { data: { user: backerAuth } } = await supabase.auth.admin.getUserById((pledge as any).backer_id);
+            const { data: backerProfile } = await supabase.from("profiles").select("display_name").eq("id", (pledge as any).backer_id).single();
+            if (backerAuth?.email && backerProfile) {
+              await sendPledgeConfirmedEmail({
+                backerEmail: backerAuth.email,
+                backerName: (backerProfile as any).display_name,
+                projectTitle: project.title,
+                projectSlug: project.slug,
+                amount: pledge.amount_sgd,
+                deadline: project.deadline,
+              }).catch(console.error);
+            }
           }
         }
       }
@@ -176,12 +204,6 @@ export async function POST(request: Request) {
           // Email backer — refund notification
           const backer = (pledge as any).backer;
           if (backer) {
-            const { data: backerAuth } = await supabase
-              .from("profiles")
-              .select("id")
-              .eq("id", backer.id)
-              .single();
-            // Get email from auth.users via service role
             const { data: { user } } = await supabase.auth.admin.getUserById(backer.id);
             const { data: project } = await supabase
               .from("projects")
