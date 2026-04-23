@@ -25,7 +25,7 @@ const STEPS: Step[] = [
     num: 2,
     title: "Backers fund it",
     description:
-      "Share your campaign. Backers pledge via PayNow or credit card. All-or-nothing — no one pays unless you hit your goal.",
+      "Share your campaign. Backers pledge via PayNow or credit card. Funds held in escrow — released only when milestones are delivered.",
   },
   {
     Icon: Banknote,

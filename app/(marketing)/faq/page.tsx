@@ -18,9 +18,9 @@ const BACKER_FAQS: Faq[] = [
   },
   {
     q: "What happens if the campaign doesn't reach its goal?",
-    a: "All-or-nothing means no one is on the hook. Card holds are released automatically. PayNow pledges are refunded in full within 5–7 business days. Creators receive nothing.",
+    a: "Funds are held in escrow and only released to creators as they hit milestones. If milestones aren't met, funds remain protected and can be refunded to backers.",
     plain:
-      "All-or-nothing means no one is on the hook. Card holds are released automatically. PayNow pledges are refunded in full within 5–7 business days. Creators receive nothing.",
+      "Funds are held in escrow and only released to creators as they hit milestones. If milestones aren't met, funds remain protected and can be refunded to backers.",
   },
   {
     q: "What if the creator doesn't deliver their rewards?",

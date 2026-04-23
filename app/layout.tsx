@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "get that bread — Singapore's Crowdfunding Platform",
     description:
-      "Launch your campaign, find your backers, bring your idea to life. All-or-nothing funding with PayNow & Stripe.",
+      "Launch your campaign, find your backers, bring your idea to life. Milestone-based escrow funding with PayNow & Stripe.",
     siteName: "get that bread",
     url: SITE_URL,
     locale: "en_SG",

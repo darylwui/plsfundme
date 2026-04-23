@@ -5,7 +5,7 @@ import { ShieldCheck, Clock, CreditCard, AlertCircle, Mail } from "lucide-react"
 export const metadata: Metadata = {
   title: "Backer protection — get that bread",
   description:
-    "How your pledge is protected on get that bread — Singapore's reward-based crowdfunding platform. All-or-nothing funding, clear refund rules, and a human on the other end of every question.",
+    "How your pledge is protected on get that bread — Singapore's reward-based crowdfunding platform. Milestone-based escrow, clear refund rules, and a human on the other end of every question.",
 };
 
 const CONTACT_EMAIL = "hello@getthatbread.sg";
@@ -26,7 +26,7 @@ export default function RefundGuaranteePage() {
             Your pledge is safe
           </h1>
           <p className="mt-3 text-[var(--color-ink-muted)] text-lg leading-relaxed">
-            get that bread runs on an all-or-nothing model. We only move your money if the campaign you backed reaches its goal — and even then, you&apos;re protected if things go wrong.
+            get that bread uses milestone-based escrow protection. Funds are held until the creator hits their commitments — and at every stage, you&apos;re protected if things go wrong.
           </p>
         </div>
 
@@ -50,7 +50,7 @@ export default function RefundGuaranteePage() {
         </div>
 
         <div className="prose prose-sm max-w-none text-[var(--color-ink)] prose-headings:text-[var(--color-ink)] prose-headings:font-black prose-a:text-[var(--color-brand-crust)] space-y-8">
-          <Section title="How all-or-nothing funding protects you">
+          <Section title="How milestone-based escrow protects you">
             <p>
               When you back a project, your payment is either:
             </p>

@@ -62,8 +62,8 @@ export default function OpengraphImage() {
               lineHeight: 1.3,
             }}
           >
-            All-or-nothing funding. PayNow &amp; credit card. Backers only pay
-            if the campaign hits its goal.
+            Milestone-based escrow. PayNow &amp; credit card. Funds released
+            as creators deliver on milestones.
           </div>
         </div>
 

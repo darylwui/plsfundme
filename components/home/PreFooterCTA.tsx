@@ -14,7 +14,7 @@ export function PreFooterCTA() {
             Your campaign could be<br className="hidden sm:block" /> live in 48 hours.
           </h2>
           <p className="text-white/70 text-lg leading-relaxed mb-8 max-w-lg">
-            No upfront costs. No risk to your backers. All-or-nothing funding means everyone wins or no one pays.
+            No upfront costs. Your backers are protected at every milestone. Funds only released as you deliver.
           </p>
           <div className="flex flex-wrap gap-3">
             <Link href="/projects/create">

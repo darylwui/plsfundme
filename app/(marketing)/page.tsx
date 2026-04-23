@@ -201,7 +201,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                       <div className="px-6 py-4 bg-[var(--color-surface-raised)] border-t border-[var(--color-border)] flex items-center gap-2">
                         <Shield className="w-3.5 h-3.5 text-[var(--color-brand-crust)] shrink-0" />
                         <span className="text-sm md:text-xs text-[var(--color-ink-muted)]">
-                          All-or-nothing · funds held in escrow
+                          Milestone-based escrow · funds released as creator delivers
                         </span>
                       </div>
                     </div>
@@ -238,7 +238,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                         <ul className="text-sm text-[var(--color-ink-muted)] space-y-2">
                           <li className="flex items-start gap-2">
                             <Shield className="w-4 h-4 text-[var(--color-brand-crust)] shrink-0 mt-0.5" />
-                            All-or-nothing funding — no risk to backers
+                            Milestone-protected escrow — funds only released on delivery
                           </li>
                           <li className="flex items-start gap-2">
                             <Lock className="w-4 h-4 text-[var(--color-brand-golden)] shrink-0 mt-0.5" />

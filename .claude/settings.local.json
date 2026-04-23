@@ -134,7 +134,10 @@
       "Bash(node --input-type=module -e ' *)",
       "Bash(npx tsx *)",
       "Bash(curl -sS -o /tmp/preview.html -w \"%{http_code}\" \"https://getthatbread-git-fix-project-pa-e7d01b-daryls-projects-d3be8de2.vercel.app/projects/mochicloud-smart-compostable-packaging-solutions-j1vef\")",
-      "Bash(git stash *)"
+      "Bash(git stash *)",
+      "Bash(ln -s /Users/darylwui/plsfundme/.env.local /Users/darylwui/plsfundme/.claude/worktrees/competent-stonebraker-9af493/.env.local)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:54911/projects/mochicloud-smart-compostable-packaging-solutions-j1vef)",
+      "Bash(git --no-pager diff --stat)"
     ]
   }
 }
