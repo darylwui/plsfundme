@@ -21,8 +21,6 @@ const TABS: { key: FilterTab; label: string; Icon: React.ComponentType<{ classNa
   { key: "ending_soon", label: "Ending soon", Icon: Clock },
 ];
 
-const FILTER_MAP: Record<FilterTab, ProjectWithRelations[]> = {};
-
 export function DiscoverySection({
   trending,
   newest,
