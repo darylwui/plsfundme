@@ -273,7 +273,7 @@ export function ProjectPageTabs({
                     Select a reward tier to continue backing.
                   </p>
                   <Link href={`/backing/${projectId}/checkout${selectedReward ? `?reward=${selectedReward.id}` : ""}`}>
-                    <Button size="sm">{selectedReward ? `Back with ${selectedReward.title}` : "Back this project"}</Button>
+                    <Button size="sm">{selectedReward ? `Back with ${selectedReward.title}` : "Pledge without reward"}</Button>
                   </Link>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
