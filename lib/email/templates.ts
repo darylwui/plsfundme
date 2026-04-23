@@ -179,6 +179,30 @@ export async function sendProjectRemovedEmail(args: ProjectRemovedArgs) {
   });
 }
 
+interface CreatorApplicationSubmittedArgs {
+  creatorEmail: string;
+  creatorName: string;
+}
+
+export async function sendCreatorApplicationSubmittedEmail(args: CreatorApplicationSubmittedArgs) {
+  return sendEmail({
+    from: FROM,
+    to: args.creatorEmail,
+    subject: "We received your creator application 🙌",
+    html: `
+      <h2>Hi ${args.creatorName},</h2>
+      <p>We've received your application to become a creator on get that bread. Our team reviews all applications within <strong>1–2 business days</strong>.</p>
+      <p>You'll get an email as soon as a decision is made. In the meantime, you can check your application status in your dashboard.</p>
+      <a href="${appUrl}/dashboard" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
+        View your dashboard
+      </a>
+      <p style="margin-top:24px;font-size:14px;color:#6b7280;">
+        Questions? Reply to this email or contact us at <a href="mailto:hello@getthatbread.sg">hello@getthatbread.sg</a>.
+      </p>
+    `,
+  });
+}
+
 interface CreatorApprovedArgs {
   creatorEmail: string;
   creatorName: string;
