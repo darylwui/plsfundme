@@ -257,7 +257,7 @@ export function ProjectPageSections({
                 href={`/backing/${projectId}/checkout${selectedReward ? `?reward=${selectedReward.id}` : ""}`}
               >
                 <Button size="sm">
-                  {selectedReward ? `Back with ${selectedReward.title}` : "Back this project"}
+                  {selectedReward ? `Back with ${selectedReward.title}` : "Pledge without reward"}
                 </Button>
               </Link>
             </div>
