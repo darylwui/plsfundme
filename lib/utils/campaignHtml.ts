@@ -15,7 +15,7 @@ import { sanitizeRichHtml } from "./sanitize";
 export const CAMPAIGN_PROSE_CLASSES = [
   "max-w-none text-[var(--color-ink)] text-base leading-relaxed",
   // Section heading (H2) — the big one that shows in the TOC + FAQ pipeline.
-  "[&_h2]:text-xl [&_h2]:font-bold [&_h2]:tracking-tight [&_h2]:text-[var(--color-ink)]",
+  "[&_h2]:text-xl [&_h2]:font-bold [&_h2]:tracking-tight [&_h2]:text-[var(--color-brand-crust)]",
   "[&_h2]:mt-8 [&_h2]:mb-3 [&_h2]:pb-2 [&_h2]:border-b [&_h2]:border-[var(--color-border)]",
   // Subsection heading (H3) — nested under H2, muted.
   "[&_h3]:text-base [&_h3]:font-bold [&_h3]:tracking-tight [&_h3]:mt-6 [&_h3]:mb-2 [&_h3]:text-[var(--color-ink-muted)]",
