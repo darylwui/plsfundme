@@ -330,30 +330,3 @@ export async function sendPledgeRefundedEmail(args: PledgeRefundedArgs) {
     `,
   });
 }
-
-interface AdminNewProjectSubmittedArgs {
-  creatorName: string;
-  projectTitle: string;
-  projectSlug: string;
-  fundingGoal: number;
-}
-
-export async function sendAdminNewProjectSubmittedEmail(args: AdminNewProjectSubmittedArgs) {
-  const adminEmail = process.env.ADMIN_EMAIL ?? "daryl.wui@gmail.com";
-  return sendEmail({
-    from: FROM,
-    to: adminEmail,
-    subject: `New project submitted for review: "${args.projectTitle}"`,
-    html: `
-      <h2>New project pending review</h2>
-      <ul>
-        <li><strong>Title:</strong> ${args.projectTitle}</li>
-        <li><strong>Creator:</strong> ${args.creatorName}</li>
-        <li><strong>Funding goal:</strong> ${formatSgd(args.fundingGoal)}</li>
-      </ul>
-      <a href="${appUrl}/admin/projects/${args.projectSlug}" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
-        Review project
-      </a>
-    `,
-  });
-}
