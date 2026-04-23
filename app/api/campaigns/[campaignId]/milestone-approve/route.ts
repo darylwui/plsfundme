@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { releaseMilestonePayment } from '@/lib/milestones/escrow';
-import type { MilestoneNumber } from '@/lib/milestones/types';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 
 interface RouteContext {
   params: Promise<{ campaignId: string }>;
@@ -11,7 +9,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
   const { campaignId } = await params;
 
   try {
-    // Get authenticated user (must be admin)
+    // Get authenticated user
     const supabase = await createClient();
     const {
       data: { user },
@@ -44,68 +42,69 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
     // Parse request
     const { submission_id, decision, feedback_text } = await req.json();
 
-    if (!['approved', 'rejected', 'needs_info'].includes(decision)) {
-      return NextResponse.json({ error: 'Invalid decision' }, { status: 400 });
+    // Validate input
+    if (!submission_id) {
+      return NextResponse.json(
+        { error: 'submission_id is required' },
+        { status: 400 }
+      );
     }
 
-    // Get submission details
-    const { data: submission, error: subError } = await supabase
+    if (!['approved', 'rejected', 'needs_info'].includes(decision)) {
+      return NextResponse.json(
+        { error: 'decision must be one of: approved, rejected, needs_info' },
+        { status: 400 }
+      );
+    }
+
+    // Use service client for administrative operations
+    const service = createServiceClient();
+
+    // Verify submission exists and belongs to the campaign
+    const { data: submission, error: submissionError } = await service
       .from('milestone_submissions')
-      .select('*')
+      .select('id, campaign_id, milestone_number, status')
       .eq('id', submission_id)
+      .eq('campaign_id', campaignId)
       .single();
 
-    if (subError || !submission) {
-      return NextResponse.json({ error: 'Submission not found' }, { status: 404 });
+    if (submissionError || !submission) {
+      return NextResponse.json(
+        { error: 'Submission not found' },
+        { status: 404 }
+      );
     }
 
-    // Update submission status
-    const { error: updateError } = await supabase
-      .from('milestone_submissions')
-      .update({ status: decision })
-      .eq('id', submission_id);
-
-    if (updateError) {
-      return NextResponse.json({ error: updateError.message }, { status: 500 });
-    }
-
-    // Record approval
-    const { data: approval, error: approvalError } = await supabase
+    // Create approval record
+    const { data: approval, error: approvalError } = await service
       .from('milestone_approvals')
       .insert({
         submission_id,
         approved_by: user.id,
         decision,
-        feedback_text,
+        feedback_text: feedback_text || null,
       })
       .select()
       .single();
 
     if (approvalError) {
-      return NextResponse.json({ error: approvalError.message }, { status: 500 });
+      return NextResponse.json(
+        { error: approvalError.message },
+        { status: 500 }
+      );
     }
 
-    // If approved, release funds from escrow
-    if (decision === 'approved') {
-      // Get campaign total to calculate payout
-      const { data: campaign } = await supabase
-        .from('projects')
-        .select('amount_pledged_sgd')
-        .eq('id', campaignId)
-        .single();
+    // Update submission status
+    const { error: updateError } = await service
+      .from('milestone_submissions')
+      .update({ status: decision })
+      .eq('id', submission_id);
 
-      if (campaign) {
-        const releaseResult = await releaseMilestonePayment({
-          campaign_id: campaignId,
-          milestone_number: submission.milestone_number as MilestoneNumber,
-          campaign_total_sgd: campaign.amount_pledged_sgd,
-        });
-
-        if (!releaseResult.success) {
-          // Log error but still return success (approval recorded; release failed separately)
-          console.error('Escrow release failed:', releaseResult.error);
-        }
-      }
+    if (updateError) {
+      return NextResponse.json(
+        { error: updateError.message },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({ success: true, approval }, { status: 200 });

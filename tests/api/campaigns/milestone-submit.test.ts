@@ -663,7 +663,6 @@ describe('POST /api/campaigns/{campaignId}/milestone-submit', () => {
       });
 
       expect(response.status).toBe(201);
-      expect(mockNormalizeProof).toHaveBeenCalled();
-    });
+      expect(mockNormalizeProof).toHaveBeenCalled();    });
   });
 });

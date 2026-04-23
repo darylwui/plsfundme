@@ -748,171 +748,239 @@ export type Database = {
       }
       milestone_submissions: {
         Row: {
-          id: string
           campaign_id: string
-          creator_id: string
-          milestone_number: number
-          status: string
-          proof_data: Json
-          submitted_at: string
           created_at: string
+          creator_id: string
+          id: string
+          milestone_number: number
+          proof_data: Json
+          status: string
+          submitted_at: string
         }
         Insert: {
-          id?: string
           campaign_id: string
-          creator_id: string
-          milestone_number: number
-          status?: string
-          proof_data: Json
-          submitted_at?: string
           created_at?: string
+          creator_id: string
+          id?: string
+          milestone_number: number
+          proof_data: Json
+          status?: string
+          submitted_at?: string
         }
         Update: {
-          id?: string
           campaign_id?: string
-          creator_id?: string
-          milestone_number?: number
-          status?: string
-          proof_data?: Json
-          submitted_at?: string
           created_at?: string
+          creator_id?: string
+          id?: string
+          milestone_number?: number
+          proof_data?: Json
+          status?: string
+          submitted_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "milestone_submissions_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "milestone_submissions_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       milestone_approvals: {
         Row: {
-          id: string
-          submission_id: string
           approved_by: string
+          created_at: string
           decision: string
           feedback_text: string | null
+          id: string
           reviewed_at: string
-          created_at: string
+          submission_id: string
         }
         Insert: {
-          id?: string
-          submission_id: string
           approved_by: string
+          created_at?: string
           decision: string
           feedback_text?: string | null
+          id?: string
           reviewed_at?: string
-          created_at?: string
+          submission_id: string
         }
         Update: {
-          id?: string
-          submission_id?: string
           approved_by?: string
+          created_at?: string
           decision?: string
           feedback_text?: string | null
+          id?: string
           reviewed_at?: string
-          created_at?: string
+          submission_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "milestone_approvals_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "milestone_submissions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "milestone_approvals_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       escrow_releases: {
         Row: {
-          id: string
-          campaign_id: string
-          milestone_number: number
           amount_sgd: number
-          released_at: string
-          reason: string
+          campaign_id: string
           created_at: string
+          id: string
+          milestone_number: number
+          reason: string
+          released_at: string
         }
         Insert: {
-          id?: string
-          campaign_id: string
-          milestone_number: number
           amount_sgd: number
-          released_at: string
-          reason: string
+          campaign_id: string
           created_at?: string
+          id?: string
+          milestone_number: number
+          reason: string
+          released_at: string
         }
         Update: {
-          id?: string
-          campaign_id?: string
-          milestone_number?: number
           amount_sgd?: number
-          released_at?: string
-          reason?: string
+          campaign_id?: string
           created_at?: string
+          id?: string
+          milestone_number?: number
+          reason?: string
+          released_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "escrow_releases_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       disputes: {
         Row: {
-          id: string
-          campaign_id: string
           backer_id: string
+          campaign_id: string
+          created_at: string
           description: string
           filed_at: string
-          status: string
+          id: string
           resolution_notes: string | null
           resolved_at: string | null
-          created_at: string
+          status: string
         }
         Insert: {
-          id?: string
-          campaign_id: string
           backer_id: string
+          campaign_id: string
+          created_at?: string
           description: string
           filed_at?: string
-          status?: string
+          id?: string
           resolution_notes?: string | null
           resolved_at?: string | null
-          created_at?: string
+          status?: string
         }
         Update: {
-          id?: string
-          campaign_id?: string
           backer_id?: string
+          campaign_id?: string
+          created_at?: string
           description?: string
           filed_at?: string
-          status?: string
+          id?: string
           resolution_notes?: string | null
           resolved_at?: string | null
-          created_at?: string
+          status?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "disputes_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "disputes_backer_id_fkey"
+            columns: ["backer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       creator_qualifications: {
         Row: {
-          id: string
-          creator_id: string
-          tier: string
-          completed_campaigns_count: number
-          external_proof_url: string | null
-          external_proof_type: string | null
           approved_at: string | null
           approved_by: string | null
+          completed_campaigns_count: number
           created_at: string
+          creator_id: string
+          external_proof_type: string | null
+          external_proof_url: string | null
+          id: string
+          tier: string
           updated_at: string
         }
         Insert: {
-          id?: string
-          creator_id: string
-          tier?: string
-          completed_campaigns_count?: number
-          external_proof_url?: string | null
-          external_proof_type?: string | null
           approved_at?: string | null
           approved_by?: string | null
+          completed_campaigns_count?: number
           created_at?: string
+          creator_id: string
+          external_proof_type?: string | null
+          external_proof_url?: string | null
+          id?: string
+          tier?: string
           updated_at?: string
         }
         Update: {
-          id?: string
-          creator_id?: string
-          tier?: string
-          completed_campaigns_count?: number
-          external_proof_url?: string | null
-          external_proof_type?: string | null
           approved_at?: string | null
           approved_by?: string | null
+          completed_campaigns_count?: number
           created_at?: string
+          creator_id?: string
+          external_proof_type?: string | null
+          external_proof_url?: string | null
+          id?: string
+          tier?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "creator_qualifications_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creator_qualifications_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

@@ -19,7 +19,7 @@ export function ProjectUpdatesFeed({ updates, isBacker }: ProjectUpdatesFeedProp
     <div>
       <h2 className="text-2xl font-black text-[var(--color-ink)] mb-5 tracking-tight flex items-center gap-2">
         <Megaphone className="w-5 h-5 text-[var(--color-brand-crust)]" />
-        Updates
+        Campaign updates
         <span className="font-mono text-sm font-semibold text-[var(--color-ink-muted)]">
           ({updates.length})
         </span>
