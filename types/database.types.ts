@@ -201,12 +201,17 @@ export type Database = {
           backer_note: string | null
           created_at: string
           delivered_at: string | null
+          escrow_held: boolean | null
+          escrow_held_at: string | null
           fulfillment_status: Database["public"]["Enums"]["fulfillment_status"]
           id: string
           is_anonymous: boolean
           payment_method: Database["public"]["Enums"]["payment_method_type"]
           platform_fee_sgd: number
           project_id: string
+          refund_reason: string | null
+          refunded: boolean | null
+          refunded_at: string | null
           reward_id: string | null
           shipped_at: string | null
           status: Database["public"]["Enums"]["pledge_status"]
@@ -222,12 +227,17 @@ export type Database = {
           backer_note?: string | null
           created_at?: string
           delivered_at?: string | null
+          escrow_held?: boolean | null
+          escrow_held_at?: string | null
           fulfillment_status?: Database["public"]["Enums"]["fulfillment_status"]
           id?: string
           is_anonymous?: boolean
           payment_method: Database["public"]["Enums"]["payment_method_type"]
           platform_fee_sgd?: number
           project_id: string
+          refund_reason?: string | null
+          refunded?: boolean | null
+          refunded_at?: string | null
           reward_id?: string | null
           shipped_at?: string | null
           status?: Database["public"]["Enums"]["pledge_status"]
@@ -243,12 +253,17 @@ export type Database = {
           backer_note?: string | null
           created_at?: string
           delivered_at?: string | null
+          escrow_held?: boolean | null
+          escrow_held_at?: string | null
           fulfillment_status?: Database["public"]["Enums"]["fulfillment_status"]
           id?: string
           is_anonymous?: boolean
           payment_method?: Database["public"]["Enums"]["payment_method_type"]
           platform_fee_sgd?: number
           project_id?: string
+          refund_reason?: string | null
+          refunded?: boolean | null
+          refunded_at?: string | null
           reward_id?: string | null
           shipped_at?: string | null
           status?: Database["public"]["Enums"]["pledge_status"]
@@ -727,6 +742,242 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      milestone_submissions: {
+        Row: {
+          campaign_id: string
+          created_at: string
+          creator_id: string
+          id: string
+          milestone_number: number
+          proof_data: Json
+          status: string
+          submitted_at: string
+        }
+        Insert: {
+          campaign_id: string
+          created_at?: string
+          creator_id: string
+          id?: string
+          milestone_number: number
+          proof_data: Json
+          status?: string
+          submitted_at?: string
+        }
+        Update: {
+          campaign_id?: string
+          created_at?: string
+          creator_id?: string
+          id?: string
+          milestone_number?: number
+          proof_data?: Json
+          status?: string
+          submitted_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "milestone_submissions_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "milestone_submissions_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      milestone_approvals: {
+        Row: {
+          approved_by: string
+          created_at: string
+          decision: string
+          feedback_text: string | null
+          id: string
+          reviewed_at: string
+          submission_id: string
+        }
+        Insert: {
+          approved_by: string
+          created_at?: string
+          decision: string
+          feedback_text?: string | null
+          id?: string
+          reviewed_at?: string
+          submission_id: string
+        }
+        Update: {
+          approved_by?: string
+          created_at?: string
+          decision?: string
+          feedback_text?: string | null
+          id?: string
+          reviewed_at?: string
+          submission_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "milestone_approvals_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "milestone_submissions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "milestone_approvals_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      escrow_releases: {
+        Row: {
+          amount_sgd: number
+          campaign_id: string
+          created_at: string
+          id: string
+          milestone_number: number
+          reason: string
+          released_at: string
+        }
+        Insert: {
+          amount_sgd: number
+          campaign_id: string
+          created_at?: string
+          id?: string
+          milestone_number: number
+          reason: string
+          released_at: string
+        }
+        Update: {
+          amount_sgd?: number
+          campaign_id?: string
+          created_at?: string
+          id?: string
+          milestone_number?: number
+          reason?: string
+          released_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "escrow_releases_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      disputes: {
+        Row: {
+          backer_id: string
+          campaign_id: string
+          created_at: string
+          description: string
+          filed_at: string
+          id: string
+          resolution_notes: string | null
+          resolved_at: string | null
+          status: string
+        }
+        Insert: {
+          backer_id: string
+          campaign_id: string
+          created_at?: string
+          description: string
+          filed_at?: string
+          id?: string
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          status?: string
+        }
+        Update: {
+          backer_id?: string
+          campaign_id?: string
+          created_at?: string
+          description?: string
+          filed_at?: string
+          id?: string
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "disputes_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "disputes_backer_id_fkey"
+            columns: ["backer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_qualifications: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          completed_campaigns_count: number
+          created_at: string
+          creator_id: string
+          external_proof_type: string | null
+          external_proof_url: string | null
+          id: string
+          tier: string
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          completed_campaigns_count?: number
+          created_at?: string
+          creator_id: string
+          external_proof_type?: string | null
+          external_proof_url?: string | null
+          id?: string
+          tier?: string
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          completed_campaigns_count?: number
+          created_at?: string
+          creator_id?: string
+          external_proof_type?: string | null
+          external_proof_url?: string | null
+          id?: string
+          tier?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_qualifications_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creator_qualifications_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
