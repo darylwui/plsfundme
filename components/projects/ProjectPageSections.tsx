@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { MessageCircle, Megaphone, Send, Lock } from "lucide-react";
+import { MessageCircle, Megaphone, Send, Lock, HelpCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { RewardTierCard } from "@/components/projects/RewardTierCard";
@@ -11,7 +11,7 @@ import { ProjectSectionNav } from "@/components/projects/ProjectSectionNav";
 import type { ProjectUpdatePost } from "@/types/project";
 import type { Reward } from "@/types/reward";
 import { formatDate } from "@/lib/utils/dates";
-import { sanitizeRichHtml } from "@/lib/utils/sanitize";
+import { CAMPAIGN_PROSE_CLASSES, type CampaignHeading } from "@/lib/utils/campaignHtml";
 
 type FeedbackAuthor = {
   display_name: string;
@@ -41,38 +41,8 @@ interface ProjectPageSectionsProps {
   isBacker: boolean;
   initialFeedback: ProjectFeedback[];
   descriptionHtml: string;
+  descriptionHeadings: CampaignHeading[];
   rewards: Reward[];
-}
-
-function slugify(input: string): string {
-  return input
-    .toLowerCase()
-    .replace(/<[^>]*>/g, "")
-    .replace(/&[^;]+;/g, "")
-    .replace(/[^a-z0-9\s-]/g, "")
-    .trim()
-    .replace(/\s+/g, "-")
-    .slice(0, 60);
-}
-
-/** Inject stable IDs into H2/H3 tags and extract heading metadata. */
-function processHtml(html: string) {
-  const headings: { id: string; text: string; level: 2 | 3 }[] = [];
-  let idx = 0;
-
-  const processed = html.replace(
-    /<h([23])([^>]*)>([\s\S]*?)<\/h\1>/gi,
-    (_m, level, attrs, inner) => {
-      const text = inner.replace(/<[^>]*>/g, "").trim();
-      if (!text) return _m;
-      const id = `section-${slugify(text)}-${idx++}`;
-      headings.push({ id, text, level: level === "2" ? 2 : 3 });
-      const cleanAttrs = String(attrs ?? "").replace(/\sid="[^"]*"/gi, "");
-      return `<h${level}${cleanAttrs} id="${id}">${inner}</h${level}>`;
-    }
-  );
-
-  return { html: processed, headings };
 }
 
 export function ProjectPageSections({
@@ -87,6 +57,7 @@ export function ProjectPageSections({
   isBacker,
   initialFeedback,
   descriptionHtml,
+  descriptionHeadings,
   rewards,
 }: ProjectPageSectionsProps) {
   const [feedback, setFeedback] = useState<ProjectFeedback[]>(initialFeedback);
@@ -110,18 +81,13 @@ export function ProjectPageSections({
     [activeRewards, selectedRewardId]
   );
 
-  const processed = useMemo(
-    () => processHtml(sanitizeRichHtml(descriptionHtml ?? "")),
-    [descriptionHtml]
-  );
-
   const faqItems = useMemo(
     () =>
-      processed.headings.filter((h) => {
+      descriptionHeadings.filter((h) => {
         const lower = h.text.toLowerCase();
         return h.text.includes("?") || lower.startsWith("faq") || lower.includes("question");
       }),
-    [processed.headings]
+    [descriptionHeadings]
   );
 
   const canPostFeedback = useMemo(
@@ -240,36 +206,29 @@ export function ProjectPageSections({
           Campaign
         </h2>
 
-        {/* Subsection chips from H2 headings */}
-        {processed.headings.filter((h) => h.level === 2).length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {processed.headings
-              .filter((h) => h.level === 2)
-              .map((h) => (
-                <a
-                  key={h.id}
-                  href={`#${h.id}`}
-                  className="text-sm font-semibold rounded-full px-4 py-1.5 border border-[var(--color-brand-crust)]/40 bg-[var(--color-brand-crust)]/10 text-[var(--color-brand-crust)] hover:bg-[var(--color-brand-crust)]/20 hover:border-[var(--color-brand-crust)] transition-colors"
-                >
-                  {h.text}
-                </a>
-              ))}
+        {/* Subsection chips — mobile only; desktop shows CampaignToc in the right rail. */}
+        {descriptionHeadings.length > 0 && (
+          <div className="flex flex-wrap gap-2 lg:hidden">
+            {descriptionHeadings.map((h) => (
+              <a
+                key={h.id}
+                href={`#${h.id}`}
+                className={
+                  h.level === 2
+                    ? "text-sm font-semibold rounded-full px-4 py-1.5 border border-[var(--color-brand-crust)]/40 bg-[var(--color-brand-crust)]/10 text-[var(--color-brand-crust)] hover:bg-[var(--color-brand-crust)]/20 hover:border-[var(--color-brand-crust)] transition-colors"
+                    : "text-xs font-medium rounded-full px-3 py-1 border border-[var(--color-border)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-crust)]/40 transition-colors"
+                }
+              >
+                {h.text}
+              </a>
+            ))}
           </div>
         )}
 
-        {processed.html ? (
+        {descriptionHtml ? (
           <div
-            className="prose prose-base max-w-none text-[var(--color-ink)]
-              prose-headings:text-[var(--color-ink)] prose-headings:font-bold prose-headings:tracking-tight
-              prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-3 prose-h2:border-b prose-h2:border-[var(--color-border)] prose-h2:pb-2
-              prose-h3:text-base prose-h3:mt-6 prose-h3:mb-2 prose-h3:text-[var(--color-ink-muted)]
-              prose-p:text-[var(--color-ink-muted)] prose-p:leading-relaxed
-              prose-a:text-[var(--color-brand-crust)] prose-a:no-underline hover:prose-a:underline
-              prose-strong:text-[var(--color-ink)] prose-strong:font-semibold
-              prose-ul:text-[var(--color-ink-muted)] prose-li:my-1
-              prose-img:rounded-[var(--radius-card)] prose-img:border prose-img:border-[var(--color-border)]
-              prose-blockquote:border-l-[var(--color-brand-crust)] prose-blockquote:text-[var(--color-ink-muted)]"
-            dangerouslySetInnerHTML={{ __html: processed.html }}
+            className={CAMPAIGN_PROSE_CLASSES}
+            dangerouslySetInnerHTML={{ __html: descriptionHtml }}
           />
         ) : (
           <div className="rounded-[var(--radius-card)] border-2 border-dashed border-[var(--color-border)] p-6 text-sm text-[var(--color-ink-muted)]">
@@ -298,7 +257,7 @@ export function ProjectPageSections({
                 href={`/backing/${projectId}/checkout${selectedReward ? `?reward=${selectedReward.id}` : ""}`}
               >
                 <Button size="sm">
-                  {selectedReward ? `Back with ${selectedReward.title}` : "Back this project"}
+                  {selectedReward ? `Back with ${selectedReward.title}` : "Pledge without reward"}
                 </Button>
               </Link>
             </div>
@@ -331,9 +290,18 @@ export function ProjectPageSections({
         </h2>
 
         {faqItems.length === 0 ? (
-          <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-5 text-sm text-[var(--color-ink-muted)]">
-            No FAQ entries yet. Creators can add question-style headings (ending in "?") in the
-            campaign body — they'll automatically appear here.
+          <div className="rounded-[var(--radius-card)] border-2 border-dashed border-[var(--color-border)] p-8 flex flex-col items-center text-center gap-2">
+            <div className="w-11 h-11 rounded-full bg-[var(--color-brand-crust)]/10 flex items-center justify-center">
+              <HelpCircle className="w-5 h-5 text-[var(--color-brand-crust)]" />
+            </div>
+            <p className="text-sm font-semibold text-[var(--color-ink)]">
+              No FAQ entries yet
+            </p>
+            <p className="text-xs text-[var(--color-ink-muted)] max-w-md leading-relaxed">
+              Creators can add question-style section headings (ending in{" "}
+              <span className="font-mono font-semibold text-[var(--color-ink)]">?</span>) to the
+              campaign body — they'll appear here automatically.
+            </p>
           </div>
         ) : (
           <div className="flex flex-col gap-2">

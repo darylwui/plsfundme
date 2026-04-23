@@ -201,7 +201,7 @@ export type Database = {
           backer_note: string | null
           created_at: string
           delivered_at: string | null
-          escrow_held: boolean | null
+          escrow_held: boolean
           escrow_held_at: string | null
           fulfillment_status: Database["public"]["Enums"]["fulfillment_status"]
           id: string
@@ -210,7 +210,7 @@ export type Database = {
           platform_fee_sgd: number
           project_id: string
           refund_reason: string | null
-          refunded: boolean | null
+          refunded: boolean
           refunded_at: string | null
           reward_id: string | null
           shipped_at: string | null
@@ -227,7 +227,7 @@ export type Database = {
           backer_note?: string | null
           created_at?: string
           delivered_at?: string | null
-          escrow_held?: boolean | null
+          escrow_held?: boolean
           escrow_held_at?: string | null
           fulfillment_status?: Database["public"]["Enums"]["fulfillment_status"]
           id?: string
@@ -236,7 +236,7 @@ export type Database = {
           platform_fee_sgd?: number
           project_id: string
           refund_reason?: string | null
-          refunded?: boolean | null
+          refunded?: boolean
           refunded_at?: string | null
           reward_id?: string | null
           shipped_at?: string | null
@@ -253,7 +253,7 @@ export type Database = {
           backer_note?: string | null
           created_at?: string
           delivered_at?: string | null
-          escrow_held?: boolean | null
+          escrow_held?: boolean
           escrow_held_at?: string | null
           fulfillment_status?: Database["public"]["Enums"]["fulfillment_status"]
           id?: string
@@ -262,7 +262,7 @@ export type Database = {
           platform_fee_sgd?: number
           project_id?: string
           refund_reason?: string | null
-          refunded?: boolean | null
+          refunded?: boolean
           refunded_at?: string | null
           reward_id?: string | null
           shipped_at?: string | null

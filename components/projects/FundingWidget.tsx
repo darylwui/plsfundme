@@ -169,7 +169,7 @@ export function FundingWidget({ project }: FundingWidgetProps) {
               ) : (
                 <Link href={checkoutHref}>
                   <Button size="lg" fullWidth>
-                    {selectedReward ? `Back with ${selectedReward.title}` : "Back this project"}
+                    {selectedReward ? `Back with ${selectedReward.title}` : "Pledge without reward"}
                   </Button>
                 </Link>
               )}

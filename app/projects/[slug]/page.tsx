@@ -10,10 +10,13 @@ import { FundingWidget } from "@/components/projects/FundingWidget";
 import { BackerEducationSection } from "@/components/backer/BackerEducationSection";
 import { FeaturedSticker } from "@/components/projects/FeaturedSticker";
 import { ProjectPageSections } from "@/components/projects/ProjectPageSections";
+import { CampaignToc } from "@/components/projects/CampaignToc";
+import { ProjectCard } from "@/components/projects/ProjectCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { daysRemaining, formatDate } from "@/lib/utils/dates";
 import { toEmbedUrl } from "@/lib/utils/video-embed";
+import { processCampaignHtml } from "@/lib/utils/campaignHtml";
 import type { ProjectWithRelations } from "@/types/project";
 import type { Metadata } from "next";
 
@@ -158,7 +161,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   const { data: similarRaw } = await supabase
     .from("projects")
     .select(
-      "id, title, slug, short_description, cover_image_url, amount_pledged_sgd, funding_goal_sgd, backer_count, deadline"
+      "*, category:categories(*), creator:profiles!creator_id(id, display_name, avatar_url), rewards(*), stretch_goals(*)"
     )
     .eq("category_id", project.category_id)
     .neq("id", project.id)
@@ -166,17 +169,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     .order("created_at", { ascending: false })
     .limit(3);
 
-  const similarProjects = (similarRaw ?? []) as {
-    id: string;
-    title: string;
-    slug: string;
-    short_description: string;
-    cover_image_url: string | null;
-    amount_pledged_sgd: number;
-    funding_goal_sgd: number;
-    backer_count: number;
-    deadline: string;
-  }[];
+  const similarProjects = (similarRaw ?? []) as unknown as ProjectWithRelations[];
 
   // Status guards
   if (project.status === "draft" && !isCreator) notFound();
@@ -184,6 +177,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   const isPendingReview = project.status === "pending_review";
   if (isPendingReview && !isCreator) notFound();
+
+  const campaign = processCampaignHtml(project.full_description);
 
   return (
     <div className="min-h-screen bg-[var(--color-surface)]">
@@ -415,7 +410,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               updates={updates}
               isBacker={isBacker}
               initialFeedback={feedback}
-              descriptionHtml={project.full_description}
+              descriptionHtml={campaign.html}
+              descriptionHeadings={campaign.headings}
               rewards={project.rewards}
             />
           </div>
@@ -438,44 +434,33 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                   />
                 </div>
               )}
+
+              {/* Campaign section jumps */}
+              <CampaignToc headings={campaign.headings} />
             </div>
           </div>
         </div>
 
-        {/* Similar projects */}
+        {/* Similar projects — reuse the same card as /explore so hover, progress
+            bar, category pill, and ending-soon stamp all match. */}
         {similarProjects.length > 0 && (
           <section className="mt-16">
-            <h2 className="text-2xl font-black text-[var(--color-ink)] tracking-tight mb-4">
-              Similar projects
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {similarProjects.map((item) => (
+            <div className="flex items-baseline justify-between gap-4 mb-4">
+              <h2 className="text-2xl font-black text-[var(--color-ink)] tracking-tight">
+                Similar projects
+              </h2>
+              {project.category && (
                 <Link
-                  key={item.id}
-                  href={`/projects/${item.slug}`}
-                  className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] overflow-hidden hover:shadow-[var(--shadow-card)] transition-shadow"
+                  href={`/explore?category=${project.category.slug}`}
+                  className="text-sm font-semibold text-[var(--color-brand-crust)] hover:underline shrink-0"
                 >
-                  <div className="relative aspect-[16/10] bg-[var(--color-surface-overlay)]">
-                    {item.cover_image_url ? (
-                      <Image
-                        src={item.cover_image_url}
-                        alt={item.title}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, 33vw"
-                      />
-                    ) : null}
-                  </div>
-                  <div className="p-4">
-                    <p className="font-bold text-[var(--color-ink)] line-clamp-1">{item.title}</p>
-                    <p className="mt-1 text-sm text-[var(--color-ink-muted)] line-clamp-2">
-                      {item.short_description}
-                    </p>
-                    <div className="mt-2 text-xs text-[var(--color-ink-subtle)]">
-                      {item.backer_count} backers · {daysRemaining(item.deadline)}d left
-                    </div>
-                  </div>
+                  See all in {project.category.name} →
                 </Link>
+              )}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {similarProjects.map((item) => (
+                <ProjectCard key={item.id} project={item} />
               ))}
             </div>
           </section>

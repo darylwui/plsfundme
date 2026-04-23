@@ -111,15 +111,15 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
         </form>
 
         {/* Sort tabs */}
-        <div className="flex gap-1 p-1 bg-[var(--color-surface-overlay)] rounded-[var(--radius-btn)] border border-[var(--color-border)] w-fit">
+        <div className="flex gap-2">
           {SORTS.map(({ key, label, Icon }) => (
             <Link
               key={key}
               href={buildUrl({ sort: key })}
-              className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-[calc(var(--radius-btn)-2px)] text-sm font-semibold transition-colors duration-[150ms] ${
+              className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-[var(--radius-btn)] text-sm font-semibold transition-colors duration-[150ms] border ${
                 sort === key
-                  ? "bg-[var(--color-surface)] shadow-sm text-[var(--color-ink)]"
-                  : "text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
+                  ? "bg-[var(--color-brand-crust)] text-white border-[var(--color-brand-crust)]"
+                  : "bg-transparent text-[var(--color-brand-crust-dark)] border-[var(--color-border)] hover:border-[var(--color-brand-crust)] hover:text-[var(--color-brand-crust)]"
               }`}
             >
               <Icon className="w-3.5 h-3.5" />
@@ -132,10 +132,10 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
         <div className="flex flex-wrap gap-2">
           <Link
             href={buildUrl({ category: undefined })}
-            className={`px-3 py-1.5 rounded-full text-sm font-semibold transition-colors duration-[150ms] ${
+            className={`px-3 py-1.5 rounded-full text-sm font-semibold transition-colors duration-[150ms] border ${
               !category
-                ? "bg-[var(--color-brand-crust)] text-white"
-                : "bg-[var(--color-surface-overlay)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
+                ? "bg-[var(--color-brand-crust)] text-white border-[var(--color-brand-crust)]"
+                : "bg-transparent text-[var(--color-brand-crust-dark)] border-[var(--color-border)] hover:border-[var(--color-brand-crust)] hover:text-[var(--color-brand-crust)]"
             }`}
           >
             All
@@ -144,10 +144,10 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
             <Link
               key={cat.id}
               href={buildUrl({ category: cat.slug })}
-              className={`px-3 py-1.5 rounded-full text-sm font-semibold transition-colors duration-[150ms] ${
+              className={`px-3 py-1.5 rounded-full text-sm font-semibold transition-colors duration-[150ms] border ${
                 category === cat.slug
-                  ? "bg-[var(--color-brand-crust)] text-white"
-                  : "bg-[var(--color-surface-overlay)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
+                  ? "bg-[var(--color-brand-crust)] text-white border-[var(--color-brand-crust)]"
+                  : "bg-transparent text-[var(--color-brand-crust-dark)] border-[var(--color-border)] hover:border-[var(--color-brand-crust)] hover:text-[var(--color-brand-crust)]"
               }`}
             >
               {cat.name}

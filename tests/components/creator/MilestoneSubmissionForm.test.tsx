@@ -17,6 +17,7 @@ describe('MilestoneSubmissionForm', () => {
     expect(screen.getByLabelText(/factory floor photo/i)).toBeTruthy();
   });
 
+
   it('should render form for milestone 3 (fulfillment)', () => {
     render(<MilestoneSubmissionForm campaignId="campaign-1" milestoneNumber={3} onSubmit={vi.fn()} />);
 

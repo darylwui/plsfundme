@@ -1,6 +1,5 @@
-import { Suspense } from "react";
 import Link from "next/link";
-import { ArrowRight, Shield, Globe, Lock, TrendingUp, Star, Clock } from "lucide-react";
+import { ArrowRight, Shield, Globe, Lock } from "lucide-react";
 import { unstable_cache } from "next/cache";
 // Marketing homepage: use the cookieless service-role client inside
 // `unstable_cache`. Next 16 throws if `cookies()` is called inside a cached
@@ -8,11 +7,11 @@ import { unstable_cache } from "next/cache";
 // be used here. The data we read is public (active projects + aggregate stats)
 // and is shared across all visitors, so service-role is the correct fit.
 import { createServiceClient } from "@/lib/supabase/server";
-import { ProjectGrid } from "@/components/projects/ProjectGrid";
 import { Button } from "@/components/ui/button";
 import { StatsBar } from "@/components/home/StatsBar";
 import { HowItWorksSection } from "@/components/home/HowItWorksSection";
 import { PreFooterCTA } from "@/components/home/PreFooterCTA";
+import { DiscoverySection } from "@/components/home/DiscoverySection";
 import { ScrollReveal } from "@/components/marketing/ScrollReveal";
 import type { ProjectWithRelations } from "@/types/project";
 
@@ -76,41 +75,18 @@ function formatStatValue(n: number, prefix = "") {
   return `${prefix}${n.toLocaleString()}`;
 }
 
-const TABS: { key: FilterTab; label: string; Icon: React.ComponentType<{ className?: string }> }[] = [
-  { key: "trending", label: "Trending", Icon: TrendingUp },
-  { key: "newest", label: "Newest", Icon: Star },
-  { key: "ending_soon", label: "Ending soon", Icon: Clock },
-];
-
-// ── Extracted async server component so the hero renders immediately ─────────
-async function ProjectGridServer({ activeFilter }: { activeFilter: FilterTab }) {
-  const projects = await getProjects(activeFilter);
-  return (
-    <ProjectGrid
-      projects={projects}
-      emptyMessage="No active projects yet — be the first to launch one!"
-    />
-  );
-}
-
-// ── Project grid skeleton (matches loading.tsx cards) ────────────────────────
-function ProjectGridSkeleton() {
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="h-80 rounded-2xl bg-amber-100/60 dark:bg-amber-900/20" />
-      ))}
-    </div>
-  );
-}
-
 export default async function HomePage({ searchParams }: HomePageProps) {
   const { filter } = await searchParams;
-  const activeFilter: FilterTab =
+  const initialFilter: FilterTab =
     filter === "newest" || filter === "ending_soon" ? filter : "trending";
 
-  // Stats can resolve in parallel while the project grid streams in
-  const platformStats = await getPlatformStats();
+  // Fetch all three filter results in parallel
+  const [trendingProjects, newestProjects, endingSoonProjects, platformStats] = await Promise.all([
+    getProjects("trending"),
+    getProjects("newest"),
+    getProjects("ending_soon"),
+    getPlatformStats(),
+  ]);
 
   const stats = [
     {
@@ -275,14 +251,6 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                         </ul>
                       </div>
 
-                      <div className="px-6 py-4 bg-[var(--color-surface-raised)] border-t border-[var(--color-border)]">
-                        <Link
-                          href="/projects/create"
-                          className="text-sm font-semibold text-[var(--color-brand-crust)] hover:underline inline-flex items-center gap-1"
-                        >
-                          Launch your campaign <ArrowRight className="w-3.5 h-3.5" />
-                        </Link>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -308,39 +276,12 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
       {/* ── Discovery section ────────────────────────────────── */}
       <ScrollReveal>
-        <section className="bg-[var(--color-surface-raised)] border-t border-[var(--color-border)]">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 md:pt-10 pb-14">
-            {/* Filter tabs */}
-            <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
-              <div className="flex gap-1 p-1 bg-[var(--color-surface-overlay)] rounded-[var(--radius-btn)] border border-[var(--color-border)]">
-                {TABS.map(({ key, label, Icon }) => (
-                  <Link
-                    key={key}
-                    href={`/?filter=${key}`}
-                    className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-[calc(var(--radius-btn)-2px)] text-sm font-semibold transition-colors duration-[150ms] ${
-                      activeFilter === key
-                        ? "bg-[var(--color-surface)] shadow-sm text-[var(--color-ink)]"
-                        : "text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
-                    }`}
-                  >
-                    <Icon className="w-3.5 h-3.5" />
-                    {label}
-                  </Link>
-                ))}
-              </div>
-              <Link
-                href="/explore"
-                className="text-sm font-semibold text-[var(--color-brand-crust)] hover:underline flex items-center gap-1"
-              >
-                View all <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-
-            <Suspense fallback={<ProjectGridSkeleton />}>
-              <ProjectGridServer activeFilter={activeFilter} />
-            </Suspense>
-          </div>
-        </section>
+        <DiscoverySection
+          trending={trendingProjects}
+          newest={newestProjects}
+          endingSoon={endingSoonProjects}
+          initialFilter={initialFilter}
+        />
       </ScrollReveal>
 
       {/* ── How it works ─────────────────────────────────────── */}
