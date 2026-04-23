@@ -53,7 +53,7 @@ async function BackerDashboard({ userId, displayName, email }: { userId: string;
           <h3 className="font-bold text-[var(--color-ink)] mb-1">Ready to launch your own campaign?</h3>
           <p className="text-sm text-[var(--color-ink-muted)]">Become a creator and bring your ideas to life on get that bread.</p>
         </div>
-        <Link href="/apply/pm" className="shrink-0">
+        <Link href="/apply/creator" className="shrink-0">
           <Button variant="primary" size="sm">
             Apply as Creator
           </Button>
@@ -261,7 +261,7 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
             </div>
           )}
           <div className="px-5 py-4 flex items-center gap-4 flex-wrap">
-            <Link href="/apply/pm">
+            <Link href="/apply/creator">
               <Button size="sm">Re-apply as Creator</Button>
             </Link>
             <a
@@ -368,8 +368,8 @@ export default async function DashboardPage() {
   const email = user?.email ?? "";
   const role = (profile?.role ?? "backer").toString().trim().toLowerCase();
 
-  // Backer shows backer dashboard for all non-project_manager roles
-  if (role === "project_manager") {
+  // Backer shows backer dashboard for all non-creator roles
+  if (role === "creator") {
     return <CreatorDashboard userId={user!.id} displayName={displayName} email={email} />;
   }
 
