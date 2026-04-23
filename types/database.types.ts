@@ -201,12 +201,17 @@ export type Database = {
           backer_note: string | null
           created_at: string
           delivered_at: string | null
+          escrow_held: boolean
+          escrow_held_at: string | null
           fulfillment_status: Database["public"]["Enums"]["fulfillment_status"]
           id: string
           is_anonymous: boolean
           payment_method: Database["public"]["Enums"]["payment_method_type"]
           platform_fee_sgd: number
           project_id: string
+          refund_reason: string | null
+          refunded: boolean
+          refunded_at: string | null
           reward_id: string | null
           shipped_at: string | null
           status: Database["public"]["Enums"]["pledge_status"]
@@ -222,12 +227,17 @@ export type Database = {
           backer_note?: string | null
           created_at?: string
           delivered_at?: string | null
+          escrow_held?: boolean
+          escrow_held_at?: string | null
           fulfillment_status?: Database["public"]["Enums"]["fulfillment_status"]
           id?: string
           is_anonymous?: boolean
           payment_method: Database["public"]["Enums"]["payment_method_type"]
           platform_fee_sgd?: number
           project_id: string
+          refund_reason?: string | null
+          refunded?: boolean
+          refunded_at?: string | null
           reward_id?: string | null
           shipped_at?: string | null
           status?: Database["public"]["Enums"]["pledge_status"]
@@ -243,12 +253,17 @@ export type Database = {
           backer_note?: string | null
           created_at?: string
           delivered_at?: string | null
+          escrow_held?: boolean
+          escrow_held_at?: string | null
           fulfillment_status?: Database["public"]["Enums"]["fulfillment_status"]
           id?: string
           is_anonymous?: boolean
           payment_method?: Database["public"]["Enums"]["payment_method_type"]
           platform_fee_sgd?: number
           project_id?: string
+          refund_reason?: string | null
+          refunded?: boolean
+          refunded_at?: string | null
           reward_id?: string | null
           shipped_at?: string | null
           status?: Database["public"]["Enums"]["pledge_status"]
@@ -730,6 +745,174 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      milestone_submissions: {
+        Row: {
+          id: string
+          campaign_id: string
+          creator_id: string
+          milestone_number: number
+          status: string
+          proof_data: Json
+          submitted_at: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          campaign_id: string
+          creator_id: string
+          milestone_number: number
+          status?: string
+          proof_data: Json
+          submitted_at?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          campaign_id?: string
+          creator_id?: string
+          milestone_number?: number
+          status?: string
+          proof_data?: Json
+          submitted_at?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
+      milestone_approvals: {
+        Row: {
+          id: string
+          submission_id: string
+          approved_by: string
+          decision: string
+          feedback_text: string | null
+          reviewed_at: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          submission_id: string
+          approved_by: string
+          decision: string
+          feedback_text?: string | null
+          reviewed_at?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          submission_id?: string
+          approved_by?: string
+          decision?: string
+          feedback_text?: string | null
+          reviewed_at?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
+      escrow_releases: {
+        Row: {
+          id: string
+          campaign_id: string
+          milestone_number: number
+          amount_sgd: number
+          released_at: string
+          reason: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          campaign_id: string
+          milestone_number: number
+          amount_sgd: number
+          released_at: string
+          reason: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          campaign_id?: string
+          milestone_number?: number
+          amount_sgd?: number
+          released_at?: string
+          reason?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
+      disputes: {
+        Row: {
+          id: string
+          campaign_id: string
+          backer_id: string
+          description: string
+          filed_at: string
+          status: string
+          resolution_notes: string | null
+          resolved_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          campaign_id: string
+          backer_id: string
+          description: string
+          filed_at?: string
+          status?: string
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          campaign_id?: string
+          backer_id?: string
+          description?: string
+          filed_at?: string
+          status?: string
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      creator_qualifications: {
+        Row: {
+          id: string
+          creator_id: string
+          tier: string
+          completed_campaigns_count: number
+          external_proof_url: string | null
+          external_proof_type: string | null
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          creator_id: string
+          tier?: string
+          completed_campaigns_count?: number
+          external_proof_url?: string | null
+          external_proof_type?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          creator_id?: string
+          tier?: string
+          completed_campaigns_count?: number
+          external_proof_url?: string | null
+          external_proof_type?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
     }
     Views: {

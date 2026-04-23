@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { releaseMilestonePayment } from '@/lib/milestones/escrow';
+import type { MilestoneNumber } from '@/lib/milestones/types';
 
 interface RouteContext {
   params: Promise<{ campaignId: string }>;
@@ -96,7 +97,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
       if (campaign) {
         const releaseResult = await releaseMilestonePayment({
           campaign_id: campaignId,
-          milestone_number: submission.milestone_number,
+          milestone_number: submission.milestone_number as MilestoneNumber,
           campaign_total_sgd: campaign.amount_pledged_sgd,
         });
 
