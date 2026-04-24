@@ -4,8 +4,9 @@ import type { CreationStep, SaveState } from "@/hooks/useProjectCreation";
 const STEPS = [
   { number: 1 as CreationStep, label: "Basics" },
   { number: 2 as CreationStep, label: "Funding" },
-  { number: 3 as CreationStep, label: "Rewards" },
-  { number: 4 as CreationStep, label: "Review" },
+  { number: 3 as CreationStep, label: "Milestones" },
+  { number: 4 as CreationStep, label: "Rewards" },
+  { number: 5 as CreationStep, label: "Review" },
 ];
 
 interface StepIndicatorProps {

@@ -5,6 +5,7 @@ import { slugifyUnique } from "@/lib/utils/slugify";
 import { sanitizeRichHtml } from "@/lib/utils/sanitize";
 import { sendAdminNewProjectSubmittedEmail } from "@/lib/email/templates";
 import { maybeSweep, rateLimit, rateLimitResponse } from "@/lib/rate-limit";
+import { milestoneSchema, projectMilestonesSchema } from "@/lib/validations/project";
 
 const rewardSchema = z.object({
   title: z.string().trim().min(1).max(200),
@@ -26,6 +27,7 @@ const bodySchema = z.object({
   payout_mode: z.enum(["manual", "automatic"]).optional().default("automatic"),
   start_date: z.string().nullable().optional(),
   deadline: z.string(),
+  milestones: z.array(milestoneSchema).length(3),
   rewards: z.array(rewardSchema).min(1).max(50),
 });
 
@@ -74,6 +76,18 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Deadline must be in the future." }, { status: 400 });
   }
 
+  // Date-ordering refinement on milestones (future + strictly increasing).
+  const milestonesParse = projectMilestonesSchema.safeParse({ milestones: parsed.milestones });
+  if (!milestonesParse.success) {
+    return NextResponse.json(
+      {
+        error:
+          "Milestones are invalid. Please double-check all 3 milestones before submitting.",
+      },
+      { status: 400 },
+    );
+  }
+
   const slug = slugifyUnique(parsed.title);
 
   const { data: project, error: projectError } = await supabase
@@ -91,6 +105,7 @@ export async function POST(request: NextRequest) {
       payout_mode: parsed.payout_mode,
       start_date: parsed.start_date ?? null,
       deadline: parsed.deadline,
+      milestones: milestonesParse.data.milestones,
       status: "pending_review",
       launched_at: new Date().toISOString(),
     })

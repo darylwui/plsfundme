@@ -20,6 +20,13 @@ export interface ProjectWithRelations extends Project {
   stretch_goals: StretchGoal[]
 }
 
+/** One of three milestones a creator promises to deliver. */
+export interface MilestoneDraft {
+  title: string
+  description: string
+  target_date: string
+}
+
 /** Data shape for the multi-step creation form */
 export interface ProjectDraft {
   // Step 1: Basic Info
@@ -34,6 +41,8 @@ export interface ProjectDraft {
   start_date: string | null
   deadline: string
   payout_mode: import('./database.types').PayoutMode
-  // Step 3: Rewards (managed separately)
-  // Step 4: Review + launch
+  // Step 3: Milestones (fixed 3, 40/40/20 payout split)
+  milestones: [MilestoneDraft, MilestoneDraft, MilestoneDraft]
+  // Step 4: Rewards (managed separately)
+  // Step 5: Review + launch
 }

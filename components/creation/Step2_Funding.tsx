@@ -179,7 +179,7 @@ export function Step2_Funding({ draft, onUpdate, onNext, onBack }: Step2Props) {
           Back
         </Button>
         <Button size="lg" onClick={handleNext}>
-          Next: Reward tiers
+          Next: Milestones
         </Button>
       </div>
     </div>
