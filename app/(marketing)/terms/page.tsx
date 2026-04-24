@@ -123,6 +123,11 @@ export default function TermsPage() {
                 as granted at our discretion.
               </li>
             </ul>
+            <p>
+              The specific circumstances under which refunds are granted, the dispute process, applicable timelines,
+              and how much is refunded in each case are set out in our{" "}
+              <a href="/refund-policy">Refund &amp; Dispute Policy</a>, which is incorporated into these Terms by reference.
+            </p>
           </Section>
 
           <Section title="6. Platform Fees">

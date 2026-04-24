@@ -67,40 +67,17 @@ export default function RefundGuaranteePage() {
             </p>
           </Section>
 
-          <Section title="When can I request a refund?">
+          <Section title="Refunds and disputes">
             <p>
-              Even after a campaign funds, you can ask for a refund in any of these cases:
+              If a creator fails to deliver — whether they cancel, go silent past a milestone, or misrepresent the project — you can ask for a refund. Full pledge back on fraud; funds still in escrow back on good-faith failure. Either way, our 5% platform fee comes back with it.
             </p>
-            <ul className="list-disc pl-5 space-y-2">
-              <li>The creator cancels the project or shuts down their campaign.</li>
-              <li>The creator fails to deliver the promised reward within a reasonable time after the estimated delivery date.</li>
-              <li>The creator materially misrepresented the project — e.g. fake photos, plagiarised work, or fabricated credentials.</li>
-              <li>You were charged in error, or duplicate-charged.</li>
-              <li>Your pledge was placed by someone else on your card without permission.</li>
-            </ul>
             <p>
-              Refund requests tied to personal change-of-mind after a campaign has funded are considered case-by-case, and are not guaranteed.
+              Our two-stage dispute process gives creators 14 days to respond to a concern before a formal dispute opens — because most delays in real projects are communication gaps, not failures. If a milestone is 45+ days overdue with no update, we open the dispute on backers&apos; behalf automatically.
             </p>
-          </Section>
-
-          <Section title="How to request a refund">
             <p>
-              Email{" "}
-              <a
-                href={`mailto:${CONTACT_EMAIL}?subject=Refund%20request`}
-                className="font-semibold text-[var(--color-brand-crust)] hover:underline"
-              >
-                {CONTACT_EMAIL}
-              </a>{" "}
-              with:
-            </p>
-            <ul className="list-disc pl-5 space-y-2">
-              <li>The campaign name or link.</li>
-              <li>The email you used to pledge.</li>
-              <li>A short description of what happened.</li>
-            </ul>
-            <p>
-              We aim to respond within 2 business days. If your request qualifies, we&apos;ll process the refund back to your original payment method (card or PayNow) within 5–10 business days, depending on your bank.
+              <Link href="/refund-policy" className="font-semibold text-[var(--color-brand-crust)] hover:underline">
+                Read the full refund &amp; dispute policy →
+              </Link>
             </p>
           </Section>
 
