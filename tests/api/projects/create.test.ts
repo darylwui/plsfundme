@@ -31,6 +31,23 @@ const VALID_BODY = {
   payout_mode: "escrow",
   start_date: "2026-05-01",
   deadline: "2026-06-01",
+  milestones: [
+    {
+      title: "Prototype finalised",
+      description: "Prototype finalised and manufacturing partner confirmed with signed contract.",
+      target_date: "2026-07-01",
+    },
+    {
+      title: "Production complete",
+      description: "All units manufactured, QA-checked, and ready to ship from the warehouse.",
+      target_date: "2026-09-01",
+    },
+    {
+      title: "Rewards delivered",
+      description: "All rewards shipped to backers and confirmed delivered with tracking proof.",
+      target_date: "2026-11-01",
+    },
+  ],
   rewards: [
     {
       title: "Reward 1",

@@ -3,8 +3,9 @@
 import { StepIndicator } from "./StepIndicator";
 import { Step1_BasicInfo } from "./Step1_BasicInfo";
 import { Step2_Funding } from "./Step2_Funding";
-import { Step3_Rewards } from "./Step3_Rewards";
-import { Step4_Review } from "./Step4_Review";
+import { Step3_Milestones } from "./Step3_Milestones";
+import { Step4_Rewards } from "./Step4_Rewards";
+import { Step5_Review } from "./Step5_Review";
 import { CreationChecklist } from "./CreationChecklist";
 import { useProjectCreation } from "@/hooks/useProjectCreation";
 import type { Category } from "@/types/project";
@@ -20,6 +21,7 @@ export function ProjectCreationForm({ categories }: ProjectCreationFormProps) {
     rewards,
     saveState,
     updateDraft,
+    updateMilestone,
     addReward,
     updateReward,
     removeReward,
@@ -29,7 +31,7 @@ export function ProjectCreationForm({ categories }: ProjectCreationFormProps) {
     clearDraft,
   } = useProjectCreation();
 
-  const showChecklist = step !== 4; // Don't show checklist on review step
+  const showChecklist = step !== 5; // Don't show checklist on review step
 
   return (
     <div className="flex flex-col gap-8">
@@ -57,7 +59,15 @@ export function ProjectCreationForm({ categories }: ProjectCreationFormProps) {
               />
             )}
             {step === 3 && (
-              <Step3_Rewards
+              <Step3_Milestones
+                draft={draft}
+                onUpdate={updateMilestone}
+                onNext={next}
+                onBack={back}
+              />
+            )}
+            {step === 4 && (
+              <Step4_Rewards
                 rewards={rewards}
                 onAdd={addReward}
                 onUpdate={updateReward}
@@ -66,8 +76,8 @@ export function ProjectCreationForm({ categories }: ProjectCreationFormProps) {
                 onBack={back}
               />
             )}
-            {step === 4 && (
-              <Step4_Review
+            {step === 5 && (
+              <Step5_Review
                 draft={draft}
                 rewards={rewards}
                 categories={categories}

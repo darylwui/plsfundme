@@ -622,6 +622,7 @@ export type Database = {
           id: string
           is_featured: boolean
           launched_at: string | null
+          milestones: Json | null
           payout_mode: Database["public"]["Enums"]["payout_mode"]
           rejection_reason: string | null
           rejection_reason_code: string | null
@@ -649,6 +650,7 @@ export type Database = {
           id?: string
           is_featured?: boolean
           launched_at?: string | null
+          milestones?: Json | null
           payout_mode?: Database["public"]["Enums"]["payout_mode"]
           rejection_reason?: string | null
           rejection_reason_code?: string | null
@@ -676,6 +678,7 @@ export type Database = {
           id?: string
           is_featured?: boolean
           launched_at?: string | null
+          milestones?: Json | null
           payout_mode?: Database["public"]["Enums"]["payout_mode"]
           rejection_reason?: string | null
           rejection_reason_code?: string | null

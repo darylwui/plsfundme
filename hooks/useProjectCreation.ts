@@ -2,11 +2,13 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
-import type { ProjectDraft } from "@/types/project";
+import type { ProjectDraft, MilestoneDraft } from "@/types/project";
 import type { RewardFormData } from "@/types/reward";
 
-export type CreationStep = 1 | 2 | 3 | 4;
+export type CreationStep = 1 | 2 | 3 | 4 | 5;
 export type SaveState = "idle" | "saving" | "saved" | "error";
+
+const EMPTY_MILESTONE: MilestoneDraft = { title: "", description: "", target_date: "" };
 
 const INITIAL_DRAFT: ProjectDraft = {
   title: "",
@@ -19,6 +21,11 @@ const INITIAL_DRAFT: ProjectDraft = {
   start_date: null,
   deadline: "",
   payout_mode: "automatic",
+  milestones: [
+    { ...EMPTY_MILESTONE },
+    { ...EMPTY_MILESTONE },
+    { ...EMPTY_MILESTONE },
+  ],
 };
 
 const SAVE_DEBOUNCE_MS = 1200;
@@ -46,7 +53,14 @@ export function useProjectCreation() {
         .single();
 
       if (data) {
-        setDraft(data.draft_data as ProjectDraft);
+        // Backfill milestones for drafts saved before the milestone step shipped.
+        const loadedDraft = data.draft_data as Partial<ProjectDraft>;
+        const withDefaults: ProjectDraft = {
+          ...INITIAL_DRAFT,
+          ...loadedDraft,
+          milestones: loadedDraft.milestones ?? INITIAL_DRAFT.milestones,
+        };
+        setDraft(withDefaults);
         setRewards(data.rewards_data as RewardFormData[]);
         setStep(data.step as CreationStep);
       }
@@ -134,11 +148,19 @@ export function useProjectCreation() {
   }
 
   function next() {
-    setStep((s) => Math.min(s + 1, 4) as CreationStep);
+    setStep((s) => Math.min(s + 1, 5) as CreationStep);
   }
 
   function back() {
     setStep((s) => Math.max(s - 1, 1) as CreationStep);
+  }
+
+  function updateMilestone(index: 0 | 1 | 2, partial: Partial<MilestoneDraft>) {
+    setDraft((prev) => {
+      const nextMilestones = [...prev.milestones] as ProjectDraft["milestones"];
+      nextMilestones[index] = { ...nextMilestones[index], ...partial };
+      return { ...prev, milestones: nextMilestones };
+    });
   }
 
   return {
@@ -148,6 +170,7 @@ export function useProjectCreation() {
     saveState,
     loaded,
     updateDraft,
+    updateMilestone,
     addReward,
     updateReward,
     removeReward,

@@ -2,16 +2,20 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Rocket, Eye, CalendarDays } from "lucide-react";
+import { Rocket, Eye, CalendarDays, Flag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FundingWidget } from "@/components/projects/FundingWidget";
 import { formatDate } from "@/lib/utils/dates";
+import { formatSgd } from "@/lib/utils/currency";
 import { CAMPAIGN_PROSE_CLASSES, processCampaignHtml } from "@/lib/utils/campaignHtml";
 import type { ProjectDraft, ProjectWithRelations, Category } from "@/types/project";
 import type { RewardFormData, Reward } from "@/types/reward";
 
-interface Step4Props {
+// Display-only; the split is enforced in lib/milestones/escrow.ts.
+const PAYOUT_PERCENTAGES: [number, number, number] = [40, 40, 20];
+
+interface Step5Props {
   draft: ProjectDraft;
   rewards: RewardFormData[];
   categories: Category[];
@@ -69,13 +73,14 @@ function buildPreviewProject(
   } as unknown as ProjectWithRelations;
 }
 
-export function Step4_Review({ draft, rewards, categories, onBack, onSuccess }: Step4Props) {
+export function Step5_Review({ draft, rewards, categories, onBack, onSuccess }: Step5Props) {
   const router = useRouter();
   const [launching, setLaunching] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const category = categories.find((c) => c.id === draft.category_id);
   const previewProject = buildPreviewProject(draft, rewards, category);
+  const creatorReceives = draft.funding_goal_sgd * 0.95;
 
   // Check submission readiness
   const isReady = {
@@ -85,6 +90,13 @@ export function Step4_Review({ draft, rewards, categories, onBack, onSuccess }: 
     fullDescription: draft.full_description && draft.full_description.length >= 50,
     goal: draft.funding_goal_sgd && draft.funding_goal_sgd >= 500 && draft.funding_goal_sgd <= 10_000_000,
     deadline: draft.deadline && new Date(draft.deadline) > new Date(),
+    milestones: draft.milestones.every(
+      (m) =>
+        m.title.trim().length >= 5 &&
+        m.description.trim().length >= 20 &&
+        !!m.target_date &&
+        new Date(m.target_date) > new Date(),
+    ),
     rewards: rewards.length > 0 && rewards.every((r) => r.title && r.title.trim().length > 0),
   };
 
@@ -110,6 +122,7 @@ export function Step4_Review({ draft, rewards, categories, onBack, onSuccess }: 
         payout_mode: draft.payout_mode,
         start_date: draft.start_date,
         deadline: draft.deadline,
+        milestones: draft.milestones,
         rewards,
       }),
     });
@@ -218,6 +231,63 @@ export function Step4_Review({ draft, rewards, categories, onBack, onSuccess }: 
             {/* Funding widget */}
             <FundingWidget project={previewProject} />
 
+            {/* Milestones — shown to backers so they know what they're funding. */}
+            {draft.milestones.some((m) => m.title.trim().length > 0) && (
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-2">
+                  <Flag className="w-4 h-4 text-[var(--color-brand-crust)]" />
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--color-ink)]">
+                    Milestones
+                  </h3>
+                </div>
+                <div className="flex flex-col gap-2">
+                  {draft.milestones.map((m, i) => {
+                    const pct = PAYOUT_PERCENTAGES[i];
+                    const payout =
+                      draft.funding_goal_sgd > 0
+                        ? (creatorReceives * pct) / 100
+                        : 0;
+                    return (
+                      <div
+                        key={i}
+                        className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-4 flex flex-col gap-1"
+                      >
+                        <div className="flex items-baseline justify-between gap-3">
+                          <p className="text-sm font-bold text-[var(--color-ink)]">
+                            {m.title || (
+                              <span className="text-[var(--color-ink-subtle)] italic font-normal">
+                                Milestone {i + 1}
+                              </span>
+                            )}
+                          </p>
+                          <p className="text-xs font-semibold text-[var(--color-brand-crust)] shrink-0">
+                            {pct}%
+                            {payout > 0 && (
+                              <span className="text-[var(--color-ink-muted)] font-normal">
+                                {" "}
+                                · {formatSgd(payout)}
+                              </span>
+                            )}
+                          </p>
+                        </div>
+                        {m.description && (
+                          <p className="text-xs text-[var(--color-ink-muted)] leading-relaxed">
+                            {m.description}
+                          </p>
+                        )}
+                        {m.target_date && (
+                          <p className="text-xs text-[var(--color-ink-subtle)] flex items-center gap-1.5 mt-0.5">
+                            <CalendarDays className="w-3 h-3" />
+                            Target: {formatDate(m.target_date)}
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* Description — runs through the same pipeline as the public page
                 (sanitize + faux-heading promotion + prose classes) so this
                 preview matches the published view exactly. */}
@@ -246,6 +316,7 @@ export function Step4_Review({ draft, rewards, categories, onBack, onSuccess }: 
             {!isReady.fullDescription && <p>• Campaign story needs work (50+ characters)</p>}
             {!isReady.goal && <p>• Funding goal must be S$500–S$10M</p>}
             {!isReady.deadline && <p>• Deadline must be in the future</p>}
+            {!isReady.milestones && <p>• Fill in all 3 milestones with future target dates</p>}
             {!isReady.rewards && <p>• Add at least 1 reward with a title</p>}
           </div>
         </div>

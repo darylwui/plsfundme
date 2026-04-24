@@ -19,7 +19,7 @@ const EMPTY_REWARD: RewardFormData = {
   image_url: null,
 };
 
-interface Step3Props {
+interface Step4Props {
   rewards: RewardFormData[];
   onAdd: (reward: RewardFormData) => void;
   onUpdate: (index: number, reward: RewardFormData) => void;
@@ -28,14 +28,14 @@ interface Step3Props {
   onBack: () => void;
 }
 
-export function Step3_Rewards({
+export function Step4_Rewards({
   rewards,
   onAdd,
   onUpdate,
   onRemove,
   onNext,
   onBack,
-}: Step3Props) {
+}: Step4Props) {
   const [adding, setAdding] = useState(false);
   const [form, setForm] = useState<RewardFormData>(EMPTY_REWARD);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});

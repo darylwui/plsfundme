@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { slugifyUnique } from "@/lib/utils/slugify";
 import { sanitizeRichHtml } from "@/lib/utils/sanitize";
 import { sendAdminNewProjectSubmittedEmail } from "@/lib/email/templates";
+import { projectMilestonesSchema } from "@/lib/validations/project";
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -43,8 +44,22 @@ export async function POST(request: Request) {
     payout_mode,
     start_date,
     deadline,
+    milestones,
     rewards = [],
   } = body;
+
+  // Milestones are required at submission time — the UI forces this, but
+  // validate server-side so stray clients can't skip it.
+  const milestonesParse = projectMilestonesSchema.safeParse({ milestones });
+  if (!milestonesParse.success) {
+    return NextResponse.json(
+      {
+        error:
+          "Milestones are invalid. Please double-check all 3 milestones before submitting.",
+      },
+      { status: 400 },
+    );
+  }
 
   const slug = slugifyUnique(title);
 
@@ -63,6 +78,7 @@ export async function POST(request: Request) {
       payout_mode,
       start_date,
       deadline,
+      milestones: milestonesParse.data.milestones,
       status: "pending_review",
       launched_at: new Date().toISOString(),
     })
