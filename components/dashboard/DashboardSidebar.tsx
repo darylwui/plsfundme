@@ -4,12 +4,13 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, FolderOpen, Users, Wallet, Heart, LogOut,
-  ClipboardList, UserCheck, UsersRound, User,
+  ClipboardList, UserCheck, UsersRound, User, MessageSquare,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 const CREATOR_NAV = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
+  { href: "/dashboard/application", label: "Application", icon: MessageSquare, exact: false },
   { href: "/dashboard/projects", label: "My projects", icon: FolderOpen, exact: false },
   { href: "/dashboard/creator-profile", label: "Creator profile", icon: User, exact: false },
   { href: "/dashboard/backers", label: "Backers", icon: Users, exact: false },

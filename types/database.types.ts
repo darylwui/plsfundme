@@ -429,12 +429,15 @@ export type Database = {
           created_at: string
           id: string
           id_document_url: string | null
+          info_requested_at: string | null
+          last_contacted_at: string | null
           linkedin_url: string | null
           project_description: string
           project_type: string
           rejection_reason: string | null
           reviewed_at: string | null
           reviewed_by: string | null
+          reviewer_id: string | null
           singpass_sub: string | null
           singpass_verified: boolean
           status: Database["public"]["Enums"]["creator_status"]
@@ -448,12 +451,15 @@ export type Database = {
           created_at?: string
           id: string
           id_document_url?: string | null
+          info_requested_at?: string | null
+          last_contacted_at?: string | null
           linkedin_url?: string | null
           project_description: string
           project_type: string
           rejection_reason?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          reviewer_id?: string | null
           singpass_sub?: string | null
           singpass_verified?: boolean
           status?: Database["public"]["Enums"]["creator_status"]
@@ -467,12 +473,15 @@ export type Database = {
           created_at?: string
           id?: string
           id_document_url?: string | null
+          info_requested_at?: string | null
+          last_contacted_at?: string | null
           linkedin_url?: string | null
           project_description?: string
           project_type?: string
           rejection_reason?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          reviewer_id?: string | null
           singpass_sub?: string | null
           singpass_verified?: boolean
           status?: Database["public"]["Enums"]["creator_status"]
@@ -490,6 +499,58 @@ export type Database = {
           {
             foreignKeyName: "creator_profiles_reviewed_by_fkey"
             columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creator_profiles_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_review_notes: {
+        Row: {
+          author_id: string
+          author_role: string
+          body: string
+          created_at: string
+          creator_id: string
+          id: string
+          visibility: string
+        }
+        Insert: {
+          author_id: string
+          author_role: string
+          body: string
+          created_at?: string
+          creator_id: string
+          id?: string
+          visibility: string
+        }
+        Update: {
+          author_id?: string
+          author_role?: string
+          body?: string
+          created_at?: string
+          creator_id?: string
+          id?: string
+          visibility?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_review_notes_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creator_review_notes_author_id_fkey"
+            columns: ["author_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -1030,7 +1091,7 @@ export type Database = {
         | "released"
         | "refunded"
         | "failed"
-      creator_status: "pending_review" | "approved" | "rejected"
+      creator_status: "pending_review" | "approved" | "rejected" | "needs_info"
       project_status:
         | "draft"
         | "active"
@@ -1181,7 +1242,7 @@ export const Constants = {
         "refunded",
         "failed",
       ],
-      creator_status: ["pending_review", "approved", "rejected"],
+      creator_status: ["pending_review", "approved", "rejected", "needs_info"],
       project_status: [
         "draft",
         "active",

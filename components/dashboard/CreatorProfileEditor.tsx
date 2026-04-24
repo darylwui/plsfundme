@@ -16,7 +16,7 @@ interface CreatorProfileEditorProps {
     companyWebsite: string | null;
     projectType: string;
     projectDescription: string;
-    status: "pending_review" | "approved" | "rejected";
+    status: "pending_review" | "approved" | "rejected" | "needs_info";
   };
 }
 

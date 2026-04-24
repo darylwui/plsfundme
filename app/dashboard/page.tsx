@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PlusCircle, ArrowRight, Pencil, Heart, Clock, XCircle } from "lucide-react";
+import { PlusCircle, ArrowRight, Pencil, Heart, Clock, XCircle, MessageCircleQuestion } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { FundingProgressCard } from "@/components/dashboard/FundingProgressCard";
 import { BackerTable } from "@/components/dashboard/BackerTable";
@@ -181,9 +181,11 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
   const subtitle =
     creatorStatus === "pending_review"
       ? "Your creator application is under review."
-      : creatorStatus === "rejected"
-        ? "Your creator application needs attention."
-        : "Here\u2019s what\u2019s happening with your campaigns.";
+      : creatorStatus === "needs_info"
+        ? "Your reviewer is waiting on more info."
+        : creatorStatus === "rejected"
+          ? "Your creator application needs attention."
+          : "Here\u2019s what\u2019s happening with your campaigns.";
 
   return (
     <div className="flex flex-col gap-8">
@@ -219,6 +221,24 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
 
       {/* Singpass card — only relevant once approved */}
       {creatorStatus === "approved" && !singpassVerified && <SingpassVerificationCard />}
+
+      {/* ── Needs info ── */}
+      {creatorStatus === "needs_info" && (
+        <div className="rounded-[var(--radius-card)] border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/20 p-6 flex items-start gap-4">
+          <div className="w-11 h-11 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center shrink-0">
+            <MessageCircleQuestion className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+          </div>
+          <div className="flex-1">
+            <h2 className="font-bold text-[var(--color-ink)]">Your reviewer has a question</h2>
+            <p className="text-sm text-[var(--color-ink-muted)] mt-1 leading-relaxed">
+              Head to your application thread to see what they asked and reply.
+            </p>
+            <Link href="/dashboard/application" className="inline-block mt-3">
+              <Button size="sm">Open application</Button>
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* ── Application pending ── */}
       {creatorStatus === "pending_review" && (

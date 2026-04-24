@@ -96,35 +96,13 @@ export function CreatorRegistrationSteps({ onBack }: CreatorRegistrationStepsPro
     setErrors({});
 
     try {
-      const supabase = createClient();
-
-      const { data, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { full_name: displayName.trim(), role: "creator" },
-          emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
-        },
-      });
-
-      if (signUpError) {
-        setErrors({ form: signUpError.message });
-        setLoading(false);
-        return;
-      }
-
-      const userId = data.user?.id;
-      if (!userId) {
-        setErrors({ form: "Failed to create account. Please try again." });
-        setLoading(false);
-        return;
-      }
-
       const res = await fetch("/api/creator-apply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId,
+          email,
+          password,
+          displayName: displayName.trim(),
           bio: bio.trim(),
           linkedin_url: linkedinUrl.trim() || null,
           company_name: companyName.trim() || null,
@@ -142,6 +120,10 @@ export function CreatorRegistrationSteps({ onBack }: CreatorRegistrationStepsPro
         return;
       }
 
+      // Sign the new user in so they land in their dashboard.
+      const supabase = createClient();
+      await supabase.auth.signInWithPassword({ email, password });
+
       setSuccess(true);
     } catch {
       setErrors({ form: "An unexpected error occurred. Please try again." });
@@ -156,11 +138,17 @@ export function CreatorRegistrationSteps({ onBack }: CreatorRegistrationStepsPro
         <div className="text-5xl">🎉</div>
         <h3 className="font-bold text-xl text-[var(--color-ink)]">Application submitted!</h3>
         <p className="text-sm text-[var(--color-ink-muted)] max-w-sm mx-auto">
-          We&apos;ll review your application within <strong>1–2 business days</strong>. Check your inbox to confirm your email.
+          We&apos;ll review your application within <strong>1–2 business days</strong>. You&apos;re logged in — head to your dashboard to track progress.
         </p>
         <p className="text-xs text-[var(--color-ink-subtle)]">
           You&apos;ll be notified at <strong>{email}</strong> once we&apos;ve reviewed your application.
         </p>
+        <a
+          href="/dashboard"
+          className="inline-flex items-center justify-center gap-2 rounded-[var(--radius-btn)] bg-[var(--color-brand-crust)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--color-brand-crust-dark)] transition-colors w-fit mx-auto"
+        >
+          Go to dashboard →
+        </a>
       </div>
     );
   }
