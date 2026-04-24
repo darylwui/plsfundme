@@ -25,13 +25,13 @@ export function LegalTabs({
 
   return (
     <div>
-      <div className="border-b border-[var(--color-border)] mb-10 overflow-x-auto">
-        <div className="flex min-w-max">
+      <div className="border-b border-[var(--color-border)] mb-10">
+        <div className="flex">
           {TABS.map((tab) => (
             <button
               key={tab.id}
               onClick={() => handleTab(tab.id)}
-              className={`px-5 py-3 text-sm font-semibold whitespace-nowrap border-b-2 -mb-px transition-colors ${
+              className={`flex-1 py-3 text-sm font-semibold whitespace-nowrap border-b-2 -mb-px transition-colors ${
                 activeTab === tab.id
                   ? 'border-[var(--color-brand-crust)] text-[var(--color-brand-crust)] dark:border-[var(--color-brand-golden)] dark:text-[var(--color-brand-golden)]'
                   : 'border-transparent text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] hover:border-[var(--color-border)]'
