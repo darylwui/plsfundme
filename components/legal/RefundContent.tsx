@@ -65,7 +65,9 @@ export function RefundContent() {
             facilitate the dispute process, and apply this policy where triggers are met — not to act as an insurer,
             guarantor, or co-obligor for creator performance. Our holding of pledge funds does not
             create a trust, fiduciary relationship, or any other special relationship between us and
-            any Backer or Creator.
+            any Backer or Creator. All funds are held and processed through regulated third-party
+            payment providers; our role is limited to facilitating instructions for release or
+            refund in accordance with these Terms and this policy.
           </p>
           <p>
             By backing a campaign, you acknowledge that we cannot control what any creator will or will not do,
@@ -116,14 +118,13 @@ export function RefundContent() {
           </p>
           <ul className="list-disc pl-5 space-y-2">
             <li>
-              <strong>Confirmed fraud or material misrepresentation</strong> — you are entitled to a{" "}
-              <strong>full pledge refund</strong>, delivered in two steps: (a) any funds still in
-              escrow are returned immediately; and (b) we pursue the creator for any amounts already
-              released and, where we recover them, remit those to you. We do not guarantee recovery
-              of released funds. Our liability for any unrecovered shortfall — i.e., the portion we
-              are unable to recover from the creator — is limited as described under
-              &ldquo;Limitation of our liability&rdquo; below. The full-refund entitlement means we
-              will pursue recovery; it does not make us the insurer of the shortfall.
+              <strong>Confirmed fraud or material misrepresentation</strong> — you may receive{" "}
+              <strong>up to a full pledge refund</strong>, comprising: (a) funds remaining in
+              escrow, returned immediately; and (b) any additional amounts successfully recovered
+              from the creator. We will take reasonable steps to pursue recovery of released funds
+              from the creator, but we do not guarantee recovery. Our liability for any unrecovered
+              shortfall is limited as described under &ldquo;Limitation of our liability&rdquo;
+              below.
             </li>
             <li>
               <strong>Good-faith failure</strong> (supplier collapse, genuine inability to deliver) — you
@@ -149,9 +150,9 @@ export function RefundContent() {
           </p>
           <p className="text-sm">
             <strong>Who decides which bucket?</strong> We do — based on the investigation evidence. Backers
-            cannot self-classify their refund tier, and our classification is final. If you disagree, you
-            are free to pursue other remedies (bank chargeback, small claims), but we ask that you speak
-            to us first — we can usually resolve matters faster.
+            cannot self-classify their refund tier, and our classification is final within our internal
+            dispute process. If you disagree, you are free to pursue other remedies (bank chargeback,
+            small claims), but we ask that you speak to us first — we can usually resolve matters faster.
           </p>
         </Section>
 
@@ -294,6 +295,7 @@ export function RefundContent() {
             platform refund for the same transaction. We may provide your bank with transaction
             records, campaign content, and platform communications in response to a chargeback. Any
             chargeback filed without a reasonable basis may affect your standing on the platform.
+            This does not affect your rights with your payment provider.
           </p>
         </Section>
 
@@ -306,8 +308,8 @@ export function RefundContent() {
             <li>
               <strong>Creator cancels after funding.</strong> Treated as good-faith (escrow-only refund)
               unless there is clear evidence of deliberate misrepresentation at the time of launch, in
-              which case it may be classified as fraud and backers may be entitled to a full pledge refund
-              subject to recovery from the creator.
+              which case it may be classified as fraud and backers may receive up to a full pledge
+              refund subject to recovery from the creator.
             </li>
           </ul>
         </Section>
