@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { Trash2, Plus, CheckCircle2, Lock, ImageIcon, AlertTriangle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -8,7 +9,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ImageUpload } from "@/components/ui/ImageUpload";
 import { Badge } from "@/components/ui/badge";
-import { CampaignEditor } from "@/components/projects/CampaignEditor";
+
+const CampaignEditor = dynamic(
+  () => import("@/components/projects/CampaignEditor").then((m) => m.CampaignEditor),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="min-h-[400px] rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface-muted)]/40 animate-pulse" />
+    ),
+  }
+);
 import { formatSgd } from "@/lib/utils/currency";
 import { rewardSchema } from "@/lib/validations/reward";
 import type { ProjectWithRelations, Category, ProjectUpdate } from "@/types/project";

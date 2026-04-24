@@ -180,8 +180,17 @@ export async function DELETE(request: Request, { params }: RouteContext) {
 
     const stripeErrors: string[] = [];
 
-    for (const pledge of pledges ?? []) {
-      if (!pledge.stripe_payment_intent_id) continue;
+    // Cap parallelism to stay well under Stripe's 100 req/sec rate limit
+    // while still cutting wall-clock time by ~8x vs the prior serial loop.
+    const STRIPE_CONCURRENCY = 8;
+    async function runBatched<T>(items: T[], fn: (item: T) => Promise<void>) {
+      for (let i = 0; i < items.length; i += STRIPE_CONCURRENCY) {
+        await Promise.all(items.slice(i, i + STRIPE_CONCURRENCY).map(fn));
+      }
+    }
+
+    await runBatched(pledges ?? [], async (pledge) => {
+      if (!pledge.stripe_payment_intent_id) return;
 
       try {
         if (pledge.status === "authorized" || pledge.status === "pending") {
@@ -205,7 +214,7 @@ export async function DELETE(request: Request, { params }: RouteContext) {
         );
         stripeErrors.push(`pledge ${pledge.id}: ${msg}`);
       }
-    }
+    });
 
     // Reverse any processed payouts (Stripe Connect transfers).
     const { data: payouts, error: payoutsErr } = await service
@@ -217,8 +226,8 @@ export async function DELETE(request: Request, { params }: RouteContext) {
       return NextResponse.json({ error: payoutsErr.message }, { status: 500 });
     }
 
-    for (const payout of payouts ?? []) {
-      if (payout.status !== "paid" || !payout.stripe_transfer_id) continue;
+    await runBatched(payouts ?? [], async (payout) => {
+      if (payout.status !== "paid" || !payout.stripe_transfer_id) return;
       try {
         await stripe.transfers.createReversal(payout.stripe_transfer_id);
       } catch (err) {
@@ -229,7 +238,7 @@ export async function DELETE(request: Request, { params }: RouteContext) {
         );
         stripeErrors.push(`payout ${payout.id}: ${msg}`);
       }
-    }
+    });
 
     // Pledges and payouts have ON DELETE RESTRICT, so explicitly delete them
     // before the project row. Rewards / stretch_goals / project_updates /
