@@ -11,8 +11,9 @@ import {
 import {
   FileText,
   Search,
-  Target,
-  Package,
+  Rocket,
+  Zap,
+  CheckCircle2,
   type LucideIcon,
 } from "lucide-react";
 
@@ -29,7 +30,7 @@ const STEPS: Step[] = [
     step: "01",
     title: "Create your campaign",
     description:
-      "Set your funding goal, deadline, and reward tiers. Tell your story with a compelling description and cover image.",
+      "Set your milestones, deadline, and reward tiers. Tell your story with a compelling description and cover image.",
   },
   {
     Icon: Search,
@@ -39,18 +40,25 @@ const STEPS: Step[] = [
       "Our team reviews your campaign within 1–2 business days. Once approved, you go live — then share with your network!",
   },
   {
-    Icon: Target,
+    Icon: Rocket,
     step: "03",
-    title: "Hit your goal",
+    title: "Go live & get backed",
     description:
-      "If your campaign reaches its funding goal by the deadline, you receive the funds minus our 5% platform fee.",
+      "Backers pledge to fund your milestones. Funds are held securely in escrow until you deliver.",
   },
   {
-    Icon: Package,
+    Icon: Zap,
     step: "04",
-    title: "Deliver your rewards",
+    title: "Ship milestones & get paid",
     description:
-      "Fulfill your promises to backers. Keep them updated with campaign posts along the way.",
+      "As you complete each milestone, funds are released to you minus our 5% platform fee. Keep backers updated along the way.",
+  },
+  {
+    Icon: CheckCircle2,
+    step: "05",
+    title: "Campaign complete",
+    description:
+      "All milestones delivered, all backers rewarded. You've successfully brought your idea to life.",
   },
 ];
 
