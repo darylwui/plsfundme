@@ -1,3 +1,230 @@
+# PDPA Review Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Close the gap between what `/privacy` claims and what the code does, add inline consent at pledge checkout, and tighten Sentry session replay to error-only.
+
+**Architecture:** Pure content/config work. Rewrite a static marketing page (`/privacy`), flip one Sentry sampling flag, add three links under the Confirm pledge button. No DB changes, no API changes, no new components, no tests beyond `lint`, `tsc`, and browser smoke.
+
+**Tech Stack:** Next.js App Router, React server components, Tailwind CSS (existing design tokens), Sentry, Supabase (unchanged).
+
+**Spec:** [docs/superpowers/specs/2026-04-24-pdpa-review-design.md](../specs/2026-04-24-pdpa-review-design.md)
+
+---
+
+## Task ordering rationale
+
+Three small independent commits, each shippable on its own:
+
+1. **Task 1** — Sentry config flip. Smallest blast radius; if it breaks anything we find out fast.
+2. **Task 2** — Pledge checkout consent line. Self-contained UI change.
+3. **Task 3** — `/privacy` rewrite. Biggest content diff but zero runtime risk.
+4. **Task 4** — Verification + changelog + commit check.
+
+---
+
+## Task 1: Flip Sentry session replay to error-only
+
+**Files:**
+- Modify: `instrumentation-client.ts:35`
+
+- [ ] **Step 1: Open the file and locate the line**
+
+Run: `grep -n "replaysSessionSampleRate" instrumentation-client.ts`
+Expected output: `35:    replaysSessionSampleRate: 0.1,`
+
+- [ ] **Step 2: Change the value from 0.1 to 0**
+
+Use the Edit tool with this exact change.
+
+Old string (line 35, with surrounding comment for uniqueness):
+```
+    // Record 10% of all sessions for baseline UX insight, and 100% of
+    // sessions that hit an error for actionable debugging.
+    replaysSessionSampleRate: 0.1,
+    replaysOnErrorSampleRate: 1.0,
+```
+
+New string:
+```
+    // Session replay is error-only: we do not record sessions under
+    // normal conditions, only when an error fires. Narrows PDPA
+    // disclosure surface and cuts Sentry replay volume.
+    replaysSessionSampleRate: 0,
+    replaysOnErrorSampleRate: 1.0,
+```
+
+- [ ] **Step 3: Verify the change**
+
+Run: `grep -n "replaysSessionSampleRate" instrumentation-client.ts`
+Expected output: `    replaysSessionSampleRate: 0,`
+
+- [ ] **Step 4: Type check**
+
+Run: `npx tsc --noEmit`
+Expected: exits cleanly (no output, or prints nothing about `instrumentation-client.ts`).
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add instrumentation-client.ts
+git commit -m "$(cat <<'EOF'
+chore: flip Sentry session replay to error-only
+
+Drop replaysSessionSampleRate from 0.1 to 0. Error-only replay narrows
+the PDPA disclosure surface — we no longer record ambient sessions for
+baseline UX, only sessions where an error fires (replaysOnErrorSampleRate
+stays at 1.0).
+
+Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>
+EOF
+)"
+```
+
+---
+
+## Task 2: Add inline consent line to pledge checkout
+
+**Files:**
+- Modify: `components/backing/CheckoutForm.tsx` (import at line 1-17; JSX block around line 199-207)
+
+- [ ] **Step 1: Add the `Link` import**
+
+The file currently has no `next/link` import. Add it after the existing React/Next imports.
+
+Old string (lines 3-4):
+```
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+```
+
+New string:
+```
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+```
+
+- [ ] **Step 2: Add the consent line below the trust line**
+
+Find the block around line 199-207 (Confirm pledge button + "You're only charged if…" trust line). Add a new `<p>` directly after the trust line.
+
+Old string:
+```
+      <Button type="submit" size="lg" fullWidth loading={loading || !stripe}>
+        Confirm pledge — {formatSgd(sgdAmount)}
+      </Button>
+
+      <p className="text-xs text-center text-[var(--color-ink-subtle)] flex items-center justify-center gap-1.5">
+        <Shield className="w-3.5 h-3.5" />
+        You&apos;re only charged if the campaign reaches its goal by{" "}
+        {new Date(project.deadline).toLocaleDateString("en-SG")}
+      </p>
+    </form>
+```
+
+New string:
+```
+      <Button type="submit" size="lg" fullWidth loading={loading || !stripe}>
+        Confirm pledge — {formatSgd(sgdAmount)}
+      </Button>
+
+      <p className="text-xs text-center text-[var(--color-ink-subtle)] flex items-center justify-center gap-1.5">
+        <Shield className="w-3.5 h-3.5" />
+        You&apos;re only charged if the campaign reaches its goal by{" "}
+        {new Date(project.deadline).toLocaleDateString("en-SG")}
+      </p>
+
+      <p className="text-xs text-center text-[var(--color-ink-subtle)] leading-relaxed">
+        By confirming, you agree to our{" "}
+        <Link href="/terms" className="underline hover:text-[var(--color-ink)]">
+          Terms of Service
+        </Link>
+        ,{" "}
+        <Link href="/privacy" className="underline hover:text-[var(--color-ink)]">
+          Privacy Policy
+        </Link>
+        , and{" "}
+        <Link href="/refund-policy" className="underline hover:text-[var(--color-ink)]">
+          Refund &amp; Dispute Policy
+        </Link>
+        .
+      </p>
+    </form>
+```
+
+- [ ] **Step 3: Verify the import and the JSX**
+
+Run: `grep -n "next/link\|Refund & Dispute Policy\|Refund &amp; Dispute Policy" components/backing/CheckoutForm.tsx`
+Expected: three matching lines (one import, one `&amp;` usage, plus the import was single-match). Adjust if unexpected.
+
+- [ ] **Step 4: Lint**
+
+Run: `npm run lint 2>&1 | grep -E "CheckoutForm" || echo "clean"`
+Expected: `clean`
+
+- [ ] **Step 5: Type check**
+
+Run: `npx tsc --noEmit`
+Expected: exits cleanly.
+
+- [ ] **Step 6: Browser smoke test via preview MCP**
+
+The dev server is already running (serverId `ee9b9f52-b205-4938-aebe-6bff53d0cc98`, port 65207). Checkout requires an active live project and an authenticated session, which may not exist in local dev. The key correctness gate is `tsc` + `lint` + the DOM grep in Step 3 above. If you want to do a live smoke anyway:
+
+1. Find a live project ID via preview_eval:
+```
+window.location.href = 'http://localhost:65207/explore'
+```
+Then:
+```
+[...document.querySelectorAll('a[href*="/project/"]')].slice(0,3).map(a=>a.href)
+```
+If the list is empty, skip the live check — the static validation in Step 3 is sufficient.
+
+2. If a project is found, visit `/{projectId}/checkout` and confirm via `preview_snapshot` that three links appear under Confirm pledge (Terms, Privacy Policy, Refund &amp; Dispute Policy). Login redirect is fine — we're looking at the component, not the flow.
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add components/backing/CheckoutForm.tsx
+git commit -m "$(cat <<'EOF'
+feat: add inline consent line to pledge checkout
+
+Surfaces Terms, Privacy Policy, and Refund & Dispute Policy at the
+point of payment. PDPA-wise this gives us "deemed consent by conduct"
+on the transactional processing happening at checkout. Styling matches
+the existing "you're only charged if" trust line — both small-print,
+ink-subtle, text-xs.
+
+Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>
+EOF
+)"
+```
+
+---
+
+## Task 3: Rewrite `/privacy` page
+
+**Files:**
+- Rewrite: `app/(marketing)/privacy/page.tsx`
+
+This is the biggest task. Single-file rewrite; keep the `Section` helper at the bottom and the two constants at the top. Everything between the opening `<div>` hero and the closing `</div>` is replaced.
+
+- [ ] **Step 0: Read the existing file**
+
+The Write tool requires a prior Read in the same session before it can overwrite. Read the full file first:
+
+Run: `Read tool on app/(marketing)/privacy/page.tsx`
+Expected: 199-line file with the current policy content.
+
+- [ ] **Step 1: Replace the entire file with the new content**
+
+Use the Write tool (the file already exists, so Write will overwrite it — acceptable here because we are doing a full rewrite of content + keeping structural helpers).
+
+New file content:
+
+```tsx
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -325,3 +552,142 @@ function Section({ title, children }: { title: string; children: React.ReactNode
     </section>
   );
 }
+```
+
+- [ ] **Step 2: Verify structural expectations**
+
+Run: `grep -cE "^          <Section title" "app/(marketing)/privacy/page.tsx"`
+Expected: `13`
+
+Run: `grep -E "marketing|product updates|announcements" "app/(marketing)/privacy/page.tsx" || echo "clean"`
+Expected: `clean` (no marketing-email residue)
+
+Run: `grep -cE "Sentry|Google Analytics|Singpass" "app/(marketing)/privacy/page.tsx"`
+Expected: at least `5` (multiple mentions across sections)
+
+- [ ] **Step 3: Lint**
+
+Run: `npm run lint 2>&1 | grep -E "privacy/page" || echo "clean"`
+Expected: `clean`
+
+- [ ] **Step 4: Type check**
+
+Run: `npx tsc --noEmit`
+Expected: exits cleanly (no errors).
+
+- [ ] **Step 5: Browser smoke test via preview MCP**
+
+The dev server is already running (serverId `ee9b9f52-b205-4938-aebe-6bff53d0cc98`, port 65207).
+
+Navigate and verify all 13 sections render:
+```
+preview_eval: window.location.href = 'http://localhost:65207/privacy'
+preview_eval: [...document.querySelectorAll('h2')].map(h=>h.textContent)
+```
+Expected: 13 section headings matching the titles above in order.
+
+Check for absence of marketing residue:
+```
+preview_eval: document.body.textContent.toLowerCase().includes('marketing email') || document.body.textContent.toLowerCase().includes('product updates')
+```
+Expected: `false`
+
+Check the three new concepts are visible in the DOM:
+```
+preview_eval: ['Sentry', 'Google Analytics', 'Singpass', 'UINFIN'].map(w=>({w, found: document.body.textContent.includes(w)}))
+```
+Expected: all four `found: true`.
+
+Optional dark-mode check (since policy is long and prose styling matters):
+```
+preview_resize: colorScheme dark
+preview_eval: document.documentElement.className
+```
+Verify no unreadable contrast.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add "app/(marketing)/privacy/page.tsx"
+git commit -m "$(cat <<'EOF'
+content: rewrite /privacy for PDPA alignment
+
+Closes drift between the policy and actual data practices:
+
+- Adds dedicated sections for session replay (error-only via Sentry) and
+  creator verification (Singpass MyInfo — stores hashed UINFIN, never raw)
+- Adds Sentry and Google Analytics 4 to data-sharing disclosure
+- Rewrites cookies section to honestly acknowledge GA4 with IP anonymisation
+- Removes all marketing-email language (we're transactional-only)
+- Expands retention into per-category table with KYC 7yr, messages
+  campaign-lifespan, replays 30d, financial records 7yr
+- Renames Contact section to "Data Protection Officer & Contact" and
+  names hello@ as the DPO mailbox
+- Bumps Last Updated to 24 April 2026
+
+Sub-project #1 of 3 pre-launch trust & compliance work.
+
+Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>
+EOF
+)"
+```
+
+---
+
+## Task 4: Final verification + changelog
+
+**Files:**
+- Modify: `~/Desktop/changelog/getthatbread-changelog.md` (personal log outside repo)
+
+- [ ] **Step 1: Final clean-repo type check**
+
+Run: `npx tsc --noEmit`
+Expected: exits cleanly.
+
+- [ ] **Step 2: Final clean-repo lint**
+
+Run: `npm run lint 2>&1 | grep -E "(instrumentation-client|privacy/page|CheckoutForm)" || echo "clean"`
+Expected: `clean`
+
+- [ ] **Step 3: Verify commit history**
+
+Run: `git log --oneline -5`
+Expected (top three, in some order): the three commits from Tasks 1–3 all present.
+
+Example:
+```
+<hash> content: rewrite /privacy for PDPA alignment
+<hash> feat: add inline consent line to pledge checkout
+<hash> chore: flip Sentry session replay to error-only
+```
+
+- [ ] **Step 4: Update the personal changelog**
+
+Read `~/Desktop/changelog/getthatbread-changelog.md` first with the Read tool to get current content. Then use Edit to append under the existing `## 2026-04-24` → `### Trust & compliance` block (it's already the most recent date).
+
+Find the closing `- ` line of the existing Trust & compliance block, and insert these three new bullets before the separator:
+
+```
+- `content` **PDPA review**: rewrote /privacy to match actual data practices — added dedicated sections for Sentry session replay (error-only) and Singpass KYC (stores SHA-256 hash of UINFIN, never raw), added Sentry + GA4 to data-sharing disclosure, switched cookies section to honestly acknowledge GA4 with IP anonymisation, removed all marketing-email language (we're transactional-only), expanded data retention into a per-category table. Closes sub-project #1 of 3.
+- `code` Flipped **Sentry session replay to error-only** (`replaysSessionSampleRate: 0.1 → 0`). Ambient sessions are no longer recorded; we only capture when an error actually fires.
+- `design` Added inline consent line under Confirm pledge on checkout — links to Terms, Privacy Policy, and Refund & Dispute Policy for PDPA deemed-consent-by-conduct at payment point.
+```
+
+- [ ] **Step 5: Mark the sub-project complete in your running todo**
+
+Update TodoWrite to mark "Brainstorm sub-project #1 (PDPA review)" completed. All three pre-launch trust & compliance sub-projects are now shipped.
+
+- [ ] **Step 6: (Optional) Open PR**
+
+If the user wants a PR, prompt them to confirm. Do not push or open PRs unprompted — this repo's convention is to ask first.
+
+---
+
+## Self-review notes (author → implementer)
+
+- **No tests.** This is static content + one config flag. Unit tests on JSX marketing copy would be pure churn. `tsc` + `lint` + browser smoke is the right bar.
+- **Three independent commits** so each is reviewable and revertable on its own. Don't squash.
+- **Marketing language.** Audit before committing Task 3 — any stray "promotions", "offers", "newsletter" text in /privacy contradicts our transactional-only stance. grep for it.
+- **DPO is a mailbox not a person.** Don't personify it ("Daryl Wui, DPO"). Just the mailbox.
+- **UINFIN hash wording.** Keep it as "SHA-256 hash" / "one-way cryptographic hash" — these match the migration file comment. Don't soften to "we hash it" or "anonymised".
+- **Out of scope reminder:** no new DB columns, no account-deletion endpoint, no cookie banner, no `marketing_consent` column. If you find yourself touching migrations or API routes, stop — you've left the plan.

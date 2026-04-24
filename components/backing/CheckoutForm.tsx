@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   PaymentElement,
@@ -204,6 +205,22 @@ export function CheckoutForm({
         <Shield className="w-3.5 h-3.5" />
         You&apos;re only charged if the campaign reaches its goal by{" "}
         {new Date(project.deadline).toLocaleDateString("en-SG")}
+      </p>
+
+      <p className="text-xs text-center text-[var(--color-ink-subtle)] leading-relaxed">
+        By confirming, you agree to our{" "}
+        <Link href="/terms" className="underline hover:text-[var(--color-ink)]">
+          Terms of Service
+        </Link>
+        ,{" "}
+        <Link href="/privacy" className="underline hover:text-[var(--color-ink)]">
+          Privacy Policy
+        </Link>
+        , and{" "}
+        <Link href="/refund-policy" className="underline hover:text-[var(--color-ink)]">
+          Refund &amp; Dispute Policy
+        </Link>
+        .
       </p>
     </form>
   );

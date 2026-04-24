@@ -30,9 +30,10 @@ if (dsn) {
       }),
     ],
 
-    // Record 10% of all sessions for baseline UX insight, and 100% of
-    // sessions that hit an error for actionable debugging.
-    replaysSessionSampleRate: 0.1,
+    // Session replay is error-only: we do not record sessions under
+    // normal conditions, only when an error fires. Narrows PDPA
+    // disclosure surface and cuts Sentry replay volume.
+    replaysSessionSampleRate: 0,
     replaysOnErrorSampleRate: 1.0,
 
     enableLogs: true,
