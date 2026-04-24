@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
@@ -62,52 +63,56 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <head>
-        {/* Prevent flash of wrong theme */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('theme');var p=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';if((t||p)==='dark')document.documentElement.classList.add('dark');}catch(e){}})();`,
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@graph": [
-                {
-                  "@type": "Organization",
-                  "@id": `${SITE_URL}#organization`,
-                  name: "get that bread",
-                  alternateName: "getthatbread",
-                  url: SITE_URL,
-                  logo: `${SITE_URL}/bread-icon.png`,
-                  description:
-                    "Singapore's reward-based crowdfunding platform for entrepreneurs.",
-                  areaServed: { "@type": "Country", name: "Singapore" },
-                },
-                {
-                  "@type": "WebSite",
-                  "@id": `${SITE_URL}#website`,
-                  url: SITE_URL,
-                  name: "get that bread",
-                  publisher: { "@id": `${SITE_URL}#organization` },
-                  inLanguage: "en-SG",
-                  potentialAction: {
-                    "@type": "SearchAction",
-                    target: {
-                      "@type": "EntryPoint",
-                      urlTemplate: `${SITE_URL}/explore?q={search_term_string}`,
-                    },
-                    "query-input": "required name=search_term_string",
-                  },
-                },
-              ],
-            }),
-          }}
-        />
-      </head>
       <body className="min-h-full flex flex-col">
+        {/* Theme-flash preventer — must run before first paint. `beforeInteractive`
+            tells Next to emit this inline in <head> during SSR, avoiding the
+            React 19 "script tag while rendering" warning that fires when you
+            put raw <script> in a Server Component tree. */}
+        <Script id="theme-init" strategy="beforeInteractive">
+          {`(function(){try{var t=localStorage.getItem('theme');var p=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';if((t||p)==='dark')document.documentElement.classList.add('dark');}catch(e){}})();`}
+        </Script>
+
+        {/* Structured data — rendered via next/script to avoid the same React
+            19 warning. type="application/ld+json" keeps search engines happy. */}
+        <Script
+          id="schema-org-graph"
+          type="application/ld+json"
+          strategy="beforeInteractive"
+        >
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "Organization",
+                "@id": `${SITE_URL}#organization`,
+                name: "get that bread",
+                alternateName: "getthatbread",
+                url: SITE_URL,
+                logo: `${SITE_URL}/bread-icon.png`,
+                description:
+                  "Singapore's reward-based crowdfunding platform for entrepreneurs.",
+                areaServed: { "@type": "Country", name: "Singapore" },
+              },
+              {
+                "@type": "WebSite",
+                "@id": `${SITE_URL}#website`,
+                url: SITE_URL,
+                name: "get that bread",
+                publisher: { "@id": `${SITE_URL}#organization` },
+                inLanguage: "en-SG",
+                potentialAction: {
+                  "@type": "SearchAction",
+                  target: {
+                    "@type": "EntryPoint",
+                    urlTemplate: `${SITE_URL}/explore?q={search_term_string}`,
+                  },
+                  "query-input": "required name=search_term_string",
+                },
+              },
+            ],
+          })}
+        </Script>
+
         <ThemeProvider>
           <CurrencyProvider>
             <Navbar />

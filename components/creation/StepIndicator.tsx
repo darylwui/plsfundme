@@ -81,31 +81,33 @@ export function StepIndicator({ current, saveState, onGoTo }: StepIndicatorProps
         </ol>
       </nav>
 
-      {/* Auto-save indicator — always shown so creators know their work persists */}
+      {/* Auto-save indicator — always shown so creators know their work persists.
+          Labels hide on narrow viewports so the 5 step circles + connectors don't
+          get pushed off-screen at 375px — the icon alone still signals state. */}
       {saveState && (
         <div className="flex items-center gap-1.5 text-xs text-[var(--color-ink-subtle)] shrink-0">
           {saveState === "saving" && (
             <>
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              Saving…
+              <span className="hidden sm:inline">Saving…</span>
             </>
           )}
           {saveState === "saved" && (
             <>
               <Cloud className="w-3.5 h-3.5 text-[var(--color-brand-success)]" />
-              <span className="text-[var(--color-brand-success)]">Draft saved</span>
+              <span className="hidden sm:inline text-[var(--color-brand-success)]">Draft saved</span>
             </>
           )}
           {saveState === "error" && (
             <>
               <CloudOff className="w-3.5 h-3.5 text-[var(--color-brand-danger)]" />
-              <span className="text-[var(--color-brand-danger)]">Save failed</span>
+              <span className="hidden sm:inline text-[var(--color-brand-danger)]">Save failed</span>
             </>
           )}
           {saveState === "idle" && (
             <>
               <Cloud className="w-3.5 h-3.5" />
-              Auto-saves as you type
+              <span className="hidden sm:inline">Auto-saves as you type</span>
             </>
           )}
         </div>

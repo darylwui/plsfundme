@@ -111,12 +111,12 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
         </form>
 
         {/* Sort tabs */}
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {SORTS.map(({ key, label, Icon }) => (
             <Link
               key={key}
               href={buildUrl({ sort: key })}
-              className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-[var(--radius-btn)] text-sm font-semibold transition-colors duration-[150ms] border ${
+              className={`inline-flex items-center gap-1.5 whitespace-nowrap px-4 py-2 rounded-[var(--radius-btn)] text-sm font-semibold transition-colors duration-[150ms] border ${
                 sort === key
                   ? "bg-[var(--color-brand-crust)] text-white border-[var(--color-brand-crust)]"
                   : "bg-transparent text-[var(--color-brand-crust-dark)] border-[var(--color-border)] hover:border-[var(--color-brand-crust)] hover:text-[var(--color-brand-crust)]"
