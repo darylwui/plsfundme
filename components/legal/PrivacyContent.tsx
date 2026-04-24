@@ -235,6 +235,34 @@ export function PrivacyContent() {
             We may also disclose your data if required by law, court order, or government or regulatory
             authority in Singapore.
           </p>
+
+          <h3 className="text-base font-bold text-[var(--color-ink)] mt-4">International data transfers</h3>
+          <p>
+            Some of our service providers process personal data outside Singapore. When we transfer data to
+            them, we do so on the basis that (a) the recipient country provides a standard of protection
+            comparable to Singapore&apos;s PDPA, or (b) contractual protections are in place requiring the
+            recipient to provide a comparable level of protection.
+          </p>
+          <ul>
+            <li>
+              <strong>Stripe</strong> — processes payment data in the United States and other jurisdictions.
+              Subject to{" "}
+              <a href="https://stripe.com/en-sg/privacy" target="_blank" rel="noopener noreferrer">
+                Stripe&apos;s cross-border transfer safeguards
+              </a>.
+            </li>
+            <li>
+              <strong>Vercel</strong> — platform hosting served globally; requests may be processed outside
+              Singapore.
+            </li>
+            <li>
+              <strong>Google</strong> — analytics data processed in the United States with IP anonymisation
+              enabled.
+            </li>
+            <li>
+              <strong>Sentry</strong> — error and session replay data processed in the United States.
+            </li>
+          </ul>
         </Section>
 
         <Section title="6. Cookies and Analytics">
@@ -248,6 +276,18 @@ export function PrivacyContent() {
             full IP address is never stored by Google. We do not use advertising or retargeting
             cookies, and we do not share analytics data with ad networks.
           </p>
+          <p>
+            To opt out of analytics tracking you can: (a) use your browser&apos;s privacy mode or
+            block third-party cookies; (b) install the{" "}
+            <a
+              href="https://tools.google.com/dlpage/gaoptout"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Google Analytics opt-out browser add-on
+            </a>; or (c) contact us to request removal of analytics data associated with your account.
+            Opting out of analytics does not affect your access to or use of the platform.
+          </p>
         </Section>
 
         <Section title="7. Session Replay">
@@ -260,8 +300,9 @@ export function PrivacyContent() {
           </p>
           <p>
             When an error triggers a replay, Sentry captures DOM changes, mouse movement, clicks,
-            navigation, and network request metadata for that session. Form input text is masked by
-            default — we cannot see what you typed into input fields.
+            navigation, and network request metadata for that session. Form input fields are
+            configured with masking rules in Sentry&apos;s replay SDK — the content of input fields
+            is not captured or transmitted. We cannot see what you typed.
           </p>
           <p>
             Replays are used by our engineering team to reproduce and fix crashes. Recordings are
@@ -361,6 +402,11 @@ export function PrivacyContent() {
             <li>
               <strong>Withdraw consent</strong> for the use of your personal data for any purpose
               (subject to legal and contractual obligations).
+            </li>
+            <li>
+              <strong>Data portability</strong> — request a structured, machine-readable copy of
+              personal data you have provided to us (such as your account and pledge history), where
+              technically feasible.
             </li>
           </ul>
           <p>

@@ -63,7 +63,9 @@ export function RefundContent() {
             Creators are independent third parties solely responsible for the accuracy of their campaign,
             the delivery of rewards, and compliance with applicable laws. Our role is to hold funds in escrow,
             facilitate the dispute process, and apply this policy where triggers are met — not to act as an insurer,
-            guarantor, or co-obligor for creator performance.
+            guarantor, or co-obligor for creator performance. Our holding of pledge funds does not
+            create a trust, fiduciary relationship, or any other special relationship between us and
+            any Backer or Creator.
           </p>
           <p>
             By backing a campaign, you acknowledge that we cannot control what any creator will or will not do,
@@ -97,6 +99,13 @@ export function RefundContent() {
             Outside these triggers, if you&apos;re unsure — email us anyway. We&apos;d rather hear from you
             early than after you&apos;ve lost confidence in a project.
           </p>
+          <p className="text-sm">
+            <strong>Time limit.</strong> Disputes must be filed within{" "}
+            <strong>12 months</strong> of the relevant event — the campaign end date, the missed
+            milestone due date, or the date you first became aware of the fraud or
+            misrepresentation, whichever is later. We may decline to investigate disputes filed
+            outside this window.
+          </p>
         </Section>
 
         <Section title="How much you get back">
@@ -108,11 +117,13 @@ export function RefundContent() {
           <ul className="list-disc pl-5 space-y-2">
             <li>
               <strong>Confirmed fraud or material misrepresentation</strong> — you are entitled to a{" "}
-              <strong>full pledge refund</strong>. Where funds have already been released to the creator,
-              we will take reasonable steps to recover the shortfall from the creator and, where recovery
-              is successful, apply those funds toward completing your refund. We do not guarantee recovery
-              of funds already released, and our liability for any unrecovered shortfall is limited as
-              described under &ldquo;Limitation of our liability&rdquo; below.
+              <strong>full pledge refund</strong>, delivered in two steps: (a) any funds still in
+              escrow are returned immediately; and (b) we pursue the creator for any amounts already
+              released and, where we recover them, remit those to you. We do not guarantee recovery
+              of released funds. Our liability for any unrecovered shortfall — i.e., the portion we
+              are unable to recover from the creator — is limited as described under
+              &ldquo;Limitation of our liability&rdquo; below. The full-refund entitlement means we
+              will pursue recovery; it does not make us the insurer of the shortfall.
             </li>
             <li>
               <strong>Good-faith failure</strong> (supplier collapse, genuine inability to deliver) — you
@@ -267,6 +278,22 @@ export function RefundContent() {
             <strong>Before you file a bank chargeback:</strong> please talk to us first. We can usually
             resolve disputes faster than your bank&apos;s 30+ day window, and filing a chargeback locks
             the process on our side and can delay your refund.
+          </p>
+        </Section>
+
+        <Section title="Chargebacks and payment disputes">
+          <p>
+            Please contact us before filing a chargeback with your bank or card issuer. We can
+            usually resolve disputes faster than the standard 30+ day bank process, and filing a
+            chargeback while a platform dispute is open may suspend or terminate our internal
+            investigation, delay your refund, or affect your eligibility for a platform refund on
+            that transaction.
+          </p>
+          <p>
+            If you have already filed a chargeback, please notify us. We will not process a parallel
+            platform refund for the same transaction. We may provide your bank with transaction
+            records, campaign content, and platform communications in response to a chargeback. Any
+            chargeback filed without a reasonable basis may affect your standing on the platform.
           </p>
         </Section>
 
