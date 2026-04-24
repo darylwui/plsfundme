@@ -242,7 +242,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                           </li>
                           <li className="flex items-start gap-2">
                             <Lock className="w-4 h-4 text-[var(--color-brand-golden)] shrink-0 mt-0.5" />
-                            Secure escrow — funds held until goal met
+                            Secure escrow — funds held safely
                           </li>
                           <li className="flex items-start gap-2">
                             <Globe className="w-4 h-4 text-[var(--color-brand-info)] shrink-0 mt-0.5" />
