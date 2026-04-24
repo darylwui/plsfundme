@@ -315,6 +315,93 @@ export async function sendAdminNewProjectSubmittedEmail(args: AdminNewProjectSub
   });
 }
 
+// ── Creator review thread emails ──────────────────────────────────────────────
+
+interface CreatorRequestInfoArgs {
+  creatorEmail: string;
+  creatorName: string;
+  question: string;
+}
+
+interface CreatorNewMessageArgs {
+  creatorEmail: string;
+  creatorName: string;
+  message: string;
+}
+
+interface AdminCreatorRepliedArgs {
+  applicantName: string;
+  applicantEmail: string;
+  reply: string;
+}
+
+function escapeHtml(input: string): string {
+  return input
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+export async function sendCreatorRequestInfoEmail(args: CreatorRequestInfoArgs) {
+  return sendEmail({
+    from: FROM,
+    to: args.creatorEmail,
+    subject: "We need a bit more info on your creator application",
+    html: `
+      <h2>Hi ${args.creatorName},</h2>
+      <p>Thanks for applying to become a creator on get that bread. Before we can make a decision, we'd like to ask you a few follow-up questions:</p>
+      <div style="background:#fef9c3;border-left:4px solid #eab308;padding:12px 16px;margin:16px 0;border-radius:4px;">
+        <p style="margin:0;white-space:pre-wrap;color:#713f12;">${escapeHtml(args.question)}</p>
+      </div>
+      <p>Reply directly in your application thread — we'll get a notification as soon as you respond.</p>
+      <a href="${appUrl}/dashboard/application" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
+        Open your application
+      </a>
+      <p style="margin-top:24px;font-size:14px;color:#6b7280;">
+        Questions? Reply to this email or contact us at <a href="mailto:hello@getthatbread.sg">hello@getthatbread.sg</a>.
+      </p>
+    `,
+  });
+}
+
+export async function sendCreatorNewMessageEmail(args: CreatorNewMessageArgs) {
+  return sendEmail({
+    from: FROM,
+    to: args.creatorEmail,
+    subject: "New message on your creator application",
+    html: `
+      <h2>Hi ${args.creatorName},</h2>
+      <p>A reviewer just added a message to your creator application thread:</p>
+      <div style="background:#f3f4f6;border-left:4px solid #9ca3af;padding:12px 16px;margin:16px 0;border-radius:4px;">
+        <p style="margin:0;white-space:pre-wrap;color:#374151;">${escapeHtml(args.message)}</p>
+      </div>
+      <a href="${appUrl}/dashboard/application" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
+        Open your application
+      </a>
+    `,
+  });
+}
+
+export async function sendAdminCreatorRepliedEmail(args: AdminCreatorRepliedArgs) {
+  return sendEmail({
+    from: FROM,
+    to: ADMIN_EMAIL,
+    subject: `💬 ${args.applicantName} replied on their creator application`,
+    html: `
+      <h2>${args.applicantName} replied</h2>
+      <p style="font-size:14px;color:#6b7280;">${args.applicantEmail}</p>
+      <div style="background:#f3f4f6;border-left:4px solid #9ca3af;padding:12px 16px;margin:16px 0;border-radius:4px;">
+        <p style="margin:0;white-space:pre-wrap;color:#374151;">${escapeHtml(args.reply)}</p>
+      </div>
+      <a href="${appUrl}/dashboard/admin/creators?tab=needs_info" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
+        Open in admin
+      </a>
+    `,
+  });
+}
+
 export async function sendPledgeRefundedEmail(args: PledgeRefundedArgs) {
   return sendEmail({
     from: FROM,

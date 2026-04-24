@@ -137,7 +137,15 @@
       "Bash(git stash *)",
       "Bash(ln -s /Users/darylwui/plsfundme/.env.local /Users/darylwui/plsfundme/.claude/worktrees/competent-stonebraker-9af493/.env.local)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:54911/projects/mochicloud-smart-compostable-packaging-solutions-j1vef)",
-      "Bash(git --no-pager diff --stat)"
+      "Bash(git --no-pager diff --stat)",
+      "Bash(ln -s /Users/darylwui/plsfundme/.env.local /Users/darylwui/plsfundme/.claude/worktrees/youthful-cohen-17af66/.env.local)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/dashboard/admin/creators)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/dashboard/application)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/api/creator/application/notes)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/api/admin/creator/00000000-0000-0000-0000-000000000000/notes)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "Bash(supabase migration *)",
+      "Bash(supabase start *)"
     ]
   }
 }

@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { CreatorApprovalList } from "@/components/admin/CreatorApprovalList";
 
+type CreatorStatus = "pending_review" | "approved" | "rejected" | "needs_info";
+
 interface CreatorProfile {
   id: string;
   bio: string;
@@ -12,10 +14,12 @@ interface CreatorProfile {
   project_description: string;
   id_document_url: string | null;
   singpass_verified: boolean;
-  status: "pending_review" | "approved" | "rejected";
+  status: CreatorStatus;
   rejection_reason: string | null;
   submitted_at: string;
   reviewed_at: string | null;
+  info_requested_at: string | null;
+  last_contacted_at: string | null;
   profile: {
     display_name: string;
     avatar_url: string | null;
@@ -28,6 +32,18 @@ interface PageProps {
 }
 
 export const metadata = { title: "Project managers — Admin" };
+
+const TAB_ORDER: CreatorStatus[] = ["pending_review", "needs_info", "approved", "rejected"];
+const TAB_LABELS: Record<CreatorStatus, string> = {
+  pending_review: "Pending Review",
+  needs_info: "Needs Info",
+  approved: "Approved",
+  rejected: "Rejected",
+};
+
+function isCreatorStatus(v: string | undefined): v is CreatorStatus {
+  return v === "pending_review" || v === "needs_info" || v === "approved" || v === "rejected";
+}
 
 export default async function DashboardAdminPMsPage({ searchParams }: PageProps) {
   const { tab } = await searchParams;
@@ -68,34 +84,33 @@ export default async function DashboardAdminPMsPage({ searchParams }: PageProps)
     email: emailMap.get(p.id) ?? "",
   }));
 
-  const activeTab = (tab === "approved" || tab === "rejected") ? tab : "pending_review";
+  const activeTab: CreatorStatus = isCreatorStatus(tab) ? tab : "pending_review";
 
   return (
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="text-2xl font-black text-[var(--color-ink)]">Creator Applications</h1>
         <p className="text-sm text-[var(--color-ink-muted)] mt-1">
-          Review and approve applications from aspiring campaign creators.
+          Review, message, and approve applications from aspiring campaign creators.
         </p>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b border-[var(--color-border)]">
-        {(["pending_review", "approved", "rejected"] as const).map((t) => {
+      <div className="flex gap-1 border-b border-[var(--color-border)] overflow-x-auto">
+        {TAB_ORDER.map((t) => {
           const count = enriched.filter((p) => p.status === t).length;
           const isActive = activeTab === t;
-          const label = t === "pending_review" ? "Pending Review" : t === "approved" ? "Approved" : "Rejected";
           return (
             <a
               key={t}
               href={`/dashboard/admin/creators?tab=${t}`}
-              className={`px-4 py-2.5 text-sm font-semibold border-b-2 transition-colors ${
+              className={`px-4 py-2.5 text-sm font-semibold border-b-2 transition-colors whitespace-nowrap ${
                 isActive
                   ? "border-[var(--color-brand-crust)] text-[var(--color-ink)]"
                   : "border-transparent text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
               }`}
             >
-              {label}
+              {TAB_LABELS[t]}
               {count > 0 && (
                 <span
                   className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${
