@@ -50,12 +50,11 @@ export async function generateMetadata({
   const project = await getProject(slug);
   if (!project) return {};
 
-  const ogImages = project.cover_image_url
-    ? [{ url: project.cover_image_url, width: 1200, height: 630, alt: project.title }]
-    : undefined;
-
   const seoTitle = `${project.title} — Crowdfunding campaign in Singapore`;
 
+  // og:image / twitter:image are injected automatically from the
+  // co-located opengraph-image.tsx file convention — don't set them
+  // here or the manual value will override the generated card.
   return {
     title: seoTitle,
     description: project.short_description,
@@ -67,13 +66,11 @@ export async function generateMetadata({
       type: "website",
       locale: "en_SG",
       siteName: "get that bread",
-      ...(ogImages ? { images: ogImages } : {}),
     },
     twitter: {
       card: "summary_large_image",
       title: project.title,
       description: project.short_description,
-      ...(ogImages ? { images: ogImages.map((img) => img.url) } : {}),
     },
   };
 }

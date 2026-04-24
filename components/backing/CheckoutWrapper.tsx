@@ -11,18 +11,15 @@ import type { Reward } from "@/types/reward";
 import type { PaymentMethodType } from "@/types/database.types";
 import type { CreatePledgeResponse } from "@/types/pledge";
 
-/** Safe PayNow logo with image fallback (no innerHTML) */
+/** PayNow wordmark rendered as styled text — we don't ship a logo asset. */
 function PayNowLogo() {
-  const [failed, setFailed] = useState(false);
-  if (failed) return <span className="text-2xl" aria-label="PayNow">📱</span>;
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src="/paynow-logo.png"
-      alt="PayNow"
-      className="w-10 h-10 object-contain"
-      onError={() => setFailed(true)}
-    />
+    <span
+      aria-label="PayNow"
+      className="font-black text-[11px] leading-none tracking-tight text-[#EB2226]"
+    >
+      PayNow
+    </span>
   );
 }
 
@@ -168,7 +165,7 @@ export function CheckoutWrapper({
             How would you like to pay?
           </h3>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* PayNow */}
             <button
               onClick={() => selectMethod("paynow")}
