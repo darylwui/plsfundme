@@ -18,7 +18,7 @@ type Status = "running" | "success" | "missed";
 
 const GOAL = 100;
 const PLEDGE_STEP = 25;
-const DEMO_SECONDS = 30;
+const DEMO_SECONDS = 11;
 
 export function PledgeTimelineDemo() {
   const [progress, setProgress] = useState(0);
