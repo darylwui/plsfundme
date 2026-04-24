@@ -41,14 +41,9 @@ export async function POST(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  // Single join: profile + creator_profile status in one round-trip.
-  // creator_profiles has three FKs back to profiles (id, reviewed_by,
-  // reviewer_id) so the embed is ambiguous without an explicit FK hint —
-  // PostgREST silently drops the relation, the status check falls through,
-  // and every submit returns 403.
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, display_name, creator_profiles!creator_profiles_id_fkey(status)")
+    .select("role, display_name")
     .eq("id", user.id)
     .single();
 
@@ -56,9 +51,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const creatorProfile = Array.isArray(profile.creator_profiles)
-    ? profile.creator_profiles[0]
-    : profile.creator_profiles;
+  // Separate query avoids the ambiguous-embed problem: creator_profiles has
+  // three FKs back to profiles (id, reviewed_by, reviewer_id) which makes
+  // nested selects unreliable regardless of FK hint syntax.
+  const { data: creatorProfile } = await supabase
+    .from("creator_profiles")
+    .select("status")
+    .eq("id", user.id)
+    .single();
 
   if (!creatorProfile || creatorProfile.status !== "approved") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });

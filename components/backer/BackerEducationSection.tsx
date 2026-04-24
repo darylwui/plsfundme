@@ -25,7 +25,6 @@ export function BackerEducationSection() {
         <div className="mt-3 space-y-2 text-amber-800 dark:text-amber-200">
           <p>• <strong>Creator delays?</strong> We'll notify you and hold funds until they deliver.</p>
           <p>• <strong>Creator disappears?</strong> File a dispute. We help you pursue recovery.</p>
-          <p>• <strong>Product damaged?</strong> Report it. Creator must resolve or we facilitate refund.</p>
         </div>
       </details>
     </div>

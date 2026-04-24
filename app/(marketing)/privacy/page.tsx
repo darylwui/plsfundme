@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: "Privacy Policy for get that bread, Singapore's reward-based crowdfunding platform.",
 };
 
-const LAST_UPDATED = "24 April 2026";
+const LAST_UPDATED = "25 April 2026";
 const CONTACT_EMAIL = "hello@getthatbread.sg";
 
 export default function PrivacyPage() {
@@ -27,20 +27,43 @@ export default function PrivacyPage() {
             <p>
               get that bread (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;the platform&rdquo;) is committed to
               protecting your personal data. This Privacy Policy explains how we collect, use, and safeguard
-              your information when you use our platform at{" "}
+              your information when you use our crowdfunding marketplace at{" "}
               <a href="https://getthatbread.sg">getthatbread.sg</a>.
             </p>
             <p>
-              This policy complies with Singapore&apos;s <strong>Personal Data Protection Act 2012 (PDPA)</strong>.
-              By using get that bread, you consent to the data practices described in this policy.
+              This policy complies with Singapore&apos;s{" "}
+              <strong>Personal Data Protection Act 2012 (PDPA)</strong>. By using get that bread, you
+              consent to the data practices described in this policy.
             </p>
             <p>
               For any privacy-related request or question, contact our Data Protection Officer
-              (see Section 13).
+              (see Section 14).
             </p>
           </Section>
 
-          <Section title="2. Data We Collect">
+          <Section title="2. Our Role as a Marketplace">
+            <p>
+              get that bread is a crowdfunding marketplace platform — not a retailer, manufacturer, or
+              direct seller of any goods or services. We provide technology infrastructure that enables
+              independent creators (&ldquo;Creators&rdquo;) to raise funds from backers
+              (&ldquo;Backers&rdquo;) in exchange for rewards.
+            </p>
+            <p>
+              <strong>Creators are independent third parties.</strong> They are not our employees, agents,
+              representatives, or partners. We do not control, direct, or supervise Creators in their
+              conduct, fulfilment of rewards, or handling of personal data. When you interact with a
+              Creator&apos;s campaign, you are engaging with that Creator as an independent party, not
+              with us.
+            </p>
+            <p>
+              This distinction matters for your privacy: once personal data is shared with a Creator for
+              reward fulfilment, that Creator becomes an independent data controller under the PDPA and is
+              solely responsible for how they handle that data. We explain this in detail in Sections 5
+              and 9.
+            </p>
+          </Section>
+
+          <Section title="3. Data We Collect">
             <p>We collect the following categories of personal data:</p>
             <ul>
               <li>
@@ -53,7 +76,8 @@ export default function PrivacyPage() {
               </li>
               <li>
                 <strong>Campaign data:</strong> Project titles, descriptions, images, rewards, milestones,
-                and other content creators submit.
+                and other content Creators submit. Creators are responsible for the accuracy and lawfulness
+                of the content they publish.
               </li>
               <li>
                 <strong>Pledge and payment data:</strong> Pledge amounts, selected rewards, and shipping
@@ -61,10 +85,10 @@ export default function PrivacyPage() {
                 <a href="https://stripe.com">Stripe</a> — we never see or store full card numbers.
               </li>
               <li>
-                <strong>Creator verification (KYC):</strong> For creators who verify via Singpass, we store
+                <strong>Creator verification (KYC):</strong> For Creators who verify via Singpass, we store
                 verified name, date of birth, nationality, residency status, and a one-way cryptographic
                 hash of the UINFIN for duplicate-account detection. The raw UINFIN is never stored. See
-                Section 7.
+                Section 8.
               </li>
               <li>
                 <strong>Uploaded images:</strong> Profile pictures, campaign artwork, and reward imagery
@@ -73,19 +97,19 @@ export default function PrivacyPage() {
                 visibility.
               </li>
               <li>
-                <strong>In-app messages:</strong> Messages between creators and backers inside a
+                <strong>In-app messages:</strong> Messages between Creators and Backers inside a
                 campaign&apos;s review threads are stored for the lifespan of that campaign plus a 30-day
                 grace period after the final milestone is released or the campaign is cancelled.
               </li>
               <li>
                 <strong>Usage data:</strong> IP address, browser type, pages visited, and interaction data
                 collected via our hosting provider (Vercel) and analytics provider (Google Analytics 4 —
-                see Section 5).
+                see Section 6).
               </li>
               <li>
                 <strong>Error diagnostics:</strong> When something breaks, we collect technical error
                 context via Sentry. This may include a session replay recording of the failing
-                interaction — see Section 6.
+                interaction — see Section 7.
               </li>
               <li>
                 <strong>Communications:</strong> Messages you send to us via email or support channels.
@@ -93,31 +117,38 @@ export default function PrivacyPage() {
             </ul>
           </Section>
 
-          <Section title="3. How We Use Your Data">
+          <Section title="4. How We Use Your Data">
             <p>We use your personal data to:</p>
             <ul>
               <li>Create and manage your account on the platform.</li>
-              <li>Process pledges and creator payouts securely via Stripe.</li>
+              <li>Process pledges and Creator payouts securely via Stripe.</li>
               <li>
                 Send transactional emails (pledge confirmations, campaign status updates, payout
                 notifications, password resets, refund notices). We do not send marketing emails.
               </li>
-              <li>Review campaigns and creator applications for compliance with our Terms.</li>
-              <li>Verify creator identity for payout eligibility and anti-fraud.</li>
+              <li>
+                Screen campaigns and Creator applications against our platform policies on a
+                reasonable-endeavours basis. Such screening does not constitute an audit, endorsement,
+                or guarantee of any Creator&apos;s identity, accuracy, conduct, or legal compliance.
+              </li>
+              <li>Verify Creator identity for payout eligibility and anti-fraud.</li>
               <li>Respond to customer support enquiries and PDPA rights requests.</li>
-              <li>Diagnose technical issues via error tracking and limited session replay (Section 6).</li>
+              <li>Diagnose technical issues via error tracking and limited session replay (Section 7).</li>
               <li>Improve platform usability via aggregated usage analytics.</li>
             </ul>
           </Section>
 
-          <Section title="4. Data Sharing">
+          <Section title="5. Data Sharing">
             <p>
-              We do <strong>not</strong> sell your personal data. We share data only with the following
-              third parties, solely to operate the platform:
+              We do <strong>not</strong> sell your personal data. We share data only in the following
+              circumstances:
             </p>
+
+            <h3 className="text-base font-bold text-[var(--color-ink)] mt-4">Service providers</h3>
+            <p>We share data with the following service providers solely to operate the platform:</p>
             <ul>
               <li>
-                <strong>Stripe</strong> — payment processing and creator payouts. Subject to{" "}
+                <strong>Stripe</strong> — payment processing and Creator payouts. Subject to{" "}
                 <a href="https://stripe.com/en-sg/privacy" target="_blank" rel="noopener noreferrer">
                   Stripe&apos;s Privacy Policy
                 </a>.
@@ -133,20 +164,88 @@ export default function PrivacyPage() {
                 <strong>Resend</strong> — transactional email delivery.
               </li>
               <li>
-                <strong>Sentry</strong> — error tracking and error-only session replay (Section 6).
+                <strong>Sentry</strong> — error tracking and error-only session replay (Section 7).
               </li>
               <li>
                 <strong>Google Analytics 4 (Google)</strong> — platform usage analytics with IP
                 anonymisation enabled.
               </li>
             </ul>
+
+            <h3 className="text-base font-bold text-[var(--color-ink)] mt-4">Sharing with campaign Creators</h3>
             <p>
-              We may also disclose your data if required by law, court order, or government authority in
-              Singapore.
+              When you pledge to a campaign, we may share the following data with the Creator to enable
+              reward fulfilment:
+            </p>
+            <ul>
+              <li>Your name</li>
+              <li>Your contact email address</li>
+              <li>Your shipping address (where a physical reward requires it)</li>
+              <li>Any note you choose to include with your pledge</li>
+            </ul>
+            <p>
+              This data is shared on the basis that it is necessary to fulfil the reward you have
+              requested. We share only what is reasonably required for that purpose.
+            </p>
+
+            <h3 className="text-base font-bold text-[var(--color-ink)] mt-4">Creators as independent data controllers</h3>
+            <p>
+              Once personal data has been shared with a Creator for fulfilment purposes, that Creator
+              acts as an <strong>independent data controller</strong> under the PDPA. This means:
+            </p>
+            <ul>
+              <li>
+                The Creator is solely responsible for their own compliance with the PDPA and any other
+                applicable data protection laws.
+              </li>
+              <li>
+                We do not control, monitor, audit, or have visibility into how Creators store, use,
+                retain, or handle your personal data after it has been shared with them.
+              </li>
+              <li>
+                We are not responsible for any loss, misuse, unauthorised access, breach, or unlawful
+                processing of your personal data by a Creator.
+              </li>
+              <li>
+                We cannot compel a Creator to delete, correct, or return your personal data once it has
+                been shared with them. Any such request must be made directly to the Creator.
+              </li>
+            </ul>
+
+            <h3 className="text-base font-bold text-[var(--color-ink)] mt-4">Creator obligations</h3>
+            <p>
+              By launching a campaign on get that bread, Creators agree to our Terms of Service, which
+              require them to:
+            </p>
+            <ul>
+              <li>
+                Use personal data only for the purpose of fulfilling campaign rewards and necessary
+                campaign communication.
+              </li>
+              <li>
+                Not use personal data for marketing, profiling, or any unrelated purpose without obtaining
+                separate, explicit consent from you.
+              </li>
+              <li>
+                Handle personal data in accordance with the PDPA and any other applicable laws.
+              </li>
+            </ul>
+            <p>
+              However, we do not guarantee Creator compliance with these obligations. If you believe a
+              Creator has misused your personal data, please contact us at{" "}
+              <a href={`mailto:${CONTACT_EMAIL}`} className="font-semibold text-[var(--color-brand-crust)] hover:underline">{CONTACT_EMAIL}</a>{" "}
+              — we will take reasonable steps to investigate and, where appropriate, take action against
+              that Creator under our Terms.
+            </p>
+
+            <h3 className="text-base font-bold text-[var(--color-ink)] mt-4">Legal disclosures</h3>
+            <p>
+              We may also disclose your data if required by law, court order, or government or regulatory
+              authority in Singapore.
             </p>
           </Section>
 
-          <Section title="5. Cookies and Analytics">
+          <Section title="6. Cookies and Analytics">
             <p>
               <strong>Essential session cookies</strong> keep you logged in and are required for the
               platform to function. These cannot be disabled.
@@ -159,11 +258,13 @@ export default function PrivacyPage() {
             </p>
           </Section>
 
-          <Section title="6. Session Replay">
+          <Section title="7. Session Replay">
             <p>
-              We use <a href="https://sentry.io" target="_blank" rel="noopener noreferrer">Sentry</a>&apos;s
-              session replay feature to record <strong>only the sessions in which an error occurs</strong>.
-              We do not record sessions under normal, error-free conditions.
+              We use{" "}
+              <a href="https://sentry.io" target="_blank" rel="noopener noreferrer">Sentry</a>&apos;s
+              session replay feature to record{" "}
+              <strong>only the sessions in which an error occurs</strong>. We do not record sessions under
+              normal, error-free conditions.
             </p>
             <p>
               When an error triggers a replay, Sentry captures DOM changes, mouse movement, clicks,
@@ -176,7 +277,7 @@ export default function PrivacyPage() {
             </p>
           </Section>
 
-          <Section title="7. Creator Verification (Singpass MyInfo)">
+          <Section title="8. Creator Verification (Singpass MyInfo)">
             <p>
               Creators are required to verify their identity through{" "}
               <a href="https://www.singpass.gov.sg/main/" target="_blank" rel="noopener noreferrer">
@@ -199,13 +300,13 @@ export default function PrivacyPage() {
             </p>
             <p>
               This data is used strictly for payout compliance (Monetary Authority of Singapore payment
-              services rules) and anti-fraud. It is not used for marketing, not shared with other backers
-              or creators, and is accessible only to the creator themselves and to platform admins
+              services rules) and anti-fraud. It is not used for marketing, not shared with other Backers
+              or Creators, and is accessible only to the Creator themselves and to platform admins
               performing compliance review.
             </p>
           </Section>
 
-          <Section title="8. Data Retention">
+          <Section title="9. Data Retention">
             <p>
               Different categories of data are retained for different periods depending on the legal and
               operational reason we hold them.
@@ -248,16 +349,22 @@ export default function PrivacyPage() {
               Legal and financial retention obligations override deletion requests for affected records —
               when you exercise your PDPA rights, we&apos;ll confirm which records fall under this.
             </p>
+            <p>
+              <strong>Creator-held data:</strong> Once personal data has been shared with a Creator to
+              fulfil a reward, we have no visibility into or control over that Creator&apos;s retention
+              practices. We cannot guarantee that a Creator will delete your data on request. For
+              any data held independently by a Creator, you must contact that Creator directly.
+            </p>
           </Section>
 
-          <Section title="9. Your Rights (PDPA)">
+          <Section title="10. Your Rights (PDPA)">
             <p>Under Singapore&apos;s PDPA, you have the right to:</p>
             <ul>
               <li>
                 <strong>Access</strong> the personal data we hold about you.
               </li>
               <li>
-                <strong>Correct</strong> any inaccurate personal data.
+                <strong>Correct</strong> any inaccurate personal data we hold.
               </li>
               <li>
                 <strong>Withdraw consent</strong> for the use of your personal data for any purpose
@@ -268,20 +375,59 @@ export default function PrivacyPage() {
               To exercise any of these rights, email our Data Protection Officer at{" "}
               <a href={`mailto:${CONTACT_EMAIL}`} className="font-semibold text-[var(--color-brand-crust)] hover:underline">{CONTACT_EMAIL}</a>.
               We respond within 30 days as required by the PDPA. We may verify your identity before
-              acting on access or deletion requests to protect you against impersonation.
+              acting on access or correction requests to protect you against impersonation.
+            </p>
+            <p>
+              <strong>Scope of your rights under this policy:</strong> Your PDPA rights under this policy
+              apply only to personal data that <em>we</em> hold and process as data controller. For
+              personal data held by Creators or third-party service providers acting as independent data
+              controllers (see Section 5), you must exercise your rights directly with those parties. We
+              are not able to act as an intermediary for such requests.
             </p>
           </Section>
 
-          <Section title="10. Security">
+          <Section title="11. Security">
             <p>
-              We take reasonable technical and organisational measures to protect your personal data,
+              We take reasonable technical and organisational measures to protect the personal data we hold,
               including HTTPS encryption, hashed passwords, and row-level security on our database. Data
               is encrypted at rest by our infrastructure providers. However, no method of transmission
               over the internet is 100% secure, and we cannot guarantee absolute security.
             </p>
+            <p>
+              These measures apply to personal data we directly hold and process. We do not control the
+              security practices of Creators or other independent data controllers to whom data may be
+              disclosed in accordance with this policy, and we are not responsible for any security
+              incidents affecting data held by those parties.
+            </p>
           </Section>
 
-          <Section title="11. Children">
+          <Section title="12. Limitation of Liability for Third-Party Data Handling">
+            <p>
+              To the fullest extent permitted by law, we are not liable for any loss, damage, or harm
+              arising from the actions of third parties — including Creators, payment processors, or
+              analytics providers — in relation to personal data shared with them in accordance with
+              this policy.
+            </p>
+            <p>
+              Our liability is limited to personal data that we directly hold and process as data
+              controller. We are not responsible for:
+            </p>
+            <ul>
+              <li>How Creators use, store, retain, or disclose personal data once it has been shared with them;</li>
+              <li>Any Creator&apos;s failure to comply with the PDPA or their obligations under our Terms;</li>
+              <li>Data breaches or misuse occurring within a Creator&apos;s own systems or processes;</li>
+              <li>
+                Actions of third-party service providers (such as Stripe, Google, or Sentry) within their
+                own platforms, which are governed by their respective privacy policies.
+              </li>
+            </ul>
+            <p>
+              Nothing in this section limits or excludes our liability for our own negligence, fraud, or
+              wilful misconduct, or any liability that cannot be excluded under Singapore law.
+            </p>
+          </Section>
+
+          <Section title="13. Children">
             <p>
               get that bread is not intended for users under 18 years of age. We do not knowingly collect
               personal data from minors. If you believe a minor has registered on our platform, please
@@ -289,7 +435,7 @@ export default function PrivacyPage() {
             </p>
           </Section>
 
-          <Section title="12. Changes to This Policy">
+          <Section title="14. Changes to This Policy">
             <p>
               We may update this Privacy Policy from time to time. We will notify you of material changes
               by email or by posting a notice on the platform. Your continued use of get that bread after
@@ -297,7 +443,7 @@ export default function PrivacyPage() {
             </p>
           </Section>
 
-          <Section title="13. Data Protection Officer & Contact">
+          <Section title="15. Data Protection Officer &amp; Contact">
             <p>
               Our Data Protection Officer can be reached at:{" "}
               <a href={`mailto:${CONTACT_EMAIL}`} className="font-semibold text-[var(--color-brand-crust)] hover:underline">{CONTACT_EMAIL}</a>
