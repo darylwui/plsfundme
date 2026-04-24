@@ -1,11 +1,21 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ImageUpload } from "@/components/ui/ImageUpload";
-import { CampaignEditor } from "@/components/projects/CampaignEditor";
 import { projectBasicInfoSchema } from "@/lib/validations/project";
+
+const CampaignEditor = dynamic(
+  () => import("@/components/projects/CampaignEditor").then((m) => m.CampaignEditor),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="min-h-[400px] rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface-muted)]/40 animate-pulse" />
+    ),
+  }
+);
 import type { ProjectDraft } from "@/types/project";
 import type { Category } from "@/types/project";
 
