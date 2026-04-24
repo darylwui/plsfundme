@@ -4,6 +4,9 @@ import { withSentryConfig } from "@sentry/nextjs";
 const nextConfig: NextConfig = {
   async redirects() {
     return [
+      // Policy pages consolidated under /terms
+      { source: "/privacy", destination: "/terms?tab=privacy", permanent: true },
+      { source: "/refund-policy", destination: "/terms?tab=refund", permanent: true },
       // Legacy PM routes → creator equivalents (permanent 308)
       { source: "/apply/pm", destination: "/apply/creator", permanent: true },
       { source: "/api/pm-apply", destination: "/api/creator-apply", permanent: true },
