@@ -41,10 +41,14 @@ export async function POST(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  // Single join: profile + creator_profile status in one round-trip
+  // Single join: profile + creator_profile status in one round-trip.
+  // creator_profiles has three FKs back to profiles (id, reviewed_by,
+  // reviewer_id) so the embed is ambiguous without an explicit FK hint —
+  // PostgREST silently drops the relation, the status check falls through,
+  // and every submit returns 403.
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, display_name, creator_profiles(status)")
+    .select("role, display_name, creator_profiles!creator_profiles_id_fkey(status)")
     .eq("id", user.id)
     .single();
 
