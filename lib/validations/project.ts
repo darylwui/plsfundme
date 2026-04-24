@@ -25,7 +25,7 @@ export const projectFundingSchema = z.object({
   { message: 'Deadline must be in the future', path: ['deadline'] }
 )
 
-const milestoneSchema = z.object({
+export const milestoneSchema = z.object({
   title: z
     .string()
     .min(5, 'Milestone title must be at least 5 characters')

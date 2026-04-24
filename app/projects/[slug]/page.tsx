@@ -96,12 +96,14 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
       .from("project_updates")
       .select("*")
       .eq("project_id", project.id)
-      .order("created_at", { ascending: false }),
+      .order("created_at", { ascending: false })
+      .limit(50),
     supabase
       .from("project_feedback")
       .select("id, project_id, author_id, parent_id, message, created_at, updated_at")
       .eq("project_id", project.id)
-      .order("created_at", { ascending: false }),
+      .order("created_at", { ascending: false })
+      .limit(100),
     user
       ? supabase
           .from("pledges")
