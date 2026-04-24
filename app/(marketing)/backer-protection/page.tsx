@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ShieldCheck, Clock, CreditCard, AlertCircle, Mail } from "lucide-react";
+import { BackerProtectionTimeline } from "@/components/marketing/BackerProtectionTimeline";
 
 export const metadata: Metadata = {
   title: "Backer protection — get that bread",
@@ -67,6 +68,15 @@ export default function RefundGuaranteePage() {
             </p>
           </Section>
 
+          <Section title="Your protection at every stage">
+            <p>
+              Your pledge moves through four stages, and at each one there&apos;s a specific protection in place. You&apos;re never in a grey zone where money has changed hands but no one&apos;s accountable.
+            </p>
+            <div className="mt-6">
+              <BackerProtectionTimeline />
+            </div>
+          </Section>
+
           <Section title="Refunds and disputes">
             <p>
               If a creator fails to deliver — whether they cancel, go silent past a milestone, or misrepresent the project — you can ask for a refund. Full pledge back on fraud; funds still in escrow back on good-faith failure. Either way, our 5% platform fee comes back with it.
@@ -101,7 +111,14 @@ export default function RefundGuaranteePage() {
           </Section>
 
           <Section title="Questions?">
-            <p className="flex items-center gap-2">
+            <p>
+              For long-tail questions about pledging, refunds, rewards, or how we vet creators, see our{" "}
+              <Link href="/faq" className="font-semibold text-[var(--color-brand-crust)] hover:underline">
+                FAQ
+              </Link>
+              . For anything else, email us — we answer every message within a business day.
+            </p>
+            <p className="flex items-center gap-2 mt-2">
               <Mail className="w-4 h-4 text-[var(--color-ink-muted)]" />
               <a
                 href={`mailto:${CONTACT_EMAIL}`}
