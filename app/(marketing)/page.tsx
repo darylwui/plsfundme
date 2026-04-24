@@ -238,7 +238,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                         <ul className="text-sm text-[var(--color-ink-muted)] space-y-2">
                           <li className="flex items-start gap-2">
                             <Shield className="w-4 h-4 text-[var(--color-brand-crust)] shrink-0 mt-0.5" />
-                            Milestone-protected escrow — funds only released on delivery
+                            Milestone-protected escrow
                           </li>
                           <li className="flex items-start gap-2">
                             <Lock className="w-4 h-4 text-[var(--color-brand-golden)] shrink-0 mt-0.5" />
