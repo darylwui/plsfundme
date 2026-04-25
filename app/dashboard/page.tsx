@@ -155,9 +155,8 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
 
   const typedProjects = (projects as unknown as ProjectWithRelations[]) ?? [];
   const activeProject = typedProjects.find((p) => p.status === "active") ?? typedProjects[0];
-  const hasActiveCampaign = typedProjects.some((p) => p.status === "active");
   const onlyProjectIsDraft =
-    typedProjects.length > 0 && !hasActiveCampaign && activeProject?.status === "draft";
+    typedProjects.length > 0 && typedProjects.every((p) => p.status === "draft");
 
   const { data: creatorProfile } = await supabase
     .from("creator_profiles")
