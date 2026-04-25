@@ -103,12 +103,12 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-black text-[var(--color-ink)]">My projects</h1>
         {canCreate ? (
-          <Link href="/projects/create">
-            <Button>
+          <Button asChild>
+            <Link href="/projects/create">
               <PlusCircle className="w-4 h-4" />
               New campaign
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         ) : creatorProfile?.status === "pending_review" ? (
           <span
             title="Your creator application is still under review. You'll be able to launch once approved."
@@ -118,12 +118,12 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
             New campaign · Awaiting approval
           </span>
         ) : (
-          <Link href="/apply/creator">
-            <Button variant="secondary">
+          <Button asChild variant="secondary">
+            <Link href="/apply/creator">
               <PlusCircle className="w-4 h-4" />
               Apply to launch campaigns
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         )}
       </div>
 
@@ -155,13 +155,13 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
                 Ready to raise funds for your idea? Create your first campaign in minutes.
               </p>
             </div>
-            <Link href="/projects/create">
-              <Button size="lg">
+            <Button asChild size="lg">
+              <Link href="/projects/create">
                 <PlusCircle className="w-4 h-4" />
                 Start your first campaign
                 <ArrowRight className="w-4 h-4" />
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         )
       ) : (

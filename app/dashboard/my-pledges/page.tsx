@@ -192,9 +192,9 @@ export default async function MyPledgesPage() {
               Find a project you believe in and be the first to back it.
             </p>
           </div>
-          <Link href="/explore">
-            <Button size="lg"><Heart className="w-4 h-4" /> Explore projects</Button>
-          </Link>
+          <Button asChild size="lg">
+            <Link href="/explore"><Heart className="w-4 h-4" /> Explore projects</Link>
+          </Button>
         </div>
       ) : (
         <div className="flex flex-col gap-6">

@@ -17,20 +17,21 @@ export function PreFooterCTA() {
             No upfront costs. Your backers are protected at every milestone. Funds only released as you deliver.
           </p>
           <div className="flex flex-wrap gap-3">
-            <Link href="/projects/create">
-              <Button size="lg" variant="inverse" className="font-bold">
+            <Button asChild size="lg" variant="inverse" className="font-bold">
+              <Link href="/projects/create">
                 Start for free
                 <ArrowRight className="w-4 h-4 shrink-0" />
-              </Button>
-            </Link>
-            <Link href="/how-it-works">
-              <Button
-                size="lg"
-                className="bg-white/10 text-white border border-white/20 hover:bg-white/20 active:scale-[0.98]"
-              >
+              </Link>
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              className="bg-white/10 text-white border border-white/20 hover:bg-white/20 active:scale-[0.98]"
+            >
+              <Link href="/how-it-works">
                 Learn how it works
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </div>
       </div>

@@ -61,11 +61,11 @@ export default function ForgotPasswordPage() {
             .
           </p>
         </div>
-        <Link href="/login">
-          <Button variant="secondary" fullWidth>
+        <Button asChild variant="secondary" fullWidth>
+          <Link href="/login">
             Back to login
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </Card>
     );
   }

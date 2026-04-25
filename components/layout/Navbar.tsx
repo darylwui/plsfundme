@@ -156,24 +156,24 @@ export function Navbar() {
                 <>
                   {user ? (
                     <>
-                      <Link href="/projects/create">
-                        <Button variant="inverse" size="sm">
+                      <Button asChild variant="inverse" size="sm">
+                        <Link href="/projects/create">
                           <PlusCircle className="w-4 h-4" />
                           Start a project
-                        </Button>
-                      </Link>
-                      <Link href="/dashboard">
-                        <Button variant="primary" size="sm">Dashboard</Button>
-                      </Link>
+                        </Link>
+                      </Button>
+                      <Button asChild variant="primary" size="sm">
+                        <Link href="/dashboard">Dashboard</Link>
+                      </Button>
                     </>
                   ) : (
                     <>
-                      <Link href="/login">
-                        <Button variant="ghost" size="sm">Log in</Button>
-                      </Link>
-                      <Link href="/register">
-                        <Button variant="primary" size="sm">Get started</Button>
-                      </Link>
+                      <Button asChild variant="ghost" size="sm">
+                        <Link href="/login">Log in</Link>
+                      </Button>
+                      <Button asChild variant="primary" size="sm">
+                        <Link href="/register">Get started</Link>
+                      </Button>
                     </>
                   )}
                 </>
@@ -269,24 +269,24 @@ export function Navbar() {
               <>
                 {user ? (
                   <>
-                    <Link href="/projects/create" onClick={() => setMenuOpen(false)}>
-                      <Button variant="inverse" size="md" fullWidth>
+                    <Button asChild variant="inverse" size="md" fullWidth>
+                      <Link href="/projects/create" onClick={() => setMenuOpen(false)}>
                         <PlusCircle className="w-4 h-4" />
                         Start a project
-                      </Button>
-                    </Link>
-                    <Link href="/dashboard" onClick={() => setMenuOpen(false)}>
-                      <Button variant="primary" size="md" fullWidth>Dashboard</Button>
-                    </Link>
+                      </Link>
+                    </Button>
+                    <Button asChild variant="primary" size="md" fullWidth>
+                      <Link href="/dashboard" onClick={() => setMenuOpen(false)}>Dashboard</Link>
+                    </Button>
                   </>
                 ) : (
                   <>
-                    <Link href="/login" onClick={() => setMenuOpen(false)}>
-                      <Button variant="ghost" size="md" fullWidth>Log in</Button>
-                    </Link>
-                    <Link href="/register" onClick={() => setMenuOpen(false)}>
-                      <Button variant="primary" size="md" fullWidth>Get started</Button>
-                    </Link>
+                    <Button asChild variant="ghost" size="md" fullWidth>
+                      <Link href="/login" onClick={() => setMenuOpen(false)}>Log in</Link>
+                    </Button>
+                    <Button asChild variant="primary" size="md" fullWidth>
+                      <Link href="/register" onClick={() => setMenuOpen(false)}>Get started</Link>
+                    </Button>
                   </>
                 )}
               </>

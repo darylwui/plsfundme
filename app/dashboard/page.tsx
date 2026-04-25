@@ -54,11 +54,11 @@ async function BackerDashboard({ userId, displayName, email }: { userId: string;
           <h3 className="font-bold text-[var(--color-ink)] mb-1">Ready to launch your own campaign?</h3>
           <p className="text-sm text-[var(--color-ink-muted)]">Become a creator and bring your ideas to life on get that bread.</p>
         </div>
-        <Link href="/apply/creator" className="shrink-0">
-          <Button variant="primary" size="sm">
+        <Button asChild variant="primary" size="sm">
+          <Link href="/apply/creator" className="shrink-0">
             Apply as Creator
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
 
       {/* Stats */}
@@ -82,12 +82,12 @@ async function BackerDashboard({ userId, displayName, email }: { userId: string;
           <p className="text-sm text-[var(--color-ink-muted)] mt-1 mb-6">
             Explore campaigns and back the ideas you believe in.
           </p>
-          <Link href="/explore">
-            <Button size="lg">
+          <Button asChild size="lg">
+            <Link href="/explore">
               <Heart className="w-4 h-4" />
               Explore projects
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       ) : (
         <div>
@@ -131,12 +131,12 @@ async function BackerDashboard({ userId, displayName, email }: { userId: string;
       )}
 
       <div className="pt-4 border-t border-[var(--color-border)]">
-        <Link href="/explore">
-          <Button variant="ghost" fullWidth>
+        <Button asChild variant="ghost" fullWidth>
+          <Link href="/explore">
             <Heart className="w-4 h-4" />
             Explore all projects
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
     </div>
   );
@@ -227,12 +227,12 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
         </div>
         {creatorStatus === "approved" && (
           <div className="flex items-center gap-2">
-            <Link href="/projects/create">
-              <Button>
+            <Button asChild>
+              <Link href="/projects/create">
                 <PlusCircle className="w-4 h-4" />
                 New campaign
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         )}
       </div>
@@ -248,9 +248,9 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
             <p className="text-sm text-[var(--color-ink-muted)] mt-1 leading-relaxed">
               Head to your application thread to see what they asked and reply.
             </p>
-            <Link href="/dashboard/application" className="inline-block mt-3">
-              <Button size="sm">Open application</Button>
-            </Link>
+            <Button asChild size="sm" className="inline-block mt-3">
+              <Link href="/dashboard/application">Open application</Link>
+            </Button>
           </div>
         </div>
       )}
@@ -296,9 +296,9 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
             </div>
           )}
           <div className="px-5 py-4 flex items-center gap-4 flex-wrap">
-            <Link href="/apply/creator">
-              <Button size="sm">Re-apply as Creator</Button>
-            </Link>
+            <Button asChild size="sm">
+              <Link href="/apply/creator">Re-apply as Creator</Link>
+            </Button>
             <a
               href="mailto:hello@getthatbread.sg"
               className="text-sm font-semibold text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"

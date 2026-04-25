@@ -136,18 +136,18 @@ export default async function HomePage({ searchParams }: HomePageProps) {
               </h2>
 
               <div className="mt-6 md:mt-8 flex flex-wrap gap-3">
-                <Link href="/projects/create">
-                  <Button size="lg" variant="inverse">
+                <Button asChild size="lg" variant="inverse">
+                  <Link href="/projects/create">
                     Start for free
                     <ArrowRight className="w-4 h-4 shrink-0" />
-                  </Button>
-                </Link>
-                <Link href="/explore">
-                  <Button size="lg">
+                  </Link>
+                </Button>
+                <Button asChild size="lg">
+                  <Link href="/explore">
                     Explore projects
                     <ArrowRight className="w-4 h-4 shrink-0" />
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </div>
 
             </div>

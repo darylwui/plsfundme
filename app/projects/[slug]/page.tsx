@@ -205,12 +205,12 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                 compact
               />
             )}
-            <Link href={`/projects/${slug}/edit`}>
-              <Button variant="secondary" size="sm">
+            <Button asChild variant="secondary" size="sm">
+              <Link href={`/projects/${slug}/edit`}>
                 <Pencil className="w-3.5 h-3.5" />
                 Edit campaign
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         )}
       </div>

@@ -21,14 +21,14 @@ export default function NotFound() {
           moved or never existed.
         </p>
         <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-          <Link href="/">
-            <Button size="lg">Go home</Button>
-          </Link>
-          <Link href="/explore">
-            <Button size="lg" variant="secondary">
+          <Button asChild size="lg">
+            <Link href="/">Go home</Link>
+          </Button>
+          <Button asChild size="lg" variant="secondary">
+            <Link href="/explore">
               Explore projects
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
         <div className="mt-6 pt-6 border-t border-[var(--color-border)]">
           <p className="text-sm text-[var(--color-ink-subtle)] mb-3">

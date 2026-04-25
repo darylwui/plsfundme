@@ -88,11 +88,11 @@ function ResetPasswordContent() {
             This password reset link has expired or already been used. Request a fresh one.
           </p>
         </div>
-        <Link href="/forgot-password" className="w-full">
-          <Button size="lg" fullWidth>
+        <Button asChild size="lg" fullWidth>
+          <Link href="/forgot-password" className="w-full">
             Request new link
-          </Button>
-        </Link>
+          </Link>
+        </Button>
         <div className="flex justify-center">
           <BackLink href="/login">Back to login</BackLink>
         </div>

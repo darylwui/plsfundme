@@ -70,12 +70,12 @@ export function DraftContinuationCard(props: DraftContinuationCardProps) {
         </p>
 
         <div className="flex items-center gap-4 flex-wrap">
-          <Link href={continueHref}>
-            <Button variant="primary">
+          <Button asChild variant="primary">
+            <Link href={continueHref}>
               <Pencil className="w-4 h-4" />
               Continue editing
-            </Button>
-          </Link>
+            </Link>
+          </Button>
           {props.source === "project" ? (
             <DeleteDraftButton source="project" projectId={props.project.id} />
           ) : (
