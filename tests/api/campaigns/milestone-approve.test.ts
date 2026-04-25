@@ -499,11 +499,12 @@ describe('milestone-approve route', () => {
 
       expect(res.status).toBe(200);
       expect(mocks.releaseMilestonePayment).toHaveBeenCalledTimes(1);
-      expect(mocks.releaseMilestonePayment.mock.calls[0][0]).toEqual({
+      expect(mocks.releaseMilestonePayment.mock.calls[0][0]).toMatchObject({
         campaign_id: 'campaign-1',
         milestone_number: 1,
         campaign_total_sgd: 10000,
       });
+      expect(mocks.releaseMilestonePayment.mock.calls[0][0].supabase).toBeDefined();
       expect(mocks.sendMilestoneApprovedToCreatorEmail).toHaveBeenCalledTimes(1);
       expect(mocks.sendMilestoneApprovedToCreatorEmail.mock.calls[0][0].escrowReleasedSgd).toBe(4000);
       expect(mocks.sendMilestoneApprovedToBackerEmail).toHaveBeenCalledTimes(2);

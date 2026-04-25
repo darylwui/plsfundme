@@ -136,6 +136,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
     if (decision === 'approved') {
       // Insert escrow_releases row
       const releaseResult = await releaseMilestonePayment({
+        supabase: service,
         campaign_id: campaignId,
         milestone_number: milestoneNumber,
         campaign_total_sgd: p.amount_pledged_sgd,
