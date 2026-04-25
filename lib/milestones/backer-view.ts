@@ -27,9 +27,9 @@ interface MilestonePromise {
 }
 
 interface SubmissionRow {
+  id: string;
   milestone_number: number;
   submitted_at: string;
-  milestone_approvals: Array<{ decision: MilestoneDecision; reviewed_at: string }>;
 }
 
 interface ReleaseRow {
@@ -115,22 +115,34 @@ function deriveState(
  *
  * `target_date` strings are treated as UTC. Date-only strings ("2026-05-01")
  * parse as UTC midnight. See {@link parseTargetDate} for the single parsing point.
+ *
+ * Queries target the column-scoped public views (`milestone_submissions_public`,
+ * `milestone_approvals_public`, `escrow_releases_public`, `disputes_public`)
+ * rather than the base tables. The views select only the columns the helper
+ * needs and gate by parent project status IN ('active', 'funded', 'failed'),
+ * keeping private fields (proof_data, feedback_text, description, backer_id)
+ * out of reach of anon/authenticated users. Approvals are fetched in a
+ * separate query and joined in JS because views lack FK constraints for
+ * Supabase's auto-relationship resolution.
  */
 export async function resolveMilestonesForBacker(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   supabase: SupabaseClient<any, any, any>,
   projectId: string,
 ): Promise<BackerMilestoneView> {
-  // Fire all four queries in parallel — they're independent.
-  const [projectResult, submissionsResult, releasesResult, disputesResult] = await Promise.all([
+  // Fire all five queries in parallel — they're independent.
+  const [projectResult, submissionsResult, approvalsResult, releasesResult, disputesResult] = await Promise.all([
     supabase.from("projects").select("milestones").eq("id", projectId).single(),
     supabase
-      .from("milestone_submissions")
-      .select("milestone_number, submitted_at, milestone_approvals(decision, reviewed_at)")
+      .from("milestone_submissions_public")
+      .select("id, milestone_number, submitted_at")
       .eq("campaign_id", projectId),
-    supabase.from("escrow_releases").select("milestone_number, amount_sgd").eq("campaign_id", projectId),
     supabase
-      .from("disputes")
+      .from("milestone_approvals_public")
+      .select("submission_id, decision, reviewed_at"),
+    supabase.from("escrow_releases_public").select("milestone_number, amount_sgd").eq("campaign_id", projectId),
+    supabase
+      .from("disputes_public")
       .select("id")
       .eq("campaign_id", projectId)
       .in("status", ["open", "investigating"]),
@@ -141,9 +153,10 @@ export async function resolveMilestonesForBacker(
   // failure itself shouldn't be silent.
   const queryErrors: Array<[string, unknown]> = [
     ["projects", projectResult.error],
-    ["milestone_submissions", submissionsResult.error],
-    ["escrow_releases", releasesResult.error],
-    ["disputes", disputesResult.error],
+    ["milestone_submissions_public", submissionsResult.error],
+    ["milestone_approvals_public", approvalsResult.error],
+    ["escrow_releases_public", releasesResult.error],
+    ["disputes_public", disputesResult.error],
   ];
   for (const [label, error] of queryErrors) {
     if (error) console.warn(`resolveMilestonesForBacker: ${label} query failed`, error);
@@ -154,18 +167,39 @@ export async function resolveMilestonesForBacker(
     return { milestones: [], hasOpenDispute: (disputesResult.data?.length ?? 0) > 0 };
   }
 
-  const submissions = (submissionsResult.data ?? []) as unknown as SubmissionRow[];
+  const submissions = (submissionsResult.data ?? []) as unknown as Array<{
+    id: string;
+    milestone_number: number;
+    submitted_at: string;
+  }>;
+  const approvals = (approvalsResult.data ?? []) as unknown as Array<{
+    submission_id: string;
+    decision: MilestoneDecision;
+    reviewed_at: string;
+  }>;
   const releases = (releasesResult.data ?? []) as unknown as ReleaseRow[];
-  const submissionByNumber = new Map<number, SubmissionRow>();
+
+  // Build lookup maps
+  const submissionByNumber = new Map<number, typeof submissions[number]>();
   for (const s of submissions) submissionByNumber.set(s.milestone_number, s);
+
   const releaseByNumber = new Map<number, ReleaseRow>();
   for (const r of releases) releaseByNumber.set(r.milestone_number, r);
+
+  // Join approvals to submissions via submission_id
+  const approvalsBySubmissionId = new Map<string, Array<{ decision: MilestoneDecision; reviewed_at: string }>>();
+  for (const a of approvals) {
+    const list = approvalsBySubmissionId.get(a.submission_id) ?? [];
+    list.push({ decision: a.decision, reviewed_at: a.reviewed_at });
+    approvalsBySubmissionId.set(a.submission_id, list);
+  }
 
   const now = new Date();
   const resolved: ResolvedMilestone[] = milestonesRaw.map((promise, i) => {
     const number = (i + 1) as 1 | 2 | 3;
     const submission = submissionByNumber.get(number);
-    const approval = submission ? latestApproval(submission.milestone_approvals) : undefined;
+    const submissionApprovals = submission ? (approvalsBySubmissionId.get(submission.id) ?? []) : [];
+    const approval = latestApproval(submissionApprovals);
     const state = deriveState(promise, submission, approval, now);
 
     const m: ResolvedMilestone = {

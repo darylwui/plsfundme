@@ -1,11 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { resolveMilestonesForBacker } from '@/lib/milestones/backer-view';
 
-// Mock the Supabase client. The helper calls four queries; each returns
+// Mock the Supabase client. The helper calls five queries; each returns
 // `{ data, error }` like the real client.
 function createMockSupabase(responses: {
   project: unknown;
   submissions: unknown;
+  approvals: unknown;
   releases: unknown;
   disputes: unknown;
 }) {
@@ -17,17 +18,20 @@ function createMockSupabase(responses: {
         }),
       }),
     }),
-    milestone_submissions: () => ({
+    milestone_submissions_public: () => ({
       select: () => ({
         eq: async () => ({ data: responses.submissions, error: null }),
       }),
     }),
-    escrow_releases: () => ({
+    milestone_approvals_public: () => ({
+      select: async () => ({ data: responses.approvals, error: null }),
+    }),
+    escrow_releases_public: () => ({
       select: () => ({
         eq: async () => ({ data: responses.releases, error: null }),
       }),
     }),
-    disputes: () => ({
+    disputes_public: () => ({
       select: () => ({
         eq: () => ({
           in: async () => ({ data: responses.disputes, error: null }),
@@ -58,6 +62,7 @@ describe('resolveMilestonesForBacker', () => {
     const supabase = createMockSupabase({
       project: { milestones: null },
       submissions: [],
+      approvals: [],
       releases: [],
       disputes: [],
     });
@@ -70,6 +75,7 @@ describe('resolveMilestonesForBacker', () => {
     const supabase = createMockSupabase({
       project: { milestones: [M_TEMPLATE[0], M_TEMPLATE[1]] },
       submissions: [],
+      approvals: [],
       releases: [],
       disputes: [],
     });
@@ -81,6 +87,7 @@ describe('resolveMilestonesForBacker', () => {
     const supabase = createMockSupabase({
       project: { milestones: M_TEMPLATE },
       submissions: [],
+      approvals: [],
       releases: [],
       disputes: [],
     });
@@ -93,6 +100,7 @@ describe('resolveMilestonesForBacker', () => {
     const supabase = createMockSupabase({
       project: { milestones: [{ title: 'Tooling', description: 'x', target_date: '2026-04-15' }, M_TEMPLATE[1], M_TEMPLATE[2]] },
       submissions: [],
+      approvals: [],
       releases: [],
       disputes: [],
     });
@@ -105,8 +113,9 @@ describe('resolveMilestonesForBacker', () => {
     const supabase = createMockSupabase({
       project: { milestones: M_TEMPLATE },
       submissions: [
-        { milestone_number: 1, submitted_at: '2026-04-20', milestone_approvals: [] },
+        { id: 'sub-1', milestone_number: 1, submitted_at: '2026-04-20' },
       ],
+      approvals: [],
       releases: [],
       disputes: [],
     });
@@ -119,11 +128,10 @@ describe('resolveMilestonesForBacker', () => {
     const supabase = createMockSupabase({
       project: { milestones: M_TEMPLATE },
       submissions: [
-        {
-          milestone_number: 1,
-          submitted_at: '2026-04-20',
-          milestone_approvals: [{ decision: 'rejected', reviewed_at: '2026-04-22' }],
-        },
+        { id: 'sub-1', milestone_number: 1, submitted_at: '2026-04-20' },
+      ],
+      approvals: [
+        { submission_id: 'sub-1', decision: 'rejected', reviewed_at: '2026-04-22' },
       ],
       releases: [],
       disputes: [],
@@ -136,11 +144,10 @@ describe('resolveMilestonesForBacker', () => {
     const supabase = createMockSupabase({
       project: { milestones: M_TEMPLATE },
       submissions: [
-        {
-          milestone_number: 1,
-          submitted_at: '2026-04-20',
-          milestone_approvals: [{ decision: 'needs_info', reviewed_at: '2026-04-22' }],
-        },
+        { id: 'sub-1', milestone_number: 1, submitted_at: '2026-04-20' },
+      ],
+      approvals: [
+        { submission_id: 'sub-1', decision: 'needs_info', reviewed_at: '2026-04-22' },
       ],
       releases: [],
       disputes: [],
@@ -153,11 +160,10 @@ describe('resolveMilestonesForBacker', () => {
     const supabase = createMockSupabase({
       project: { milestones: M_TEMPLATE },
       submissions: [
-        {
-          milestone_number: 1,
-          submitted_at: '2026-04-20',
-          milestone_approvals: [{ decision: 'approved', reviewed_at: '2026-04-22' }],
-        },
+        { id: 'sub-1', milestone_number: 1, submitted_at: '2026-04-20' },
+      ],
+      approvals: [
+        { submission_id: 'sub-1', decision: 'approved', reviewed_at: '2026-04-22' },
       ],
       releases: [{ milestone_number: 1, amount_sgd: 4000 }],
       disputes: [],
@@ -172,11 +178,10 @@ describe('resolveMilestonesForBacker', () => {
     const supabase = createMockSupabase({
       project: { milestones: M_TEMPLATE },
       submissions: [
-        {
-          milestone_number: 1,
-          submitted_at: '2026-04-20',
-          milestone_approvals: [{ decision: 'approved', reviewed_at: '2026-04-22' }],
-        },
+        { id: 'sub-1', milestone_number: 1, submitted_at: '2026-04-20' },
+      ],
+      approvals: [
+        { submission_id: 'sub-1', decision: 'approved', reviewed_at: '2026-04-22' },
       ],
       releases: [],
       disputes: [],
@@ -190,14 +195,11 @@ describe('resolveMilestonesForBacker', () => {
     const supabase = createMockSupabase({
       project: { milestones: M_TEMPLATE },
       submissions: [
-        {
-          milestone_number: 1,
-          submitted_at: '2026-04-20',
-          milestone_approvals: [
-            { decision: 'rejected', reviewed_at: '2026-04-22' },
-            { decision: 'approved', reviewed_at: '2026-04-23' },
-          ],
-        },
+        { id: 'sub-1', milestone_number: 1, submitted_at: '2026-04-20' },
+      ],
+      approvals: [
+        { submission_id: 'sub-1', decision: 'rejected', reviewed_at: '2026-04-22' },
+        { submission_id: 'sub-1', decision: 'approved', reviewed_at: '2026-04-23' },
       ],
       releases: [{ milestone_number: 1, amount_sgd: 4000 }],
       disputes: [],
@@ -211,16 +213,11 @@ describe('resolveMilestonesForBacker', () => {
     const supabase = createMockSupabase({
       project: { milestones: M_TEMPLATE },
       submissions: [
-        {
-          milestone_number: 1,
-          submitted_at: '2026-04-10',
-          milestone_approvals: [{ decision: 'approved', reviewed_at: '2026-04-12' }],
-        },
-        {
-          milestone_number: 2,
-          submitted_at: '2026-04-20',
-          milestone_approvals: [],
-        },
+        { id: 'sub-1', milestone_number: 1, submitted_at: '2026-04-10' },
+        { id: 'sub-2', milestone_number: 2, submitted_at: '2026-04-20' },
+      ],
+      approvals: [
+        { submission_id: 'sub-1', decision: 'approved', reviewed_at: '2026-04-12' },
       ],
       releases: [{ milestone_number: 1, amount_sgd: 4000 }],
       disputes: [],
@@ -233,6 +230,7 @@ describe('resolveMilestonesForBacker', () => {
     const supabase = createMockSupabase({
       project: { milestones: M_TEMPLATE },
       submissions: [],
+      approvals: [],
       releases: [],
       disputes: [{ id: 'd-1' }, { id: 'd-2' }],
     });
@@ -244,6 +242,7 @@ describe('resolveMilestonesForBacker', () => {
     const supabase = createMockSupabase({
       project: { milestones: M_TEMPLATE },
       submissions: [],
+      approvals: [],
       releases: [],
       disputes: [],
     });
@@ -265,17 +264,22 @@ describe('resolveMilestonesForBacker', () => {
             }),
           };
         }
-        if (table === 'milestone_submissions') {
+        if (table === 'milestone_submissions_public') {
           return {
             select: () => ({ eq: async () => ({ data: [], error: null }) }),
           };
         }
-        if (table === 'escrow_releases') {
+        if (table === 'milestone_approvals_public') {
+          return {
+            select: async () => ({ data: [], error: null }),
+          };
+        }
+        if (table === 'escrow_releases_public') {
           return {
             select: () => ({ eq: async () => ({ data: [], error: null }) }),
           };
         }
-        if (table === 'disputes') {
+        if (table === 'disputes_public') {
           return {
             select: () => ({
               eq: () => ({
@@ -300,7 +304,7 @@ describe('resolveMilestonesForBacker', () => {
     expect(result.hasOpenDispute).toBe(false);
     // The error was logged
     expect(warnSpy).toHaveBeenCalledWith(
-      expect.stringContaining('disputes query failed'),
+      expect.stringContaining('disputes_public query failed'),
       expect.objectContaining({ message: expect.stringContaining('permission denied') }),
     );
 
@@ -317,6 +321,7 @@ describe('resolveMilestonesForBacker', () => {
         ],
       },
       submissions: [],
+      approvals: [],
       releases: [],
       disputes: [],
     });

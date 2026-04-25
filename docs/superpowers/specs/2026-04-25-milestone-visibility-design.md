@@ -211,7 +211,9 @@ The schema does not enforce a UNIQUE constraint on `milestone_approvals.submissi
 
 ### RLS verification
 
-The four source tables (`milestone_submissions`, `milestone_approvals`, `escrow_releases`, `disputes`) currently have RLS policies that may not include public/backer read access. **Action item for implementation:** verify backers (and anonymous users for the public project page) can read these tables. If not, the safest fix is to add narrow read policies — e.g., "anyone can read `milestone_submissions` rows where the parent project status is `active` or `funded`." Implementer should run a quick RLS test plan and either confirm existing policies suffice or add a small migration. Surface this as a task in the implementation plan.
+The four source tables (`milestone_submissions`, `milestone_approvals`, `escrow_releases`, `disputes`) have strict RLS policies that grant read access only to creators and admins. Rather than widening those policies (which would expose private columns like `proof_data`, `feedback_text`, `description`, `backer_id` since RLS gates rows but not columns), this design adds **narrowly-scoped public views** that select only the columns the backer-view helper needs and gate by parent project status. The base tables keep their existing strict RLS unchanged.
+
+Migration `023_milestone_backer_read.sql` creates four views: `milestone_submissions_public`, `milestone_approvals_public`, `escrow_releases_public`, `disputes_public`. Each filters by `projects.status IN ('active', 'funded', 'failed')` (matching the rest of the codebase's public-read convention; cancelled / draft / pending_review remain creator-only). `GRANT SELECT` is given to `anon` and `authenticated` on the views, not the base tables.
 
 ### Caching/staleness
 
