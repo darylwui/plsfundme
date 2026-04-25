@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CheckCircle, AlertCircle } from "lucide-react";
+import { BackLink } from "@/components/ui/back-link";
 
 type Stage = "verifying" | "ready" | "success" | "expired";
 
@@ -92,9 +93,9 @@ function ResetPasswordContent() {
             Request new link
           </Button>
         </Link>
-        <Link href="/login" className="text-sm text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors">
-          Back to login
-        </Link>
+        <div className="flex justify-center">
+          <BackLink href="/login">Back to login</BackLink>
+        </div>
       </Card>
     );
   }

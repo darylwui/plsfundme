@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { CheckCircle2, Rocket, Users } from "lucide-react";
+import { BackToTop } from "@/components/ui/back-to-top";
 
 export const metadata: Metadata = {
   title: "FAQ — get that bread",
@@ -194,6 +195,10 @@ export default function FaqPage() {
           </div>
         </div>
       </section>
+
+      <div className="flex justify-center py-10 border-t border-[var(--color-border)] bg-[var(--color-surface)]">
+        <BackToTop />
+      </div>
     </div>
   );
 }
