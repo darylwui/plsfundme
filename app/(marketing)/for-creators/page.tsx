@@ -183,6 +183,14 @@ export default function ForCreatorsPage() {
                 <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
+            <div className="mt-4">
+              <Link
+                href="/for-creators/launch-guide"
+                className="inline-flex items-center gap-1 text-sm font-semibold text-[var(--color-brand-crust)] dark:text-[var(--color-brand-golden)] hover:underline"
+              >
+                Get the launch checklist <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
           </div>
         </section>
       </ScrollReveal>
