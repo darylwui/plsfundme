@@ -22,7 +22,7 @@ export function DraftContinuationCard({ project }: DraftContinuationCardProps) {
       {/* Header strip */}
       <div className="bg-gradient-to-r from-[var(--color-brand-crumb)] to-[var(--color-brand-crumb)]/40 dark:from-[var(--color-brand-crust-dark)]/25 dark:to-[var(--color-brand-crust-dark)]/10 px-5 py-2.5 border-b border-[var(--color-border)]">
         <p className="text-xs font-bold text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)]">
-          📝 Pick up where you left off
+          <span aria-hidden="true">📝</span> Pick up where you left off
         </p>
       </div>
 
