@@ -439,6 +439,44 @@ export async function sendAdminCreatorRepliedEmail(args: AdminCreatorRepliedArgs
   });
 }
 
+interface MilestoneApprovedBackerArgs {
+  backerEmail: string;
+  backerName: string;
+  creatorName: string;
+  projectTitle: string;
+  projectSlug: string;
+  milestoneNumber: 1 | 2 | 3;
+  escrowReleasedSgd: number;
+}
+
+const MILESTONE_LABELS: Record<1 | 2 | 3, string> = {
+  1: "Tooling & Deposits — Factory has confirmed the order",
+  2: "Production — Manufacturing is underway",
+  3: "Fulfillment — Rewards are on the way",
+};
+
+export async function sendMilestoneApprovedToBackerEmail(args: MilestoneApprovedBackerArgs) {
+  const safeTitle = escapeHtml(args.projectTitle);
+  const safeName = escapeHtml(args.backerName);
+  const safeCreator = escapeHtml(args.creatorName);
+  const milestoneLabel = MILESTONE_LABELS[args.milestoneNumber];
+
+  return sendEmail({
+    from: FROM,
+    to: args.backerEmail,
+    subject: `Milestone ${args.milestoneNumber} hit · ${args.projectTitle}`,
+    html: `
+      <h2>Hi ${safeName},</h2>
+      <p>Great news — <strong>${safeCreator}</strong> just hit milestone ${args.milestoneNumber} on <strong>${safeTitle}</strong>. We've verified the proof and released <strong>${formatSgd(args.escrowReleasedSgd)}</strong> from escrow.</p>
+      <p><strong>Milestone ${args.milestoneNumber}: ${escapeHtml(milestoneLabel)}</strong></p>
+      <p>Your money is still safe in escrow until all milestones are complete. You'll get an update when the next one is ready.</p>
+      <a href="${appUrl}/projects/${encodeURIComponent(args.projectSlug)}" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
+        See campaign progress
+      </a>
+    `,
+  });
+}
+
 export async function sendPledgeRefundedEmail(args: PledgeRefundedArgs) {
   return sendEmail({
     from: FROM,

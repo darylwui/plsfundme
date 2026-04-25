@@ -57,3 +57,61 @@ describe('sendCampaignFailedToBackerEmail', () => {
     expect(payload.html).toMatch(/&lt;script&gt;/);
   });
 });
+
+import { sendMilestoneApprovedToBackerEmail } from '@/lib/email/templates';
+
+describe('sendMilestoneApprovedToBackerEmail', () => {
+  beforeEach(() => {
+    mockSend.mockClear();
+  });
+
+  it('sends an email with all milestone context', async () => {
+    await sendMilestoneApprovedToBackerEmail({
+      backerEmail: 'backer@example.com',
+      backerName: 'Sam',
+      creatorName: 'Jamie',
+      projectTitle: 'Sourdough Starter Kit',
+      projectSlug: 'sourdough-starter-kit',
+      milestoneNumber: 1,
+      escrowReleasedSgd: 4000,
+    });
+
+    const payload = mockSend.mock.calls[0][0];
+    expect(payload.to).toBe('backer@example.com');
+    expect(payload.subject).toContain('Milestone 1');
+    expect(payload.subject).toContain('Sourdough Starter Kit');
+    expect(payload.html).toContain('Sam');
+    expect(payload.html).toContain('Jamie');
+    expect(payload.html).toContain('milestone 1');
+    expect(payload.html).toMatch(/\$4,?000/); // matches both Node ICU "$4,000" and browser "S$4,000"
+    expect(payload.html).toContain('/projects/sourdough-starter-kit');
+  });
+
+  it('includes Reply-To via the centralized helper', async () => {
+    await sendMilestoneApprovedToBackerEmail({
+      backerEmail: 'backer@example.com',
+      backerName: 'Sam',
+      creatorName: 'Jamie',
+      projectTitle: 'Test',
+      projectSlug: 'test',
+      milestoneNumber: 2,
+      escrowReleasedSgd: 4000,
+    });
+    expect(mockSend.mock.calls[0][0].replyTo).toBe('hello@getthatbread.sg');
+  });
+
+  it('escapes HTML in user-supplied fields', async () => {
+    await sendMilestoneApprovedToBackerEmail({
+      backerEmail: 'backer@example.com',
+      backerName: '<img src=x>',
+      creatorName: 'Jamie',
+      projectTitle: '<b>x</b>',
+      projectSlug: 'test',
+      milestoneNumber: 3,
+      escrowReleasedSgd: 2000,
+    });
+    const payload = mockSend.mock.calls[0][0];
+    expect(payload.html).not.toContain('<img');
+    expect(payload.html).not.toContain('<b>x</b>');
+  });
+});
