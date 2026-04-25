@@ -139,7 +139,8 @@ export async function resolveMilestonesForBacker(
       .eq("campaign_id", projectId),
     supabase
       .from("milestone_approvals_public")
-      .select("submission_id, decision, reviewed_at"),
+      .select("submission_id, decision, reviewed_at")
+      .eq("campaign_id", projectId),
     supabase.from("escrow_releases_public").select("milestone_number, amount_sgd").eq("campaign_id", projectId),
     supabase
       .from("disputes_public")

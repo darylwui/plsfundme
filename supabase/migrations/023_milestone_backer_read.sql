@@ -1,3 +1,15 @@
+-- The views below are intentionally created with security_invoker = false
+-- (Postgres default), meaning they execute with the view owner's
+-- privileges and bypass RLS on the underlying base tables. This is the
+-- correct choice here: the views expose only safe columns and are gated
+-- by parent project status, while the base tables themselves keep their
+-- strict RLS (creator/admin-only) from migration 019.
+--
+-- Supabase's security advisor will flag these as `security_definer_view`
+-- warnings — the warnings can be safely dismissed for these views since
+-- the bypass is intentional and the column projection is the security
+-- boundary.
+
 -- Milestone visibility for backers (REVISED: column-scoped views)
 --
 -- Backers and anonymous viewers need to see milestone status for launched
@@ -16,7 +28,7 @@
 -- and pending_review/draft/removed stay creator-only.
 
 -- milestone_submissions: only id, campaign_id, milestone_number, submitted_at
-CREATE VIEW milestone_submissions_public AS
+CREATE VIEW milestone_submissions_public WITH (security_invoker = false) AS
   SELECT ms.id,
          ms.campaign_id,
          ms.milestone_number,
@@ -27,10 +39,11 @@ CREATE VIEW milestone_submissions_public AS
 
 GRANT SELECT ON milestone_submissions_public TO anon, authenticated;
 
--- milestone_approvals: only id, submission_id, decision, reviewed_at
-CREATE VIEW milestone_approvals_public AS
+-- milestone_approvals: only id, submission_id, decision, reviewed_at, campaign_id (for filtering by project in helper)
+CREATE VIEW milestone_approvals_public WITH (security_invoker = false) AS
   SELECT ma.id,
          ma.submission_id,
+         ms.campaign_id,
          ma.decision,
          ma.reviewed_at
     FROM milestone_approvals ma
@@ -41,7 +54,7 @@ CREATE VIEW milestone_approvals_public AS
 GRANT SELECT ON milestone_approvals_public TO anon, authenticated;
 
 -- escrow_releases: only id, campaign_id, milestone_number, amount_sgd, released_at
-CREATE VIEW escrow_releases_public AS
+CREATE VIEW escrow_releases_public WITH (security_invoker = false) AS
   SELECT er.id,
          er.campaign_id,
          er.milestone_number,
@@ -54,7 +67,7 @@ CREATE VIEW escrow_releases_public AS
 GRANT SELECT ON escrow_releases_public TO anon, authenticated;
 
 -- disputes: only id, campaign_id, status (no description, no backer_id, no resolution_notes)
-CREATE VIEW disputes_public AS
+CREATE VIEW disputes_public WITH (security_invoker = false) AS
   SELECT d.id,
          d.campaign_id,
          d.status

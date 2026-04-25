@@ -24,7 +24,9 @@ function createMockSupabase(responses: {
       }),
     }),
     milestone_approvals_public: () => ({
-      select: async () => ({ data: responses.approvals, error: null }),
+      select: () => ({
+        eq: async () => ({ data: responses.approvals, error: null }),
+      }),
     }),
     escrow_releases_public: () => ({
       select: () => ({
@@ -271,7 +273,9 @@ describe('resolveMilestonesForBacker', () => {
         }
         if (table === 'milestone_approvals_public') {
           return {
-            select: async () => ({ data: [], error: null }),
+            select: () => ({
+              eq: async () => ({ data: [], error: null }),
+            }),
           };
         }
         if (table === 'escrow_releases_public') {
