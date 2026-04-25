@@ -203,22 +203,16 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
           <p className="text-sm text-[var(--color-ink-muted)] mt-0.5">{subtitle}</p>
           <p className="text-xs text-[var(--color-ink-subtle)] mt-1">{email}</p>
         </div>
-        <div className="flex items-center gap-2">
-          <Link href="/dashboard/creator-profile">
-            <Button variant="secondary">
-              <Pencil className="w-4 h-4" />
-              Edit creator card
-            </Button>
-          </Link>
-          {creatorStatus === "approved" && (
+        {creatorStatus === "approved" && (
+          <div className="flex items-center gap-2">
             <Link href="/projects/create">
               <Button>
                 <PlusCircle className="w-4 h-4" />
                 New campaign
               </Button>
             </Link>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* ── Needs info ── */}
