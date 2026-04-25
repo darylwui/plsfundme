@@ -3,15 +3,15 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-interface DeleteDraftButtonProps {
-  projectId: string;
-}
+type DeleteDraftButtonProps =
+  | { source: "project"; projectId: string }
+  | { source: "campaign-draft" };
 
 type Status = "idle" | "pending" | "error";
 
 const ERROR_MESSAGE = "Couldn't delete draft. Try again or contact support.";
 
-export function DeleteDraftButton({ projectId }: DeleteDraftButtonProps) {
+export function DeleteDraftButton(props: DeleteDraftButtonProps) {
   const router = useRouter();
   const [status, setStatus] = useState<Status>("idle");
 
@@ -21,9 +21,14 @@ export function DeleteDraftButton({ projectId }: DeleteDraftButtonProps) {
     const confirmed = window.confirm("Delete this draft? This cannot be undone.");
     if (!confirmed) return;
 
+    const url =
+      props.source === "project"
+        ? `/api/projects/${props.projectId}/delete`
+        : `/api/campaign-drafts/delete`;
+
     setStatus("pending");
     try {
-      const res = await fetch(`/api/projects/${projectId}/delete`, { method: "POST" });
+      const res = await fetch(url, { method: "POST" });
       if (!res.ok) {
         setStatus("error");
         return;

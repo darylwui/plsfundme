@@ -6,11 +6,13 @@ import { BackerTable } from "@/components/dashboard/BackerTable";
 import { SingpassVerifiedBadge } from "@/components/dashboard/SingpassVerificationCard";
 import { CreatorOnboardingStepper } from "@/components/dashboard/CreatorOnboardingStepper";
 import { DraftContinuationCard } from "@/components/dashboard/DraftContinuationCard";
+import { WizardDraftBanner } from "@/components/dashboard/WizardDraftBanner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils/dates";
 import { formatSgd } from "@/lib/utils/currency";
 import { getProjectStatusLabel, getProjectStatusVariant } from "@/lib/utils/project-status";
+import { extractDraftTitle } from "@/lib/dashboard/wizard-draft";
 import type { ProjectWithRelations } from "@/types/project";
 import type { PledgeWithBacker } from "@/types/pledge";
 
@@ -167,6 +169,26 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
   const creatorStatus = creatorProfile?.status ?? "pending_review";
   const rejectionReason = creatorProfile?.rejection_reason ?? null;
 
+  // Surface in-progress wizard work on the dashboard.
+  // The wizard auto-saves to `campaign_drafts` (one row per user via
+  // UNIQUE(user_id)). When the creator has zero projects we render the
+  // full DraftContinuationCard. When they already have projects we render
+  // a slim WizardDraftBanner above the existing layout so wizard work
+  // doesn't disappear behind committed projects.
+  const { data: wizardDraftRow } = await supabase
+    .from("campaign_drafts")
+    .select("draft_data, step, updated_at")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  const wizardDraft = wizardDraftRow
+    ? {
+        title: extractDraftTitle(wizardDraftRow.draft_data),
+        step: wizardDraftRow.step,
+        updated_at: wizardDraftRow.updated_at,
+      }
+    : null;
+
   let recentPledges: PledgeWithBacker[] = [];
   if (activeProject) {
     const { data: pledges } = await supabase
@@ -287,13 +309,37 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
         </div>
       )}
 
+      {/* Wizard draft banner — shown above the rest of the approved-creator
+          layout whenever they have other projects in flight. Mirrors the
+          "always surface wizard work" intent: full DraftContinuationCard
+          when projects.length === 0, slim banner otherwise. */}
+      {creatorStatus === "approved" && typedProjects.length > 0 && wizardDraft && (
+        <WizardDraftBanner draft={wizardDraft} />
+      )}
+
       {/* ── Approved: show campaigns ── */}
       {creatorStatus === "approved" && (
         typedProjects.length === 0 ? (
-          <CreatorOnboardingStepper singpassVerified={singpassVerified} />
+          // No projects yet. If the wizard has in-progress work, surface
+          // the draft-continuation card pointing back to /projects/create
+          // (which auto-restores from campaign_drafts). Otherwise show the
+          // 4-step onboarding stepper.
+          wizardDraft ? (
+            <DraftContinuationCard
+              source="campaign-draft"
+              draft={{
+                title: wizardDraft.title,
+                step: wizardDraft.step,
+                updated_at: wizardDraft.updated_at,
+              }}
+            />
+          ) : (
+            <CreatorOnboardingStepper singpassVerified={singpassVerified} />
+          )
         ) : onlyProjectIsDraft && activeProject ? (
           <div className="flex flex-col gap-8">
             <DraftContinuationCard
+              source="project"
               project={{
                 id: activeProject.id,
                 title: activeProject.title,

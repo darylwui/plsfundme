@@ -4,18 +4,38 @@ import { Button } from "@/components/ui/button";
 import { DeleteDraftButton } from "@/components/dashboard/DeleteDraftButton";
 import { formatRelativeTime } from "@/lib/utils/dates";
 
-interface DraftContinuationCardProps {
-  project: {
-    id: string;
-    title: string;
-    slug: string;
-    updated_at: string;
-  };
-}
+type DraftContinuationCardProps =
+  | {
+      source: "project";
+      project: {
+        id: string;
+        title: string;
+        slug: string;
+        updated_at: string;
+      };
+    }
+  | {
+      source: "campaign-draft";
+      draft: {
+        title: string;
+        updated_at: string;
+        step: number;
+      };
+    };
 
-export function DraftContinuationCard({ project }: DraftContinuationCardProps) {
-  const title = project.title?.trim() ? project.title : "Untitled draft";
-  const lastSaved = formatRelativeTime(project.updated_at);
+export function DraftContinuationCard(props: DraftContinuationCardProps) {
+  const rawTitle = props.source === "project" ? props.project.title : props.draft.title;
+  const title = rawTitle?.trim() ? rawTitle : "Untitled draft";
+
+  const lastSaved = formatRelativeTime(
+    props.source === "project" ? props.project.updated_at : props.draft.updated_at,
+  );
+
+  const continueHref =
+    props.source === "project" ? `/projects/${props.project.slug}/edit` : `/projects/create`;
+
+  // Step indicator only meaningful for the in-progress wizard source.
+  const stepHint = props.source === "campaign-draft" ? `Step ${props.draft.step} of 5` : null;
 
   return (
     <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] overflow-hidden">
@@ -35,6 +55,12 @@ export function DraftContinuationCard({ project }: DraftContinuationCardProps) {
           {lastSaved && (
             <span className="text-xs text-[var(--color-ink-subtle)]">Last saved {lastSaved}</span>
           )}
+          {stepHint && (
+            <>
+              <span className="text-xs text-[var(--color-ink-subtle)]" aria-hidden="true">·</span>
+              <span className="text-xs text-[var(--color-ink-subtle)]">{stepHint}</span>
+            </>
+          )}
         </div>
 
         <h2 className="text-xl font-black text-[var(--color-ink)] mb-2">{title}</h2>
@@ -44,13 +70,17 @@ export function DraftContinuationCard({ project }: DraftContinuationCardProps) {
         </p>
 
         <div className="flex items-center gap-4 flex-wrap">
-          <Link href={`/projects/${project.slug}/edit`}>
+          <Link href={continueHref}>
             <Button variant="primary">
               <Pencil className="w-4 h-4" />
               Continue editing
             </Button>
           </Link>
-          <DeleteDraftButton projectId={project.id} />
+          {props.source === "project" ? (
+            <DeleteDraftButton source="project" projectId={props.project.id} />
+          ) : (
+            <DeleteDraftButton source="campaign-draft" />
+          )}
         </div>
       </div>
     </div>

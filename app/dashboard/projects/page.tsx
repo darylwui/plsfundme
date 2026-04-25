@@ -4,10 +4,13 @@ import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ShareButtons } from "@/components/sharing/ShareButtons";
+import { DraftContinuationCard } from "@/components/dashboard/DraftContinuationCard";
+import { WizardDraftBanner } from "@/components/dashboard/WizardDraftBanner";
 import { formatDate, daysRemaining } from "@/lib/utils/dates";
 import { formatSgd, fundingPercent } from "@/lib/utils/currency";
 import { REJECTION_REASONS } from "@/types/admin";
 import { getProjectStatusLabel, getProjectStatusVariant } from "@/lib/utils/project-status";
+import { extractDraftTitle } from "@/lib/dashboard/wizard-draft";
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://getthatbread.sg";
 
@@ -28,6 +31,7 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
     .from("projects")
     .select("id, title, slug, status, rejection_reason, rejection_reason_code, funding_goal_sgd, amount_pledged_sgd, backer_count, deadline, created_at, cover_image_url")
     .eq("creator_id", user.id)
+    .is("deleted_at", null)
     .order("created_at", { ascending: false }) as { data: any[] | null };
 
   // Only show "New campaign" button when the user is actually able to create.
@@ -37,6 +41,23 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
     .eq("id", user.id)
     .single();
   const canCreate = creatorProfile?.status === "approved";
+
+  // Surface in-progress wizard work in the empty state. Mirrors /dashboard's
+  // logic: wizard draft only shown when no projects exist (projects.status='draft'
+  // takes priority when both sources have content).
+  const { data: wizardDraftRow } = await supabase
+    .from("campaign_drafts")
+    .select("draft_data, step, updated_at")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  const wizardDraft = wizardDraftRow
+    ? {
+        title: extractDraftTitle(wizardDraftRow.draft_data),
+        step: wizardDraftRow.step,
+        updated_at: wizardDraftRow.updated_at,
+      }
+    : null;
 
   return (
     <div className="flex flex-col gap-6">
@@ -106,25 +127,43 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
         )}
       </div>
 
+      {/* Wizard draft banner above the project list — surfaces in-progress
+          wizard work when the creator already has other projects so it
+          doesn't disappear behind committed campaigns. */}
+      {projects && projects.length > 0 && wizardDraft && (
+        <WizardDraftBanner draft={wizardDraft} />
+      )}
+
       {!projects || projects.length === 0 ? (
-        <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border-2 border-dashed border-[var(--color-border)] p-16 flex flex-col items-center text-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-[var(--color-brand-crust)]/10 flex items-center justify-center">
-            <Rocket className="w-8 h-8 text-[var(--color-brand-crust)]" />
+        wizardDraft ? (
+          <DraftContinuationCard
+            source="campaign-draft"
+            draft={{
+              title: wizardDraft.title,
+              step: wizardDraft.step,
+              updated_at: wizardDraft.updated_at,
+            }}
+          />
+        ) : (
+          <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border-2 border-dashed border-[var(--color-border)] p-16 flex flex-col items-center text-center gap-4">
+            <div className="w-16 h-16 rounded-full bg-[var(--color-brand-crust)]/10 flex items-center justify-center">
+              <Rocket className="w-8 h-8 text-[var(--color-brand-crust)]" />
+            </div>
+            <div>
+              <h2 className="text-xl font-black text-[var(--color-ink)]">No projects yet</h2>
+              <p className="text-sm text-[var(--color-ink-muted)] mt-1 max-w-sm">
+                Ready to raise funds for your idea? Create your first campaign in minutes.
+              </p>
+            </div>
+            <Link href="/projects/create">
+              <Button size="lg">
+                <PlusCircle className="w-4 h-4" />
+                Start your first campaign
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+            </Link>
           </div>
-          <div>
-            <h2 className="text-xl font-black text-[var(--color-ink)]">No projects yet</h2>
-            <p className="text-sm text-[var(--color-ink-muted)] mt-1 max-w-sm">
-              Ready to raise funds for your idea? Create your first campaign in minutes.
-            </p>
-          </div>
-          <Link href="/projects/create">
-            <Button size="lg">
-              <PlusCircle className="w-4 h-4" />
-              Start your first campaign
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-          </Link>
-        </div>
+        )
       ) : (
         <div className="flex flex-col gap-4">
           {projects.map((project) => {
