@@ -3,6 +3,7 @@ import { LegalTabs, type LegalTabId } from "@/components/legal/LegalTabs";
 import { TermsContent } from "@/components/legal/TermsContent";
 import { PrivacyContent } from "@/components/legal/PrivacyContent";
 import { RefundContent } from "@/components/legal/RefundContent";
+import { BackToTop } from "@/components/ui/back-to-top";
 
 const META: Record<LegalTabId, { title: string; description: string }> = {
   terms: {
@@ -46,6 +47,10 @@ export default async function TermsPage({ searchParams }: TermsPageProps) {
         <LegalTabs activeTab={activeTab}>
           {content[activeTab]}
         </LegalTabs>
+
+        <div className="mt-10 flex justify-center">
+          <BackToTop />
+        </div>
       </div>
     </div>
   );
