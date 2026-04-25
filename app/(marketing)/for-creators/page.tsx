@@ -1,12 +1,14 @@
 import Link from "next/link";
 import {
   ArrowRight,
+  BookOpen,
   CheckCircle2,
   DollarSign,
   HelpCircle,
   Rocket,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { BackToTop } from "@/components/ui/back-to-top";
 import { CreatorTimelineScrub } from "@/components/marketing/CreatorTimelineScrubDynamic";
 import { CreatorReassurance } from "@/components/marketing/CreatorReassurance";
 import { ScrollReveal } from "@/components/marketing/ScrollReveal";
@@ -48,11 +50,17 @@ export default function ForCreatorsPage() {
             Singapore-first, milestone-based funding, and you only pay a fee if
             you hit your goal.
           </p>
-          <div className="mt-8">
+          <div className="mt-8 flex flex-wrap items-center gap-3">
             <Link href="/projects/create">
               <Button size="lg" variant="primary">
                 Start your campaign
                 <ArrowRight className="w-4 h-4" />
+              </Button>
+            </Link>
+            <Link href="/for-creators/launch-guide">
+              <Button size="lg" variant="secondary">
+                <BookOpen className="w-4 h-4" />
+                Get the launch checklist
               </Button>
             </Link>
           </div>
@@ -177,23 +185,27 @@ export default function ForCreatorsPage() {
             <p className="text-lg text-[var(--color-ink-muted)] max-w-md mx-auto mb-10 leading-relaxed">
               Start for free. No upfront costs, no risk to your backers.
             </p>
-            <Link href="/projects/create">
-              <Button size="lg" variant="primary">
-                Start your campaign
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-            </Link>
-            <div className="mt-4">
-              <Link
-                href="/for-creators/launch-guide"
-                className="inline-flex items-center gap-1 text-sm font-semibold text-[var(--color-brand-crust)] dark:text-[var(--color-brand-golden)] hover:underline"
-              >
-                Get the launch checklist <ArrowRight className="w-3.5 h-3.5" />
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <Link href="/projects/create">
+                <Button size="lg" variant="primary">
+                  Start your campaign
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </Link>
+              <Link href="/for-creators/launch-guide">
+                <Button size="lg" variant="secondary">
+                  <BookOpen className="w-4 h-4" />
+                  Get the launch checklist
+                </Button>
               </Link>
             </div>
           </div>
         </section>
       </ScrollReveal>
+
+      <div className="flex justify-center py-10 border-t border-[var(--color-border)] bg-[var(--color-surface)]">
+        <BackToTop />
+      </div>
     </div>
   );
 }

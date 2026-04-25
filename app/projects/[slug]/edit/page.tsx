@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
-import Link from "next/link";
-import { ArrowLeft, XCircle } from "lucide-react";
+import { XCircle } from "lucide-react";
+import { BackLink } from "@/components/ui/back-link";
 import { createClient } from "@/lib/supabase/server";
 import { EditProjectForm } from "@/components/project/EditProjectForm";
 import { ResubmitButton } from "@/components/project/ResubmitButton";
@@ -87,13 +87,9 @@ export default async function EditProjectPage({ params }: EditProjectPageProps) 
     <div className="min-h-screen bg-[var(--color-surface-raised)]">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Back nav */}
-        <Link
-          href={`/projects/${slug}`}
-          className="inline-flex items-center gap-1.5 text-sm text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors mb-6"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to project
-        </Link>
+        <div className="mb-6">
+          <BackLink href={`/projects/${slug}`}>Back to project</BackLink>
+        </div>
 
         {/* Rejection banner */}
         {isRejected && (
