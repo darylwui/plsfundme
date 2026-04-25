@@ -111,10 +111,7 @@ function DatesLine({ milestone }: { milestone: ResolvedMilestone }) {
   if (state === "approved") {
     const date = approved_at ? formatDate(approved_at) : formatDate(target_date);
     if (typeof escrow_released_sgd === "number") {
-      const amount = formatSgd(escrow_released_sgd);
-      // Ensure the S$ prefix is always present (some ICU builds drop it)
-      const amountDisplay = amount.startsWith("S$") ? amount : `S$${amount.replace(/^\$/, "")}`;
-      return <>Approved {date} · {amountDisplay} released</>;
+      return <>Approved {date} · {formatSgd(escrow_released_sgd)} released</>;
     }
     return <>Approved {date}</>;
   }

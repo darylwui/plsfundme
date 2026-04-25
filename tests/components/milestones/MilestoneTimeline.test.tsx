@@ -47,7 +47,8 @@ describe('MilestoneTimeline', () => {
   it('shows "Approved" pill and escrow amount for approved milestones', () => {
     render(<MilestoneTimeline milestones={baseMilestones} />);
     expect(screen.getByText('Approved')).toBeTruthy();
-    expect(screen.getByText(/S\$4,?000 released/)).toBeTruthy();
+    // Match both jsdom's "$4,000" and real-browser "S$4,000" (Node ICU vs browser ICU)
+    expect(screen.getByText(/\$4,?000 released/)).toBeTruthy();
   });
 
   it('shows "Under review" pill and submitted date for under_review milestones', () => {
