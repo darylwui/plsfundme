@@ -477,6 +477,34 @@ export async function sendMilestoneApprovedToBackerEmail(args: MilestoneApproved
   });
 }
 
+interface MilestoneApprovedCreatorArgs {
+  creatorEmail: string;
+  creatorName: string;
+  projectTitle: string;
+  projectSlug: string;
+  milestoneNumber: 1 | 2 | 3;
+  escrowReleasedSgd: number;
+}
+
+export async function sendMilestoneApprovedToCreatorEmail(args: MilestoneApprovedCreatorArgs) {
+  const safeTitle = escapeHtml(args.projectTitle);
+  const safeName = escapeHtml(args.creatorName);
+
+  return sendEmail({
+    from: FROM,
+    to: args.creatorEmail,
+    subject: `Milestone ${args.milestoneNumber} approved — ${args.projectTitle}`,
+    html: `
+      <h2>Hi ${safeName},</h2>
+      <p>Milestone ${args.milestoneNumber} on <strong>${safeTitle}</strong> has been approved. <strong>${formatSgd(args.escrowReleasedSgd)}</strong> has been released from escrow to your account.</p>
+      <p>Backers have been notified. Keep up the good work.</p>
+      <a href="${appUrl}/dashboard" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
+        Open dashboard
+      </a>
+    `,
+  });
+}
+
 export async function sendPledgeRefundedEmail(args: PledgeRefundedArgs) {
   return sendEmail({
     from: FROM,

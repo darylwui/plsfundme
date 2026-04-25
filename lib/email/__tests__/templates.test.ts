@@ -115,3 +115,39 @@ describe('sendMilestoneApprovedToBackerEmail', () => {
     expect(payload.html).not.toContain('<b>x</b>');
   });
 });
+
+import { sendMilestoneApprovedToCreatorEmail } from '@/lib/email/templates';
+
+describe('sendMilestoneApprovedToCreatorEmail', () => {
+  beforeEach(() => { mockSend.mockClear(); });
+
+  it('sends short confirmation with milestone number + amount', async () => {
+    await sendMilestoneApprovedToCreatorEmail({
+      creatorEmail: 'creator@example.com',
+      creatorName: 'Jamie',
+      projectTitle: 'Sourdough Starter Kit',
+      projectSlug: 'sourdough-starter-kit',
+      milestoneNumber: 2,
+      escrowReleasedSgd: 4000,
+    });
+
+    const payload = mockSend.mock.calls[0][0];
+    expect(payload.to).toBe('creator@example.com');
+    expect(payload.subject).toContain('Milestone 2');
+    expect(payload.html).toContain('Jamie');
+    expect(payload.html).toMatch(/\$4,?000/);
+    expect(payload.html).toContain('/dashboard');
+  });
+
+  it('includes Reply-To', async () => {
+    await sendMilestoneApprovedToCreatorEmail({
+      creatorEmail: 'creator@example.com',
+      creatorName: 'Jamie',
+      projectTitle: 'Test',
+      projectSlug: 'test',
+      milestoneNumber: 1,
+      escrowReleasedSgd: 4000,
+    });
+    expect(mockSend.mock.calls[0][0].replyTo).toBe('hello@getthatbread.sg');
+  });
+});
