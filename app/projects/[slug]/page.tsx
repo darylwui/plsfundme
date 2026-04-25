@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Pencil, Clock, CalendarDays, Building2, Globe, Link2 } from "lucide-react";
 import { ShareButtons } from "@/components/sharing/ShareButtons";
 import { BackLink } from "@/components/ui/back-link";
+import { MilestoneTimeline } from "@/components/milestones/MilestoneTimeline";
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://getthatbread.sg";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
@@ -18,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { daysRemaining, formatDate } from "@/lib/utils/dates";
 import { toEmbedUrl } from "@/lib/utils/video-embed";
 import { processCampaignHtml } from "@/lib/utils/campaignHtml";
+import { resolveMilestonesForBacker } from "@/lib/milestones/backer-view";
 import type { ProjectWithRelations } from "@/types/project";
 import type { Metadata } from "next";
 
@@ -89,7 +91,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   const isCreator = user?.id === project.creator.id;
 
   // Parallel fetches
-  const [{ data: updatesRaw }, { data: feedbackRaw }, backerCheck] = await Promise.all([
+  const [{ data: updatesRaw }, { data: feedbackRaw }, backerCheck, milestoneView] = await Promise.all([
     supabase
       .from("project_updates")
       .select("*")
@@ -115,6 +117,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           // active pledge on this project?".
           .not("status", "in", "(failed,released,refunded)")
       : Promise.resolve({ count: 0 }),
+    resolveMilestonesForBacker(supabase, project.id),
   ]);
 
   const service = createServiceClient();
@@ -389,6 +392,14 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               </section>
               <FundingWidget project={project} />
             </div>
+
+            {/* ── Milestones ── */}
+            {milestoneView.milestones.length > 0 && (
+              <MilestoneTimeline
+                milestones={milestoneView.milestones}
+                hasOpenDispute={milestoneView.hasOpenDispute}
+              />
+            )}
 
             {/* ── Anchored sections (nav + Campaign, Rewards, FAQ, Updates, Comments) ── */}
             <ProjectPageSections
