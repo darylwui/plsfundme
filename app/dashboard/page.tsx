@@ -11,28 +11,9 @@ import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils/dates";
 import { formatSgd } from "@/lib/utils/currency";
 import { getProjectStatusLabel, getProjectStatusVariant } from "@/lib/utils/project-status";
+import { extractDraftTitle } from "@/lib/dashboard/wizard-draft";
 import type { ProjectWithRelations } from "@/types/project";
 import type { PledgeWithBacker } from "@/types/pledge";
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-/**
- * Pull `title` out of the wizard's `draft_data` JSON blob.
- * The wizard auto-saves the entire ProjectDraft object; we only need the title
- * for the dashboard's draft-continuation card. Returns "" for any malformed
- * shape — the card has its own "Untitled draft" fallback.
- */
-function extractDraftTitle(draftData: unknown): string {
-  if (
-    draftData &&
-    typeof draftData === "object" &&
-    "title" in draftData &&
-    typeof (draftData as { title: unknown }).title === "string"
-  ) {
-    return (draftData as { title: string }).title;
-  }
-  return "";
-}
 
 // ─── Backer Dashboard ────────────────────────────────────────────────────────
 
