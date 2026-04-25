@@ -4,7 +4,6 @@ import { getStripe } from "@/lib/stripe/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import {
   sendCampaignFundedEmail,
-  sendCampaignFailedEmail,
   sendPledgeConfirmedEmail,
   sendPledgeRefundedEmail,
 } from "@/lib/email/templates";
