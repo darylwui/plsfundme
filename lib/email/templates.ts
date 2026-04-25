@@ -80,6 +80,38 @@ export async function sendCampaignFailedEmail(args: CampaignFailedArgs) {
   });
 }
 
+interface CampaignFailedBackerArgs {
+  backerEmail: string;
+  backerName: string;
+  projectTitle: string;
+  deadline: string;
+}
+
+export async function sendCampaignFailedToBackerEmail(args: CampaignFailedBackerArgs) {
+  const safeTitle = escapeHtml(args.projectTitle);
+  const safeName = escapeHtml(args.backerName);
+  const deadlineDisplay = new Date(args.deadline).toLocaleDateString("en-SG", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  return sendEmail({
+    from: FROM,
+    to: args.backerEmail,
+    subject: `${args.projectTitle} didn't reach its goal`,
+    html: `
+      <h2>Hi ${safeName},</h2>
+      <p>The campaign you backed, <strong>${safeTitle}</strong>, ended on ${deadlineDisplay} without reaching its funding goal.</p>
+      <p><strong>Your card was never charged — no action needed.</strong></p>
+      <p>Thanks for backing local creators. Keep an eye out for more campaigns to support.</p>
+      <a href="${appUrl}/explore" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
+        Find more campaigns
+      </a>
+    `,
+  });
+}
+
 export async function sendPledgeConfirmedEmail(args: PledgeConfirmedArgs) {
   return sendEmail({
     from: FROM,
