@@ -1,4 +1,4 @@
-import { getResend, FROM, ADMIN_EMAIL } from "./resend";
+import { getResend, FROM, REPLY_TO, ADMIN_EMAIL } from "./resend";
 import { formatSgd } from "@/lib/utils/currency";
 
 interface CampaignFundedArgs {
@@ -38,7 +38,7 @@ interface PledgeRefundedArgs {
 const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://getthatbread.sg";
 
 function sendEmail(payload: Parameters<ReturnType<typeof getResend>["emails"]["send"]>[0]) {
-  return getResend().emails.send(payload);
+  return getResend().emails.send({ replyTo: REPLY_TO, ...payload });
 }
 
 export async function sendCampaignFundedEmail(args: CampaignFundedArgs) {
