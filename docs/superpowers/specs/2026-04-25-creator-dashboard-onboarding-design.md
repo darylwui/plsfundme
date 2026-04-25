@@ -154,11 +154,8 @@ No other query changes. `creator_profiles.singpass_verified` is already selected
 Inside `CreatorDashboard` (`app/dashboard/page.tsx`), after fetching projects:
 
 ```ts
-const hasActiveCampaign = typedProjects.some(p => p.status === "active");
 const onlyProjectIsDraft =
-  typedProjects.length > 0 &&
-  !hasActiveCampaign &&
-  activeProject?.status === "draft";
+  typedProjects.length > 0 && typedProjects.every((p) => p.status === "draft");
 
 // Within the approved branch:
 if (typedProjects.length === 0) {
@@ -166,7 +163,7 @@ if (typedProjects.length === 0) {
   return <CreatorOnboardingStepper singpassVerified={singpassVerified} />;
 }
 
-if (onlyProjectIsDraft) {
+if (onlyProjectIsDraft && activeProject) {
   // Replaces FundingProgressCard + BackerTable for the activeProject only
   // The "All campaigns" list at the bottom still renders if typedProjects.length > 1
   return <DraftContinuationCard project={activeProject} />;
@@ -174,6 +171,8 @@ if (onlyProjectIsDraft) {
 
 // Otherwise: existing layout (FundingProgressCard, BackerTable, all-campaigns list)
 ```
+
+The flag uses `every(...)` rather than `!hasActiveCampaign && activeProject?.status === "draft"` so that creators with a draft alongside a non-active historical campaign (funded, failed, cancelled, pending_review) correctly fall through to the existing layout where their historical campaign remains visible.
 
 The `SingpassVerificationCard` import and conditional render in the dashboard are removed entirely — Singpass info now lives only inside the stepper (when relevant) and inside the `SingpassVerifiedBadge` (when verified, which is unchanged).
 
