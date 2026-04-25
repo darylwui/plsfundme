@@ -48,7 +48,7 @@ export function DeleteDraftButton({ projectId }: DeleteDraftButtonProps) {
       >
         {label}
       </button>
-      {status === "error" && <p className="text-xs text-red-600 dark:text-red-400">{ERROR_MESSAGE}</p>}
+      {status === "error" && <p role="alert" className="text-xs text-red-600 dark:text-red-400">{ERROR_MESSAGE}</p>}
     </div>
   );
 }
