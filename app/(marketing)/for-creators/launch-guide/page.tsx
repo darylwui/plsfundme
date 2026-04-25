@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { CheckCircle2, Circle, BookOpen, ArrowRight } from "lucide-react";
+import { CheckCircle2, Circle, BookOpen, ArrowRight, ArrowUp } from "lucide-react";
 
 const STORAGE_KEY = "gtb-launch-guide-v1";
 const TITLE_KEY = "gtb-launch-guide-title-v1";
@@ -186,12 +186,23 @@ export default function LaunchGuidePage() {
 
   const doneCount = checked.size;
   const pct = TOTAL_ITEMS > 0 ? Math.round((doneCount / TOTAL_ITEMS) * 100) : 0;
+  const topRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div className="min-h-screen bg-[var(--color-surface-raised)] print:bg-white">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 print:py-8">
+    <div className="min-h-screen bg-[var(--color-surface-raised)]">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        {/* Back link — top left */}
+        <div className="mb-8">
+          <Link
+            href="/for-creators"
+            className="inline-flex items-center gap-1.5 text-sm text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
+          >
+            ← Back to For Creators
+          </Link>
+        </div>
+
         {/* Hero */}
-        <div className="mb-10">
+        <div ref={topRef} className="mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 mb-4 print:hidden">
             <BookOpen className="w-4 h-4 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)]" />
             <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)]">
@@ -202,7 +213,7 @@ export default function LaunchGuidePage() {
             Everything you need before you hit launch
           </h1>
           <p className="mt-3 text-[var(--color-ink-muted)] text-lg leading-relaxed">
-            This is your prep list. Run through it before you open the campaign wizard — the
+            This is your prep list. Run through it before you open the campaign form — the
             more ready you are, the stronger your campaign lands on day one.
           </p>
         </div>
@@ -224,7 +235,7 @@ export default function LaunchGuidePage() {
             </div>
             {doneCount === TOTAL_ITEMS && (
               <p className="mt-3 text-sm font-semibold text-[var(--color-brand-crust)]">
-                You&apos;re ready — head to the campaign wizard and launch. 🎉
+                You&apos;re ready — head to the campaign form and launch. 🎉
               </p>
             )}
           </div>
@@ -322,25 +333,23 @@ export default function LaunchGuidePage() {
           ))}
         </div>
 
-        {/* Download PDF button + print tip */}
-        <div className="mt-8 flex flex-col items-center gap-3 print:hidden">
-          <button
-            type="button"
-            onClick={() => window.print()}
+        {/* Download PDF link */}
+        <div className="mt-8 flex justify-center">
+          <Link
+            href="/for-creators/launch-guide/print"
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] text-sm font-semibold text-[var(--color-ink)] hover:bg-[var(--color-surface-raised)] transition-colors"
           >
             Download PDF checklist
-          </button>
-          <p className="text-xs text-[var(--color-ink-subtle)]">
-            Opens your browser&apos;s print dialog — save as PDF for an interactive checklist you can fill in digitally.
-          </p>
+          </Link>
         </div>
 
         {/* CTA */}
-        <div className="mt-12 rounded-[var(--radius-card)] bg-[var(--color-brand-crust)] px-8 py-8 text-center print:hidden">
+        <div className="mt-12 rounded-[var(--radius-card)] bg-[var(--color-brand-crust)] px-8 py-8 text-center">
           <h3 className="text-xl font-black text-white mb-2">Ready to launch?</h3>
           <p className="text-sm text-white/75 mb-5">
-            Open the campaign wizard — you&apos;ve got everything you need.
+            Open the campaign form — you&apos;ve got everything you need.
           </p>
           <Link
             href="/projects/create"
@@ -350,14 +359,15 @@ export default function LaunchGuidePage() {
           </Link>
         </div>
 
-        {/* Back link */}
-        <div className="mt-8 text-center print:hidden">
-          <Link
-            href="/for-creators"
-            className="text-sm text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
+        {/* Back to top */}
+        <div className="mt-8 text-center">
+          <button
+            type="button"
+            onClick={() => topRef.current?.scrollIntoView({ behavior: "smooth" })}
+            className="inline-flex items-center gap-1.5 text-sm text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
           >
-            ← Back to For Creators
-          </Link>
+            <ArrowUp className="w-3.5 h-3.5" /> Back to top
+          </button>
         </div>
       </div>
     </div>

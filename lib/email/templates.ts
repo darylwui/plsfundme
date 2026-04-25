@@ -226,7 +226,7 @@ export async function sendCreatorApprovedEmail(args: CreatorApprovedArgs) {
       <p style="margin-top:16px;font-size:14px;color:#6b7280;">
         Not sure where to start?
         <a href="${appUrl}/for-creators/launch-guide" style="color:#7C3AED;">Run through our launch checklist</a>
-        — it covers everything you need to prepare before you open the campaign wizard.
+        — it covers everything you need to prepare before you open the campaign form.
       </p>
       <a href="${appUrl}/projects/create" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
         Launch your first campaign
