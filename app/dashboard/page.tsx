@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PlusCircle, ArrowRight, Pencil, Heart, Clock, XCircle, MessageCircleQuestion } from "lucide-react";
+import { PlusCircle, ArrowRight, Pencil, Heart, Clock, XCircle, MessageCircleQuestion, BookOpen } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { FundingProgressCard } from "@/components/dashboard/FundingProgressCard";
 import { BackerTable } from "@/components/dashboard/BackerTable";
@@ -305,6 +305,14 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
             </p>
             <Link href="/projects/create">
               <Button size="lg"><PlusCircle className="w-4 h-4" /> Start a project</Button>
+            </Link>
+            <Link
+              href="/for-creators/launch-guide"
+              className="mt-4 inline-flex items-center gap-2 text-sm text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
+            >
+              <BookOpen className="w-4 h-4 shrink-0" />
+              Not sure where to start? Run through the launch checklist first.
+              <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
         ) : (
