@@ -248,7 +248,7 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
             <p className="text-sm text-[var(--color-ink-muted)] mt-1 leading-relaxed">
               Head to your application thread to see what they asked and reply.
             </p>
-            <Button asChild size="sm" className="inline-block mt-3">
+            <Button asChild size="sm" className="mt-3">
               <Link href="/dashboard/application">Open application</Link>
             </Button>
           </div>

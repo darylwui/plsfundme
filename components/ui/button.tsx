@@ -1,6 +1,7 @@
 "use client";
 
 import { type ButtonHTMLAttributes, forwardRef } from "react";
+import { Slot } from "@radix-ui/react-slot";
 import { Loader2 } from "lucide-react";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -8,6 +9,20 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: "sm" | "md" | "lg";
   loading?: boolean;
   fullWidth?: boolean;
+  /**
+   * When true, the Button delegates rendering to its child element via
+   * Radix Slot — useful for wrapping a `<Link>` so the rendered element
+   * is a real `<a>` (valid HTML, single focus stop, real keyboard target)
+   * while still inheriting Button styles. Slot expects exactly one child.
+   *
+   * Constraints when `asChild` is true:
+   * - `loading` is ignored (Slot can't accept a sibling spinner without
+   *   breaking its single-child rule, and links don't have loading states
+   *   in practice — submit buttons that need it should not use asChild).
+   * - `disabled` has no effect on `<a>` (HTML doesn't allow it). For
+   *   navigation guards, conditionally render the link instead.
+   */
+  asChild?: boolean;
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -17,6 +32,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       size = "md",
       loading = false,
       fullWidth = false,
+      asChild = false,
       disabled,
       className = "",
       children,
@@ -46,11 +62,25 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       lg: "text-base px-6 py-3 h-12",
     };
 
+    const composedClassName = `${base} ${variants[variant]} ${sizes[size]} ${fullWidth ? "w-full" : ""} ${className}`;
+
+    if (asChild) {
+      // Slot delegates to the child element — typically a Next/Link — so
+      // the rendered DOM is a real <a>. We forward className and ref but
+      // skip loading-spinner injection (would break Slot's single-child
+      // rule) and the disabled HTML attribute (no-op on <a>).
+      return (
+        <Slot ref={ref} className={composedClassName} {...props}>
+          {children}
+        </Slot>
+      );
+    }
+
     return (
       <button
         ref={ref}
         disabled={disabled || loading}
-        className={`${base} ${variants[variant]} ${sizes[size]} ${fullWidth ? "w-full" : ""} ${className}`}
+        className={composedClassName}
         {...props}
       >
         {loading && <Loader2 className="w-4 h-4 animate-spin" />}
