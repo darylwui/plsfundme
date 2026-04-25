@@ -15,7 +15,7 @@ const SECTIONS: Section[] = [
   {
     id: "basics",
     title: "Campaign basics",
-    intro: "These are the first fields in the campaign creation wizard.",
+    intro: "The basics backers see first. Get these right and everything else follows.",
     items: [
       {
         id: "title",
@@ -48,7 +48,7 @@ const SECTIONS: Section[] = [
   {
     id: "funding",
     title: "Funding goal & deadline",
-    intro: "You can only reach your goal — you can't raise more than your target.",
+    intro: "Set a goal you can genuinely deliver on. Aim ambitious, but be honest — your backers are counting on you.",
     items: [
       {
         id: "goal",
@@ -65,7 +65,7 @@ const SECTIONS: Section[] = [
   {
     id: "rewards",
     title: "Reward tiers",
-    intro: "You need at least one tier. Think carefully about what each tier costs you to fulfil.",
+    intro: "At least one tier required. Price it by what it costs you to deliver — not just what feels right.",
     items: [
       {
         id: "reward_title",
@@ -103,7 +103,7 @@ const SECTIONS: Section[] = [
     id: "milestones",
     title: "Milestones & payouts",
     intro:
-      "Funds are released in three stages as you hit milestones — not all at once. Plan your deliverables before you launch.",
+      "Your funds unlock in three stages, not all at once. Know what you'll prove at each before you launch.",
     items: [
       {
         id: "m1",
@@ -125,7 +125,7 @@ const SECTIONS: Section[] = [
   {
     id: "submit",
     title: "After you submit",
-    intro: "Once you submit, the campaign goes into admin review before it goes live.",
+    intro: "Almost there. Submit and we'll review your campaign — usually within 2–3 business days.",
     items: [
       {
         id: "review",
@@ -202,9 +202,8 @@ export default function LaunchGuidePage() {
             Everything you need before you hit launch
           </h1>
           <p className="mt-3 text-[var(--color-ink-muted)] text-lg leading-relaxed">
-            Run through this checklist before you open the campaign wizard. The more prepared
-            you are, the faster your review goes — and the stronger your campaign looks to
-            backers from day one.
+            This is your prep list. Run through it before you open the campaign wizard — the
+            more ready you are, the stronger your campaign lands on day one.
           </p>
         </div>
 
