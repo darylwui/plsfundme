@@ -1,8 +1,9 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Pencil, Clock, CalendarDays, Building2, Globe, Link2 } from "lucide-react";
+import { Pencil, Clock, CalendarDays, Building2, Globe, Link2 } from "lucide-react";
 import { ShareButtons } from "@/components/sharing/ShareButtons";
+import { BackLink } from "@/components/ui/back-link";
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://getthatbread.sg";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
@@ -194,13 +195,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
       {/* Back nav */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 flex items-center justify-between">
-        <Link
-          href="/explore"
-          className="inline-flex items-center gap-1.5 text-sm text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to explore
-        </Link>
+        <BackLink href="/explore">Back to explore</BackLink>
         {isCreator && (
           <div className="flex items-center gap-2">
             {project.status === "active" && (

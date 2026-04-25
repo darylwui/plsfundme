@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ShieldCheck, Clock, CreditCard, AlertCircle, Mail } from "lucide-react";
 import { BackerProtectionTimeline } from "@/components/marketing/BackerProtectionTimeline";
+import { BackToTop } from "@/components/ui/back-to-top";
 
 export const metadata: Metadata = {
   title: "Backer protection — get that bread",
@@ -128,6 +129,10 @@ export default function RefundGuaranteePage() {
               </a>
             </p>
           </Section>
+
+          <div className="mt-8 flex justify-center">
+            <BackToTop />
+          </div>
         </div>
       </div>
     </div>

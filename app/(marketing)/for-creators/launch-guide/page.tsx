@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { CheckCircle2, Circle, BookOpen, ArrowRight, ArrowUp } from "lucide-react";
+import { CheckCircle2, Circle, BookOpen, ArrowRight } from "lucide-react";
+import { BackLink } from "@/components/ui/back-link";
+import { BackToTop } from "@/components/ui/back-to-top";
 
 const STORAGE_KEY = "gtb-launch-guide-v1";
 const TITLE_KEY = "gtb-launch-guide-title-v1";
@@ -186,23 +188,17 @@ export default function LaunchGuidePage() {
 
   const doneCount = checked.size;
   const pct = TOTAL_ITEMS > 0 ? Math.round((doneCount / TOTAL_ITEMS) * 100) : 0;
-  const topRef = useRef<HTMLDivElement>(null);
 
   return (
     <div className="min-h-screen bg-[var(--color-surface-raised)]">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Back link — top left */}
         <div className="mb-8">
-          <Link
-            href="/for-creators"
-            className="inline-flex items-center gap-1.5 text-sm text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
-          >
-            ← Back to For Creators
-          </Link>
+          <BackLink href="/for-creators">Back to For Creators</BackLink>
         </div>
 
         {/* Hero */}
-        <div ref={topRef} className="mb-10">
+        <div className="mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 mb-4 print:hidden">
             <BookOpen className="w-4 h-4 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)]" />
             <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)]">
@@ -360,14 +356,8 @@ export default function LaunchGuidePage() {
         </div>
 
         {/* Back to top */}
-        <div className="mt-8 text-center">
-          <button
-            type="button"
-            onClick={() => topRef.current?.scrollIntoView({ behavior: "smooth" })}
-            className="inline-flex items-center gap-1.5 text-sm text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
-          >
-            <ArrowUp className="w-3.5 h-3.5" /> Back to top
-          </button>
+        <div className="mt-8 flex justify-center">
+          <BackToTop />
         </div>
       </div>
     </div>

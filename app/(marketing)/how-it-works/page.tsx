@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Gift, PlayCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { BackToTop } from "@/components/ui/back-to-top";
 import { PledgeTimelineDemo } from "@/components/marketing/PledgeTimelineDemo";
 import { ScrollReveal } from "@/components/marketing/ScrollReveal";
 import { ScrollDownCue } from "@/components/marketing/ScrollDownCueDynamic";
@@ -112,6 +113,10 @@ export default function HowItWorksPage() {
           </div>
         </section>
       </ScrollReveal>
+
+      <div className="flex justify-center py-10 border-t border-[var(--color-border)] bg-[var(--color-surface)]">
+        <BackToTop />
+      </div>
     </div>
   );
 }
