@@ -255,7 +255,7 @@ export default function LaunchGuidePage() {
                           type="button"
                           onClick={() => toggle(item.id)}
                           className="mt-0.5 shrink-0 print:hidden"
-                          aria-label={done ? "Uncheck project title" : "Check project title"}
+                          aria-label={done ? `Uncheck: ${item.label}` : `Check: ${item.label}`}
                         >
                           {done ? (
                             <CheckCircle2 className="w-5 h-5 text-[var(--color-brand-golden)]" />
