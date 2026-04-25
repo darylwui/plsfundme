@@ -19,10 +19,10 @@ export function MilestoneTimeline({ milestones, hasOpenDispute }: MilestoneTimel
 
       {hasOpenDispute && (
         <div
-          role="alert"
+          role="status"
           className="px-5 py-3 bg-red-50 dark:bg-red-950/20 border-b border-red-200 dark:border-red-800 flex items-center gap-2"
         >
-          <AlertTriangle className="w-4 h-4 text-red-700 dark:text-red-400 shrink-0" />
+          <AlertTriangle className="w-4 h-4 text-red-700 dark:text-red-400 shrink-0" aria-hidden="true" />
           <p className="text-sm font-bold text-red-700 dark:text-red-400">
             Open dispute — under investigation
           </p>
@@ -65,14 +65,14 @@ function StateIcon({ state, number }: { state: MilestoneState; number: 1 | 2 | 3
   if (state === "approved") {
     return (
       <div className={`${base} bg-emerald-500 text-white`}>
-        <Check className="w-4 h-4" />
+        <Check className="w-4 h-4" aria-hidden="true" />
       </div>
     );
   }
   if (state === "late") {
     return (
       <div className={`${base} bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300`}>
-        <AlertTriangle className="w-3.5 h-3.5" />
+        <AlertTriangle className="w-3.5 h-3.5" aria-hidden="true" />
       </div>
     );
   }
