@@ -146,7 +146,7 @@ export function Step2_Funding({ draft, onUpdate, onNext, onBack }: Step2Props) {
         <label className="text-sm font-medium text-[var(--color-ink)]">
           Payout mode
         </label>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {(["automatic", "manual"] as const).map((mode) => (
             <button
               key={mode}
@@ -179,7 +179,7 @@ export function Step2_Funding({ draft, onUpdate, onNext, onBack }: Step2Props) {
           Back
         </Button>
         <Button size="lg" onClick={handleNext}>
-          Next: Reward tiers
+          Next: Milestones
         </Button>
       </div>
     </div>

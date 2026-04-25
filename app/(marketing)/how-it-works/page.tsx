@@ -1,10 +1,9 @@
 import Link from "next/link";
-import { ArrowRight, Gift, PlayCircle, Sparkles } from "lucide-react";
+import { ArrowRight, Gift, PlayCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PledgeTimelineDemo } from "@/components/marketing/PledgeTimelineDemo";
 import { ScrollReveal } from "@/components/marketing/ScrollReveal";
 import { ScrollDownCue } from "@/components/marketing/ScrollDownCueDynamic";
-import { WhyBackPillars } from "@/components/marketing/WhyBackPillars";
 import { RewardArchetypes } from "@/components/marketing/RewardArchetypes";
 import { CreatorRedirect } from "@/components/marketing/CreatorRedirect";
 
@@ -36,25 +35,7 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      {/* ── 1. Why back ──────────────────────────────────────── */}
-      <ScrollReveal>
-        <section className="border-b border-[var(--color-border)] bg-[var(--color-surface)]">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-            <div className="max-w-2xl mb-10 md:mb-14">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] text-[11px] uppercase tracking-[0.15em] font-medium mb-4">
-                <Sparkles className="w-3.5 h-3.5" />
-                Why back a campaign
-              </div>
-              <h2 className="text-3xl md:text-4xl font-black tracking-tight leading-[1.1] text-[var(--color-ink)]">
-                Three reasons pledging here hits different.
-              </h2>
-            </div>
-            <WhyBackPillars />
-          </div>
-        </section>
-      </ScrollReveal>
-
-      {/* ── 2. Try it yourself ───────────────────────────────── */}
+      {/* ── 1. Try it yourself ───────────────────────────────── */}
       <ScrollReveal>
         <section className="border-b border-[var(--color-border)] bg-[var(--color-surface-raised)]">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">

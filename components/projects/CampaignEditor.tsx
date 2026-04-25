@@ -2,7 +2,6 @@
 
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import { useEffect, useCallback } from "react";
 import { CAMPAIGN_PROSE_CLASSES } from "@/lib/utils/campaignHtml";
@@ -68,15 +67,22 @@ export function CampaignEditor({
   error,
 }: CampaignEditorProps) {
   const editor = useEditor({
+    // Required on React 19 + SSR — otherwise Tiptap throws during the initial
+    // server render and the error boundary takes over. See:
+    // https://tiptap.dev/docs/editor/getting-started/install/nextjs
+    immediatelyRender: false,
     extensions: [
       StarterKit.configure({
         // Constrained block types only — no arbitrary HTML
         codeBlock: false,
         code: false,
-      }),
-      Link.configure({
-        openOnClick: false,
-        HTMLAttributes: { rel: "noopener noreferrer nofollow", target: "_blank" },
+        // Link ships with StarterKit in v3 — configure it here instead of
+        // registering a second Link extension (which triggers a duplicate-name
+        // warning and breaks hydration).
+        link: {
+          openOnClick: false,
+          HTMLAttributes: { rel: "noopener noreferrer nofollow", target: "_blank" },
+        },
       }),
       Placeholder.configure({ placeholder }),
     ],

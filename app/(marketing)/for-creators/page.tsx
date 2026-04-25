@@ -70,7 +70,7 @@ export default function ForCreatorsPage() {
                 How a campaign works
               </div>
               <h2 className="text-3xl md:text-4xl font-black tracking-tight leading-[1.1] text-[var(--color-ink)]">
-                From first draft to funded.
+                From idea to milestones.
               </h2>
               <p className="mt-4 text-[var(--color-ink-muted)] leading-relaxed">
                 Scroll through the timeline to see each stage of a campaign —

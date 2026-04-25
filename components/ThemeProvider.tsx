@@ -4,31 +4,42 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 type Theme = "light" | "dark";
 
-const ThemeContext = createContext<{ theme: Theme; toggle: () => void }>({
+const ThemeContext = createContext<{ theme: Theme; mounted: boolean; toggle: () => void }>({
   theme: "light",
+  mounted: false,
   toggle: () => {},
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  // Initialise from localStorage first (explicit user preference), then fall
-  // back to the DOM class set by the inline <script> in the root layout
-  // (which reflects system preference on first visit).
-  // Reading localStorage directly prevents the class from "disappearing" if
-  // React reconciliation removes it before this initialiser runs.
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window === "undefined") return "light";
+  // Start with "light" on both server and first client render to match SSR
+  // output exactly. The real theme is resolved in the mount effect below —
+  // consumers that render theme-dependent UI (e.g. icon swaps) should gate
+  // on `mounted` to avoid hydration mismatches.
+  const [theme, setTheme] = useState<Theme>("light");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    let resolved: Theme = "light";
     try {
       const stored = localStorage.getItem("theme");
-      if (stored === "dark" || stored === "light") return stored;
-    } catch {}
-    return document.documentElement.classList.contains("dark") ? "dark" : "light";
-  });
+      if (stored === "dark" || stored === "light") {
+        resolved = stored;
+      } else {
+        resolved = document.documentElement.classList.contains("dark") ? "dark" : "light";
+      }
+    } catch {
+      resolved = document.documentElement.classList.contains("dark") ? "dark" : "light";
+    }
+    setTheme(resolved);
+    document.documentElement.classList.toggle("dark", resolved === "dark");
+    setMounted(true);
+  }, []);
 
-  // Re-sync the DOM class after every render — belt-and-suspenders guard
-  // against React hydration stripping the class the inline script set.
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", theme === "dark");
-  }, [theme]);
+    if (mounted) {
+      document.documentElement.classList.toggle("dark", theme === "dark");
+    }
+  }, [theme, mounted]);
 
   function toggle() {
     setTheme((t) => {
@@ -40,7 +51,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <ThemeContext.Provider value={{ theme, toggle }}>
+    <ThemeContext.Provider value={{ theme, mounted, toggle }}>
       {children}
     </ThemeContext.Provider>
   );

@@ -3,7 +3,7 @@ import { sanitizeRichHtml } from "./sanitize";
 /**
  * Single source of truth for how campaign-description HTML renders. Used by:
  * - the public project page ([slug]/page.tsx → ProjectPageSections)
- * - the pre-submit preview (Step4_Review)
+ * - the pre-submit preview (Step5_Review)
  * - the TipTap editor itself (CampaignEditor)
  *
  * Uses Tailwind arbitrary-descendant selectors (`[&_h2]:...`) rather than the

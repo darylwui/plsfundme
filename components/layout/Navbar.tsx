@@ -38,7 +38,7 @@ const NAV_ITEMS: NavItem[] = [
 export function Navbar() {
   const { user, loading } = useAuth();
   const { currency, setCurrency } = useCurrency();
-  const { theme, toggle: toggleTheme } = useTheme();
+  const { theme, mounted: themeMounted, toggle: toggleTheme } = useTheme();
   const pathname = usePathname();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -135,13 +135,20 @@ export function Navbar() {
               ))}
             </div>
 
-            {/* Theme toggle */}
+            {/* Theme toggle — icon is only rendered after ThemeProvider has read
+                localStorage, so the SSR output matches the first client paint and
+                we avoid a hydration mismatch on the icon swap. */}
             <button
               onClick={toggleTheme}
               className="p-2 rounded-lg text-[var(--color-ink-invert-muted)] hover:bg-[var(--color-surface-invert-raised)] transition-colors duration-[160ms]"
               aria-label="Toggle dark mode"
+              suppressHydrationWarning
             >
-              {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              <span className="block w-4 h-4" suppressHydrationWarning>
+                {themeMounted ? (
+                  theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />
+                ) : null}
+              </span>
             </button>
 
             <div className="min-w-[168px] flex items-center justify-end gap-2">

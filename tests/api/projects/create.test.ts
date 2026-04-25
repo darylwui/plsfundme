@@ -39,6 +39,23 @@ const VALID_BODY = {
   payout_mode: "automatic",
   start_date: FUTURE_START,
   deadline: FUTURE_DEADLINE,
+  milestones: [
+    {
+      title: "Prototype finalised",
+      description: "Prototype finalised and manufacturing partner confirmed with signed contract.",
+      target_date: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+    {
+      title: "Production complete",
+      description: "All units manufactured, QA-checked, and ready to ship from the warehouse.",
+      target_date: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+    {
+      title: "Rewards delivered",
+      description: "All rewards shipped to backers and confirmed delivered with tracking proof.",
+      target_date: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+  ],
   rewards: [
     {
       title: "Reward 1",

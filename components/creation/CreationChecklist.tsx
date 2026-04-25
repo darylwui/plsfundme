@@ -71,6 +71,19 @@ export function CreationChecklist({ draft, rewards }: CreationChecklistProps) {
       isRequired: true,
     },
     {
+      id: "milestones",
+      label: "Milestones",
+      description: "3 milestones with titles, proof details & target dates",
+      isComplete: draft.milestones.every(
+        (m) =>
+          m.title.trim().length >= 5 &&
+          m.description.trim().length >= 20 &&
+          !!m.target_date &&
+          new Date(m.target_date) > new Date(),
+      ),
+      isRequired: true,
+    },
+    {
       id: "rewards",
       label: "Rewards",
       description: "At least 1 reward tier",
@@ -144,7 +157,7 @@ export function CreationChecklist({ draft, rewards }: CreationChecklistProps) {
       {completionPercent === 100 && (
         <div className="mt-2 p-3 rounded-[var(--radius-card)] bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700">
           <p className="text-xs font-bold text-emerald-700 dark:text-emerald-300">
-            ✨ You're ready to submit! Our team will review within 1–2 business days.
+            ✨ You&apos;re ready to submit! Our team will review within 1–2 business days.
           </p>
         </div>
       )}
