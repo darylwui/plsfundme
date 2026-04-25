@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatSgd, fundingPercent } from "@/lib/utils/currency";
 import { formatDate, daysRemaining } from "@/lib/utils/dates";
+import { MilestoneSummary } from "@/components/milestones/MilestoneSummary";
+import { resolveMilestonesForBacker, type BackerMilestoneView } from "@/lib/milestones/backer-view";
 
 export const metadata = { title: "My pledges" };
 
@@ -33,6 +35,17 @@ export default async function MyPledgesPage() {
   };
 
   const pledges = (pledgesRaw ?? []) as unknown as PledgeRow[];
+
+  const fundedPledges = pledges.filter((p) => p.project?.status === "funded");
+  const milestoneViewByProjectId = new Map<string, BackerMilestoneView>();
+  await Promise.all(
+    fundedPledges.map(async (p) => {
+      if (!p.project) return;
+      const view = await resolveMilestonesForBacker(supabase, p.project.id);
+      milestoneViewByProjectId.set(p.project.id, view);
+    }),
+  );
+
   const activePledges = pledges.filter((p) => !["cancelled", "failed", "released", "refunded"].includes(p.status));
   const pastPledges = pledges.filter((p) => ["cancelled", "failed", "released", "refunded"].includes(p.status));
   const totalActive = activePledges.reduce((s, p) => s + p.amount_sgd, 0);
@@ -54,7 +67,13 @@ export default async function MyPledgesPage() {
     draft: "Draft", cancelled: "Cancelled",
   };
 
-  function ActivePledgeCard({ pledge }: { pledge: PledgeRow }) {
+  function ActivePledgeCard({
+    pledge,
+    milestoneViewByProjectId,
+  }: {
+    pledge: PledgeRow;
+    milestoneViewByProjectId: Map<string, BackerMilestoneView>;
+  }) {
     const project = pledge.project;
     if (!project) return null;
     const percent = fundingPercent(project.amount_pledged_sgd, project.funding_goal_sgd);
@@ -98,30 +117,41 @@ export default async function MyPledgesPage() {
           </Link>
         </div>
 
-        {/* Live progress strip */}
-        <div className="border-t border-[var(--color-border)] bg-[var(--color-surface-raised)] px-5 py-3 flex flex-col gap-2">
-          <div className="h-1.5 rounded-full bg-[var(--color-surface-overlay)] overflow-hidden">
-            <div
-              className={`h-full rounded-full transition-all duration-500 ${barColor}`}
-              style={{ width: `${Math.min(percent, 100)}%` }}
-            />
-          </div>
-          <div className="flex items-center justify-between text-xs text-[var(--color-ink-muted)]">
-            <span>
-              <span className="font-mono font-bold text-[var(--color-ink)]">{formatSgd(project.amount_pledged_sgd)}</span>
-              {" "}raised of <span className="font-mono">{formatSgd(project.funding_goal_sgd)}</span>
-            </span>
-            <div className="flex items-center gap-3">
-              <span><span className="font-mono font-bold text-[var(--color-ink)]">{percent}%</span> funded</span>
-              <span><span className="font-mono font-bold text-[var(--color-ink)]">{project.backer_count}</span> backers</span>
-              {isActive && (
-                <span className={`font-mono font-bold ${days <= 3 ? "text-[var(--color-brand-danger)]" : "text-[var(--color-ink)]"}`}>
-                  {days}d left
+        {/* Progress strip: funding bar while funding; milestone summary once funded */}
+        {(() => {
+          if (project.status === "funded") {
+            const view = milestoneViewByProjectId.get(project.id);
+            if (view && view.milestones.length === 3) {
+              return <MilestoneSummary milestones={view.milestones} hasOpenDispute={view.hasOpenDispute} />;
+            }
+            // Defensive fallback: funded but no milestones defined (legacy data) — keep funding strip
+          }
+          return (
+            <div className="border-t border-[var(--color-border)] bg-[var(--color-surface-raised)] px-5 py-3 flex flex-col gap-2">
+              <div className="h-1.5 rounded-full bg-[var(--color-surface-overlay)] overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all duration-500 ${barColor}`}
+                  style={{ width: `${Math.min(percent, 100)}%` }}
+                />
+              </div>
+              <div className="flex items-center justify-between text-xs text-[var(--color-ink-muted)]">
+                <span>
+                  <span className="font-mono font-bold text-[var(--color-ink)]">{formatSgd(project.amount_pledged_sgd)}</span>
+                  {" "}raised of <span className="font-mono">{formatSgd(project.funding_goal_sgd)}</span>
                 </span>
-              )}
+                <div className="flex items-center gap-3">
+                  <span><span className="font-mono font-bold text-[var(--color-ink)]">{percent}%</span> funded</span>
+                  <span><span className="font-mono font-bold text-[var(--color-ink)]">{project.backer_count}</span> backers</span>
+                  {isActive && (
+                    <span className={`font-mono font-bold ${days <= 3 ? "text-[var(--color-brand-danger)]" : "text-[var(--color-ink)]"}`}>
+                      {days}d left
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          );
+        })()}
       </div>
     );
   }
@@ -201,7 +231,9 @@ export default async function MyPledgesPage() {
           {activePledges.length > 0 && (
             <div className="flex flex-col gap-3">
               <h2 className="font-bold text-[var(--color-ink)]">Active pledges</h2>
-              {activePledges.map((p) => <ActivePledgeCard key={p.id} pledge={p} />)}
+              {activePledges.map((p) => (
+                <ActivePledgeCard key={p.id} pledge={p} milestoneViewByProjectId={milestoneViewByProjectId} />
+              ))}
             </div>
           )}
           {pastPledges.length > 0 && (
