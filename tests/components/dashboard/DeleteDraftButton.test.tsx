@@ -14,13 +14,13 @@ describe('DeleteDraftButton', () => {
   });
 
   it('renders a "Delete draft" button', () => {
-    render(<DeleteDraftButton projectId="proj-1" />);
+    render(<DeleteDraftButton source="project" projectId="proj-1" />);
     expect(screen.getByRole('button', { name: /delete draft/i })).toBeTruthy();
   });
 
   it('shows confirm dialog with the right copy on click', () => {
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
-    render(<DeleteDraftButton projectId="proj-1" />);
+    render(<DeleteDraftButton source="project" projectId="proj-1" />);
 
     fireEvent.click(screen.getByRole('button', { name: /delete draft/i }));
 
@@ -31,20 +31,20 @@ describe('DeleteDraftButton', () => {
     vi.spyOn(window, 'confirm').mockReturnValue(false);
     const fetchSpy = vi.spyOn(global, 'fetch');
 
-    render(<DeleteDraftButton projectId="proj-1" />);
+    render(<DeleteDraftButton source="project" projectId="proj-1" />);
     fireEvent.click(screen.getByRole('button', { name: /delete draft/i }));
 
     expect(fetchSpy).not.toHaveBeenCalled();
     expect(mockRefresh).not.toHaveBeenCalled();
   });
 
-  it('calls POST /api/projects/[id]/delete on confirm', async () => {
+  it('calls POST /api/projects/[id]/delete when source is project', async () => {
     vi.spyOn(window, 'confirm').mockReturnValue(true);
     const fetchSpy = vi
       .spyOn(global, 'fetch')
       .mockResolvedValue(new Response(null, { status: 200 }));
 
-    render(<DeleteDraftButton projectId="proj-1" />);
+    render(<DeleteDraftButton source="project" projectId="proj-1" />);
     fireEvent.click(screen.getByRole('button', { name: /delete draft/i }));
 
     await waitFor(() => {
@@ -52,11 +52,25 @@ describe('DeleteDraftButton', () => {
     });
   });
 
+  it('calls POST /api/campaign-drafts/delete when source is campaign-draft', async () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const fetchSpy = vi
+      .spyOn(global, 'fetch')
+      .mockResolvedValue(new Response(null, { status: 200 }));
+
+    render(<DeleteDraftButton source="campaign-draft" />);
+    fireEvent.click(screen.getByRole('button', { name: /delete draft/i }));
+
+    await waitFor(() => {
+      expect(fetchSpy).toHaveBeenCalledWith('/api/campaign-drafts/delete', { method: 'POST' });
+    });
+  });
+
   it('calls router.refresh() on success', async () => {
     vi.spyOn(window, 'confirm').mockReturnValue(true);
     vi.spyOn(global, 'fetch').mockResolvedValue(new Response(null, { status: 200 }));
 
-    render(<DeleteDraftButton projectId="proj-1" />);
+    render(<DeleteDraftButton source="project" projectId="proj-1" />);
     fireEvent.click(screen.getByRole('button', { name: /delete draft/i }));
 
     await waitFor(() => {
@@ -72,7 +86,7 @@ describe('DeleteDraftButton', () => {
     });
     vi.spyOn(global, 'fetch').mockReturnValue(fetchPromise);
 
-    render(<DeleteDraftButton projectId="proj-1" />);
+    render(<DeleteDraftButton source="project" projectId="proj-1" />);
     fireEvent.click(screen.getByRole('button', { name: /delete draft/i }));
 
     await waitFor(() => {
@@ -86,7 +100,7 @@ describe('DeleteDraftButton', () => {
     vi.spyOn(window, 'confirm').mockReturnValue(true);
     vi.spyOn(global, 'fetch').mockResolvedValue(new Response(null, { status: 500 }));
 
-    render(<DeleteDraftButton projectId="proj-1" />);
+    render(<DeleteDraftButton source="project" projectId="proj-1" />);
     fireEvent.click(screen.getByRole('button', { name: /delete draft/i }));
 
     await waitFor(() => {
@@ -99,7 +113,7 @@ describe('DeleteDraftButton', () => {
     vi.spyOn(window, 'confirm').mockReturnValue(true);
     vi.spyOn(global, 'fetch').mockRejectedValue(new Error('network down'));
 
-    render(<DeleteDraftButton projectId="proj-1" />);
+    render(<DeleteDraftButton source="project" projectId="proj-1" />);
     fireEvent.click(screen.getByRole('button', { name: /delete draft/i }));
 
     await waitFor(() => {

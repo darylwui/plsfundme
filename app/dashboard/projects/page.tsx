@@ -28,6 +28,7 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
     .from("projects")
     .select("id, title, slug, status, rejection_reason, rejection_reason_code, funding_goal_sgd, amount_pledged_sgd, backer_count, deadline, created_at, cover_image_url")
     .eq("creator_id", user.id)
+    .is("deleted_at", null)
     .order("created_at", { ascending: false }) as { data: any[] | null };
 
   // Only show "New campaign" button when the user is actually able to create.
