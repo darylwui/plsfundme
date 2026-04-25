@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { CheckCircle2, Circle, BookOpen, ArrowRight } from "lucide-react";
 
@@ -70,7 +70,7 @@ const SECTIONS: Section[] = [
       {
         id: "reward_title",
         label: "Tier title",
-        spec: "What backers call what they're getting. E.g. \"Early bird\", \"Supporter\", \"Founding member\".",
+        spec: 'What backers call what they\'re getting. E.g. "Early bird", "Supporter", "Founding member".',
       },
       {
         id: "reward_pledge",
@@ -102,7 +102,8 @@ const SECTIONS: Section[] = [
   {
     id: "milestones",
     title: "Milestones & payouts",
-    intro: "Funds are released in three stages as you hit milestones — not all at once. Plan your deliverables before you launch.",
+    intro:
+      "Funds are released in three stages as you hit milestones — not all at once. Plan your deliverables before you launch.",
     items: [
       {
         id: "m1",
@@ -142,24 +143,47 @@ const SECTIONS: Section[] = [
 
 const TOTAL_ITEMS = SECTIONS.reduce((acc, s) => acc + s.items.length, 0);
 
-export default function LaunchGuidePage() {
-  const [checked, setChecked] = useState<Set<string>>(new Set());
-  const [projectTitle, setProjectTitle] = useState(DEFAULT_TITLE);
-  const [mounted, setMounted] = useState(false);
+// useSyncExternalStore subscribe stub — localStorage is not a push source;
+// we only need the client/server snapshot split for hydration safety.
+const noop = () => () => {};
 
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) setChecked(new Set(JSON.parse(stored)));
-      const storedTitle = localStorage.getItem(TITLE_KEY);
-      if (storedTitle) setProjectTitle(storedTitle);
-    } catch {}
-    setMounted(true);
-  }, []);
+function getCheckedSnapshot(): Set<string> {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored ? new Set(JSON.parse(stored) as string[]) : new Set();
+  } catch {
+    return new Set();
+  }
+}
+const emptySet = new Set<string>();
+
+function getTitleSnapshot(): string {
+  try {
+    return localStorage.getItem(TITLE_KEY) ?? DEFAULT_TITLE;
+  } catch {
+    return DEFAULT_TITLE;
+  }
+}
+
+// Returns true on client, false on server — used instead of a mounted effect.
+function getIsClient() {
+  return true;
+}
+
+export default function LaunchGuidePage() {
+  // useSyncExternalStore gives the server snapshot during SSR and the client
+  // snapshot after hydration — no setState-in-effect needed.
+  const mounted = useSyncExternalStore(noop, getIsClient, () => false);
+  const storedChecked = useSyncExternalStore(noop, getCheckedSnapshot, () => emptySet);
+  const storedTitle = useSyncExternalStore(noop, getTitleSnapshot, () => DEFAULT_TITLE);
+  const [checked, setChecked] = useState<Set<string>>(() => storedChecked);
+  const [projectTitle, setProjectTitle] = useState<string>(() => storedTitle);
 
   function handleTitleChange(val: string) {
     setProjectTitle(val);
-    try { localStorage.setItem(TITLE_KEY, val); } catch {}
+    try {
+      localStorage.setItem(TITLE_KEY, val);
+    } catch {}
   }
 
   function toggle(id: string) {
@@ -180,7 +204,6 @@ export default function LaunchGuidePage() {
   return (
     <div className="min-h-screen bg-[var(--color-surface-raised)] print:bg-white">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 print:py-8">
-
         {/* Hero */}
         <div className="mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 mb-4 print:hidden">
@@ -193,11 +216,13 @@ export default function LaunchGuidePage() {
             Everything you need before you hit launch
           </h1>
           <p className="mt-3 text-[var(--color-ink-muted)] text-lg leading-relaxed">
-            Run through this checklist before you open the campaign wizard. The more prepared you are, the faster your review goes — and the stronger your campaign looks to backers from day one.
+            Run through this checklist before you open the campaign wizard. The more prepared
+            you are, the faster your review goes — and the stronger your campaign looks to
+            backers from day one.
           </p>
         </div>
 
-        {/* Progress bar */}
+        {/* Progress bar — hidden until mounted to avoid hydration flash */}
         {mounted && (
           <div className="mb-10 print:hidden">
             <div className="flex items-center justify-between mb-2">
@@ -220,7 +245,7 @@ export default function LaunchGuidePage() {
           </div>
         )}
 
-        {/* Sections */}
+        {/* Checklist sections */}
         <div className="space-y-10">
           {SECTIONS.map((section) => (
             <div key={section.id}>
@@ -236,7 +261,9 @@ export default function LaunchGuidePage() {
                     return (
                       <div
                         key={item.id}
-                        className={`flex items-start gap-4 px-5 py-4 transition-colors ${done ? "opacity-60" : ""}`}
+                        className={`flex items-start gap-4 px-5 py-4 transition-colors ${
+                          done ? "opacity-60" : ""
+                        }`}
                       >
                         <button
                           type="button"
@@ -261,7 +288,9 @@ export default function LaunchGuidePage() {
                             onChange={(e) => handleTitleChange(e.target.value)}
                             maxLength={100}
                             placeholder={DEFAULT_TITLE}
-                            className={`w-full bg-transparent font-bold text-lg text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] border-b border-dashed border-[var(--color-border)] focus:border-[var(--color-brand-golden)] focus:outline-none py-0.5 transition-colors ${done ? "line-through" : ""}`}
+                            className={`w-full bg-transparent font-bold text-lg text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] border-b border-dashed border-[var(--color-border)] focus:border-[var(--color-brand-golden)] focus:outline-none py-0.5 transition-colors ${
+                              done ? "line-through" : ""
+                            }`}
                           />
                           <span className="block text-sm text-[var(--color-ink-muted)] mt-2 leading-relaxed">
                             {item.spec}
@@ -292,7 +321,7 @@ export default function LaunchGuidePage() {
                         <span
                           className={`block font-semibold text-[var(--color-ink)] leading-snug ${
                             done ? "line-through" : ""
-                          } print:no-underline`}
+                          }`}
                         >
                           {item.label}
                         </span>
