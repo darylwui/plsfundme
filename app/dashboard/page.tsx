@@ -150,6 +150,7 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
     .from("projects")
     .select("*, category:categories(*), creator:profiles!creator_id(id, display_name, avatar_url), rewards(*), stretch_goals(*)")
     .eq("creator_id", userId)
+    .is("deleted_at", null)
     .order("created_at", { ascending: false })
     .limit(5);
 
