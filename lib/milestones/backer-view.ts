@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { MilestoneDecision } from "./types";
 
 export type MilestoneState = "upcoming" | "under_review" | "approved" | "late";
 
@@ -28,12 +29,22 @@ interface MilestonePromise {
 interface SubmissionRow {
   milestone_number: number;
   submitted_at: string;
-  milestone_approvals: Array<{ decision: string; reviewed_at: string }>;
+  milestone_approvals: Array<{ decision: MilestoneDecision; reviewed_at: string }>;
 }
 
 interface ReleaseRow {
   milestone_number: number;
   amount_sgd: number;
+}
+
+/**
+ * Parse a target_date string from `projects.milestones` JSONB. Date-only
+ * strings ("2026-05-01") parse as UTC midnight — the safe default. If a
+ * future schema change introduces local-time strings, this is the single
+ * place to fix the parsing contract.
+ */
+function parseTargetDate(s: string): Date {
+  return new Date(s);
 }
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
@@ -59,8 +70,8 @@ function isMilestonePromiseArray(v: unknown): v is MilestonePromise[] {
  * UNIQUE(submission_id) so multiple rows are theoretically possible.
  */
 function latestApproval(
-  approvals: Array<{ decision: string; reviewed_at: string }>,
-): { decision: string; reviewed_at: string } | undefined {
+  approvals: Array<{ decision: MilestoneDecision; reviewed_at: string }>,
+): { decision: MilestoneDecision; reviewed_at: string } | undefined {
   if (!approvals || approvals.length === 0) return undefined;
   return [...approvals].sort((a, b) =>
     a.reviewed_at < b.reviewed_at ? 1 : a.reviewed_at > b.reviewed_at ? -1 : 0,
@@ -70,15 +81,41 @@ function latestApproval(
 function deriveState(
   promise: MilestonePromise,
   submission: SubmissionRow | undefined,
-  approval: { decision: string; reviewed_at: string } | undefined,
+  approval: { decision: MilestoneDecision; reviewed_at: string } | undefined,
   now: Date,
 ): MilestoneState {
   if (approval?.decision === "approved") return "approved";
   if (submission) return "under_review";
-  if (new Date(promise.target_date) < now) return "late";
+  if (parseTargetDate(promise.target_date) < now) return "late";
   return "upcoming";
 }
 
+/**
+ * Resolve the milestone timeline for a backer's view of a campaign.
+ *
+ * Returns a {@link BackerMilestoneView} with:
+ * - `milestones`: an array of exactly 3 {@link ResolvedMilestone} entries, each
+ *   in one of four states:
+ *   - `"upcoming"` — target date is in the future and no submission exists
+ *   - `"under_review"` — a submission exists but the latest approval decision
+ *     is not `"approved"` (includes `"rejected"` and `"needs_info"`)
+ *   - `"approved"` — latest approval decision is `"approved"`
+ *   - `"late"` — target date has passed and no submission exists
+ * - `hasOpenDispute`: true when at least one `open` or `investigating` dispute
+ *   exists for the campaign
+ *
+ * Returns `{ milestones: [], hasOpenDispute }` (empty timeline) when
+ * `projects.milestones` is missing, not an array of exactly 3 entries, or any
+ * entry lacks a string `target_date` — all-or-nothing to avoid partial/confusing
+ * backer timelines.
+ *
+ * Query errors (RLS denials, connection failures) are logged via
+ * `console.warn` — which Sentry captures as breadcrumbs — but do NOT throw.
+ * Callers receive degraded-but-valid data rather than an unhandled rejection.
+ *
+ * `target_date` strings are treated as UTC. Date-only strings ("2026-05-01")
+ * parse as UTC midnight. See {@link parseTargetDate} for the single parsing point.
+ */
 export async function resolveMilestonesForBacker(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   supabase: SupabaseClient<any, any, any>,
@@ -98,6 +135,19 @@ export async function resolveMilestonesForBacker(
       .eq("campaign_id", projectId)
       .in("status", ["open", "investigating"]),
   ]);
+
+  // Surface RLS denials / connection failures as breadcrumbs without
+  // breaking the UI — milestones gracefully degrade to "no data" but the
+  // failure itself shouldn't be silent.
+  const queryErrors: Array<[string, unknown]> = [
+    ["projects", projectResult.error],
+    ["milestone_submissions", submissionsResult.error],
+    ["escrow_releases", releasesResult.error],
+    ["disputes", disputesResult.error],
+  ];
+  for (const [label, error] of queryErrors) {
+    if (error) console.warn(`resolveMilestonesForBacker: ${label} query failed`, error);
+  }
 
   const milestonesRaw = (projectResult.data as { milestones?: unknown } | null)?.milestones;
   if (!isMilestonePromiseArray(milestonesRaw)) {
@@ -136,7 +186,7 @@ export async function resolveMilestonesForBacker(
 
     if (state === "late") {
       m.late_by_days = Math.floor(
-        (now.getTime() - new Date(promise.target_date).getTime()) / MS_PER_DAY,
+        (now.getTime() - parseTargetDate(promise.target_date).getTime()) / MS_PER_DAY,
       );
     }
 

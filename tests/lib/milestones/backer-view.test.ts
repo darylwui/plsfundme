@@ -250,4 +250,80 @@ describe('resolveMilestonesForBacker', () => {
     const result = await resolveMilestonesForBacker(supabase, 'proj-1');
     expect(result.hasOpenDispute).toBe(false);
   });
+
+  it('degrades gracefully when one of the queries returns an error', async () => {
+    // Simulate the disputes query failing — the helper should log a
+    // warning but still return milestone data without crashing.
+    const supabase = {
+      from: (table: string) => {
+        if (table === 'projects') {
+          return {
+            select: () => ({
+              eq: () => ({
+                single: async () => ({ data: { milestones: M_TEMPLATE }, error: null }),
+              }),
+            }),
+          };
+        }
+        if (table === 'milestone_submissions') {
+          return {
+            select: () => ({ eq: async () => ({ data: [], error: null }) }),
+          };
+        }
+        if (table === 'escrow_releases') {
+          return {
+            select: () => ({ eq: async () => ({ data: [], error: null }) }),
+          };
+        }
+        if (table === 'disputes') {
+          return {
+            select: () => ({
+              eq: () => ({
+                in: async () => ({
+                  data: null,
+                  error: { message: 'permission denied for table disputes' },
+                }),
+              }),
+            }),
+          };
+        }
+        throw new Error(`Unexpected table: ${table}`);
+      },
+    } as unknown as Parameters<typeof resolveMilestonesForBacker>[0];
+
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const result = await resolveMilestonesForBacker(supabase, 'proj-1');
+
+    // Milestones still resolve from the successful queries
+    expect(result.milestones).toHaveLength(3);
+    // Dispute query failed → defaults to false (no row count to use)
+    expect(result.hasOpenDispute).toBe(false);
+    // The error was logged
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('disputes query failed'),
+      expect.objectContaining({ message: expect.stringContaining('permission denied') }),
+    );
+
+    warnSpy.mockRestore();
+  });
+
+  it('returns empty milestones when any milestone has a non-string target_date (defensive guard)', async () => {
+    const supabase = createMockSupabase({
+      project: {
+        milestones: [
+          M_TEMPLATE[0],
+          { title: 'Bad', description: 'has null target', target_date: null },
+          M_TEMPLATE[2],
+        ],
+      },
+      submissions: [],
+      releases: [],
+      disputes: [],
+    });
+    const result = await resolveMilestonesForBacker(supabase, 'proj-1');
+    // All-or-nothing: a single malformed entry blanks the whole timeline.
+    // This is intentional — better to render no milestones than partial
+    // ones that confuse backers.
+    expect(result.milestones).toEqual([]);
+  });
 });
