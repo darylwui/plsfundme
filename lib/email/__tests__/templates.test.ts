@@ -151,3 +151,78 @@ describe('sendMilestoneApprovedToCreatorEmail', () => {
     expect(mockSend.mock.calls[0][0].replyTo).toBe('hello@getthatbread.sg');
   });
 });
+
+import { sendMilestoneNeedsActionEmail } from '@/lib/email/templates';
+
+describe('sendMilestoneNeedsActionEmail', () => {
+  beforeEach(() => { mockSend.mockClear(); });
+
+  it('sends rejection copy when decision is "rejected"', async () => {
+    await sendMilestoneNeedsActionEmail({
+      creatorEmail: 'creator@example.com',
+      creatorName: 'Jamie',
+      projectTitle: 'Sourdough Starter Kit',
+      projectSlug: 'sourdough-starter-kit',
+      milestoneNumber: 1,
+      decision: 'rejected',
+      feedbackText: 'Photo is too blurry, please retake.',
+    });
+    const payload = mockSend.mock.calls[0][0];
+    expect(payload.subject).toContain('Action needed');
+    expect(payload.html).toMatch(/needs revision|please review/i);
+    expect(payload.html).toContain('Photo is too blurry, please retake.');
+  });
+
+  it('sends needs_info copy when decision is "needs_info"', async () => {
+    await sendMilestoneNeedsActionEmail({
+      creatorEmail: 'creator@example.com',
+      creatorName: 'Jamie',
+      projectTitle: 'Test',
+      projectSlug: 'test',
+      milestoneNumber: 2,
+      decision: 'needs_info',
+    });
+    const payload = mockSend.mock.calls[0][0];
+    expect(payload.html).toMatch(/questions about|more info/i);
+  });
+
+  it('renders without feedbackText (undefined)', async () => {
+    await sendMilestoneNeedsActionEmail({
+      creatorEmail: 'creator@example.com',
+      creatorName: 'Jamie',
+      projectTitle: 'Test',
+      projectSlug: 'test',
+      milestoneNumber: 3,
+      decision: 'rejected',
+    });
+    expect(mockSend).toHaveBeenCalledTimes(1);
+    const payload = mockSend.mock.calls[0][0];
+    expect(payload.html).not.toContain('undefined');
+  });
+
+  it('escapes HTML in feedbackText', async () => {
+    await sendMilestoneNeedsActionEmail({
+      creatorEmail: 'creator@example.com',
+      creatorName: 'Jamie',
+      projectTitle: 'Test',
+      projectSlug: 'test',
+      milestoneNumber: 1,
+      decision: 'rejected',
+      feedbackText: '<script>alert(1)</script>',
+    });
+    const payload = mockSend.mock.calls[0][0];
+    expect(payload.html).not.toContain('<script>');
+  });
+
+  it('includes Reply-To', async () => {
+    await sendMilestoneNeedsActionEmail({
+      creatorEmail: 'creator@example.com',
+      creatorName: 'Jamie',
+      projectTitle: 'Test',
+      projectSlug: 'test',
+      milestoneNumber: 1,
+      decision: 'rejected',
+    });
+    expect(mockSend.mock.calls[0][0].replyTo).toBe('hello@getthatbread.sg');
+  });
+});

@@ -505,6 +505,48 @@ export async function sendMilestoneApprovedToCreatorEmail(args: MilestoneApprove
   });
 }
 
+interface MilestoneNeedsActionArgs {
+  creatorEmail: string;
+  creatorName: string;
+  projectTitle: string;
+  projectSlug: string;
+  milestoneNumber: 1 | 2 | 3;
+  decision: "rejected" | "needs_info";
+  feedbackText?: string;
+}
+
+export async function sendMilestoneNeedsActionEmail(args: MilestoneNeedsActionArgs) {
+  const safeTitle = escapeHtml(args.projectTitle);
+  const safeName = escapeHtml(args.creatorName);
+  const intro =
+    args.decision === "rejected"
+      ? `The proof you submitted for milestone ${args.milestoneNumber} on <strong>${safeTitle}</strong> needs revision. Please review the feedback below and resubmit.`
+      : `We have some questions about your milestone ${args.milestoneNumber} submission for <strong>${safeTitle}</strong> before we can approve it.`;
+
+  const feedbackBlock = args.feedbackText
+    ? `
+      <div style="background:#F3F4F6;padding:16px;border-radius:8px;margin-top:16px;">
+        <p style="margin:0;font-size:14px;color:#374151;"><strong>Reviewer feedback:</strong></p>
+        <p style="margin:8px 0 0 0;font-size:14px;color:#1F2937;white-space:pre-wrap;">${escapeHtml(args.feedbackText)}</p>
+      </div>
+    `
+    : "";
+
+  return sendEmail({
+    from: FROM,
+    to: args.creatorEmail,
+    subject: `Action needed — milestone ${args.milestoneNumber} (${args.projectTitle})`,
+    html: `
+      <h2>Hi ${safeName},</h2>
+      <p>${intro}</p>
+      ${feedbackBlock}
+      <a href="${appUrl}/dashboard/projects/${encodeURIComponent(args.projectSlug)}" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
+        Open project
+      </a>
+    `,
+  });
+}
+
 export async function sendPledgeRefundedEmail(args: PledgeRefundedArgs) {
   return sendEmail({
     from: FROM,
