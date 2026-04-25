@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { CheckCircle2, Circle, BookOpen, ArrowRight } from "lucide-react";
 
@@ -143,41 +143,27 @@ const SECTIONS: Section[] = [
 
 const TOTAL_ITEMS = SECTIONS.reduce((acc, s) => acc + s.items.length, 0);
 
-// useSyncExternalStore subscribe stub — localStorage is not a push source;
-// we only need the client/server snapshot split for hydration safety.
-const noop = () => () => {};
-
-function getCheckedSnapshot(): Set<string> {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? new Set(JSON.parse(stored) as string[]) : new Set();
-  } catch {
-    return new Set();
-  }
-}
-const emptySet = new Set<string>();
-
-function getTitleSnapshot(): string {
-  try {
-    return localStorage.getItem(TITLE_KEY) ?? DEFAULT_TITLE;
-  } catch {
-    return DEFAULT_TITLE;
-  }
-}
-
-// Returns true on client, false on server — used instead of a mounted effect.
-function getIsClient() {
-  return true;
-}
-
 export default function LaunchGuidePage() {
-  // useSyncExternalStore gives the server snapshot during SSR and the client
-  // snapshot after hydration — no setState-in-effect needed.
-  const mounted = useSyncExternalStore(noop, getIsClient, () => false);
-  const storedChecked = useSyncExternalStore(noop, getCheckedSnapshot, () => emptySet);
-  const storedTitle = useSyncExternalStore(noop, getTitleSnapshot, () => DEFAULT_TITLE);
-  const [checked, setChecked] = useState<Set<string>>(() => storedChecked);
-  const [projectTitle, setProjectTitle] = useState<string>(() => storedTitle);
+  const [checked, setChecked] = useState<Set<string>>(new Set());
+  const [projectTitle, setProjectTitle] = useState(DEFAULT_TITLE);
+  const [mounted, setMounted] = useState(false);
+
+  // Read persisted state from localStorage on first client render.
+  // setState inside an effect is intentional here — this is a one-time sync
+  // from an external store (localStorage) on mount, the canonical use case.
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) setChecked(new Set(JSON.parse(stored) as string[]));
+      const storedTitle = localStorage.getItem(TITLE_KEY);
+      if (storedTitle) setProjectTitle(storedTitle);
+    } catch {
+      // localStorage unavailable (e.g. private browsing with strict settings)
+    }
+    setMounted(true);
+  }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   function handleTitleChange(val: string) {
     setProjectTitle(val);
