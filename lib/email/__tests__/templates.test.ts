@@ -114,6 +114,21 @@ describe('sendMilestoneApprovedToBackerEmail', () => {
     expect(payload.html).not.toContain('<img');
     expect(payload.html).not.toContain('<b>x</b>');
   });
+
+  it('renders "release is processing" copy when escrowReleasedSgd is 0', async () => {
+    await sendMilestoneApprovedToBackerEmail({
+      backerEmail: 'backer@example.com',
+      backerName: 'Sam',
+      creatorName: 'Jamie',
+      projectTitle: 'Test',
+      projectSlug: 'test',
+      milestoneNumber: 1,
+      escrowReleasedSgd: 0,
+    });
+    const payload = mockSend.mock.calls[0][0];
+    expect(payload.html).toMatch(/processing|reflected shortly/i);
+    expect(payload.html).not.toMatch(/\$0/);
+  });
 });
 
 import { sendMilestoneApprovedToCreatorEmail } from '@/lib/email/templates';
@@ -149,6 +164,20 @@ describe('sendMilestoneApprovedToCreatorEmail', () => {
       escrowReleasedSgd: 4000,
     });
     expect(mockSend.mock.calls[0][0].replyTo).toBe('hello@getthatbread.sg');
+  });
+
+  it('renders "release is processing" copy when escrowReleasedSgd is 0', async () => {
+    await sendMilestoneApprovedToCreatorEmail({
+      creatorEmail: 'creator@example.com',
+      creatorName: 'Jamie',
+      projectTitle: 'Test',
+      projectSlug: 'test',
+      milestoneNumber: 1,
+      escrowReleasedSgd: 0,
+    });
+    const payload = mockSend.mock.calls[0][0];
+    expect(payload.html).toMatch(/processing|shortly/i);
+    expect(payload.html).not.toMatch(/\$0/);
   });
 });
 

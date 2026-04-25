@@ -302,6 +302,41 @@ describe('milestone-approve route', () => {
   // ── Submission Handling ───────────────────────────────────────────────────
 
   describe('Submission Handling', () => {
+    it('returns 409 when submission has already been reviewed', async () => {
+      const reviewedServiceClient = {
+        from: (table: string) => {
+          if (table === 'milestone_submissions') {
+            return {
+              select: () => thenable({
+                id: 'sub-1',
+                campaign_id: 'campaign-1',
+                milestone_number: 1,
+                status: 'approved', // already reviewed!
+              }),
+              update: () => thenable(null),
+            };
+          }
+          // For other tables, route shouldn't reach them — return a thenable
+          // that resolves to nothing. (If route bug causes them to be hit, the
+          // test will still pass but assertions below will catch it.)
+          return { select: () => thenable(null), insert: () => ({ select: () => thenable(null) }) };
+        },
+      };
+      (createServiceClient as ReturnType<typeof vi.fn>).mockReturnValue(reviewedServiceClient);
+
+      const req = new Request('http://localhost/x', {
+        method: 'POST',
+        body: JSON.stringify({ submission_id: 'sub-1', decision: 'approved' }),
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const res = await POST(req as any, { params: Promise.resolve({ campaignId: 'campaign-1' }) });
+
+      expect(res.status).toBe(409);
+      expect(mocks.releaseMilestonePayment).not.toHaveBeenCalled();
+      expect(mocks.sendMilestoneApprovedToCreatorEmail).not.toHaveBeenCalled();
+      expect(mocks.sendMilestoneApprovedToBackerEmail).not.toHaveBeenCalled();
+    });
+
     it('404 when submission not found', async () => {
       (createServiceClient as ReturnType<typeof vi.fn>).mockReturnValue({
         from: () =>

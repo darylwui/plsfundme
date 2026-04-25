@@ -81,6 +81,16 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
       );
     }
 
+    // Idempotency guard — once a submission has been reviewed, refuse repeat
+    // decisions. Prevents duplicate milestone_approvals + escrow_releases rows
+    // (no UNIQUE constraint on either table) and prevents re-firing emails.
+    if (submission.status !== 'pending') {
+      return NextResponse.json(
+        { error: 'Submission has already been reviewed', status: submission.status },
+        { status: 409 }
+      );
+    }
+
     // Create approval record
     const { data: approval, error: approvalError } = await service
       .from('milestone_approvals')

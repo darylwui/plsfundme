@@ -461,13 +461,17 @@ export async function sendMilestoneApprovedToBackerEmail(args: MilestoneApproved
   const safeCreator = escapeHtml(args.creatorName);
   const milestoneLabel = MILESTONE_LABELS[args.milestoneNumber];
 
+  const releaseLine = args.escrowReleasedSgd > 0
+    ? `We've verified the proof and released <strong>${formatSgd(args.escrowReleasedSgd)}</strong> from escrow.`
+    : `We've verified the proof. The escrow release is processing — you'll see it reflected shortly.`;
+
   return sendEmail({
     from: FROM,
     to: args.backerEmail,
     subject: `Milestone ${args.milestoneNumber} hit · ${args.projectTitle}`,
     html: `
       <h2>Hi ${safeName},</h2>
-      <p>Great news — <strong>${safeCreator}</strong> just hit milestone ${args.milestoneNumber} on <strong>${safeTitle}</strong>. We've verified the proof and released <strong>${formatSgd(args.escrowReleasedSgd)}</strong> from escrow.</p>
+      <p>Great news — <strong>${safeCreator}</strong> just hit milestone ${args.milestoneNumber} on <strong>${safeTitle}</strong>. ${releaseLine}</p>
       <p><strong>Milestone ${args.milestoneNumber}: ${escapeHtml(milestoneLabel)}</strong></p>
       <p>Your money is still safe in escrow until all milestones are complete. You'll get an update when the next one is ready.</p>
       <a href="${appUrl}/projects/${encodeURIComponent(args.projectSlug)}" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
@@ -490,13 +494,17 @@ export async function sendMilestoneApprovedToCreatorEmail(args: MilestoneApprove
   const safeTitle = escapeHtml(args.projectTitle);
   const safeName = escapeHtml(args.creatorName);
 
+  const releaseLine = args.escrowReleasedSgd > 0
+    ? `Milestone ${args.milestoneNumber} on <strong>${safeTitle}</strong> has been approved. <strong>${formatSgd(args.escrowReleasedSgd)}</strong> has been released from escrow to your account.`
+    : `Milestone ${args.milestoneNumber} on <strong>${safeTitle}</strong> has been approved. The escrow release is processing — you'll see funds in your account shortly.`;
+
   return sendEmail({
     from: FROM,
     to: args.creatorEmail,
     subject: `Milestone ${args.milestoneNumber} approved — ${args.projectTitle}`,
     html: `
       <h2>Hi ${safeName},</h2>
-      <p>Milestone ${args.milestoneNumber} on <strong>${safeTitle}</strong> has been approved. <strong>${formatSgd(args.escrowReleasedSgd)}</strong> has been released from escrow to your account.</p>
+      <p>${releaseLine}</p>
       <p>Backers have been notified. Keep up the good work.</p>
       <a href="${appUrl}/dashboard" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
         Open dashboard
