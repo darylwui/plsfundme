@@ -223,6 +223,11 @@ export async function sendCreatorApprovedEmail(args: CreatorApprovedArgs) {
       <h2>Welcome aboard, ${args.creatorName}! 🎉</h2>
       <p>Great news — your creator application has been reviewed and <strong>approved</strong>.</p>
       <p>You can now create and publish your first campaign on get that bread. Share your idea with backers and start raising funds today.</p>
+      <p style="margin-top:16px;font-size:14px;color:#6b7280;">
+        Not sure where to start?
+        <a href="${appUrl}/for-creators/launch-guide" style="color:#7C3AED;">Run through our launch checklist</a>
+        — it covers everything you need to prepare before you open the campaign wizard.
+      </p>
       <a href="${appUrl}/projects/create" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
         Launch your first campaign
       </a>
