@@ -262,7 +262,7 @@ export default function LaunchGuidePage() {
                             <Circle className="w-5 h-5 text-[var(--color-border)]" />
                           )}
                         </button>
-                        <span className="hidden print:inline-block w-4 h-4 border border-[#999] rounded-sm shrink-0 mt-0.5" />
+                        <input type="checkbox" className="hidden print:block shrink-0 mt-1 accent-[#92400e]" aria-hidden="true" />
                         <span className="flex-1 min-w-0">
                           <span className="block text-xs font-semibold uppercase tracking-widest text-[var(--color-ink-subtle)] mb-1">
                             {item.label}
@@ -322,14 +322,19 @@ export default function LaunchGuidePage() {
           ))}
         </div>
 
-        {/* Print tip */}
-        <p className="mt-8 text-xs text-center text-[var(--color-ink-subtle)] print:hidden">
-          Want a copy to refer to offline? Press{" "}
-          <kbd className="px-1.5 py-0.5 rounded bg-[var(--color-border)] font-mono text-xs">
-            ⌘P
-          </kbd>{" "}
-          and save as PDF.
-        </p>
+        {/* Download PDF button + print tip */}
+        <div className="mt-8 flex flex-col items-center gap-3 print:hidden">
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] text-sm font-semibold text-[var(--color-ink)] hover:bg-[var(--color-surface-raised)] transition-colors"
+          >
+            Download PDF checklist
+          </button>
+          <p className="text-xs text-[var(--color-ink-subtle)]">
+            Opens your browser&apos;s print dialog — save as PDF for an interactive checklist you can fill in digitally.
+          </p>
+        </div>
 
         {/* CTA */}
         <div className="mt-12 rounded-[var(--radius-card)] bg-[var(--color-brand-crust)] px-8 py-8 text-center print:hidden">
