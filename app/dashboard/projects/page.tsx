@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ShareButtons } from "@/components/sharing/ShareButtons";
 import { DraftContinuationCard } from "@/components/dashboard/DraftContinuationCard";
+import { WizardDraftBanner } from "@/components/dashboard/WizardDraftBanner";
 import { formatDate, daysRemaining } from "@/lib/utils/dates";
 import { formatSgd, fundingPercent } from "@/lib/utils/currency";
 import { REJECTION_REASONS } from "@/types/admin";
@@ -125,6 +126,13 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
           </Link>
         )}
       </div>
+
+      {/* Wizard draft banner above the project list — surfaces in-progress
+          wizard work when the creator already has other projects so it
+          doesn't disappear behind committed campaigns. */}
+      {projects && projects.length > 0 && wizardDraft && (
+        <WizardDraftBanner draft={wizardDraft} />
+      )}
 
       {!projects || projects.length === 0 ? (
         wizardDraft ? (

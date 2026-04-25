@@ -6,6 +6,7 @@ import { BackerTable } from "@/components/dashboard/BackerTable";
 import { SingpassVerifiedBadge } from "@/components/dashboard/SingpassVerificationCard";
 import { CreatorOnboardingStepper } from "@/components/dashboard/CreatorOnboardingStepper";
 import { DraftContinuationCard } from "@/components/dashboard/DraftContinuationCard";
+import { WizardDraftBanner } from "@/components/dashboard/WizardDraftBanner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils/dates";
@@ -170,8 +171,10 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
 
   // Surface in-progress wizard work on the dashboard.
   // The wizard auto-saves to `campaign_drafts` (one row per user via
-  // UNIQUE(user_id)). We only surface this when the creator has zero
-  // projects — projects.status='draft' takes priority when both exist.
+  // UNIQUE(user_id)). When the creator has zero projects we render the
+  // full DraftContinuationCard. When they already have projects we render
+  // a slim WizardDraftBanner above the existing layout so wizard work
+  // doesn't disappear behind committed projects.
   const { data: wizardDraftRow } = await supabase
     .from("campaign_drafts")
     .select("draft_data, step, updated_at")
@@ -304,6 +307,14 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
             </a>
           </div>
         </div>
+      )}
+
+      {/* Wizard draft banner — shown above the rest of the approved-creator
+          layout whenever they have other projects in flight. Mirrors the
+          "always surface wizard work" intent: full DraftContinuationCard
+          when projects.length === 0, slim banner otherwise. */}
+      {creatorStatus === "approved" && typedProjects.length > 0 && wizardDraft && (
+        <WizardDraftBanner draft={wizardDraft} />
       )}
 
       {/* ── Approved: show campaigns ── */}
