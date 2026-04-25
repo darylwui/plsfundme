@@ -126,11 +126,11 @@ export function FundingWidget({ project }: FundingWidgetProps) {
               </div>
             )}
 
-            <Link href={checkoutHref}>
-              <Button size="lg" fullWidth>
+            <Button asChild size="lg" fullWidth>
+              <Link href={checkoutHref}>
                 {selectedReward ? `Back with ${selectedReward.title}` : "Be the first backer"}
-              </Button>
-            </Link>
+              </Link>
+            </Button>
 
             <p className="text-xs text-center text-[var(--color-ink-subtle)] flex items-center justify-center gap-1.5">
               <Shield className="w-3.5 h-3.5" />
@@ -167,11 +167,11 @@ export function FundingWidget({ project }: FundingWidgetProps) {
                   )}
                 </div>
               ) : (
-                <Link href={checkoutHref}>
-                  <Button size="lg" fullWidth>
+                <Button asChild size="lg" fullWidth>
+                  <Link href={checkoutHref}>
                     {selectedReward ? `Back with ${selectedReward.title}` : "Pledge without reward"}
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               )}
             </div>
 

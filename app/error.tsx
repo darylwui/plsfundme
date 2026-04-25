@@ -47,11 +47,11 @@ export default function GlobalError({
           <Button size="lg" onClick={() => reset()}>
             Try again
           </Button>
-          <Link href="/">
-            <Button size="lg" variant="secondary">
+          <Button asChild size="lg" variant="secondary">
+            <Link href="/">
               Go home
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
         <div className="mt-6 pt-6 border-t border-[var(--color-border)]">
           <p className="text-sm text-[var(--color-ink-subtle)] mb-3">

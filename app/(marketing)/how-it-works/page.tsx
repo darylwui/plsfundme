@@ -104,12 +104,12 @@ export default function HowItWorksPage() {
             <p className="text-lg text-[var(--color-ink-muted)] max-w-md mx-auto mb-10 leading-relaxed">
               Browse live campaigns and pledge to the ones that move you. No goal, no charge.
             </p>
-            <Link href="/explore">
-              <Button size="lg" variant="primary">
+            <Button asChild size="lg" variant="primary">
+              <Link href="/explore">
                 Explore projects
                 <ArrowRight className="w-4 h-4" />
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </section>
       </ScrollReveal>

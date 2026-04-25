@@ -82,11 +82,11 @@ function StepRow({ step, isLast }: { step: Step; isLast: boolean }) {
         </div>
         <p className="text-xs text-[var(--color-ink-muted)] mt-0.5 leading-relaxed">{step.description}</p>
         {step.status === "cta" && step.href && (
-          <Link href={step.href} className="inline-block mt-3">
-            <Button size="sm" variant="primary">
+          <Button asChild size="sm" variant="primary" className="mt-3">
+            <Link href={step.href}>
               Start a project →
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         )}
       </div>
       {step.status === "pointer" && step.href && (

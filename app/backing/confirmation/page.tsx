@@ -67,17 +67,17 @@ export default async function ConfirmationPage({
           </p>
 
           <div className="mt-8 flex flex-col gap-3">
-            <Link href={projectSlug}>
-              <Button size="lg" fullWidth>
+            <Button asChild size="lg" fullWidth>
+              <Link href={projectSlug}>
                 Back to project
                 <ArrowRight className="w-4 h-4" />
-              </Button>
-            </Link>
-            <Link href="/explore">
-              <Button variant="secondary" size="lg" fullWidth>
+              </Link>
+            </Button>
+            <Button asChild variant="secondary" size="lg" fullWidth>
+              <Link href="/explore">
                 Discover more projects
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
 
           <Link

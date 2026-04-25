@@ -51,18 +51,18 @@ export default function ForCreatorsPage() {
             you hit your goal.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Link href="/projects/create">
-              <Button size="lg" variant="primary">
+            <Button asChild size="lg" variant="primary">
+              <Link href="/projects/create">
                 Start your campaign
                 <ArrowRight className="w-4 h-4" />
-              </Button>
-            </Link>
-            <Link href="/for-creators/launch-guide">
-              <Button size="lg" variant="secondary">
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="secondary">
+              <Link href="/for-creators/launch-guide">
                 <BookOpen className="w-4 h-4" />
                 Get the launch checklist
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
           <ScrollDownCue />
         </div>
@@ -91,12 +91,12 @@ export default function ForCreatorsPage() {
 
           <ScrollReveal>
             <div className="mt-10">
-              <Link href="/projects/create">
-                <Button size="lg">
+              <Button asChild size="lg">
+                <Link href="/projects/create">
                   Start your campaign
                   <ArrowRight className="w-4 h-4" />
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
           </ScrollReveal>
         </div>
@@ -186,18 +186,18 @@ export default function ForCreatorsPage() {
               Start for free. No upfront costs, no risk to your backers.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3">
-              <Link href="/projects/create">
-                <Button size="lg" variant="primary">
+              <Button asChild size="lg" variant="primary">
+                <Link href="/projects/create">
                   Start your campaign
                   <ArrowRight className="w-4 h-4" />
-                </Button>
-              </Link>
-              <Link href="/for-creators/launch-guide">
-                <Button size="lg" variant="secondary">
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="secondary">
+                <Link href="/for-creators/launch-guide">
                   <BookOpen className="w-4 h-4" />
                   Get the launch checklist
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
           </div>
         </section>
