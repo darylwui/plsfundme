@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Check, AlertTriangle } from "lucide-react";
 import { formatDate } from "@/lib/utils/dates";
 import { formatSgd } from "@/lib/utils/currency";
@@ -121,7 +122,13 @@ function DatesLine({ milestone }: { milestone: ResolvedMilestone }) {
   if (state === "late") {
     return (
       <>
-        Due {formatDate(target_date)} · Late by {late_by_days ?? 0} days. Disputes auto-open at 45 days.
+        Due {formatDate(target_date)} · Late by {late_by_days ?? 0} days.{" "}
+        <Link
+          href="/terms?tab=refund"
+          className="underline hover:text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-crust)] rounded"
+        >
+          Disputes auto-open at 45 days.
+        </Link>
       </>
     );
   }
