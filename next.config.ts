@@ -14,6 +14,10 @@ const nextConfig: NextConfig = {
       { source: "/api/admin/pm/:id", destination: "/api/admin/creator/:id", permanent: true },
       { source: "/admin/project-managers", destination: "/dashboard/admin/creators", permanent: true },
       { source: "/dashboard/admin/pms", destination: "/dashboard/admin/creators", permanent: true },
+      // Legacy browser-print export → new react-pdf checklist. Keep this
+      // permanent redirect so bookmarks, pasted links, and any old
+      // marketing copy still resolve to the actual download.
+      { source: "/for-creators/launch-guide/print", destination: "/api/launch-guide/pdf", permanent: true },
       // Old /admin/* tree consolidated into /dashboard/admin/*. Keep these
       // redirects so any existing bookmarks or external links still resolve.
       { source: "/admin", destination: "/dashboard", permanent: true },
