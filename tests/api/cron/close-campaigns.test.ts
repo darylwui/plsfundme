@@ -4,11 +4,13 @@ const {
   mockSendCampaignFailedEmail,
   mockSendCampaignFailedToBackerEmail,
   mockStripeCancel,
+  mockStripeRefund,
   mockCaptureProjectPledges,
 } = vi.hoisted(() => ({
   mockSendCampaignFailedEmail: vi.fn().mockResolvedValue({}),
   mockSendCampaignFailedToBackerEmail: vi.fn().mockResolvedValue({}),
   mockStripeCancel: vi.fn().mockResolvedValue({}),
+  mockStripeRefund: vi.fn().mockResolvedValue({ id: 're_test' }),
   mockCaptureProjectPledges: vi.fn().mockResolvedValue({ captured: 0, failed: 0 }),
 }));
 
@@ -18,28 +20,19 @@ vi.mock('@/lib/email/templates', () => ({
 }));
 
 vi.mock('@/lib/stripe/server', () => ({
-  getStripe: () => ({ paymentIntents: { cancel: mockStripeCancel } }),
+  getStripe: () => ({
+    paymentIntents: { cancel: mockStripeCancel },
+    refunds: { create: mockStripeRefund },
+  }),
 }));
 
 vi.mock('@/app/api/payments/capture/route', () => ({
   captureProjectPledges: mockCaptureProjectPledges,
 }));
 
-// Build a chainable Supabase mock. Each query returns a thenable that
-// resolves to canned data — Supabase's PostgrestFilterBuilder is PromiseLike,
-// so any combination of .eq()/.in()/.is()/.lt() chained before await works.
-function thenable(data: unknown) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const chain: any = {};
-  for (const m of ['eq', 'in', 'is', 'lt', 'gt', 'not', 'order', 'limit', 'range']) {
-    chain[m] = () => chain;
-  }
-  chain.single = async () => ({ data, error: null });
-  chain.then = (resolve: (v: unknown) => void) => resolve({ data, error: null });
-  return chain;
-}
-
-function buildSupabaseMock(scenario: 'failed' | 'funded' | 'no-card-backers') {
+function buildSupabaseMock(
+  scenario: 'failed' | 'funded' | 'no-card-backers' | 'failed-with-paynow',
+) {
   const expiredProjects =
     scenario === 'funded'
       ? [{ id: 'proj-1', amount_pledged_sgd: 10000, funding_goal_sgd: 10000 }]
@@ -55,9 +48,16 @@ function buildSupabaseMock(scenario: 'failed' | 'funded' | 'no-card-backers') {
   };
 
   const authorizedPledges = [
-    { id: 'pledge-1', stripe_payment_intent_id: 'pi_1' },
-    { id: 'pledge-2', stripe_payment_intent_id: 'pi_2' },
+    { id: 'pledge-1', stripe_payment_intent_id: 'pi_card_1' },
+    { id: 'pledge-2', stripe_payment_intent_id: 'pi_card_2' },
   ];
+  const paynowPledges =
+    scenario === 'failed-with-paynow'
+      ? [
+          { id: 'pledge-pn-1', stripe_payment_intent_id: 'pi_pn_1' },
+          { id: 'pledge-pn-2', stripe_payment_intent_id: 'pi_pn_2' },
+        ]
+      : [];
   const cardBackers =
     scenario === 'no-card-backers'
       ? []
@@ -66,27 +66,50 @@ function buildSupabaseMock(scenario: 'failed' | 'funded' | 'no-card-backers') {
           { backer: { display_name: 'Pat', email: 'pat@example.com' } },
         ];
 
+  // Track captured .eq() filter args so the pledges.select() branch can
+  // disambiguate "authorized" (card) vs "paynow_captured" (paynow) queries —
+  // both queries select the same columns, only the status filter differs.
+  type EqArg = [string, unknown];
+  function thenableWithFilters(
+    resolve: (eqs: EqArg[]) => unknown,
+  ) {
+    const eqs: EqArg[] = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const chain: any = {};
+    chain.eq = (col: string, val: unknown) => {
+      eqs.push([col, val]);
+      return chain;
+    };
+    for (const m of ['in', 'is', 'lt', 'gt', 'not', 'order', 'limit', 'range']) {
+      chain[m] = () => chain;
+    }
+    chain.single = async () => ({ data: resolve(eqs), error: null });
+    chain.then = (cb: (v: unknown) => void) => cb({ data: resolve(eqs), error: null });
+    return chain;
+  }
+
   return {
     from: (table: string) => {
       if (table === 'projects') {
         return {
           select: (cols: string) => {
             const isFullRecordSelect = cols.includes('creator:profiles');
-            // The expired-projects query terminates without .single(); the post-fail
-            // re-fetch terminates with .single() returning the full record.
             const data = isFullRecordSelect ? projectFull : expiredProjects;
-            return thenable(data);
+            return thenableWithFilters(() => data);
           },
-          update: () => thenable(null),
+          update: () => thenableWithFilters(() => null),
         };
       }
       if (table === 'pledges') {
         return {
-          select: (cols: string) => {
-            const isCardBackerSelect = cols.includes('backer:profiles');
-            return thenable(isCardBackerSelect ? cardBackers : authorizedPledges);
-          },
-          update: () => thenable(null),
+          select: (cols: string) =>
+            thenableWithFilters((eqs) => {
+              if (cols.includes('backer:profiles')) return cardBackers;
+              const statusFilter = eqs.find(([col]) => col === 'status');
+              if (statusFilter?.[1] === 'paynow_captured') return paynowPledges;
+              return authorizedPledges;
+            }),
+          update: () => thenableWithFilters(() => null),
         };
       }
       throw new Error(`Unexpected table: ${table}`);
@@ -107,6 +130,8 @@ describe('close-campaigns cron', () => {
     mockSendCampaignFailedEmail.mockClear();
     mockSendCampaignFailedToBackerEmail.mockClear();
     mockStripeCancel.mockClear();
+    mockStripeRefund.mockClear();
+    mockStripeRefund.mockResolvedValue({ id: 're_test' });
   });
 
   it('emails creator + card-pledge backers when a project fails', async () => {
