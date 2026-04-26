@@ -6,12 +6,14 @@ const {
   mockStripeCancel,
   mockStripeRefund,
   mockCaptureProjectPledges,
+  mockSentryCapture,
 } = vi.hoisted(() => ({
   mockSendCampaignFailedEmail: vi.fn().mockResolvedValue({}),
   mockSendCampaignFailedToBackerEmail: vi.fn().mockResolvedValue({}),
   mockStripeCancel: vi.fn().mockResolvedValue({}),
   mockStripeRefund: vi.fn().mockResolvedValue({ id: 're_test' }),
   mockCaptureProjectPledges: vi.fn().mockResolvedValue({ captured: 0, failed: 0 }),
+  mockSentryCapture: vi.fn(),
 }));
 
 vi.mock('@/lib/email/templates', () => ({
@@ -28,6 +30,10 @@ vi.mock('@/lib/stripe/server', () => ({
 
 vi.mock('@/app/api/payments/capture/route', () => ({
   captureProjectPledges: mockCaptureProjectPledges,
+}));
+
+vi.mock('@sentry/nextjs', () => ({
+  captureException: mockSentryCapture,
 }));
 
 function buildSupabaseMock(
@@ -132,6 +138,7 @@ describe('close-campaigns cron', () => {
     mockStripeCancel.mockClear();
     mockStripeRefund.mockClear();
     mockStripeRefund.mockResolvedValue({ id: 're_test' });
+    mockSentryCapture.mockClear();
   });
 
   it('emails creator + card-pledge backers when a project fails', async () => {
@@ -211,5 +218,39 @@ describe('close-campaigns cron', () => {
     const canceledIntents = mockStripeCancel.mock.calls.map((c) => c[0]);
     expect(canceledIntents).not.toContain('pi_pn_1');
     expect(canceledIntents).not.toContain('pi_pn_2');
+  });
+
+  it('continues refunding remaining pledges when one refund call throws, and reports to Sentry', async () => {
+    (createServiceClient as ReturnType<typeof vi.fn>).mockReturnValue(
+      buildSupabaseMock('failed-with-paynow'),
+    );
+
+    // First call (pledge-pn-1) fails, second call (pledge-pn-2) succeeds.
+    // Order is determined by the route iterating in array order.
+    mockStripeRefund
+      .mockRejectedValueOnce(new Error('stripe is on fire'))
+      .mockResolvedValueOnce({ id: 're_test_2' });
+
+    const req = new Request('http://localhost/api/cron/close-campaigns', {
+      headers: { Authorization: 'Bearer test-secret' },
+    });
+    const res = await GET(req);
+
+    // Cron must still return 200 — partial failure is not a cron failure.
+    expect(res.status).toBe(200);
+
+    // Both pledges were attempted; the throw didn't abort the loop.
+    expect(mockStripeRefund).toHaveBeenCalledTimes(2);
+
+    // Sentry got the failure with enough context to investigate.
+    expect(mockSentryCapture).toHaveBeenCalledTimes(1);
+    const [capturedErr, captureOpts] = mockSentryCapture.mock.calls[0];
+    expect(capturedErr).toBeInstanceOf(Error);
+    expect((capturedErr as Error).message).toBe('stripe is on fire');
+    expect(captureOpts?.extra).toMatchObject({
+      pledgeId: 'pledge-pn-1',
+      paymentIntentId: 'pi_pn_1',
+      projectId: 'proj-1',
+    });
   });
 });
