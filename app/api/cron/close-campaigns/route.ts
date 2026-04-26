@@ -132,10 +132,16 @@ export async function GET(request: Request) {
         .eq("status", "paynow_captured");
 
       if (paynowError) {
+        // Silent DB failure here would skip ALL paynow refunds for this
+        // project — Sentry-capture so ops sees the blind spot, not just
+        // Vercel logs.
         console.error(
           `Failed to fetch paynow pledges for failed project ${project.id}:`,
           paynowError,
         );
+        Sentry.captureException(paynowError, {
+          extra: { projectId: project.id },
+        });
       } else {
         for (const pledge of paynowPledges ?? []) {
           if (!pledge.stripe_payment_intent_id) continue;
