@@ -85,8 +85,14 @@ export default async function CreatorMilestonesPage({ params }: Props) {
     .eq('campaign_id', projectId);
 
   // Latest submission per milestone (rows are ordered desc, first wins)
-  const latestSubmissionByMilestone = new Map<number, typeof submissions extends Array<infer T> ? T : never>();
-  for (const s of submissions ?? []) {
+  type SubmissionRow = {
+    id: string;
+    milestone_number: number;
+    status: string;
+    submitted_at: string;
+  };
+  const latestSubmissionByMilestone = new Map<number, SubmissionRow>();
+  for (const s of (submissions ?? []) as SubmissionRow[]) {
     if (!latestSubmissionByMilestone.has(s.milestone_number)) {
       latestSubmissionByMilestone.set(s.milestone_number, s);
     }
