@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
       .eq("id", user.id)
       .maybeSingle();
 
-    const html = renderCampaignReportAdminEmail({
+    const html = await renderCampaignReportAdminEmail({
       reportId: inserted.id,
       projectTitle: project.title,
       projectSlug: project.slug,

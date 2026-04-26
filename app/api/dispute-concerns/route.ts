@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
       .eq("id", user.id)
       .maybeSingle();
 
-    const html = renderDisputeConcernAdminEmail({
+    const html = await renderDisputeConcernAdminEmail({
       concernId: inserted.id,
       pledgeId: pledge.id,
       projectTitle: project.title,
