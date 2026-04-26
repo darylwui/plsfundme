@@ -1,4 +1,4 @@
-import { getResend, FROM, ADMIN_EMAIL } from "./resend";
+import { getResend, FROM, REPLY_TO, ADMIN_EMAIL } from "./resend";
 import { formatSgd } from "@/lib/utils/currency";
 
 interface CampaignFundedArgs {
@@ -38,7 +38,7 @@ interface PledgeRefundedArgs {
 const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://getthatbread.sg";
 
 function sendEmail(payload: Parameters<ReturnType<typeof getResend>["emails"]["send"]>[0]) {
-  return getResend().emails.send(payload);
+  return getResend().emails.send({ replyTo: REPLY_TO, ...payload });
 }
 
 export async function sendCampaignFundedEmail(args: CampaignFundedArgs) {
@@ -75,6 +75,38 @@ export async function sendCampaignFailedEmail(args: CampaignFailedArgs) {
       <p>No backers were charged. You can relaunch your campaign anytime.</p>
       <a href="${appUrl}/projects/create" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
         Relaunch campaign
+      </a>
+    `,
+  });
+}
+
+interface CampaignFailedBackerArgs {
+  backerEmail: string;
+  backerName: string;
+  projectTitle: string;
+  deadline: string;
+}
+
+export async function sendCampaignFailedToBackerEmail(args: CampaignFailedBackerArgs) {
+  const safeTitle = escapeHtml(args.projectTitle);
+  const safeName = escapeHtml(args.backerName);
+  const deadlineDisplay = new Date(args.deadline).toLocaleDateString("en-SG", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  return sendEmail({
+    from: FROM,
+    to: args.backerEmail,
+    subject: `${args.projectTitle} didn't reach its goal`,
+    html: `
+      <h2>Hi ${safeName},</h2>
+      <p>The campaign you backed, <strong>${safeTitle}</strong>, ended on ${deadlineDisplay} without reaching its funding goal.</p>
+      <p><strong>Your card was never charged — no action needed.</strong></p>
+      <p>Thanks for backing local creators. Keep an eye out for more campaigns to support.</p>
+      <a href="${appUrl}/explore" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
+        Find more campaigns
       </a>
     `,
   });
@@ -402,6 +434,122 @@ export async function sendAdminCreatorRepliedEmail(args: AdminCreatorRepliedArgs
       </div>
       <a href="${appUrl}/dashboard/admin/creators?tab=needs_info" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
         Open in admin
+      </a>
+    `,
+  });
+}
+
+interface MilestoneApprovedBackerArgs {
+  backerEmail: string;
+  backerName: string;
+  creatorName: string;
+  projectTitle: string;
+  projectSlug: string;
+  milestoneNumber: 1 | 2 | 3;
+  escrowReleasedSgd: number;
+}
+
+const MILESTONE_LABELS: Record<1 | 2 | 3, string> = {
+  1: "Tooling & Deposits — Factory has confirmed the order",
+  2: "Production — Manufacturing is underway",
+  3: "Fulfillment — Rewards are on the way",
+};
+
+export async function sendMilestoneApprovedToBackerEmail(args: MilestoneApprovedBackerArgs) {
+  const safeTitle = escapeHtml(args.projectTitle);
+  const safeName = escapeHtml(args.backerName);
+  const safeCreator = escapeHtml(args.creatorName);
+  const milestoneLabel = MILESTONE_LABELS[args.milestoneNumber];
+
+  const releaseLine = args.escrowReleasedSgd > 0
+    ? `We've verified the proof and released <strong>${formatSgd(args.escrowReleasedSgd)}</strong> from escrow.`
+    : `We've verified the proof. The escrow release is processing — you'll see it reflected shortly.`;
+
+  return sendEmail({
+    from: FROM,
+    to: args.backerEmail,
+    subject: `Milestone ${args.milestoneNumber} hit · ${args.projectTitle}`,
+    html: `
+      <h2>Hi ${safeName},</h2>
+      <p>Great news — <strong>${safeCreator}</strong> just hit milestone ${args.milestoneNumber} on <strong>${safeTitle}</strong>. ${releaseLine}</p>
+      <p><strong>Milestone ${args.milestoneNumber}: ${escapeHtml(milestoneLabel)}</strong></p>
+      <p>Your money is still safe in escrow until all milestones are complete. You'll get an update when the next one is ready.</p>
+      <a href="${appUrl}/projects/${encodeURIComponent(args.projectSlug)}" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
+        See campaign progress
+      </a>
+    `,
+  });
+}
+
+interface MilestoneApprovedCreatorArgs {
+  creatorEmail: string;
+  creatorName: string;
+  projectTitle: string;
+  projectSlug: string;
+  milestoneNumber: 1 | 2 | 3;
+  escrowReleasedSgd: number;
+}
+
+export async function sendMilestoneApprovedToCreatorEmail(args: MilestoneApprovedCreatorArgs) {
+  const safeTitle = escapeHtml(args.projectTitle);
+  const safeName = escapeHtml(args.creatorName);
+
+  const releaseLine = args.escrowReleasedSgd > 0
+    ? `Milestone ${args.milestoneNumber} on <strong>${safeTitle}</strong> has been approved. <strong>${formatSgd(args.escrowReleasedSgd)}</strong> has been released from escrow to your account.`
+    : `Milestone ${args.milestoneNumber} on <strong>${safeTitle}</strong> has been approved. The escrow release is processing — you'll see funds in your account shortly.`;
+
+  return sendEmail({
+    from: FROM,
+    to: args.creatorEmail,
+    subject: `Milestone ${args.milestoneNumber} approved — ${args.projectTitle}`,
+    html: `
+      <h2>Hi ${safeName},</h2>
+      <p>${releaseLine}</p>
+      <p>Backers have been notified. Keep up the good work.</p>
+      <a href="${appUrl}/dashboard" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
+        Open dashboard
+      </a>
+    `,
+  });
+}
+
+interface MilestoneNeedsActionArgs {
+  creatorEmail: string;
+  creatorName: string;
+  projectTitle: string;
+  projectSlug: string;
+  milestoneNumber: 1 | 2 | 3;
+  decision: "rejected" | "needs_info";
+  feedbackText?: string;
+}
+
+export async function sendMilestoneNeedsActionEmail(args: MilestoneNeedsActionArgs) {
+  const safeTitle = escapeHtml(args.projectTitle);
+  const safeName = escapeHtml(args.creatorName);
+  const intro =
+    args.decision === "rejected"
+      ? `The proof you submitted for milestone ${args.milestoneNumber} on <strong>${safeTitle}</strong> needs revision. Please review the feedback below and resubmit.`
+      : `We have some questions about your milestone ${args.milestoneNumber} submission for <strong>${safeTitle}</strong> before we can approve it.`;
+
+  const feedbackBlock = args.feedbackText
+    ? `
+      <div style="background:#F3F4F6;padding:16px;border-radius:8px;margin-top:16px;">
+        <p style="margin:0;font-size:14px;color:#374151;"><strong>Reviewer feedback:</strong></p>
+        <p style="margin:8px 0 0 0;font-size:14px;color:#1F2937;white-space:pre-wrap;">${escapeHtml(args.feedbackText)}</p>
+      </div>
+    `
+    : "";
+
+  return sendEmail({
+    from: FROM,
+    to: args.creatorEmail,
+    subject: `Action needed — milestone ${args.milestoneNumber} (${args.projectTitle})`,
+    html: `
+      <h2>Hi ${safeName},</h2>
+      <p>${intro}</p>
+      ${feedbackBlock}
+      <a href="${appUrl}/dashboard/projects/${encodeURIComponent(args.projectSlug)}" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
+        Open project
       </a>
     `,
   });

@@ -4,7 +4,6 @@ import { getStripe } from "@/lib/stripe/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import {
   sendCampaignFundedEmail,
-  sendCampaignFailedEmail,
   sendPledgeConfirmedEmail,
   sendPledgeRefundedEmail,
 } from "@/lib/email/templates";
@@ -232,7 +231,7 @@ export async function POST(request: Request) {
       if (projectId) {
         const { data: project } = await supabase
           .from("projects")
-          .select("creator_id, title, amount_pledged_sgd, funding_goal_sgd")
+          .select("creator_id, title, slug, backer_count, amount_pledged_sgd, funding_goal_sgd")
           .eq("id", projectId)
           .single();
         if (project) {
@@ -247,9 +246,9 @@ export async function POST(request: Request) {
               creatorEmail: user.email,
               creatorName: (creatorProfile as any).display_name,
               projectTitle: (project as any).title,
-              projectSlug: "",
+              projectSlug: (project as any).slug,
               amountRaised: (project as any).amount_pledged_sgd,
-              backerCount: 0,
+              backerCount: (project as any).backer_count,
             }).catch(console.error);
           }
         }

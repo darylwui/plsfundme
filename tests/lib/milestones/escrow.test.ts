@@ -40,6 +40,7 @@ describe('escrow.ts - Core Escrow Logic', () => {
         mockSupabase.from.mockReturnValue(mockQuery);
 
         const result = await releaseMilestonePayment({
+          supabase: mockSupabase,
           campaign_id: 'campaign-1',
           milestone_number: 1,
           campaign_total_sgd: 1000,
@@ -62,6 +63,7 @@ describe('escrow.ts - Core Escrow Logic', () => {
         mockSupabase.from.mockReturnValue(mockQuery);
 
         await releaseMilestonePayment({
+          supabase: mockSupabase,
           campaign_id: 'campaign-1',
           milestone_number: 1,
           campaign_total_sgd: 12500,
@@ -87,6 +89,7 @@ describe('escrow.ts - Core Escrow Logic', () => {
         mockSupabase.from.mockReturnValue(mockQuery);
 
         const result = await releaseMilestonePayment({
+          supabase: mockSupabase,
           campaign_id: 'campaign-2',
           milestone_number: 2,
           campaign_total_sgd: 5000,
@@ -109,6 +112,7 @@ describe('escrow.ts - Core Escrow Logic', () => {
         mockSupabase.from.mockReturnValue(mockQuery);
 
         await releaseMilestonePayment({
+          supabase: mockSupabase,
           campaign_id: 'campaign-2',
           milestone_number: 2,
           campaign_total_sgd: 10000,
@@ -132,6 +136,7 @@ describe('escrow.ts - Core Escrow Logic', () => {
         mockSupabase.from.mockReturnValue(mockQuery);
 
         const result = await releaseMilestonePayment({
+          supabase: mockSupabase,
           campaign_id: 'campaign-3',
           milestone_number: 3,
           campaign_total_sgd: 1000,
@@ -165,6 +170,7 @@ describe('escrow.ts - Core Escrow Logic', () => {
           mockSupabase.from.mockReturnValue(mockQuery);
 
           const result = await releaseMilestonePayment({
+            supabase: mockSupabase,
             campaign_id: 'campaign-3',
             milestone_number: 3,
             campaign_total_sgd: testCase.total,
@@ -188,6 +194,7 @@ describe('escrow.ts - Core Escrow Logic', () => {
         mockSupabase.from.mockReturnValue(mockQuery);
 
         const result = await releaseMilestonePayment({
+          supabase: mockSupabase,
           campaign_id: 'campaign-1',
           milestone_number: 1,
           campaign_total_sgd: 99.99,
@@ -213,6 +220,7 @@ describe('escrow.ts - Core Escrow Logic', () => {
         mockSupabase.from.mockReturnValue(mockQuery);
 
         const result = await releaseMilestonePayment({
+          supabase: mockSupabase,
           campaign_id: 'campaign-1',
           milestone_number: 3,
           campaign_total_sgd: 333.33,
@@ -242,6 +250,7 @@ describe('escrow.ts - Core Escrow Logic', () => {
           mockSupabase.from.mockReturnValue(mockQuery);
 
           const result = await releaseMilestonePayment({
+            supabase: mockSupabase,
             campaign_id: 'campaign-1',
             milestone_number: 1,
             campaign_total_sgd: amount,
@@ -258,6 +267,7 @@ describe('escrow.ts - Core Escrow Logic', () => {
       it('should reject milestone_number 0', async () => {
         await expect(
           releaseMilestonePayment({
+            supabase: mockSupabase,
             campaign_id: 'campaign-1',
             milestone_number: 0 as any,
             campaign_total_sgd: 1000,
@@ -268,6 +278,7 @@ describe('escrow.ts - Core Escrow Logic', () => {
       it('should reject milestone_number 4', async () => {
         await expect(
           releaseMilestonePayment({
+            supabase: mockSupabase,
             campaign_id: 'campaign-1',
             milestone_number: 4 as any,
             campaign_total_sgd: 1000,
@@ -278,6 +289,7 @@ describe('escrow.ts - Core Escrow Logic', () => {
       it('should reject negative milestone_number', async () => {
         await expect(
           releaseMilestonePayment({
+            supabase: mockSupabase,
             campaign_id: 'campaign-1',
             milestone_number: -1 as any,
             campaign_total_sgd: 1000,
@@ -288,6 +300,7 @@ describe('escrow.ts - Core Escrow Logic', () => {
       it('should reject milestone_number > 3', async () => {
         await expect(
           releaseMilestonePayment({
+            supabase: mockSupabase,
             campaign_id: 'campaign-1',
             milestone_number: 999 as any,
             campaign_total_sgd: 1000,
@@ -309,6 +322,7 @@ describe('escrow.ts - Core Escrow Logic', () => {
         mockSupabase.from.mockReturnValue(mockQuery);
 
         const result = await releaseMilestonePayment({
+          supabase: mockSupabase,
           campaign_id: 'campaign-1',
           milestone_number: 1,
           campaign_total_sgd: 1000,
@@ -331,6 +345,7 @@ describe('escrow.ts - Core Escrow Logic', () => {
         mockSupabase.from.mockReturnValue(mockQuery);
 
         const result = await releaseMilestonePayment({
+          supabase: mockSupabase,
           campaign_id: 'campaign-1',
           milestone_number: 2,
           campaign_total_sgd: 5000,
@@ -353,6 +368,7 @@ describe('escrow.ts - Core Escrow Logic', () => {
         mockSupabase.from.mockReturnValue(mockQuery);
 
         const result = await releaseMilestonePayment({
+          supabase: mockSupabase,
           campaign_id: 'campaign-1',
           milestone_number: 3,
           campaign_total_sgd: 1000,
@@ -376,6 +392,7 @@ describe('escrow.ts - Core Escrow Logic', () => {
         mockSupabase.from.mockReturnValue(mockQuery);
 
         const result = await releaseMilestonePayment({
+          supabase: mockSupabase,
           campaign_id: 'campaign-1',
           milestone_number: 1,
           campaign_total_sgd: 1000,
@@ -397,6 +414,7 @@ describe('escrow.ts - Core Escrow Logic', () => {
         mockSupabase.from.mockReturnValue(mockQuery);
 
         const result = await releaseMilestonePayment({
+          supabase: mockSupabase,
           campaign_id: 'campaign-1',
           milestone_number: 3,
           campaign_total_sgd: 2000,
@@ -418,6 +436,7 @@ describe('escrow.ts - Core Escrow Logic', () => {
         mockSupabase.from.mockReturnValue(mockQuery);
 
         const result = await releaseMilestonePayment({
+          supabase: mockSupabase,
           campaign_id: 'campaign-1',
           milestone_number: 1,
           campaign_total_sgd: 100,
@@ -444,6 +463,7 @@ describe('escrow.ts - Core Escrow Logic', () => {
         mockSupabase.from.mockReturnValue(mockQuery);
 
         await releaseMilestonePayment({
+          supabase: mockSupabase,
           campaign_id: 'campaign-abc',
           milestone_number: 1,
           campaign_total_sgd: 12345.67,
@@ -471,6 +491,7 @@ describe('escrow.ts - Core Escrow Logic', () => {
         mockSupabase.from.mockReturnValue(mockQuery);
 
         await releaseMilestonePayment({
+          supabase: mockSupabase,
           campaign_id: 'campaign-xyz',
           milestone_number: 2,
           campaign_total_sgd: 25000,
@@ -497,6 +518,7 @@ describe('escrow.ts - Core Escrow Logic', () => {
         mockSupabase.from.mockReturnValue(mockQuery);
 
         await releaseMilestonePayment({
+          supabase: mockSupabase,
           campaign_id: 'campaign-final',
           milestone_number: 3,
           campaign_total_sgd: 50000,
@@ -523,6 +545,7 @@ describe('escrow.ts - Core Escrow Logic', () => {
         mockSupabase.from.mockReturnValue(mockQuery);
 
         await releaseMilestonePayment({
+          supabase: mockSupabase,
           campaign_id: 'campaign-1',
           milestone_number: 1,
           campaign_total_sgd: 1000,

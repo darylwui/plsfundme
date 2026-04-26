@@ -1,7 +1,10 @@
 import { createClient } from '@/lib/supabase/server';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import type { MilestoneNumber } from './types';
 
 interface ReleaseMilestonePaymentInput {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: SupabaseClient<any, any, any>;
   campaign_id: string;
   milestone_number: MilestoneNumber;
   campaign_total_sgd: number;
@@ -30,12 +33,10 @@ function getPayoutPercentage(milestone_number: MilestoneNumber): number {
 export async function releaseMilestonePayment(
   input: ReleaseMilestonePaymentInput
 ): Promise<ReleaseMilestonePaymentResult> {
-  const { campaign_id, milestone_number, campaign_total_sgd } = input;
+  const { supabase, campaign_id, milestone_number, campaign_total_sgd } = input;
 
   const percentage = getPayoutPercentage(milestone_number);
   const amount_sgd = Math.round(campaign_total_sgd * percentage * 100) / 100;
-
-  const supabase = await createClient();
 
   const { data, error } = await supabase
     .from('escrow_releases')

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { getStripe } from "@/lib/stripe/server";
 import { captureProjectPledges } from "@/app/api/payments/capture/route";
+import { sendCampaignFailedEmail, sendCampaignFailedToBackerEmail } from "@/lib/email/templates";
 
 export async function GET(request: Request) {
   // Verify Vercel cron secret
@@ -115,6 +116,47 @@ export async function GET(request: Request) {
           );
           // Leave pledge status as-is; will need manual resolution
         }
+      }
+
+      // Notify creator + card-pledge backers
+      const { data: projectFull } = await serviceClient
+        .from("projects")
+        .select(
+          "id, title, deadline, amount_pledged_sgd, funding_goal_sgd, creator:profiles!creator_id(id, display_name, email)"
+        )
+        .eq("id", project.id)
+        .single();
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const pf = projectFull as any;
+      if (pf?.creator?.email) {
+        sendCampaignFailedEmail({
+          creatorEmail: pf.creator.email,
+          creatorName: pf.creator.display_name,
+          projectTitle: pf.title,
+          projectSlug: "",
+          amountRaised: pf.amount_pledged_sgd,
+          goal: pf.funding_goal_sgd,
+        }).catch(console.error);
+      }
+
+      const { data: cardBackers } = await serviceClient
+        .from("pledges")
+        .select("backer:profiles!backer_id(display_name, email)")
+        .eq("project_id", project.id)
+        .eq("payment_method", "card")
+        .in("status", ["authorized", "released"]);
+
+      for (const pledge of cardBackers ?? []) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const b = (pledge as any).backer;
+        if (!b?.email || !pf) continue;
+        sendCampaignFailedToBackerEmail({
+          backerEmail: b.email,
+          backerName: b.display_name,
+          projectTitle: pf.title,
+          deadline: pf.deadline,
+        }).catch(console.error);
       }
 
       failedProjects.push(project.id);
