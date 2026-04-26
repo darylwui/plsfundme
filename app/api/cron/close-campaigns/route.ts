@@ -3,6 +3,7 @@ import { createServiceClient } from "@/lib/supabase/server";
 import { getStripe } from "@/lib/stripe/server";
 import { captureProjectPledges } from "@/app/api/payments/capture/route";
 import { sendCampaignFailedEmail, sendCampaignFailedToBackerEmail } from "@/lib/email/templates";
+import * as Sentry from "@sentry/nextjs";
 
 export async function GET(request: Request) {
   // Verify Vercel cron secret
@@ -138,10 +139,25 @@ export async function GET(request: Request) {
       } else {
         for (const pledge of paynowPledges ?? []) {
           if (!pledge.stripe_payment_intent_id) continue;
-          await stripe.refunds.create(
-            { payment_intent: pledge.stripe_payment_intent_id },
-            { idempotencyKey: `refund_failed_${pledge.id}` },
-          );
+          try {
+            await stripe.refunds.create(
+              { payment_intent: pledge.stripe_payment_intent_id },
+              { idempotencyKey: `refund_failed_${pledge.id}` },
+            );
+          } catch (err) {
+            console.error(
+              `Failed to refund paynow pledge ${pledge.id} (intent ${pledge.stripe_payment_intent_id}):`,
+              err,
+            );
+            Sentry.captureException(err, {
+              extra: {
+                pledgeId: pledge.id,
+                paymentIntentId: pledge.stripe_payment_intent_id,
+                projectId: project.id,
+              },
+            });
+            // Do not rethrow — keep refunding the remaining pledges.
+          }
         }
       }
 
