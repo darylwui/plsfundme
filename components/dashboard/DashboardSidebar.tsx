@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, FolderOpen, Users, Wallet, Heart, LogOut,
-  ClipboardList, UserCheck, UsersRound, User, MessageSquare,
+  ClipboardList, UserCheck, UsersRound, User, MessageSquare, Milestone,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -24,6 +24,7 @@ const BACKER_NAV = [
 
 const ADMIN_NAV = [
   { href: "/dashboard/admin/projects", label: "Review campaigns", icon: ClipboardList, exact: false },
+  { href: "/dashboard/admin/milestones", label: "Milestones", icon: Milestone, exact: false },
   { href: "/dashboard/admin/creators", label: "Creators", icon: UserCheck, exact: false },
   { href: "/dashboard/admin/users", label: "Users", icon: UsersRound, exact: false },
 ];

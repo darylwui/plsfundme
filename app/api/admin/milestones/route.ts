@@ -66,6 +66,7 @@ export async function GET(req: NextRequest) {
         created_at,
         projects (
           title,
+          slug,
           creator_id
         ),
         profiles!creator_id (
@@ -98,6 +99,7 @@ export async function GET(req: NextRequest) {
       id: submission.id,
       campaign_id: submission.campaign_id,
       campaign_name: submission.projects?.title || 'Unknown Campaign',
+      campaign_slug: submission.projects?.slug || null,
       creator_id: submission.creator_id,
       creator_name: submission.profiles?.display_name || 'Unknown Creator',
       milestone_number: submission.milestone_number,
