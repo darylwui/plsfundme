@@ -179,4 +179,37 @@ describe('close-campaigns cron', () => {
     expect(mockSendCampaignFailedEmail).toHaveBeenCalledTimes(1);
     expect(mockSendCampaignFailedToBackerEmail).not.toHaveBeenCalled();
   });
+
+  it('refunds paynow pledges with per-pledge idempotency keys when project fails', async () => {
+    (createServiceClient as ReturnType<typeof vi.fn>).mockReturnValue(
+      buildSupabaseMock('failed-with-paynow'),
+    );
+
+    const req = new Request('http://localhost/api/cron/close-campaigns', {
+      headers: { Authorization: 'Bearer test-secret' },
+    });
+    const res = await GET(req);
+    expect(res.status).toBe(200);
+
+    // One refund call per paynow pledge.
+    expect(mockStripeRefund).toHaveBeenCalledTimes(2);
+
+    // Each call: first arg has payment_intent; second arg has idempotencyKey
+    // tied to the pledge id (so cron retries are safe).
+    const calls = mockStripeRefund.mock.calls;
+    const paymentIntents = calls.map((c) => c[0].payment_intent).sort();
+    expect(paymentIntents).toEqual(['pi_pn_1', 'pi_pn_2']);
+
+    const idempotencyKeys = calls.map((c) => c[1]?.idempotencyKey).sort();
+    expect(idempotencyKeys).toEqual([
+      'refund_failed_pledge-pn-1',
+      'refund_failed_pledge-pn-2',
+    ]);
+
+    // Card auth-cancel path is untouched: paynow pledges should NOT also be
+    // sent through paymentIntents.cancel.
+    const canceledIntents = mockStripeCancel.mock.calls.map((c) => c[0]);
+    expect(canceledIntents).not.toContain('pi_pn_1');
+    expect(canceledIntents).not.toContain('pi_pn_2');
+  });
 });
