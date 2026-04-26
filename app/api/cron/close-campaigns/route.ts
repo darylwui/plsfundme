@@ -118,6 +118,33 @@ export async function GET(request: Request) {
         }
       }
 
+      // Refund paynow_captured pledges. Unlike card auths (cancelled above),
+      // PayNow funds were captured at pledge time and must be returned via the
+      // Stripe refund API. We deliberately do NOT update pledge rows here —
+      // the existing charge.refunded webhook handler owns that side effect
+      // (status flip, totals decrement, reward slot release, refund email).
+      // Idempotency key is per-pledge so cron retries are safe.
+      const { data: paynowPledges, error: paynowError } = await serviceClient
+        .from("pledges")
+        .select("id, stripe_payment_intent_id")
+        .eq("project_id", project.id)
+        .eq("status", "paynow_captured");
+
+      if (paynowError) {
+        console.error(
+          `Failed to fetch paynow pledges for failed project ${project.id}:`,
+          paynowError,
+        );
+      } else {
+        for (const pledge of paynowPledges ?? []) {
+          if (!pledge.stripe_payment_intent_id) continue;
+          await stripe.refunds.create(
+            { payment_intent: pledge.stripe_payment_intent_id },
+            { idempotencyKey: `refund_failed_${pledge.id}` },
+          );
+        }
+      }
+
       // Notify creator + card-pledge backers
       const { data: projectFull } = await serviceClient
         .from("projects")
