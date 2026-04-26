@@ -57,6 +57,9 @@ function buildSupabaseMock(
     { id: 'pledge-1', stripe_payment_intent_id: 'pi_card_1' },
     { id: 'pledge-2', stripe_payment_intent_id: 'pi_card_2' },
   ];
+  // Order is load-bearing: the partial-failure resilience test uses
+  // mockRejectedValueOnce on the FIRST call, so swapping these would silently
+  // change which pledgeId Sentry sees and break the assertion target.
   const paynowPledges =
     scenario === 'failed-with-paynow'
       ? [
