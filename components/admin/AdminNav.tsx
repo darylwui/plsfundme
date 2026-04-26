@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ShieldCheck, Tag, Rocket, Users, UserCheck } from "lucide-react";
+import { ShieldCheck, Tag, Rocket, Users, UserCheck, Inbox } from "lucide-react";
 
 const NAV = [
   { href: "/admin", label: "Overview", icon: ShieldCheck },
   { href: "/admin/projects", label: "Projects", icon: Rocket },
   { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/creators", label: "Creators", icon: UserCheck },
+  { href: "/admin/queue", label: "Queue", icon: Inbox },
   { href: "/admin/categories", label: "Categories", icon: Tag },
 ];
 
