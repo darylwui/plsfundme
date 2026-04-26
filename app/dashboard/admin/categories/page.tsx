@@ -1,10 +1,21 @@
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { CategoryManager } from "@/components/admin/CategoryManager";
 
 export const metadata = { title: "Categories — Admin" };
 
-export default async function CategoriesPage() {
+export default async function DashboardAdminCategoriesPage() {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("is_admin")
+    .eq("id", user.id)
+    .single();
+  if (!profile?.is_admin) redirect("/dashboard");
+
   const { data: categories } = await supabase
     .from("categories")
     .select("*")

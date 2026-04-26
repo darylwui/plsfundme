@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, FolderOpen, Users, Wallet, Heart, LogOut,
   ClipboardList, UserCheck, UsersRound, User, MessageSquare, Milestone,
+  Tag, ShieldCheck, Inbox,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -25,8 +26,11 @@ const BACKER_NAV = [
 const ADMIN_NAV = [
   { href: "/dashboard/admin/projects", label: "Review campaigns", icon: ClipboardList, exact: false },
   { href: "/dashboard/admin/milestones", label: "Milestones", icon: Milestone, exact: false },
+  { href: "/dashboard/admin/queue", label: "Queue", icon: Inbox, exact: false },
+  { href: "/dashboard/admin/kyc", label: "KYC", icon: ShieldCheck, exact: false },
   { href: "/dashboard/admin/creators", label: "Creators", icon: UserCheck, exact: false },
   { href: "/dashboard/admin/users", label: "Users", icon: UsersRound, exact: false },
+  { href: "/dashboard/admin/categories", label: "Categories", icon: Tag, exact: false },
 ];
 
 interface DashboardSidebarProps {

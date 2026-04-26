@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { DisputeConcernQueue, type ConcernRow } from "@/components/admin/DisputeConcernQueue";
 import { CampaignReportQueue, type ReportRow } from "@/components/admin/CampaignReportQueue";
@@ -9,12 +10,22 @@ export const metadata = { title: "Queue — Admin" };
 // stacked sections rather than tabs because pre-launch volume is low and an
 // empty state for one type would just look like a broken tab.
 
-export default async function AdminQueuePage({
+export default async function DashboardAdminQueuePage({
   searchParams,
 }: {
   searchParams: Promise<{ closed?: string }>;
 }) {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("is_admin")
+    .eq("id", user.id)
+    .single();
+  if (!profile?.is_admin) redirect("/dashboard");
+
   const { closed } = await searchParams;
   const showClosed = closed === "1";
 
@@ -55,7 +66,7 @@ export default async function AdminQueuePage({
           </p>
         </div>
         <a
-          href={showClosed ? "/admin/queue" : "/admin/queue?closed=1"}
+          href={showClosed ? "/dashboard/admin/queue" : "/dashboard/admin/queue?closed=1"}
           className="text-sm font-semibold text-[var(--color-brand-crust)] hover:underline shrink-0"
         >
           {showClosed ? "← Show open only" : "Show closed →"}

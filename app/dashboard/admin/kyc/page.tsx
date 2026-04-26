@@ -1,10 +1,20 @@
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { KycApprovalList } from "@/components/admin/KycApprovalList";
 
 export const metadata = { title: "KYC — Admin" };
 
-export default async function AdminKycPage() {
+export default async function DashboardAdminKycPage() {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("is_admin")
+    .eq("id", user.id)
+    .single();
+  if (!profile?.is_admin) redirect("/dashboard");
 
   const { data: profiles } = await supabase
     .from("profiles")
@@ -20,6 +30,7 @@ export default async function AdminKycPage() {
           Review and approve identity verification requests from users.
         </p>
       </div>
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <KycApprovalList profiles={(profiles as any[]) ?? []} />
     </div>
   );
