@@ -217,7 +217,7 @@ export function CheckoutForm({
           Privacy Policy
         </Link>
         , and{" "}
-        <Link href="/refund-policy" className="underline hover:text-[var(--color-ink)]">
+        <Link href="/terms?tab=refund" className="underline hover:text-[var(--color-ink)]">
           Refund &amp; Dispute Policy
         </Link>
         .
