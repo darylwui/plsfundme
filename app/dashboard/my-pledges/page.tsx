@@ -27,6 +27,8 @@ export default async function MyPledgesPage() {
     payment_method: string;
     status: string;
     created_at: string;
+    refunded: boolean;
+    refunded_at: string | null;
     project: {
       id: string; title: string; slug: string; status: string;
       funding_goal_sgd: number; amount_pledged_sgd: number;
@@ -159,6 +161,20 @@ export default async function MyPledgesPage() {
   function PastPledgeCard({ pledge }: { pledge: PledgeRow }) {
     const project = pledge.project;
     if (!project) return null;
+    const methodLabel = pledge.payment_method === "paynow" ? "PayNow" : "Card";
+
+    // Status-specific refund detail line. Backers' top question on a past
+    // pledge is "did the money come back, when, how" — so spell it out.
+    let refundDetail: string | null = null;
+    if (pledge.status === "refunded" && pledge.refunded_at) {
+      refundDetail = `Refunded on ${formatDate(pledge.refunded_at)}`;
+    } else if (pledge.status === "refunded") {
+      // Refunded flag set without a timestamp (legacy / partial data)
+      refundDetail = `Refunded to ${methodLabel}`;
+    } else if (pledge.status === "released") {
+      refundDetail = "Card hold released — never charged";
+    }
+
     return (
       <div className="flex items-center gap-4 bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-4 opacity-70">
         <div className="w-12 h-12 rounded-lg bg-[var(--color-surface-overlay)] shrink-0 overflow-hidden">
@@ -181,8 +197,13 @@ export default async function MyPledgesPage() {
             </Badge>
           </div>
           <p className="text-xs text-[var(--color-ink-subtle)] mt-0.5">
-            {formatSgd(pledge.amount_sgd)} · {formatDate(pledge.created_at)}
+            {formatSgd(pledge.amount_sgd)} via {methodLabel} · pledged {formatDate(pledge.created_at)}
           </p>
+          {refundDetail && (
+            <p className="text-xs text-[var(--color-ink-muted)] mt-0.5 font-medium">
+              {refundDetail}
+            </p>
+          )}
         </div>
         <Link
           href={`/projects/${project.slug}`}
