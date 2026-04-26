@@ -4,8 +4,9 @@ import { withSentryConfig } from "@sentry/nextjs";
 const nextConfig: NextConfig = {
   async redirects() {
     return [
-      // Policy pages consolidated under /terms
-      { source: "/privacy", destination: "/terms?tab=privacy", permanent: true },
+      // /privacy is its own page; /terms?tab=privacy is handled in proxy.ts so
+      // the destination doesn't carry the now-meaningless `tab` query.
+      // Refund still lives under /terms tabs.
       { source: "/refund-policy", destination: "/terms?tab=refund", permanent: true },
       // Legacy PM routes → creator equivalents (permanent 308)
       { source: "/apply/pm", destination: "/apply/creator", permanent: true },

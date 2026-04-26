@@ -119,7 +119,7 @@ export function TermsContent() {
             <li>
               <strong>Handle Backer personal data lawfully.</strong> You must handle all Backer personal
               data you receive in accordance with the PDPA and our{" "}
-              <a href="/terms?tab=privacy">Privacy Policy</a>. You may use Backer data only for fulfilling
+              <a href="/privacy">Privacy Policy</a>. You may use Backer data only for fulfilling
               campaign rewards and necessary campaign communications. You must not use Backer data for
               marketing, profiling, or any unrelated purpose without obtaining separate, explicit consent.
             </li>
@@ -395,7 +395,7 @@ export function TermsContent() {
         <Section title="15. Privacy &amp; Data">
           <p>
             Your use of get that bread is also governed by our{" "}
-            <a href="/terms?tab=privacy">Privacy Policy</a>, which is incorporated into these Terms by
+            <a href="/privacy">Privacy Policy</a>, which is incorporated into these Terms by
             reference. By using the Platform, you consent to our collection and use of your data as
             described in the Privacy Policy, in accordance with Singapore&apos;s Personal Data Protection
             Act 2012 (PDPA).
