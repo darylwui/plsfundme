@@ -29,7 +29,7 @@ const BACKER_FAQS: Faq[] = [
       <>
         Creators are legally responsible for fulfilling what they promised. Pledges sit in escrow after a campaign funds and are only released to the creator as they hit milestones — so the platform still holds funds when delivery slips. If a creator goes dark or fails to deliver, you can raise a concern via our two-stage dispute process: the creator has 14 days to respond, and if they don&apos;t, a formal dispute opens. Milestones 45+ days overdue with no update auto-trigger a dispute on your behalf. Full rules, refund amounts, and timelines are in our{" "}
         <a
-          href="/refund-policy"
+          href="/terms?tab=refund"
           className="font-semibold text-[var(--color-brand-crust)] hover:underline"
         >
           Refund &amp; Dispute Policy
@@ -46,7 +46,7 @@ const BACKER_FAQS: Faq[] = [
       <>
         Yes — any time before the campaign ends, cancel or adjust your pledge for free. Once a campaign has successfully funded and funds are captured, refunds follow the rules set out in our{" "}
         <a
-          href="/refund-policy"
+          href="/terms?tab=refund"
           className="font-semibold text-[var(--color-brand-crust)] hover:underline"
         >
           Refund &amp; Dispute Policy
@@ -69,7 +69,7 @@ const BACKER_FAQS: Faq[] = [
       <>
         If the product arrived but isn&apos;t what the creator sold — wrong spec, missing components, materially different from the campaign — contact the creator first. They&apos;re responsible for making it right under Singapore&apos;s Consumer Protection (Fair Trading) Act. If the creator won&apos;t engage, escalate to us and we can mediate or, in serious cases of misrepresentation, treat it as a dispute under our{" "}
         <a
-          href="/refund-policy"
+          href="/terms?tab=refund"
           className="font-semibold text-[var(--color-brand-crust)] hover:underline"
         >
           Refund &amp; Dispute Policy
