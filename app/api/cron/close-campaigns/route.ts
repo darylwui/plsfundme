@@ -3,6 +3,7 @@ import { createServiceClient } from "@/lib/supabase/server";
 import { getStripe } from "@/lib/stripe/server";
 import { captureProjectPledges } from "@/app/api/payments/capture/route";
 import { sendCampaignFailedEmail, sendCampaignFailedToBackerEmail } from "@/lib/email/templates";
+import * as Sentry from "@sentry/nextjs";
 
 export async function GET(request: Request) {
   // Verify Vercel cron secret
@@ -115,6 +116,54 @@ export async function GET(request: Request) {
             err
           );
           // Leave pledge status as-is; will need manual resolution
+        }
+      }
+
+      // Refund paynow_captured pledges. Unlike card auths (cancelled above),
+      // PayNow funds were captured at pledge time and must be returned via the
+      // Stripe refund API. We deliberately do NOT update pledge rows here —
+      // the existing charge.refunded webhook handler owns that side effect
+      // (status flip, totals decrement, reward slot release, refund email).
+      // Idempotency key is per-pledge so cron retries are safe.
+      const { data: paynowPledges, error: paynowError } = await serviceClient
+        .from("pledges")
+        .select("id, stripe_payment_intent_id")
+        .eq("project_id", project.id)
+        .eq("status", "paynow_captured");
+
+      if (paynowError) {
+        // Silent DB failure here would skip ALL paynow refunds for this
+        // project — Sentry-capture so ops sees the blind spot, not just
+        // Vercel logs.
+        console.error(
+          `Failed to fetch paynow pledges for failed project ${project.id}:`,
+          paynowError,
+        );
+        Sentry.captureException(paynowError, {
+          extra: { projectId: project.id },
+        });
+      } else {
+        for (const pledge of paynowPledges ?? []) {
+          if (!pledge.stripe_payment_intent_id) continue;
+          try {
+            await stripe.refunds.create(
+              { payment_intent: pledge.stripe_payment_intent_id },
+              { idempotencyKey: `refund_failed_${pledge.id}` },
+            );
+          } catch (err) {
+            console.error(
+              `Failed to refund paynow pledge ${pledge.id} (intent ${pledge.stripe_payment_intent_id}):`,
+              err,
+            );
+            Sentry.captureException(err, {
+              extra: {
+                pledgeId: pledge.id,
+                paymentIntentId: pledge.stripe_payment_intent_id,
+                projectId: project.id,
+              },
+            });
+            // Do not rethrow — keep refunding the remaining pledges.
+          }
         }
       }
 

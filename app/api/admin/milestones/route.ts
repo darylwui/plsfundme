@@ -66,6 +66,7 @@ export async function GET(req: NextRequest) {
         created_at,
         projects (
           title,
+          slug,
           creator_id
         ),
         profiles!creator_id (
@@ -93,11 +94,37 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    // Fetch latest approvals for non-pending submissions in this page so we can
+    // surface the decision + feedback in the queue UI.
+    const submissionIds = (submissions ?? []).map((s: { id: string }) => s.id);
+    const approvalBySubmissionId = new Map<
+      string,
+      { decision: string; feedback_text: string | null; reviewed_at: string }
+    >();
+    if (submissionIds.length > 0) {
+      const { data: approvals } = await supabase
+        .from('milestone_approvals')
+        .select('submission_id, decision, feedback_text, reviewed_at')
+        .in('submission_id', submissionIds)
+        .order('reviewed_at', { ascending: false });
+      for (const a of approvals ?? []) {
+        // First write wins because we ordered desc — that's the latest.
+        if (!approvalBySubmissionId.has(a.submission_id)) {
+          approvalBySubmissionId.set(a.submission_id, {
+            decision: a.decision,
+            feedback_text: a.feedback_text,
+            reviewed_at: a.reviewed_at,
+          });
+        }
+      }
+    }
+
     // Transform response
     const transformedSubmissions = submissions?.map((submission: any) => ({
       id: submission.id,
       campaign_id: submission.campaign_id,
       campaign_name: submission.projects?.title || 'Unknown Campaign',
+      campaign_slug: submission.projects?.slug || null,
       creator_id: submission.creator_id,
       creator_name: submission.profiles?.display_name || 'Unknown Creator',
       milestone_number: submission.milestone_number,
@@ -105,7 +132,19 @@ export async function GET(req: NextRequest) {
       proof_data: submission.proof_data,
       submitted_at: submission.submitted_at,
       created_at: submission.created_at,
+      approval: approvalBySubmissionId.get(submission.id) ?? null,
     })) || [];
+
+    // Counts per status for the tab badges. Cheap because the table is small
+    // and we're only selecting one column.
+    const counts = { pending: 0, approved: 0, rejected: 0, needs_info: 0 };
+    const { data: allStatuses } = await supabase
+      .from('milestone_submissions')
+      .select('status');
+    for (const row of allStatuses ?? []) {
+      const s = row.status as keyof typeof counts;
+      if (s in counts) counts[s] += 1;
+    }
 
     const totalPages = Math.ceil((count || 0) / limit);
 
@@ -116,6 +155,7 @@ export async function GET(req: NextRequest) {
         page,
         limit,
         pages: totalPages,
+        counts,
       },
       { status: 200 }
     );
