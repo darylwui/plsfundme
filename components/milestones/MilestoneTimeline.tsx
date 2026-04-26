@@ -1,16 +1,44 @@
 import Link from "next/link";
-import { Check, AlertTriangle } from "lucide-react";
+import { Check, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { formatDate } from "@/lib/utils/dates";
 import { formatSgd } from "@/lib/utils/currency";
+import { ReportConcernButton } from "@/components/dispute/ReportConcernButton";
 import type { ResolvedMilestone, MilestoneState } from "@/lib/milestones/backer-view";
 
 interface MilestoneTimelineProps {
   milestones: ResolvedMilestone[];
   hasOpenDispute?: boolean;
+  /**
+   * Project title — shown in the report-concern dialog header when a backer
+   * opens it from this surface.
+   */
+  projectTitle?: string;
+  /**
+   * The viewing user's active pledge ID on this project, if any. When set,
+   * the report-concern affordance renders. Pass null for non-backers and
+   * for the creator (creator-self should not be reporting their own project).
+   */
+  pledgeId?: string | null;
+  /**
+   * If the user has already filed an open Stage 1 concern on their pledge,
+   * this is the concern's `created_at`. The footer renders a "submitted"
+   * indicator instead of the report button to prevent duplicate filings.
+   */
+  openConcernCreatedAt?: string | null;
 }
 
-export function MilestoneTimeline({ milestones, hasOpenDispute }: MilestoneTimelineProps) {
+export function MilestoneTimeline({
+  milestones,
+  hasOpenDispute,
+  projectTitle,
+  pledgeId = null,
+  openConcernCreatedAt = null,
+}: MilestoneTimelineProps) {
   if (milestones.length === 0) return null;
+
+  const lateMilestone = milestones.find((m) => m.state === "late");
+  const lateMilestoneNumber = (lateMilestone?.number ?? null) as 1 | 2 | 3 | null;
+  const showConcernAffordance = Boolean(pledgeId && projectTitle);
 
   return (
     <section className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] overflow-hidden">
@@ -35,6 +63,24 @@ export function MilestoneTimeline({ milestones, hasOpenDispute }: MilestoneTimel
           <MilestoneRow key={m.number} milestone={m} isLast={idx === milestones.length - 1} />
         ))}
       </ol>
+
+      {showConcernAffordance && (
+        <div className="border-t border-[var(--color-border)] px-5 py-3 flex items-center justify-end">
+          {openConcernCreatedAt ? (
+            <span className="inline-flex items-center gap-1.5 text-xs text-[var(--color-ink-muted)]">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" aria-hidden="true" />
+              Concern submitted on {formatDate(openConcernCreatedAt)} — we&apos;ll be in touch
+            </span>
+          ) : (
+            <ReportConcernButton
+              pledgeId={pledgeId!}
+              projectTitle={projectTitle!}
+              defaultLateMilestone={lateMilestoneNumber}
+              variant="inline"
+            />
+          )}
+        </div>
+      )}
     </section>
   );
 }
