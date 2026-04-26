@@ -474,7 +474,7 @@ export async function sendMilestoneApprovedToBackerEmail(args: MilestoneApproved
       <p>Great news — <strong>${safeCreator}</strong> just hit milestone ${args.milestoneNumber} on <strong>${safeTitle}</strong>. ${releaseLine}</p>
       <p><strong>Milestone ${args.milestoneNumber}: ${escapeHtml(milestoneLabel)}</strong></p>
       <p>Your money is still safe in escrow until all milestones are complete. You'll get an update when the next one is ready.</p>
-      <a href="${appUrl}/projects/${encodeURIComponent(args.projectSlug)}" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
+      <a href="${appUrl}/projects/${encodeURIComponent(args.projectSlug)}" style="background:#E07F14;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
         See campaign progress
       </a>
     `,
@@ -484,8 +484,8 @@ export async function sendMilestoneApprovedToBackerEmail(args: MilestoneApproved
 interface MilestoneApprovedCreatorArgs {
   creatorEmail: string;
   creatorName: string;
+  projectId: string;
   projectTitle: string;
-  projectSlug: string;
   milestoneNumber: 1 | 2 | 3;
   escrowReleasedSgd: number;
 }
@@ -506,8 +506,8 @@ export async function sendMilestoneApprovedToCreatorEmail(args: MilestoneApprove
       <h2>Hi ${safeName},</h2>
       <p>${releaseLine}</p>
       <p>Backers have been notified. Keep up the good work.</p>
-      <a href="${appUrl}/dashboard" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
-        Open dashboard
+      <a href="${appUrl}/dashboard/projects/${encodeURIComponent(args.projectId)}/milestones" style="background:#E07F14;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
+        See milestone status
       </a>
     `,
   });
@@ -516,8 +516,8 @@ export async function sendMilestoneApprovedToCreatorEmail(args: MilestoneApprove
 interface MilestoneNeedsActionArgs {
   creatorEmail: string;
   creatorName: string;
+  projectId: string;
   projectTitle: string;
-  projectSlug: string;
   milestoneNumber: 1 | 2 | 3;
   decision: "rejected" | "needs_info";
   feedbackText?: string;
@@ -548,8 +548,8 @@ export async function sendMilestoneNeedsActionEmail(args: MilestoneNeedsActionAr
       <h2>Hi ${safeName},</h2>
       <p>${intro}</p>
       ${feedbackBlock}
-      <a href="${appUrl}/dashboard/projects/${encodeURIComponent(args.projectSlug)}" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
-        Open project
+      <a href="${appUrl}/dashboard/projects/${encodeURIComponent(args.projectId)}/milestones" style="background:#E07F14;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
+        Resubmit proof
       </a>
     `,
   });

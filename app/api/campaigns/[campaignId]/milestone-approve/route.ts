@@ -161,8 +161,8 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
         sendMilestoneApprovedToCreatorEmail({
           creatorEmail,
           creatorName,
+          projectId: campaignId,
           projectTitle,
-          projectSlug,
           milestoneNumber,
           escrowReleasedSgd,
         }).catch(console.error);
@@ -194,8 +194,8 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
         sendMilestoneNeedsActionEmail({
           creatorEmail,
           creatorName,
+          projectId: campaignId,
           projectTitle,
-          projectSlug,
           milestoneNumber,
           decision,
           feedbackText: feedback_text || undefined,
