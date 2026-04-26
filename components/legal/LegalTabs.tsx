@@ -4,11 +4,10 @@ import { useRouter } from 'next/navigation';
 
 const TABS = [
   { id: 'terms' as const, label: 'Terms of Service' },
-  { id: 'privacy' as const, label: 'Privacy Policy' },
   { id: 'refund' as const, label: 'Refund & Dispute' },
 ];
 
-export type LegalTabId = 'terms' | 'privacy' | 'refund';
+export type LegalTabId = 'terms' | 'refund';
 
 export function LegalTabs({
   activeTab,
