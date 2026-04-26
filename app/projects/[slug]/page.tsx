@@ -91,7 +91,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   const isCreator = user?.id === project.creator.id;
 
   // Parallel fetches
-  const [{ data: updatesRaw }, { data: feedbackRaw }, backerCheck, milestoneView] = await Promise.all([
+  const [{ data: updatesRaw }, { data: feedbackRaw }, userPledgeRows, milestoneView] = await Promise.all([
     supabase
       .from("project_updates")
       .select("*")
@@ -104,21 +104,34 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
       .eq("project_id", project.id)
       .order("created_at", { ascending: false })
       .limit(100),
+    // Fetch the user's most recent active pledge id (was a count-only check
+    // before; we need the actual id now to wire the Stage 1 dispute concern
+    // form). "cancelled" intentionally omitted — not a valid pledge_status
+    // enum value; the remaining filter covers every terminal/inactive state.
     user
       ? supabase
           .from("pledges")
-          .select("id", { count: "exact", head: true })
+          .select("id")
           .eq("project_id", project.id)
           .eq("backer_id", user.id)
-          // "cancelled" was in the filter but isn't a valid `pledge_status`
-          // enum value in the DB — PostgREST 400s the whole query. The
-          // remaining statuses still cover every terminal / inactive state
-          // we want to exclude when checking "does this user have an
-          // active pledge on this project?".
           .not("status", "in", "(failed,released,refunded)")
-      : Promise.resolve({ count: 0 }),
+          .order("created_at", { ascending: false })
+          .limit(1)
+      : Promise.resolve({ data: [] as { id: string }[] }),
     resolveMilestonesForBacker(supabase, project.id),
   ]);
+
+  const userPledgeId = (userPledgeRows.data ?? [])[0]?.id ?? null;
+  const { data: openConcernRows } = userPledgeId
+    ? await supabase
+        .from("dispute_concerns")
+        .select("created_at")
+        .eq("pledge_id", userPledgeId)
+        .in("status", ["open", "responded"])
+        .order("created_at", { ascending: false })
+        .limit(1)
+    : { data: [] as { created_at: string }[] };
+  const openConcernCreatedAt = openConcernRows?.[0]?.created_at ?? null;
 
   const service = createServiceClient();
   const { data: creatorPmProfile } = await service
@@ -158,7 +171,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
       : null,
   }));
 
-  const isBacker = isCreator || ((backerCheck as { count: number | null }).count ?? 0) > 0;
+  const isBacker = isCreator || userPledgeId !== null;
   const daysLeft = daysRemaining(project.deadline);
 
   const { data: similarRaw } = await supabase
@@ -398,6 +411,9 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               <MilestoneTimeline
                 milestones={milestoneView.milestones}
                 hasOpenDispute={milestoneView.hasOpenDispute}
+                projectTitle={project.title}
+                pledgeId={isCreator ? null : userPledgeId}
+                openConcernCreatedAt={openConcernCreatedAt}
               />
             )}
 
