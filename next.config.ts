@@ -12,8 +12,17 @@ const nextConfig: NextConfig = {
       { source: "/apply/pm", destination: "/apply/creator", permanent: true },
       { source: "/api/pm-apply", destination: "/api/creator-apply", permanent: true },
       { source: "/api/admin/pm/:id", destination: "/api/admin/creator/:id", permanent: true },
-      { source: "/admin/project-managers", destination: "/admin/creators", permanent: true },
+      { source: "/admin/project-managers", destination: "/dashboard/admin/creators", permanent: true },
       { source: "/dashboard/admin/pms", destination: "/dashboard/admin/creators", permanent: true },
+      // Old /admin/* tree consolidated into /dashboard/admin/*. Keep these
+      // redirects so any existing bookmarks or external links still resolve.
+      { source: "/admin", destination: "/dashboard", permanent: true },
+      { source: "/admin/categories", destination: "/dashboard/admin/categories", permanent: true },
+      { source: "/admin/creators", destination: "/dashboard/admin/creators", permanent: true },
+      { source: "/admin/kyc", destination: "/dashboard/admin/kyc", permanent: true },
+      { source: "/admin/projects", destination: "/dashboard/admin/projects", permanent: true },
+      { source: "/admin/queue", destination: "/dashboard/admin/queue", permanent: true },
+      { source: "/admin/users", destination: "/dashboard/admin/users", permanent: true },
     ];
   },
   images: {

@@ -141,7 +141,7 @@ describe('sendMilestoneApprovedToCreatorEmail', () => {
       creatorEmail: 'creator@example.com',
       creatorName: 'Jamie',
       projectTitle: 'Sourdough Starter Kit',
-      projectSlug: 'sourdough-starter-kit',
+      projectId: 'sourdough-starter-kit',
       milestoneNumber: 2,
       escrowReleasedSgd: 4000,
     });
@@ -159,7 +159,7 @@ describe('sendMilestoneApprovedToCreatorEmail', () => {
       creatorEmail: 'creator@example.com',
       creatorName: 'Jamie',
       projectTitle: 'Test',
-      projectSlug: 'test',
+      projectId: 'test',
       milestoneNumber: 1,
       escrowReleasedSgd: 4000,
     });
@@ -171,7 +171,7 @@ describe('sendMilestoneApprovedToCreatorEmail', () => {
       creatorEmail: 'creator@example.com',
       creatorName: 'Jamie',
       projectTitle: 'Test',
-      projectSlug: 'test',
+      projectId: 'test',
       milestoneNumber: 1,
       escrowReleasedSgd: 0,
     });
@@ -191,7 +191,7 @@ describe('sendMilestoneNeedsActionEmail', () => {
       creatorEmail: 'creator@example.com',
       creatorName: 'Jamie',
       projectTitle: 'Sourdough Starter Kit',
-      projectSlug: 'sourdough-starter-kit',
+      projectId: 'sourdough-starter-kit',
       milestoneNumber: 1,
       decision: 'rejected',
       feedbackText: 'Photo is too blurry, please retake.',
@@ -207,7 +207,7 @@ describe('sendMilestoneNeedsActionEmail', () => {
       creatorEmail: 'creator@example.com',
       creatorName: 'Jamie',
       projectTitle: 'Test',
-      projectSlug: 'test',
+      projectId: 'test',
       milestoneNumber: 2,
       decision: 'needs_info',
     });
@@ -220,7 +220,7 @@ describe('sendMilestoneNeedsActionEmail', () => {
       creatorEmail: 'creator@example.com',
       creatorName: 'Jamie',
       projectTitle: 'Test',
-      projectSlug: 'test',
+      projectId: 'test',
       milestoneNumber: 3,
       decision: 'rejected',
     });
@@ -234,7 +234,7 @@ describe('sendMilestoneNeedsActionEmail', () => {
       creatorEmail: 'creator@example.com',
       creatorName: 'Jamie',
       projectTitle: 'Test',
-      projectSlug: 'test',
+      projectId: 'test',
       milestoneNumber: 1,
       decision: 'rejected',
       feedbackText: '<script>alert(1)</script>',
@@ -248,7 +248,7 @@ describe('sendMilestoneNeedsActionEmail', () => {
       creatorEmail: 'creator@example.com',
       creatorName: 'Jamie',
       projectTitle: 'Test',
-      projectSlug: 'test',
+      projectId: 'test',
       milestoneNumber: 1,
       decision: 'rejected',
     });
