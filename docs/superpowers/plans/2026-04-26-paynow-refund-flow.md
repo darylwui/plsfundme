@@ -637,7 +637,7 @@ from pledges
 where id = '<pledge-id>';
 ```
 
-Expected: `status = 'refunded'`, `refunded_at` populated. (The webhook write is what flips this — confirms the cron→webhook chain works end-to-end.)
+Expected: `status = 'refunded'`. **Note:** `refunded_at` will likely be `null` — the `charge.refunded` webhook handler only writes the status flip, not `refunded_at`. That column is set by the milestone-escrow refund path, not the campaign-failed refund path. Don't treat `null` as a failure signal here. The reliable success indicators are: (a) `status = 'refunded'` on this row, (b) Stripe dashboard shows the refund object (Step 4), (c) project totals decremented (Step 7). Setting `refunded_at` from the webhook is a worthwhile follow-up, but it's a pre-existing gap, not a regression.
 
 - [ ] **Step 6: Verify the refund email arrived**
 
