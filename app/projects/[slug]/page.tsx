@@ -5,6 +5,7 @@ import { Pencil, Clock, CalendarDays, Building2, Globe, Link2 } from "lucide-rea
 import { ShareButtons } from "@/components/sharing/ShareButtons";
 import { BackLink } from "@/components/ui/back-link";
 import { MilestoneTimeline } from "@/components/milestones/MilestoneTimeline";
+import { ReportCampaignButton } from "@/components/dispute/ReportCampaignButton";
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://getthatbread.sg";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
@@ -485,6 +486,18 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               ))}
             </div>
           </section>
+        )}
+
+        {/* Tail-of-page report affordance. Hidden for the creator (no
+            self-reporting) and for anonymous viewers (logged-in only per
+            policy — anonymous reports are mostly noise). */}
+        {user && !isCreator && (
+          <div className="mt-16 pt-6 border-t border-[var(--color-border)] flex justify-end">
+            <ReportCampaignButton
+              projectId={project.id}
+              projectTitle={project.title}
+            />
+          </div>
         )}
       </div>
     </div>
