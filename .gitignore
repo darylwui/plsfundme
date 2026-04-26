@@ -45,3 +45,6 @@ next-env.d.ts
 .env.sentry-build-plugin
 .claude/worktrees/
 .superpowers/
+
+# Local render-script output (e.g. scripts/render-supabase-emails.ts)
+scripts/out/

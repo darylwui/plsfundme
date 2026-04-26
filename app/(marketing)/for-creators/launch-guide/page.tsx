@@ -5,145 +5,11 @@ import Link from "next/link";
 import { CheckCircle2, Circle, BookOpen, ArrowRight } from "lucide-react";
 import { BackLink } from "@/components/ui/back-link";
 import { BackToTop } from "@/components/ui/back-to-top";
+import { LAUNCH_SECTIONS, LAUNCH_TOTAL_ITEMS } from "./_data";
 
 const STORAGE_KEY = "gtb-launch-guide-v1";
 const TITLE_KEY = "gtb-launch-guide-title-v1";
 const DEFAULT_TITLE = "The world's best idea!";
-
-type Item = { id: string; label: string; spec: string; editable?: boolean };
-type Section = { id: string; title: string; intro: string; items: Item[] };
-
-const SECTIONS: Section[] = [
-  {
-    id: "basics",
-    title: "Campaign basics",
-    intro: "The basics backers see first. Get these right and everything else follows.",
-    items: [
-      {
-        id: "title",
-        label: "Project title",
-        spec: "5–100 characters. Clear and specific beats clever — backers skim fast.",
-        editable: true,
-      },
-      {
-        id: "short_desc",
-        label: "Short description",
-        spec: "20–200 characters. The hook that appears in search results and Explore cards.",
-      },
-      {
-        id: "cover_image",
-        label: "Cover image",
-        spec: "1200×675 px, JPG or PNG, under 2 MB. Your campaign's first impression — make it count.",
-      },
-      {
-        id: "full_desc",
-        label: "Full description",
-        spec: "Tell the story: what it is, why it matters, what backers receive. Minimum 50 characters.",
-      },
-      {
-        id: "category",
-        label: "Category",
-        spec: "Pick the one that fits best — it determines where your campaign appears on Explore.",
-      },
-    ],
-  },
-  {
-    id: "funding",
-    title: "Funding goal & deadline",
-    intro: "Set a goal you can genuinely deliver on. Aim ambitious, but be honest — your backers are counting on you.",
-    items: [
-      {
-        id: "goal",
-        label: "Funding goal (SGD)",
-        spec: "Minimum SGD 500, maximum SGD 10,000,000. Aim for what you genuinely need to deliver.",
-      },
-      {
-        id: "deadline",
-        label: "Campaign deadline",
-        spec: "Must be a future date. Most campaigns run 30–60 days — shorter creates urgency.",
-      },
-    ],
-  },
-  {
-    id: "rewards",
-    title: "Reward tiers",
-    intro: "At least one tier required. Price it by what it costs you to deliver — not just what feels right.",
-    items: [
-      {
-        id: "reward_title",
-        label: "Tier title",
-        spec: 'What backers call what they\'re getting. E.g. "Early bird", "Supporter", "Founding member".',
-      },
-      {
-        id: "reward_pledge",
-        label: "Minimum pledge amount",
-        spec: "The lowest amount that unlocks this tier. Factor in delivery costs.",
-      },
-      {
-        id: "reward_desc",
-        label: "Tier description",
-        spec: "What backers actually receive. Be specific — vague promises erode trust and increase disputes.",
-      },
-      {
-        id: "reward_delivery",
-        label: "Estimated delivery date",
-        spec: "Optional but strongly recommended. Sets expectations on when backers receive their reward.",
-      },
-      {
-        id: "reward_physical",
-        label: "Physical item flag",
-        spec: "Check this if you're shipping something physical. Backers see it before they pledge.",
-      },
-      {
-        id: "reward_cap",
-        label: "Max backers cap",
-        spec: "Optional. Use for limited-edition runs or capacity-constrained experiences.",
-      },
-    ],
-  },
-  {
-    id: "milestones",
-    title: "Milestones & payouts",
-    intro:
-      "Your funds unlock in three stages, not all at once. Know what you'll prove at each before you launch.",
-    items: [
-      {
-        id: "m1",
-        label: "Milestone 1 — first deliverable (40% of funds)",
-        spec: "Your first concrete proof of progress. Photos, prototypes, signed supplier agreements — anything verifiable.",
-      },
-      {
-        id: "m2",
-        label: "Milestone 2 — mid-project proof (40% of funds)",
-        spec: "Show the project advancing. This is the largest release, so the proof needs to match.",
-      },
-      {
-        id: "m3",
-        label: "Milestone 3 — final delivery (20% of funds)",
-        spec: "Completion proof: rewards shipped, build delivered, or service rendered. Closes out the campaign.",
-      },
-    ],
-  },
-  {
-    id: "submit",
-    title: "After you submit",
-    intro: "Almost there. Submit and we'll review your campaign — usually within 2–3 business days.",
-    items: [
-      {
-        id: "review",
-        label: "Admin review",
-        spec: "We review within 2–3 business days. You'll get an email when approved or if changes are needed.",
-      },
-      {
-        id: "live",
-        label: "You're live",
-        spec: "Once approved, your campaign page is public and backers can start pledging.",
-      },
-    ],
-  },
-];
-
-const TOTAL_ITEMS = SECTIONS.reduce((acc, s) => acc + s.items.length, 0);
 
 export default function LaunchGuidePage() {
   const [checked, setChecked] = useState<Set<string>>(new Set());
@@ -187,7 +53,7 @@ export default function LaunchGuidePage() {
   }
 
   const doneCount = checked.size;
-  const pct = TOTAL_ITEMS > 0 ? Math.round((doneCount / TOTAL_ITEMS) * 100) : 0;
+  const pct = LAUNCH_TOTAL_ITEMS > 0 ? Math.round((doneCount / LAUNCH_TOTAL_ITEMS) * 100) : 0;
 
   return (
     <div className="min-h-screen bg-[var(--color-surface-raised)]">
@@ -219,7 +85,7 @@ export default function LaunchGuidePage() {
           <div className="mb-10 print:hidden">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-semibold text-[var(--color-ink)]">
-                {doneCount} of {TOTAL_ITEMS} items ready
+                {doneCount} of {LAUNCH_TOTAL_ITEMS} items ready
               </span>
               <span className="text-sm text-[var(--color-ink-muted)]">{pct}%</span>
             </div>
@@ -229,7 +95,7 @@ export default function LaunchGuidePage() {
                 style={{ width: `${pct}%` }}
               />
             </div>
-            {doneCount === TOTAL_ITEMS && (
+            {doneCount === LAUNCH_TOTAL_ITEMS && (
               <p className="mt-3 text-sm font-semibold text-[var(--color-brand-crust)]">
                 You&apos;re ready — head to the campaign form and launch. 🎉
               </p>
@@ -239,7 +105,7 @@ export default function LaunchGuidePage() {
 
         {/* Checklist sections */}
         <div className="space-y-10">
-          {SECTIONS.map((section) => (
+          {LAUNCH_SECTIONS.map((section) => (
             <div key={section.id}>
               <h2 className="text-xl font-black text-[var(--color-ink)] mb-1">
                 {section.title}
@@ -331,14 +197,12 @@ export default function LaunchGuidePage() {
 
         {/* Download PDF link */}
         <div className="mt-8 flex justify-center">
-          <Link
-            href="/for-creators/launch-guide/print"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] text-sm font-semibold text-[var(--color-ink)] hover:bg-[var(--color-surface-raised)] transition-colors"
+          <a
+            href="/api/launch-guide/pdf"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] text-sm font-semibold text-[var(--color-ink)] hover:bg-[var(--color-surface-raised)] transition-colors print:hidden"
           >
-            Download PDF checklist
-          </Link>
+            Download our creator checklist
+          </a>
         </div>
 
         {/* CTA */}
