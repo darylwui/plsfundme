@@ -1,5 +1,7 @@
+import { render } from "@react-email/render";
 import { getResend, FROM, REPLY_TO, ADMIN_EMAIL } from "./resend";
 import { formatSgd } from "@/lib/utils/currency";
+import { PledgeConfirmedEmail } from "@/emails/PledgeConfirmed";
 
 interface CampaignFundedArgs {
   creatorEmail: string;
@@ -113,18 +115,27 @@ export async function sendCampaignFailedToBackerEmail(args: CampaignFailedBacker
 }
 
 export async function sendPledgeConfirmedEmail(args: PledgeConfirmedArgs) {
+  const deadlineDisplay = new Date(args.deadline).toLocaleDateString("en-SG", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  const html = await render(
+    PledgeConfirmedEmail({
+      backerName: args.backerName,
+      projectTitle: args.projectTitle,
+      projectSlug: args.projectSlug,
+      amountSgd: formatSgd(args.amount),
+      deadlineDisplay,
+    }),
+  );
+
   return sendEmail({
     from: FROM,
     to: args.backerEmail,
-    subject: `You backed "${args.projectTitle}" 🚀`,
-    html: `
-      <h2>You're in, ${args.backerName}! 🚀</h2>
-      <p>Your pledge of <strong>${formatSgd(args.amount)}</strong> to <strong>${args.projectTitle}</strong> is confirmed.</p>
-      <p>You'll only be charged if the campaign reaches its goal by <strong>${new Date(args.deadline).toLocaleDateString("en-SG", { day: "numeric", month: "long", year: "numeric" })}</strong>.</p>
-      <a href="${appUrl}/projects/${args.projectSlug}" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">
-        View campaign
-      </a>
-    `,
+    subject: `You backed "${args.projectTitle}"`,
+    html,
   });
 }
 

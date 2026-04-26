@@ -82,32 +82,32 @@ export async function POST(request: NextRequest) {
   switch (email_data.email_action_type) {
     case "signup":
       subject = "Confirm your email — get that bread";
-      html = renderConfirmSignup({ confirmUrl: buildConfirmUrl("/dashboard") });
+      html = await renderConfirmSignup({ confirmUrl: buildConfirmUrl("/dashboard") });
       break;
     case "login":
     case "magiclink":
       subject = "Your sign-in link — get that bread";
-      html = renderMagicLink({ confirmUrl: buildConfirmUrl("/dashboard") });
+      html = await renderMagicLink({ confirmUrl: buildConfirmUrl("/dashboard") });
       break;
     case "invite":
       subject = "You're invited to get that bread";
-      html = renderInvite({ confirmUrl: buildConfirmUrl("/dashboard") });
+      html = await renderInvite({ confirmUrl: buildConfirmUrl("/dashboard") });
       break;
     case "recovery":
       subject = "Reset your password — get that bread";
-      html = renderResetPassword({ confirmUrl: buildConfirmUrl("/reset-password") });
+      html = await renderResetPassword({ confirmUrl: buildConfirmUrl("/reset-password") });
       break;
     case "email_change":
     case "email_change_new":
       subject = "Confirm your new email — get that bread";
-      html = renderChangeEmail({
+      html = await renderChangeEmail({
         confirmUrl: buildConfirmUrl("/dashboard"),
         newEmail: email_data.new_email ?? user.new_email ?? user.email,
       });
       break;
     case "reauthentication":
       subject = "Your verification code — get that bread";
-      html = renderReauthentication({ token: email_data.token });
+      html = await renderReauthentication({ token: email_data.token });
       break;
     default: {
       const unknown: string = email_data.email_action_type;
