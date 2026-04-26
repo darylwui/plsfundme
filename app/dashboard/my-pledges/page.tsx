@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { ArrowRight, Heart, Rocket } from "lucide-react";
+import { ArrowRight, CheckCircle2, Heart, Rocket } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { ReportConcernButton } from "@/components/dispute/ReportConcernButton";
 import { formatSgd, fundingPercent } from "@/lib/utils/currency";
 import { formatDate, daysRemaining } from "@/lib/utils/dates";
 import { MilestoneSummary } from "@/components/milestones/MilestoneSummary";
@@ -48,6 +49,21 @@ export default async function MyPledgesPage() {
     }),
   );
 
+  // Open Stage 1 concerns this user has filed, keyed by pledge_id. We use
+  // them to (a) suppress the "Report a concern" button when one is already
+  // open and (b) show a small "Concern submitted" indicator instead.
+  const { data: concernsRaw } = await supabase
+    .from("dispute_concerns")
+    .select("id, pledge_id, created_at, status")
+    .eq("backer_id", user!.id)
+    .in("status", ["open", "responded"]);
+  const openConcernByPledgeId = new Map<string, { id: string; created_at: string }>();
+  for (const c of concernsRaw ?? []) {
+    if (!openConcernByPledgeId.has(c.pledge_id)) {
+      openConcernByPledgeId.set(c.pledge_id, { id: c.id, created_at: c.created_at });
+    }
+  }
+
   const activePledges = pledges.filter((p) => !["cancelled", "failed", "released", "refunded"].includes(p.status));
   const pastPledges = pledges.filter((p) => ["cancelled", "failed", "released", "refunded"].includes(p.status));
   const totalActive = activePledges.reduce((s, p) => s + p.amount_sgd, 0);
@@ -72,9 +88,11 @@ export default async function MyPledgesPage() {
   function ActivePledgeCard({
     pledge,
     milestoneViewByProjectId,
+    openConcern,
   }: {
     pledge: PledgeRow;
     milestoneViewByProjectId: Map<string, BackerMilestoneView>;
+    openConcern: { id: string; created_at: string } | undefined;
   }) {
     const project = pledge.project;
     if (!project) return null;
@@ -83,6 +101,12 @@ export default async function MyPledgesPage() {
     const isActive = project.status === "active";
     const isFunded = project.status === "funded";
     const barColor = isFunded ? "bg-[var(--color-brand-success)]" : "bg-[var(--color-brand-crust)]";
+    // Surface the report-concern affordance once the campaign funds (escrow
+    // begins) — that's when the protection mechanism actually engages.
+    const milestoneView = isFunded ? milestoneViewByProjectId.get(project.id) : undefined;
+    const lateMilestone = milestoneView?.milestones.find((m) => m.state === "late");
+    const lateMilestoneNumber = (lateMilestone?.number ?? null) as 1 | 2 | 3 | null;
+    const showConcernSection = isFunded;
 
     return (
       <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] shadow-[var(--shadow-card)] overflow-hidden">
@@ -154,6 +178,24 @@ export default async function MyPledgesPage() {
             </div>
           );
         })()}
+
+        {showConcernSection && (
+          <div className="border-t border-[var(--color-border)] px-5 py-2.5 flex items-center justify-end">
+            {openConcern ? (
+              <span className="inline-flex items-center gap-1.5 text-xs text-[var(--color-ink-muted)]">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" aria-hidden="true" />
+                Concern submitted on {formatDate(openConcern.created_at)} — we&apos;ll be in touch
+              </span>
+            ) : (
+              <ReportConcernButton
+                pledgeId={pledge.id}
+                projectTitle={project.title}
+                defaultLateMilestone={lateMilestoneNumber}
+                variant="inline"
+              />
+            )}
+          </div>
+        )}
       </div>
     );
   }
@@ -253,7 +295,12 @@ export default async function MyPledgesPage() {
             <div className="flex flex-col gap-3">
               <h2 className="font-bold text-[var(--color-ink)]">Active pledges</h2>
               {activePledges.map((p) => (
-                <ActivePledgeCard key={p.id} pledge={p} milestoneViewByProjectId={milestoneViewByProjectId} />
+                <ActivePledgeCard
+                  key={p.id}
+                  pledge={p}
+                  milestoneViewByProjectId={milestoneViewByProjectId}
+                  openConcern={openConcernByPledgeId.get(p.id)}
+                />
               ))}
             </div>
           )}
