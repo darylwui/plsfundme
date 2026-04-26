@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Loader2 } from 'lucide-react';
+import { ChevronDown, ChevronRight, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ImageUpload } from '@/components/ui/ImageUpload';
 import { formatDate } from '@/lib/utils/dates';
 import { formatSgd } from '@/lib/utils/currency';
 import type { MilestoneNumber, MilestoneProofData } from '@/lib/milestones/types';
@@ -16,6 +17,12 @@ export type CreatorMilestoneState =
   | 'rejected'
   | 'needs_info';
 
+export interface PastAttempt {
+  submitted_at: string;
+  decision: string | null;
+  feedback_text: string | null;
+}
+
 export interface CreatorMilestoneItem {
   number: MilestoneNumber;
   title: string;
@@ -26,6 +33,7 @@ export interface CreatorMilestoneItem {
   latest_submitted_at: string | null;
   latest_reviewed_at: string | null;
   escrow_released_sgd: number | null;
+  past_attempts: PastAttempt[];
 }
 
 const STATE_PILL: Record<CreatorMilestoneState, string> = {
@@ -67,11 +75,29 @@ export function CreatorMilestonesTimeline({
     );
   }
 
+  // Order gate: M2 unlocks once M1 approved; M3 unlocks once M2 approved.
+  // Creators can still submit out of order if the platform admin overrides
+  // by manually approving an earlier milestone — this is a soft block, not a
+  // hard one in the API.
+  const approvedByNumber = new Set(
+    milestones.filter((m) => m.state === 'approved').map((m) => m.number),
+  );
+
   return (
     <div className="flex flex-col gap-4">
-      {milestones.map((m) => (
-        <MilestoneCard key={m.number} campaignId={campaignId} milestone={m} />
-      ))}
+      {milestones.map((m) => {
+        const blocked =
+          (m.number === 2 && !approvedByNumber.has(1)) ||
+          (m.number === 3 && !approvedByNumber.has(2));
+        return (
+          <MilestoneCard
+            key={m.number}
+            campaignId={campaignId}
+            milestone={m}
+            blockedByOrder={blocked}
+          />
+        );
+      })}
     </div>
   );
 }
@@ -79,21 +105,25 @@ export function CreatorMilestonesTimeline({
 function MilestoneCard({
   campaignId,
   milestone: m,
+  blockedByOrder,
 }: {
   campaignId: string;
   milestone: CreatorMilestoneItem;
+  blockedByOrder: boolean;
 }) {
   const router = useRouter();
   const [showForm, setShowForm] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
   const [proof, setProof] = useState<MilestoneProofData>({});
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const canSubmit =
+  const baseCanSubmit =
     m.state === 'upcoming' ||
     m.state === 'late' ||
     m.state === 'rejected' ||
     m.state === 'needs_info';
+  const canSubmit = baseCanSubmit && !blockedByOrder;
 
   async function handleSubmit() {
     setSubmitting(true);
@@ -177,6 +207,17 @@ function MilestoneCard({
           </p>
         )}
 
+        {/* Order-gate explainer */}
+        {baseCanSubmit && blockedByOrder && (
+          <div className="rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-3 py-2 flex items-start gap-2">
+            <Lock className="w-3.5 h-3.5 text-[var(--color-ink-muted)] shrink-0 mt-0.5" />
+            <p className="text-xs text-[var(--color-ink-muted)] leading-relaxed">
+              Submit and get approval for M{m.number - 1} first. Milestones unlock in
+              order so backers see a clean delivery timeline.
+            </p>
+          </div>
+        )}
+
         {canSubmit && !showForm && (
           <Button
             onClick={() => setShowForm(true)}
@@ -215,6 +256,46 @@ function MilestoneCard({
             </div>
           </div>
         )}
+
+        {/* Past attempts — show only if there are any */}
+        {m.past_attempts.length > 0 && (
+          <div className="border-t border-[var(--color-border)] pt-3 mt-1">
+            <button
+              type="button"
+              onClick={() => setShowHistory((v) => !v)}
+              className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
+            >
+              {showHistory ? (
+                <ChevronDown className="w-3 h-3" />
+              ) : (
+                <ChevronRight className="w-3 h-3" />
+              )}
+              {m.past_attempts.length} earlier{' '}
+              {m.past_attempts.length === 1 ? 'attempt' : 'attempts'}
+            </button>
+            {showHistory && (
+              <div className="mt-2 flex flex-col gap-2">
+                {m.past_attempts.map((a, i) => (
+                  <div
+                    key={i}
+                    className="rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-3 py-2"
+                  >
+                    <p className="text-xs text-[var(--color-ink-muted)]">
+                      Submitted {formatDate(a.submitted_at)}
+                      {a.decision &&
+                        ` · ${a.decision === 'needs_info' ? 'Needed more info' : a.decision === 'rejected' ? 'Rejected' : 'Approved'}`}
+                    </p>
+                    {a.feedback_text && (
+                      <p className="text-sm text-[var(--color-ink)] whitespace-pre-wrap leading-relaxed mt-1">
+                        {a.feedback_text}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </article>
   );
@@ -232,12 +313,18 @@ function ProofFields({
   if (milestoneNumber === 1 || milestoneNumber === 2) {
     const letterLabel =
       milestoneNumber === 1 ? 'Factory contract' : 'Production timeline letter';
-    const letterPlaceholder =
+    const letterHint =
       milestoneNumber === 1
-        ? 'Paste the factory contract or letter confirming your tooling order…'
-        : 'Paste the factory letter confirming production is underway…';
+        ? 'Paste the contract or letter from your factory confirming your tooling order. Should mention units, deposit paid, and start date.'
+        : 'Paste the letter from your factory confirming production is underway. Should mention units in production, QA results, and ETA to completion.';
     const photoLabel =
-      milestoneNumber === 1 ? 'Contract photo URL' : 'Factory floor photo URL';
+      milestoneNumber === 1
+        ? 'Photo of the signed contract or deposit receipt'
+        : 'Photo of the production line or completed batch';
+    const photoHint =
+      milestoneNumber === 1
+        ? 'A clear photo of the signed agreement or deposit receipt — anything that ties the contract to a real, verifiable factory.'
+        : 'Date-stamped if possible. Backers and admin should be able to see the product physically being made.';
 
     return (
       <>
@@ -248,25 +335,23 @@ function ProofFields({
           <textarea
             value={value.letter_text ?? ''}
             onChange={(e) => onChange({ ...value, letter_text: e.target.value })}
-            placeholder={letterPlaceholder}
+            placeholder={
+              milestoneNumber === 1
+                ? 'e.g., "This confirms MochiCloud has signed a manufacturing agreement with Eco-Pack Industries for 5,000 units of compostable packaging starting Q3 2026. Deposit of $15,000 received."'
+                : 'e.g., "Units 1–2,500 are on the production line. QA passed for the first batch. Final batch ready for QA in 10 days."'
+            }
             rows={5}
             className="w-full px-3 py-2 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] text-sm leading-relaxed resize-y focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)]"
           />
+          <p className="text-xs text-[var(--color-ink-muted)] mt-1">{letterHint}</p>
         </div>
         <div>
-          <label className="block text-sm font-semibold text-[var(--color-ink)] mb-1">
-            {photoLabel}
-          </label>
-          <input
-            type="url"
-            value={value.photos_url ?? ''}
-            onChange={(e) => onChange({ ...value, photos_url: e.target.value })}
-            placeholder="https://…"
-            className="w-full px-3 py-2 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)]"
+          <ImageUpload
+            label={photoLabel}
+            value={value.photos_url ?? null}
+            onChange={(url) => onChange({ ...value, photos_url: url ?? undefined })}
+            hint={photoHint}
           />
-          <p className="text-xs text-[var(--color-ink-muted)] mt-1">
-            Paste a public link (Google Drive, Dropbox, image host) so admin can view it.
-          </p>
         </div>
       </>
     );
@@ -292,7 +377,8 @@ function ProofFields({
           className="w-full px-3 py-2 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] text-sm font-mono leading-relaxed resize-y focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)]"
         />
         <p className="text-xs text-[var(--color-ink-muted)] mt-1">
-          One per line. Carriers like DHL / FedEx / SingPost work — anything verifiable.
+          One tracking number per line. DHL, FedEx, SingPost, or any traceable carrier
+          works. We&apos;ll spot-check a few before approving.
         </p>
       </div>
       <div>
@@ -306,6 +392,10 @@ function ProofFields({
           placeholder="e.g., Shipped 100/100 units, ETA arrival 2026-05-15"
           className="w-full px-3 py-2 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)]"
         />
+        <p className="text-xs text-[var(--color-ink-muted)] mt-1">
+          One-line summary: how many units shipped, expected arrival window, any
+          delays.
+        </p>
       </div>
     </>
   );

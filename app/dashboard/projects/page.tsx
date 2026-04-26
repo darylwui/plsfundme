@@ -34,6 +34,62 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
     .is("deleted_at", null)
     .order("created_at", { ascending: false }) as { data: any[] | null };
 
+  // For milestone-eligible projects (active/funded/completed), compute whether
+  // any milestone needs the creator's attention so we can flag it on the card.
+  const milestoneEligibleIds = (projects ?? [])
+    .filter((p) => p.status === "active" || p.status === "funded" || p.status === "completed")
+    .map((p) => p.id as string);
+
+  const milestoneAttentionByProject = new Map<string, "needs_action" | "under_review" | null>();
+  if (milestoneEligibleIds.length > 0) {
+    const { data: subs } = await supabase
+      .from("milestone_submissions")
+      .select("id, campaign_id, milestone_number, status, submitted_at")
+      .in("campaign_id", milestoneEligibleIds)
+      .order("submitted_at", { ascending: false });
+
+    const subIds = (subs ?? []).map((s) => s.id);
+    let approvals: Array<{ submission_id: string; decision: string; reviewed_at: string }> = [];
+    if (subIds.length > 0) {
+      const { data: aps } = await supabase
+        .from("milestone_approvals")
+        .select("submission_id, decision, reviewed_at")
+        .in("submission_id", subIds)
+        .order("reviewed_at", { ascending: false });
+      approvals = aps ?? [];
+    }
+
+    const latestApprovalBySub = new Map<string, { decision: string }>();
+    for (const a of approvals) {
+      if (!latestApprovalBySub.has(a.submission_id)) {
+        latestApprovalBySub.set(a.submission_id, { decision: a.decision });
+      }
+    }
+
+    // Latest submission per (campaign, milestone)
+    const latestByKey = new Map<string, { id: string; status: string }>();
+    for (const s of subs ?? []) {
+      const key = `${s.campaign_id}:${s.milestone_number}`;
+      if (!latestByKey.has(key)) latestByKey.set(key, { id: s.id, status: s.status });
+    }
+
+    for (const projectId of milestoneEligibleIds) {
+      let needsAction = false;
+      let underReview = false;
+      for (const m of [1, 2, 3] as const) {
+        const latest = latestByKey.get(`${projectId}:${m}`);
+        if (!latest) continue;
+        const decision = latestApprovalBySub.get(latest.id)?.decision;
+        if (decision === "rejected" || decision === "needs_info") needsAction = true;
+        else if (latest.status === "pending") underReview = true;
+      }
+      milestoneAttentionByProject.set(
+        projectId,
+        needsAction ? "needs_action" : underReview ? "under_review" : null,
+      );
+    }
+  }
+
   // Only show "New campaign" button when the user is actually able to create.
   const { data: creatorProfile } = await supabase
     .from("creator_profiles")
@@ -229,15 +285,30 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
                   <div className="flex items-center gap-2 shrink-0">
                     {(project.status === "active" ||
                       project.status === "funded" ||
-                      project.status === "completed") && (
-                      <Link
-                        href={`/dashboard/projects/${project.id}/milestones`}
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface-overlay)] hover:bg-[var(--color-border)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
-                      >
-                        <MilestoneIcon className="w-3 h-3" />
-                        Milestones
-                      </Link>
-                    )}
+                      project.status === "completed") && (() => {
+                      const attn = milestoneAttentionByProject.get(project.id);
+                      const tone =
+                        attn === "needs_action"
+                          ? "border-red-300 bg-red-50 text-red-700 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800"
+                          : attn === "under_review"
+                            ? "border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-800"
+                            : "border-[var(--color-border)] bg-[var(--color-surface-overlay)] hover:bg-[var(--color-border)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]";
+                      const label =
+                        attn === "needs_action"
+                          ? "Needs your action"
+                          : attn === "under_review"
+                            ? "Under review"
+                            : "Milestones";
+                      return (
+                        <Link
+                          href={`/dashboard/projects/${project.id}/milestones`}
+                          className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-[var(--radius-btn)] border transition-colors ${tone}`}
+                        >
+                          <MilestoneIcon className="w-3 h-3" />
+                          {label}
+                        </Link>
+                      );
+                    })()}
                     <Link
                       href={`/projects/${project.slug}/edit`}
                       className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface-overlay)] hover:bg-[var(--color-border)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"

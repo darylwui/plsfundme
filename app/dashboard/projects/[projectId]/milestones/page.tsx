@@ -84,18 +84,19 @@ export default async function CreatorMilestonesPage({ params }: Props) {
     .select('milestone_number, amount_sgd')
     .eq('campaign_id', projectId);
 
-  // Latest submission per milestone (rows are ordered desc, first wins)
+  // Group submissions by milestone (rows are ordered desc, so [0] is latest,
+  // [1+] are prior attempts).
   type SubmissionRow = {
     id: string;
     milestone_number: number;
     status: string;
     submitted_at: string;
   };
-  const latestSubmissionByMilestone = new Map<number, SubmissionRow>();
+  const submissionsByMilestone = new Map<number, SubmissionRow[]>();
   for (const s of (submissions ?? []) as SubmissionRow[]) {
-    if (!latestSubmissionByMilestone.has(s.milestone_number)) {
-      latestSubmissionByMilestone.set(s.milestone_number, s);
-    }
+    const list = submissionsByMilestone.get(s.milestone_number) ?? [];
+    list.push(s);
+    submissionsByMilestone.set(s.milestone_number, list);
   }
 
   // Latest approval per submission_id (rows are ordered desc, first wins)
@@ -116,7 +117,9 @@ export default async function CreatorMilestonesPage({ params }: Props) {
   const milestones: CreatorMilestoneItem[] = isMilestonePromiseArray(promises)
     ? promises.map((p, i) => {
         const number = (i + 1) as MilestoneNumber;
-        const submission = latestSubmissionByMilestone.get(number);
+        const submissionsForM = submissionsByMilestone.get(number) ?? [];
+        const submission = submissionsForM[0];
+        const olderSubmissions = submissionsForM.slice(1);
         const approval = submission ? latestApprovalBySubmissionId.get(submission.id) : undefined;
 
         let state: CreatorMilestoneState;
@@ -126,6 +129,15 @@ export default async function CreatorMilestonesPage({ params }: Props) {
         else if (submission) state = 'under_review';
         else if (new Date(p.target_date).getTime() < now) state = 'late';
         else state = 'upcoming';
+
+        const past_attempts = olderSubmissions.map((s) => {
+          const a = latestApprovalBySubmissionId.get(s.id);
+          return {
+            submitted_at: s.submitted_at,
+            decision: a?.decision ?? null,
+            feedback_text: a?.feedback_text ?? null,
+          };
+        });
 
         return {
           number,
@@ -137,6 +149,7 @@ export default async function CreatorMilestonesPage({ params }: Props) {
           latest_submitted_at: submission?.submitted_at ?? null,
           latest_reviewed_at: approval?.reviewed_at ?? null,
           escrow_released_sgd: releaseByMilestone.get(number) ?? null,
+          past_attempts,
         };
       })
     : [];
