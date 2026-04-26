@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PlusCircle, ArrowRight, Pencil, Rocket, PartyPopper, XCircle } from "lucide-react";
+import { PlusCircle, ArrowRight, Pencil, Rocket, PartyPopper, XCircle, Milestone as MilestoneIcon } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -227,6 +227,17 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
 
                   {/* Actions */}
                   <div className="flex items-center gap-2 shrink-0">
+                    {(project.status === "active" ||
+                      project.status === "funded" ||
+                      project.status === "completed") && (
+                      <Link
+                        href={`/dashboard/projects/${project.id}/milestones`}
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface-overlay)] hover:bg-[var(--color-border)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
+                      >
+                        <MilestoneIcon className="w-3 h-3" />
+                        Milestones
+                      </Link>
+                    )}
                     <Link
                       href={`/projects/${project.slug}/edit`}
                       className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface-overlay)] hover:bg-[var(--color-border)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"

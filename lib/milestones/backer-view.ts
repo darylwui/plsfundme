@@ -136,7 +136,8 @@ export async function resolveMilestonesForBacker(
     supabase
       .from("milestone_submissions_public")
       .select("id, milestone_number, submitted_at")
-      .eq("campaign_id", projectId),
+      .eq("campaign_id", projectId)
+      .order("submitted_at", { ascending: false }),
     supabase
       .from("milestone_approvals_public")
       .select("submission_id, decision, reviewed_at")
@@ -180,9 +181,15 @@ export async function resolveMilestonesForBacker(
   }>;
   const releases = (releasesResult.data ?? []) as unknown as ReleaseRow[];
 
-  // Build lookup maps
+  // Build lookup maps. Submissions are ordered by submitted_at desc, so the
+  // first row we see for a given milestone_number is the latest — keep that
+  // and ignore older resubmissions.
   const submissionByNumber = new Map<number, typeof submissions[number]>();
-  for (const s of submissions) submissionByNumber.set(s.milestone_number, s);
+  for (const s of submissions) {
+    if (!submissionByNumber.has(s.milestone_number)) {
+      submissionByNumber.set(s.milestone_number, s);
+    }
+  }
 
   const releaseByNumber = new Map<number, ReleaseRow>();
   for (const r of releases) releaseByNumber.set(r.milestone_number, r);
