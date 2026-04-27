@@ -10,7 +10,11 @@ interface LoginPageProps {
   searchParams: Promise<{ redirectTo?: string }>;
 }
 
-export const metadata = { title: "Log in" };
+export const metadata = {
+  title: "Log in",
+  description:
+    "Sign in to get that bread to track your pledges, manage campaigns, and back the next big idea from Singapore.",
+};
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const { redirectTo } = await searchParams;

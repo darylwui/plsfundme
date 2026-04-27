@@ -10,7 +10,11 @@ interface PageProps {
   searchParams: Promise<{ role?: string }>;
 }
 
-export const metadata = { title: "Sign up" };
+export const metadata = {
+  title: "Sign up",
+  description:
+    "Create a get that bread account. Back Singapore creators or launch your own crowdfunding campaign — free to join.",
+};
 
 export default async function RegisterPage({ searchParams }: PageProps) {
   const supabase = await createClient();

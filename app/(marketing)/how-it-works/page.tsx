@@ -51,7 +51,9 @@ export default function HowItWorksPage() {
               <p className="mt-4 text-[var(--color-ink-muted)] leading-relaxed">
                 Don&apos;t take our word for it. Try pledging below, or let
                 the clock run out — you&apos;ll see exactly how your money is
-                handled either way.
+                handled either way. When a campaign hits its goal, 95% of
+                your pledge goes straight to the creator. We keep 5% to keep
+                the lights on.
               </p>
             </div>
             <PledgeTimelineDemo />
