@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { getStripe } from "@/lib/stripe/server";
 import {
@@ -20,11 +20,16 @@ interface RouteContext {
  * waiting up to 60s for unstable_cache to revalidate.
  */
 function invalidateProjectCaches(slug: string) {
+  // Next 16 split the cache invalidation API:
+  //   - updateTag(tag) — purges a tag's cached entries immediately
+  //   - revalidateTag(tag, profile) — schedules revalidation against a
+  //     CacheLifeConfig profile (we don't use profiles, so updateTag fits)
+  //
   // Tags used by unstable_cache wrappers in app/(marketing)/page.tsx
-  revalidateTag("projects-trending");
-  revalidateTag("projects-newest");
-  revalidateTag("projects-ending_soon");
-  revalidateTag("platform-stats");
+  updateTag("projects-trending");
+  updateTag("projects-newest");
+  updateTag("projects-ending_soon");
+  updateTag("platform-stats");
 
   // Path-level invalidations for routes that aren't tag-cached
   revalidatePath("/");
