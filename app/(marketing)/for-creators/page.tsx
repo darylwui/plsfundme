@@ -4,6 +4,7 @@ import {
   BookOpen,
   CheckCircle2,
   DollarSign,
+  Globe,
   HelpCircle,
   Rocket,
 } from "lucide-react";
@@ -36,9 +37,6 @@ export default function ForCreatorsPage() {
       {/* ── Hero ─────────────────────────────────────────────── */}
       <section className="bg-gradient-to-br from-amber-50 via-[#FFFBF5] to-orange-50 dark:from-[#0f0f0f] dark:via-[#0a0a0a] dark:to-[#111111] border-b border-[var(--color-border)]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24">
-          <div className="inline-flex items-center px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] text-xs uppercase tracking-[0.12em] font-medium mb-6">
-            ✨ Founding cohort
-          </div>
           <h1 className="text-[40px] md:text-[56px] font-black tracking-tight leading-[1.05] mb-5 max-w-4xl">
             Be one of the first.{" "}
             <span className="text-[var(--color-brand-crust)] dark:text-[var(--color-brand-golden)]">
@@ -66,17 +64,30 @@ export default function ForCreatorsPage() {
             </Button>
           </div>
           {/* International creators: surfaces the waitlist for non-SG
-              applicants. Small text link, not a primary CTA — the page
-              targets SG creators, this is an opt-out for the rest. */}
-          <p className="mt-5 text-sm text-[var(--color-ink-muted)]">
-            Outside Singapore?{" "}
-            <Link
-              href="/for-creators/international"
-              className="font-semibold text-[var(--color-brand-crust)] hover:underline"
+              applicants. Ghost-style CTA — visually subordinate to the
+              primary "Apply to launch" CTA above so the page still leads
+              with its SG audience, but tappable enough to feel like an
+              actionable invitation rather than a fine-print footnote. */}
+          {/* Border opacity bumped to /30 (light) / /25 (dark) so the
+              chip reads as a tappable button on the amber-50 hero,
+              not a faint outline. Copy switches to a tighter version
+              under sm: full sentence wraps on 375px viewports inside
+              the size="sm" h-8, so we shorten there. */}
+          <div className="mt-5">
+            <Button
+              asChild
+              size="sm"
+              variant="ghost"
+              className="text-[var(--color-brand-crust)] hover:text-[var(--color-brand-crust-dark)] hover:bg-[var(--color-brand-crumb)] dark:text-[var(--color-brand-golden)] dark:hover:text-[var(--color-brand-golden)] dark:hover:bg-[var(--color-brand-crust-dark)]/25 border border-[var(--color-brand-crust)]/30 dark:border-[var(--color-brand-golden)]/25 hover:border-[var(--color-brand-crust)]/50 dark:hover:border-[var(--color-brand-golden)]/45"
             >
-              Tell us you&apos;re interested →
-            </Link>
-          </p>
+              <Link href="/for-creators/international">
+                <Globe className="w-4 h-4 shrink-0" />
+                <span className="sm:hidden">Overseas founder? Submit your idea</span>
+                <span className="hidden sm:inline">If you&apos;re an overseas founder, submit your idea here</span>
+                <ArrowRight className="w-4 h-4 shrink-0" />
+              </Link>
+            </Button>
+          </div>
           <ScrollDownCue />
         </div>
       </section>

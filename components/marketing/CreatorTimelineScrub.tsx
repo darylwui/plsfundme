@@ -13,7 +13,6 @@ import {
   Search,
   Rocket,
   Zap,
-  CheckCircle2,
   type LucideIcon,
 } from "lucide-react";
 
@@ -52,13 +51,6 @@ const STEPS: Step[] = [
     title: "Ship milestones & get paid",
     description:
       "As you complete each milestone, funds are released to you minus our 5% platform fee. Keep backers updated along the way.",
-  },
-  {
-    Icon: CheckCircle2,
-    step: "05",
-    title: "Campaign complete",
-    description:
-      "All milestones delivered, all backers rewarded. You've successfully brought your idea to life.",
   },
 ];
 
