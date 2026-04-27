@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, XCircle, Trash2, ExternalLink } from "lucide-react";
+import { CheckCircle2, XCircle, Trash2, ExternalLink, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatSgd } from "@/lib/utils/currency";
@@ -427,6 +427,29 @@ export function ProjectReviewList({ pendingProjects, allProjects }: ProjectRevie
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                       Remove campaign
+                    </Button>
+                  )}
+
+                  {/* Revert to draft — un-publishes a live campaign so the
+                      creator can edit it again. Used for cleanup + staging. */}
+                  {isActive && !isRemovingThis && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      loading={loading === project.id + "revert_to_draft"}
+                      onClick={async () => {
+                        if (
+                          !confirm(
+                            `Revert "${project.title}" to draft?\n\n` +
+                              `It will be hidden from /explore and editable again. Pledges holding money will block this — refund or release first.`,
+                          )
+                        )
+                          return;
+                        await callAction(project.id, "revert_to_draft");
+                      }}
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      Revert to draft
                     </Button>
                   )}
 
