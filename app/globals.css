@@ -35,7 +35,7 @@
   --color-border-invert:        #4A2E1A;
   --color-ink-invert:           #F5EDD8;
   --color-ink-invert-muted:     #C4956A;
-  --color-ink-invert-subtle:    #8B6545;
+  --color-ink-invert-subtle:    #B0855E;   /* Bumped from #8B6545 — was 3.20:1 on the dark footer (#2C1A0E), failing WCAG AA. New value gets ~4.6:1. */
 
   /* Background */
   --color-background:      var(--color-surface);
@@ -159,7 +159,7 @@
   --color-border:          #2a2a2a;
   --color-ink:             #fafafa;
   --color-ink-muted:       #a3a3a3;
-  --color-ink-subtle:      #737373;
+  --color-ink-subtle:      #909090;   /* Bumped from #737373 — was 4.17:1 on dark surface (#0a0a0a), failing WCAG AA. New value gets ~5.5:1. */
   --color-background:      var(--color-surface);
   --color-foreground:      var(--color-ink);
   --shadow-card:        0 0 0 1px rgba(255, 255, 255, 0.06);

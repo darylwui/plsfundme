@@ -108,9 +108,9 @@ function FoundingCohortEmptyState() {
       <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] mb-3">
         Founding cohort
       </p>
-      <h3 className="text-2xl sm:text-3xl font-black tracking-tight text-[var(--color-ink)] mb-3 max-w-xl">
+      <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[var(--color-ink)] mb-3 max-w-xl">
         Be one of our first creators
-      </h3>
+      </h2>
       <p className="text-[var(--color-ink-muted)] leading-relaxed max-w-md mb-6">
         We&apos;re handpicking Singapore&apos;s founding cohort right now. Apply
         to launch your campaign and get featured at the top of the homepage on
