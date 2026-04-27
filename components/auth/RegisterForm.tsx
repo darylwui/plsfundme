@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { trackEvent } from "@/lib/analytics";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CreatorRegistrationSteps } from "@/components/auth/CreatorRegistrationSteps";
@@ -131,6 +132,7 @@ export function RegisterForm({ initialRole = null }: RegisterFormProps) {
       return;
     }
 
+    trackEvent("account_created", { method: "email" });
     setSuccess(true);
   }
 
