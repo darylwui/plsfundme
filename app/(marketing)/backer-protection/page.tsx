@@ -52,6 +52,15 @@ export default function RefundGuaranteePage() {
         </div>
 
         <div className="prose prose-sm max-w-none text-[var(--color-ink)] prose-headings:text-[var(--color-ink)] prose-headings:font-black prose-a:text-[var(--color-brand-crust)] space-y-8">
+          <Section title="The regulatory picture in Singapore">
+            <p>
+              Reward-based crowdfunding in Singapore isn&apos;t directly regulated by MAS — it&apos;s not classified as a financial product the way investment crowdfunding is. Your protection comes from elsewhere: pledges sit in <strong>Stripe escrow</strong> (the same infrastructure used by most major SG platforms), and creators are bound by Singapore&apos;s <strong>Consumer Protection (Fair Trading) Act</strong> for what they deliver. Misrepresenting a campaign is unlawful regardless of the platform.
+            </p>
+            <p>
+              On top of that, our 5% platform fee is refunded along with your pledge whenever a dispute is resolved in your favour.
+            </p>
+          </Section>
+
           <Section title="How milestone-based escrow protects you">
             <p>
               When you back a project, your payment is either:

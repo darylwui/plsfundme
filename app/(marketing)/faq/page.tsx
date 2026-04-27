@@ -107,6 +107,30 @@ const CREATOR_FAQS: Faq[] = [
     plain:
       "A flat 5% platform fee on the funds raised — only charged if the campaign reaches its goal. Standard payment processing is included. No setup fees, monthly fees, or hidden costs.",
   },
+  {
+    q: "How long does creator verification take, and what do you check?",
+    a: "Verification usually takes 1–2 business days. We confirm your identity and the basics of your campaign — that you're a real person based in Singapore, that what you're describing matches what you're capable of delivering, and that it doesn't fall into our restricted categories (regulated financial products, unlicensed activities, counterfeit goods). First-time creators may be asked for examples of past work or a quick call. Once approved, you can launch unlimited campaigns afterward without re-verifying each one.",
+    plain:
+      "Verification usually takes 1–2 business days. We confirm your identity and the basics of your campaign — that you're a real person based in Singapore, that what you're describing matches what you're capable of delivering, and that it doesn't fall into our restricted categories (regulated financial products, unlicensed activities, counterfeit goods). First-time creators may be asked for examples of past work or a quick call. Once approved, you can launch unlimited campaigns afterward without re-verifying each one.",
+  },
+  {
+    q: "Can I edit my campaign after it goes live?",
+    a: "Cosmetic edits (typos, image swaps, additional reward tiers, posts in your Updates section) are allowed any time. But the core promises a backer pledged to — funding goal, milestones, what each reward includes, deadline — are locked once the first pledge clears. Material changes after that require admin approval and may trigger a refund window for backers who pledged before the change.",
+    plain:
+      "Cosmetic edits (typos, image swaps, additional reward tiers, posts in your Updates section) are allowed any time. But the core promises a backer pledged to — funding goal, milestones, what each reward includes, deadline — are locked once the first pledge clears. Material changes after that require admin approval and may trigger a refund window for backers who pledged before the change.",
+  },
+  {
+    q: "Who owns my project's IP?",
+    a: "You do, fully. We don't take equity, IP rights, or any claim over what you create or sell. Your campaign content (description, images, video) remains your copyright — we just need a non-exclusive license to display it on the platform while your campaign is active. If you later want to take everything down, you can.",
+    plain:
+      "You do, fully. We don't take equity, IP rights, or any claim over what you create or sell. Your campaign content (description, images, video) remains your copyright — we just need a non-exclusive license to display it on the platform while your campaign is active. If you later want to take everything down, you can.",
+  },
+  {
+    q: "What happens if my campaign doesn't reach its goal?",
+    a: "All pledges are refunded automatically — backers' card authorizations are cancelled and PayNow funds returned. You owe nothing (the 5% fee is only charged on successful campaigns). You can relaunch a revised campaign whenever you're ready — many successful ones are second or third attempts.",
+    plain:
+      "All pledges are refunded automatically — backers' card authorizations are cancelled and PayNow funds returned. You owe nothing (the 5% fee is only charged on successful campaigns). You can relaunch a revised campaign whenever you're ready — many successful ones are second or third attempts.",
+  },
 ];
 
 const FAQ_JSON_LD = {
