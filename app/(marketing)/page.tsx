@@ -15,6 +15,18 @@ import { DiscoverySection } from "@/components/home/DiscoverySection";
 import { ScrollReveal } from "@/components/marketing/ScrollReveal";
 import type { ProjectWithRelations } from "@/types/project";
 
+// Page-specific metadata override — the homepage is the most-shared URL,
+// so it gets a punchier title/description than the root-layout fallback.
+// `title.absolute` skips the "%s — get that bread" template since "get that
+// bread" is already the headline here.
+export const metadata = {
+  title: {
+    absolute: "get that bread — Singapore's reward-based crowdfunding platform",
+  },
+  description:
+    "Back bold ideas from Singapore creators. Pledge to campaigns you love, get exclusive rewards, only pay if they hit their goal.",
+};
+
 type FilterTab = "trending" | "newest" | "ending_soon";
 
 interface HomePageProps {
