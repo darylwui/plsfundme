@@ -151,6 +151,22 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
         milestone_number: milestoneNumber,
         campaign_total_sgd: p.amount_pledged_sgd,
       });
+
+      // Race / retry: another approval already inserted the release.
+      // Bail out before emailing — the original approval already
+      // notified the creator and backers. Returning 409 lets the
+      // calling UI show "already approved" instead of pretending
+      // we did the work.
+      if (releaseResult.already_released) {
+        return NextResponse.json(
+          {
+            error: 'This milestone has already been released',
+            status: 'already_released',
+          },
+          { status: 409 },
+        );
+      }
+
       if (!releaseResult.success) {
         console.error('Escrow release insert failed:', releaseResult.error);
       }

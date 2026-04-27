@@ -15,6 +15,14 @@ interface ReleaseMilestonePaymentResult {
   amount_released?: number;
   reason?: string;
   error?: string;
+  /**
+   * True when the release row already existed (Postgres unique_violation
+   * on `(campaign_id, milestone_number)`) — i.e. a concurrent admin
+   * approval or a retried request beat us to the insert. Caller should
+   * short-circuit duplicate side-effects (emails, notifications) when
+   * this is set, rather than treating it like a generic failure.
+   */
+  already_released?: boolean;
 }
 
 /**
@@ -50,6 +58,18 @@ export async function releaseMilestonePayment(
     .select();
 
   if (error) {
+    // Postgres unique_violation on (campaign_id, milestone_number):
+    // another insert beat us to it. Surface as a distinct flag so
+    // the caller skips duplicate emails/notifications instead of
+    // treating it like a generic failure.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if ((error as any).code === '23505') {
+      return {
+        success: false,
+        error: 'Escrow release already exists for this milestone',
+        already_released: true,
+      };
+    }
     return {
       success: false,
       error: error.message,
