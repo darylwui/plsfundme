@@ -65,7 +65,7 @@ export default function LaunchGuidePage() {
 
         {/* Hero */}
         <div className="mb-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 mb-4 print:hidden">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 mb-4">
             <BookOpen className="w-4 h-4 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)]" />
             <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)]">
               Creator launch guide
@@ -82,7 +82,7 @@ export default function LaunchGuidePage() {
 
         {/* Progress bar — hidden until mounted to avoid hydration flash */}
         {mounted && (
-          <div className="mb-10 print:hidden">
+          <div className="mb-10">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-semibold text-[var(--color-ink)]">
                 {doneCount} of {LAUNCH_TOTAL_ITEMS} items ready
@@ -111,7 +111,7 @@ export default function LaunchGuidePage() {
                 {section.title}
               </h2>
               <p className="text-sm text-[var(--color-ink-muted)] mb-4">{section.intro}</p>
-              <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] divide-y divide-[var(--color-border)] overflow-hidden print:border-[#ccc]">
+              <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] divide-y divide-[var(--color-border)] overflow-hidden">
                 {section.items.map((item) => {
                   const done = mounted && checked.has(item.id);
 
@@ -126,7 +126,7 @@ export default function LaunchGuidePage() {
                         <button
                           type="button"
                           onClick={() => toggle(item.id)}
-                          className="mt-0.5 shrink-0 print:hidden"
+                          className="mt-0.5 shrink-0"
                           aria-label={done ? `Uncheck: ${item.label}` : `Check: ${item.label}`}
                         >
                           {done ? (
@@ -135,7 +135,6 @@ export default function LaunchGuidePage() {
                             <Circle className="w-5 h-5 text-[var(--color-border)]" />
                           )}
                         </button>
-                        <input type="checkbox" className="hidden print:block shrink-0 mt-1 accent-[#92400e]" aria-hidden="true" />
                         <span className="flex-1 min-w-0">
                           <span className="block text-xs font-semibold uppercase tracking-widest text-[var(--color-ink-subtle)] mb-1">
                             {item.label}
@@ -163,18 +162,17 @@ export default function LaunchGuidePage() {
                       key={item.id}
                       type="button"
                       onClick={() => toggle(item.id)}
-                      className={`w-full flex items-start gap-4 px-5 py-4 text-left transition-colors hover:bg-[var(--color-surface-raised)] print:pointer-events-none ${
+                      className={`w-full flex items-start gap-4 px-5 py-4 text-left transition-colors hover:bg-[var(--color-surface-raised)] ${
                         done ? "opacity-60" : ""
                       }`}
                     >
-                      <span className="mt-0.5 shrink-0 print:hidden">
+                      <span className="mt-0.5 shrink-0">
                         {done ? (
                           <CheckCircle2 className="w-5 h-5 text-[var(--color-brand-golden)]" />
                         ) : (
                           <Circle className="w-5 h-5 text-[var(--color-border)]" />
                         )}
                       </span>
-                      <span className="hidden print:inline-block w-4 h-4 border border-[#999] rounded-sm shrink-0 mt-0.5" />
                       <span className="flex-1 min-w-0">
                         <span
                           className={`block font-semibold text-[var(--color-ink)] leading-snug ${
@@ -199,7 +197,7 @@ export default function LaunchGuidePage() {
         <div className="mt-8 flex justify-center">
           <a
             href="/api/launch-guide/pdf"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] text-sm font-semibold text-[var(--color-ink)] hover:bg-[var(--color-surface-raised)] transition-colors print:hidden"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] text-sm font-semibold text-[var(--color-ink)] hover:bg-[var(--color-surface-raised)] transition-colors"
           >
             Download our creator checklist
           </a>
