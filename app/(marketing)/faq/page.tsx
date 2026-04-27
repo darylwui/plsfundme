@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { CheckCircle2, Rocket, Users } from "lucide-react";
+import { CheckCircle2, Rocket, Sparkles, Users } from "lucide-react";
 import { BackToTop } from "@/components/ui/back-to-top";
 
 export const metadata: Metadata = {
@@ -9,6 +9,93 @@ export const metadata: Metadata = {
 };
 
 type Faq = { q: string; a: React.ReactNode; plain: string };
+
+const WHY_US_FAQS: Faq[] = [
+  {
+    q: "What makes get that bread different from Kickstarter or Indiegogo?",
+    a: (
+      <>
+        Three things. <strong>Milestone-based escrow</strong> — funds are released as the
+        creator hits each delivery milestone, not handed over in one lump when
+        the campaign closes, so backers stay protected even after a campaign
+        funds.{" "}
+        <strong>Singapore-first</strong> — local creators reaching local backers,{" "}
+        <a
+          href="/backer-protection"
+          className="font-semibold text-[var(--color-brand-crust)] hover:underline"
+        >
+          Singapore Consumer Protection Act coverage
+        </a>
+        , PayNow native, no cross-border friction. And{" "}
+        <strong>5% all-in</strong> — our platform fee includes payment processing,
+        which on most platforms is a separate 3–5% on top.
+      </>
+    ),
+    plain:
+      "Three things. Milestone-based escrow — funds are released as the creator hits each delivery milestone, not handed over in one lump when the campaign closes, so backers stay protected even after a campaign funds. Singapore-first — local creators reaching local backers, Singapore Consumer Protection Act coverage, PayNow native, no cross-border friction. And 5% all-in — our platform fee includes payment processing, which on most platforms is a separate 3–5% on top.",
+  },
+  {
+    q: "What is milestone-based escrow, and why does it matter?",
+    a: "When a creator launches, they commit to a small set of delivery milestones. After the campaign funds, the money sits in escrow — we only release the next tranche after the creator submits proof of a milestone and our team verifies it. Backers see real progress before any further money moves. Creators can't disappear with the full sum on day one. It's the structural protection that's been missing from reward-based crowdfunding for over a decade.",
+    plain:
+      "When a creator launches, they commit to a small set of delivery milestones. After the campaign funds, the money sits in escrow — we only release the next tranche after the creator submits proof of a milestone and our team verifies it. Backers see real progress before any further money moves. Creators can't disappear with the full sum on day one. It's the structural protection that's been missing from reward-based crowdfunding for over a decade.",
+  },
+  {
+    q: "Why is the platform Singapore-only right now?",
+    a: (
+      <>
+        Reward-based crowdfunding regulations, payment rails, and creator-verification
+        rules differ by country. We&apos;re doing Singapore properly first — PayNow integration,
+        local Consumer Protection Act coverage, ACRA-grounded creator vetting — and will
+        open elsewhere once those foundations transfer cleanly. Overseas creators can{" "}
+        <a
+          href="/for-creators/international"
+          className="font-semibold text-[var(--color-brand-crust)] hover:underline"
+        >
+          register interest here
+        </a>{" "}
+        and we&apos;ll let you know when we open in your country.
+      </>
+    ),
+    plain:
+      "Reward-based crowdfunding regulations, payment rails, and creator-verification rules differ by country. We're doing Singapore properly first — PayNow integration, local Consumer Protection Act coverage, ACRA-grounded creator vetting — and will open elsewhere once those foundations transfer cleanly. Overseas creators can register interest at /for-creators/international and we'll let you know when we open in your country.",
+  },
+  {
+    q: "How do your fees actually compare to other platforms?",
+    a: "5% of funds raised, all-in — that figure includes payment processing. Kickstarter is 5% platform + 3–5% payment processing (≈8–10% all-in). Indiegogo is 5% + ~3% (≈8%). We didn't pick 5% to undercut anyone; we picked it because it's the simplest possible deal — one number, includes everything, only billed if your campaign hits its goal.",
+    plain:
+      "5% of funds raised, all-in — that figure includes payment processing. Kickstarter is 5% platform + 3–5% payment processing (≈8–10% all-in). Indiegogo is 5% + ~3% (≈8%). We didn't pick 5% to undercut anyone; we picked it because it's the simplest possible deal — one number, includes everything, only billed if your campaign hits its goal.",
+  },
+  {
+    q: "Why should a backer trust a smaller, newer platform?",
+    a: (
+      <>
+        Because the protections are tighter. Every creator goes through admin review before
+        launch — identity, campaign legitimacy, restricted-category screening. After a
+        campaign funds, money sits in escrow and is only released as milestones are
+        verified. Disputes auto-trigger if a milestone is 45+ days overdue with no update.
+        Singapore&apos;s Consumer Protection (Fair Trading) Act applies to fulfillment too.
+        Bigger platforms have brand recognition; the structural backer-side protections
+        built in here are stronger than what most of them offer today. Full details in our{" "}
+        <a
+          href="/backer-protection"
+          className="font-semibold text-[var(--color-brand-crust)] hover:underline"
+        >
+          backer protection page
+        </a>
+        .
+      </>
+    ),
+    plain:
+      "Because the protections are tighter. Every creator goes through admin review before launch — identity, campaign legitimacy, restricted-category screening. After a campaign funds, money sits in escrow and is only released as milestones are verified. Disputes auto-trigger if a milestone is 45+ days overdue with no update. Singapore's Consumer Protection (Fair Trading) Act applies to fulfillment too. Bigger platforms have brand recognition; the structural backer-side protections built in here are stronger than what most of them offer today. Full details on our backer protection page.",
+  },
+  {
+    q: "What does PayNow get me that a card doesn't?",
+    a: "PayNow charges immediately rather than holding funds, so creators see committed liquidity earlier and refunds clear faster if a campaign misses its goal — typically 5–10 business days vs the up-to-30-day card-hold release some banks impose. No card surcharge, no shared card details, and the QR flow is faster on mobile.",
+    plain:
+      "PayNow charges immediately rather than holding funds, so creators see committed liquidity earlier and refunds clear faster if a campaign misses its goal — typically 5–10 business days vs the up-to-30-day card-hold release some banks impose. No card surcharge, no shared card details, and the QR flow is faster on mobile.",
+  },
+];
 
 const BACKER_FAQS: Faq[] = [
   {
@@ -136,7 +223,7 @@ const CREATOR_FAQS: Faq[] = [
 const FAQ_JSON_LD = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  mainEntity: [...BACKER_FAQS, ...CREATOR_FAQS].map(({ q, plain }) => ({
+  mainEntity: [...WHY_US_FAQS, ...BACKER_FAQS, ...CREATOR_FAQS].map(({ q, plain }) => ({
     "@type": "Question",
     name: q,
     acceptedAnswer: {
@@ -165,6 +252,24 @@ export default function FaqPage() {
           <p className="text-lg text-[var(--color-ink-muted)] leading-relaxed">
             The answers backers and creators ask us most, in one place.
           </p>
+        </div>
+      </section>
+
+      {/* ── Why getthatbread ─────────────────────────────────────
+          USP / differentiator section. Positioned first because
+          it's the highest-leverage content for visitors deciding
+          whether to use the platform vs Kickstarter / Indiegogo.
+          The Backer + Creator sections below are deeper-funnel
+          ("now I know I'm using it, how does X work"). */}
+      <section className="border-b border-[var(--color-border)] bg-[var(--color-surface-raised)]">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
+          <FaqGroup
+            label="Why getthatbread"
+            heading="What makes us different"
+            accent="crust-dark"
+            Icon={Sparkles}
+            items={WHY_US_FAQS}
+          />
         </div>
       </section>
 
@@ -236,16 +341,24 @@ function FaqGroup({
 }: {
   label: string;
   heading: string;
-  accent: "golden" | "crust";
+  // "crust-dark" is the deepest brand orange — reserved for the
+  // top "Why getthatbread" section so it reads as the lead.
+  accent: "golden" | "crust" | "crust-dark";
   Icon: React.ComponentType<{ className?: string }>;
   items: Faq[];
 }) {
   const accentColor =
-    accent === "golden" ? "var(--color-brand-golden)" : "var(--color-brand-crust)";
+    accent === "golden"
+      ? "var(--color-brand-golden)"
+      : accent === "crust-dark"
+        ? "var(--color-brand-crust-dark)"
+        : "var(--color-brand-crust)";
   const accentBg =
     accent === "golden"
       ? "bg-[var(--color-brand-golden)] shadow-[0_4px_20px_0_rgba(217,119,6,0.35)]"
-      : "bg-[var(--color-brand-crust)] shadow-[var(--shadow-cta)]";
+      : accent === "crust-dark"
+        ? "bg-[var(--color-brand-crust-dark)] shadow-[0_4px_20px_0_rgba(172,88,17,0.45)]"
+        : "bg-[var(--color-brand-crust)] shadow-[var(--shadow-cta)]";
   return (
     <div>
       <div className="flex items-center gap-3 mb-8">
