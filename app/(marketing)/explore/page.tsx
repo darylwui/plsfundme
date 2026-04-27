@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { ProjectGrid } from "@/components/projects/ProjectGrid";
-import { Search, TrendingUp, Star, Clock } from "lucide-react";
+import { Search, TrendingUp, Star, Clock, Sparkles, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import type { ProjectWithRelations } from "@/types/project";
 import type { Category } from "@/types/project";
@@ -156,14 +156,52 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
         </div>
       </div>
 
-      <ProjectGrid
-        projects={typedProjects}
-        emptyMessage={
-          q
-            ? `No projects found for "${q}"`
-            : "No active projects in this category yet."
-        }
-      />
+      {/* Empty-state branching:
+          - No filter + no projects → founding-cohort recruitment block
+            (same theme as the homepage; this is also a landing-page moment
+            for visitors who arrive directly at /explore)
+          - Active search/category filter + no projects → simple "no results"
+            (filtered context where conversion CTA would feel pushy) */}
+      {typedProjects.length === 0 && !q && !category ? (
+        <div className="py-20 sm:py-28 flex flex-col items-center text-center px-4">
+          <div className="w-14 h-14 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 border border-[var(--color-brand-crust)]/30 flex items-center justify-center mb-5">
+            <Sparkles className="w-6 h-6 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)]" />
+          </div>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] mb-3">
+            Founding cohort
+          </p>
+          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[var(--color-ink)] mb-3 max-w-xl">
+            Campaigns are coming. Want yours to be one of them?
+          </h2>
+          <p className="text-[var(--color-ink-muted)] leading-relaxed max-w-md mb-6">
+            We&apos;re handpicking Singapore&apos;s founding cohort right now. Apply
+            to launch your campaign and get featured here on day one.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-5">
+            <Link
+              href="/apply/creator"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-[var(--radius-btn)] bg-[var(--color-brand-crust)] text-white font-bold text-sm hover:opacity-90 transition-opacity"
+            >
+              Apply to launch <ArrowRight className="w-4 h-4" />
+            </Link>
+            <Link
+              href="/for-creators"
+              className="text-sm font-semibold text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] underline-offset-4 hover:underline transition-colors"
+            >
+              or learn how it works
+            </Link>
+          </div>
+        </div>
+      ) : (
+        <ProjectGrid
+          projects={typedProjects}
+          emptyMessage={
+            q
+              ? `No projects found for "${q}"`
+              : "No active projects in this category yet."
+          }
+        />
+      )}
     </div>
     </div>
   );

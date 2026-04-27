@@ -37,23 +37,24 @@ export default function ForCreatorsPage() {
       <section className="bg-gradient-to-br from-amber-50 via-[#FFFBF5] to-orange-50 dark:from-[#0f0f0f] dark:via-[#0a0a0a] dark:to-[#111111] border-b border-[var(--color-border)]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24">
           <div className="inline-flex items-center px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] text-xs uppercase tracking-[0.12em] font-medium mb-6">
-            For creators
+            ✨ Founding cohort
           </div>
           <h1 className="text-[40px] md:text-[56px] font-black tracking-tight leading-[1.05] mb-5 max-w-4xl">
-            Launch a campaign.{" "}
+            Be one of the first.{" "}
             <span className="text-[var(--color-brand-crust)] dark:text-[var(--color-brand-golden)]">
               Fund your idea.
             </span>
           </h1>
           <p className="text-lg text-[var(--color-ink-muted)] leading-relaxed max-w-2xl">
-            Raise capital from your community and bring your idea to life.
-            Singapore-first, milestone-based funding, and you only pay a fee if
-            you hit your goal.
+            We&apos;re handpicking Singapore&apos;s founding cohort of creators
+            right now. Apply to launch a campaign, raise capital from your
+            community, and get featured at the top of the homepage on day one.
+            Milestone-based payouts, fee only if you hit your goal.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Button asChild size="lg" variant="primary">
-              <Link href="/projects/create">
-                Start your campaign
+              <Link href="/apply/creator">
+                Apply to launch
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </Button>
@@ -180,15 +181,16 @@ export default function ForCreatorsPage() {
               🍞 Let&apos;s go
             </div>
             <h2 className="text-4xl md:text-5xl font-black tracking-tight leading-[1.05] text-[var(--color-ink)] mb-4">
-              Ready to launch?
+              Ready to be one of our first?
             </h2>
             <p className="text-lg text-[var(--color-ink-muted)] max-w-md mx-auto mb-10 leading-relaxed">
-              Start for free. No upfront costs, no risk to your backers.
+              Apply for free. No upfront costs, no risk to your backers — we
+              only take a fee if your campaign hits its goal.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3">
               <Button asChild size="lg" variant="primary">
-                <Link href="/projects/create">
-                  Start your campaign
+                <Link href="/apply/creator">
+                  Apply to launch
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </Button>
