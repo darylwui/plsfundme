@@ -68,7 +68,12 @@ export async function POST(req: NextRequest) {
   // Upsert: if the same email signs up twice (different country guess,
   // refreshed page, etc.), we update their record rather than 409. The
   // `email` column is UNIQUE so a plain insert would fail.
-  const { error: insertError } = await service
+  //
+  // Cast to any: this table is added in migration 026; the generated
+  // database.types.ts will include it on the next regen. Matches the
+  // pattern used by other routes that touch newly-added tables.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error: insertError } = await (service as any)
     .from("international_creator_interest")
     .upsert(
       {

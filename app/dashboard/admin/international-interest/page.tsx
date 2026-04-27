@@ -30,8 +30,13 @@ export default async function InternationalInterestAdminPage() {
 
   // Read via service-role client — the table has no public RLS policies
   // by design (waitlist is admin-only).
+  //
+  // Cast to any: this table is added in migration 026; the generated
+  // database.types.ts will include it on the next regen. Pattern matches
+  // other dashboard pages that touch newly-added tables.
   const service = createServiceClient();
-  const { data: rows } = await service
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: rows } = await (service as any)
     .from("international_creator_interest")
     .select("id, email, display_name, country, project_description, referrer, created_at, contacted_at")
     .order("created_at", { ascending: false }) as { data: Row[] | null };
