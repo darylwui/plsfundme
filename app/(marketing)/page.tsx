@@ -132,10 +132,6 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
             {/* Left — headline + CTAs */}
             <div className="max-w-xl">
-              <div className="inline-flex items-center px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] text-xs uppercase tracking-[0.12em] font-medium mb-4 md:mb-6">
-                Made for Singapore entrepreneurs
-              </div>
-
               <h1 className="text-[52px] md:text-[60px] font-black tracking-tight leading-[1.05]">
                 <span className="block">Let&apos;s go</span>{" "}
                 <span className="block text-[var(--color-brand-crust)] dark:text-[var(--color-brand-golden)]">get that bread.</span>
