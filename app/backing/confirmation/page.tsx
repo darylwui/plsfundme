@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { ShareButtons } from "@/components/sharing/ShareButtons";
 import { formatSgd } from "@/lib/utils/currency";
+import { TrackPledge } from "./_TrackPledge";
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://getthatbread.sg";
 
@@ -44,6 +45,7 @@ export default async function ConfirmationPage({
 
   return (
     <main className="flex-1 flex items-center justify-center bg-[var(--color-surface-raised)] px-4 py-16">
+      <TrackPledge />
       <div className="max-w-md w-full flex flex-col gap-4">
         <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] shadow-[var(--shadow-card)] p-8 text-center">
           <div className="w-16 h-16 rounded-full bg-lime-100 dark:bg-lime-900/20 flex items-center justify-center mx-auto mb-6">
