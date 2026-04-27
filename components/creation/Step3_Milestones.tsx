@@ -138,6 +138,7 @@ export function Step3_Milestones({ draft, onUpdate, onNext, onBack }: Step3Props
                 error={titleError}
                 required
                 maxLength={80}
+                hint="5–80 chars. Name a concrete deliverable, not a feeling. E.g. 'Prototype finalised', 'First 100 units shipped'."
               />
 
               {/* Description */}
@@ -196,6 +197,7 @@ export function Step3_Milestones({ draft, onUpdate, onNext, onBack }: Step3Props
                 onChange={(e) => onUpdate(index, { target_date: e.target.value })}
                 error={dateError}
                 required
+                hint="When you'll have proof ready. Stay realistic — slipping milestones erodes backer trust."
               />
             </div>
           );
