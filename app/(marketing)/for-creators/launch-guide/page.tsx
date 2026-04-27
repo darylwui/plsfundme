@@ -55,6 +55,10 @@ export default function LaunchGuidePage() {
   const doneCount = checked.size;
   const pct = LAUNCH_TOTAL_ITEMS > 0 ? Math.round((doneCount / LAUNCH_TOTAL_ITEMS) * 100) : 0;
 
+  const topItemIds = LAUNCH_SECTIONS.slice(0, 3).flatMap((s) => s.items.map((i) => i.id));
+  const allTopDone = mounted && topItemIds.every((id) => checked.has(id));
+  const UNLOCK_PCT = Math.round((topItemIds.length / LAUNCH_TOTAL_ITEMS) * 100);
+
   return (
     <div className="min-h-screen bg-[var(--color-surface-raised)]">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -72,7 +76,7 @@ export default function LaunchGuidePage() {
             </span>
           </div>
           <h1 className="text-4xl font-black text-[var(--color-ink)] tracking-tight">
-            Everything you need before you hit launch
+            Everything you need before you launch
           </h1>
           <p className="mt-3 text-[var(--color-ink-muted)] text-lg leading-relaxed">
             This is your prep list. Run through it before you open the campaign form — the
@@ -89,10 +93,16 @@ export default function LaunchGuidePage() {
               </span>
               <span className="text-sm text-[var(--color-ink-muted)]">{pct}%</span>
             </div>
-            <div className="h-2 w-full rounded-full bg-[var(--color-border)]">
+            <div className="relative h-2 w-full rounded-full bg-[var(--color-border)]">
               <div
                 className="h-2 rounded-full bg-[var(--color-brand-golden)] transition-all duration-300"
                 style={{ width: `${pct}%` }}
+              />
+              <div
+                className={`absolute top-1/2 -translate-y-1/2 w-0.5 h-4 rounded-full transition-colors duration-500 ${
+                  allTopDone ? "bg-[var(--color-brand-golden)]" : "bg-[var(--color-ink-muted)]"
+                }`}
+                style={{ left: `${UNLOCK_PCT}%` }}
               />
             </div>
             {doneCount === LAUNCH_TOTAL_ITEMS && (
@@ -105,11 +115,30 @@ export default function LaunchGuidePage() {
 
         {/* Checklist sections */}
         <div className="space-y-10">
-          {LAUNCH_SECTIONS.map((section) => (
-            <div key={section.id}>
-              <h2 className="text-xl font-black text-[var(--color-ink)] mb-1">
-                {section.title}
-              </h2>
+          {LAUNCH_SECTIONS.map((section, sectionIndex) => {
+            const isLocked = sectionIndex >= 3 && !allTopDone;
+            return (
+            <div
+              key={section.id}
+              className={`transition-opacity duration-500 ${
+                isLocked ? "opacity-40 pointer-events-none select-none" : "opacity-100"
+              }`}
+            >
+              <div className="flex items-center gap-2 mb-1">
+                <h2 className="text-xl font-black text-[var(--color-ink)]">
+                  {section.title}
+                </h2>
+                {isLocked && (
+                  <span className="text-xs font-semibold text-[var(--color-ink-muted)] flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 24 24"
+                      fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg>
+                    Complete sections above to unlock
+                  </span>
+                )}
+              </div>
               <p className="text-sm text-[var(--color-ink-muted)] mb-4">{section.intro}</p>
               <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] divide-y divide-[var(--color-border)] overflow-hidden">
                 {section.items.map((item) => {
@@ -190,7 +219,8 @@ export default function LaunchGuidePage() {
                 })}
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Download PDF link */}
