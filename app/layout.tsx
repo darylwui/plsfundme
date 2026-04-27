@@ -16,6 +16,12 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  // Mono is used only for stats numbers (hero card post-launch),
+  // small captions on /for-creators, and the error page. None of
+  // those are LCP elements, so we skip the head preload tag — the
+  // font still loads via CSS @font-face when actually needed,
+  // we just save the critical-path HTTP request on every page.
+  preload: false,
 });
 
 const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://getthatbread.sg";
