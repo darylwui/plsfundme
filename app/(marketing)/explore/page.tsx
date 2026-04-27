@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { ProjectGrid } from "@/components/projects/ProjectGrid";
+import { FoundingCohortBanner } from "@/components/marketing/FoundingCohortBanner";
 import { Search, TrendingUp, Star, Clock, Sparkles, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import type { ProjectWithRelations } from "@/types/project";
@@ -92,6 +93,10 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
           </div>
         </div>
       </section>
+
+      {/* Founding cohort banner — self-hides until 5+ creators
+          have active/funded campaigns. */}
+      <FoundingCohortBanner />
 
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 

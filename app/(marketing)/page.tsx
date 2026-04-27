@@ -10,6 +10,7 @@ import { createServiceClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { StatsBar } from "@/components/home/StatsBar";
 import { HowItWorksSection } from "@/components/home/HowItWorksSection";
+import { FoundingCohortBanner } from "@/components/marketing/FoundingCohortBanner";
 import { PreFooterCTA } from "@/components/home/PreFooterCTA";
 import { DiscoverySection } from "@/components/home/DiscoverySection";
 import { ScrollReveal } from "@/components/marketing/ScrollReveal";
@@ -285,6 +286,14 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           <StatsBar stats={stats} />
         </ScrollReveal>
       )}
+
+      {/* ── Founding cohort banner ──────────────────────────────
+          Self-hides until we have 5+ creators with active/funded
+          campaigns. Until that threshold the discovery section
+          below shows the founding-cohort *empty state* (#113);
+          once the threshold's met, this banner takes over the
+          social-proof job and the empty state goes dormant. */}
+      <FoundingCohortBanner />
 
       {/* ── Discovery section ────────────────────────────────── */}
       <ScrollReveal>
