@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath, updateTag } from "next/cache";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { getStripe } from "@/lib/stripe/server";
 import {
@@ -9,6 +10,32 @@ import {
 
 interface RouteContext {
   params: Promise<{ id: string }>;
+}
+
+/**
+ * Flush every cached surface that depends on the active-project list.
+ * Called after any admin status change (approve / reject / remove /
+ * revert_to_draft) so /explore, the homepage discovery section, and the
+ * project detail page reflect the new state immediately instead of
+ * waiting up to 60s for unstable_cache to revalidate.
+ */
+function invalidateProjectCaches(slug: string) {
+  // Next 16 split the cache invalidation API:
+  //   - updateTag(tag) — purges a tag's cached entries immediately
+  //   - revalidateTag(tag, profile) — schedules revalidation against a
+  //     CacheLifeConfig profile (we don't use profiles, so updateTag fits)
+  //
+  // Tags used by unstable_cache wrappers in app/(marketing)/page.tsx
+  updateTag("projects-trending");
+  updateTag("projects-newest");
+  updateTag("projects-ending_soon");
+  updateTag("platform-stats");
+
+  // Path-level invalidations for routes that aren't tag-cached
+  revalidatePath("/");
+  revalidatePath("/explore");
+  revalidatePath("/sitemap.xml");
+  revalidatePath(`/projects/${slug}`);
 }
 
 /** Verify the caller is an admin */
@@ -53,6 +80,8 @@ export async function PATCH(request: Request, { params }: RouteContext) {
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
+    invalidateProjectCaches(project.slug);
+
     // Email the creator
     const { data: { user: creatorAuth } } = await service.auth.admin.getUserById(project.creator_id);
     const { data: profile } = await service.from("profiles").select("display_name").eq("id", project.creator_id).single();
@@ -85,6 +114,8 @@ export async function PATCH(request: Request, { params }: RouteContext) {
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
+    invalidateProjectCaches(project.slug);
+
     const { data: { user: creatorAuth } } = await service.auth.admin.getUserById(project.creator_id);
     const { data: profile } = await service.from("profiles").select("display_name").eq("id", project.creator_id).single();
     if (creatorAuth?.email && profile) {
@@ -109,6 +140,8 @@ export async function PATCH(request: Request, { params }: RouteContext) {
       .eq("id", id);
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+    invalidateProjectCaches(project.slug);
 
     const { data: { user: creatorAuth } } = await service.auth.admin.getUserById(project.creator_id);
     const { data: profile } = await service.from("profiles").select("display_name").eq("id", project.creator_id).single();
@@ -155,6 +188,8 @@ export async function PATCH(request: Request, { params }: RouteContext) {
       .eq("id", id);
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+    invalidateProjectCaches(project.slug);
 
     return NextResponse.json({ ok: true });
   }
