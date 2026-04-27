@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
 import { ProjectGrid } from "@/components/projects/ProjectGrid";
-import { FoundingCohortBanner } from "@/components/marketing/FoundingCohortBanner";
 import { Search, TrendingUp, Star, Clock, Sparkles, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import type { ProjectWithRelations } from "@/types/project";
@@ -78,9 +77,6 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
       {/* Page hero */}
       <section className="bg-gradient-to-br from-amber-50 via-[#FFFBF5] to-orange-50 dark:from-[#0f0f0f] dark:via-[#0a0a0a] dark:to-[#111111] border-b border-[var(--color-border)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-          <div className="inline-flex items-center px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] text-xs uppercase tracking-[0.12em] font-medium mb-4">
-            Singapore campaigns
-          </div>
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
             <div>
               <h1 className="text-3xl md:text-4xl font-black tracking-tight text-[var(--color-ink)]">
@@ -93,10 +89,6 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
           </div>
         </div>
       </section>
-
-      {/* Founding cohort banner — self-hides until 5+ creators
-          have active/funded campaigns. */}
-      <FoundingCohortBanner />
 
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
@@ -172,11 +164,8 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
           <div className="w-14 h-14 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 border border-[var(--color-brand-crust)]/30 flex items-center justify-center mb-5">
             <Sparkles className="w-6 h-6 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)]" />
           </div>
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] mb-3">
-            Founding cohort
-          </p>
           <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[var(--color-ink)] mb-3 max-w-xl">
-            Campaigns are coming. Want yours to be one of them?
+            Be one of our first creators
           </h2>
           <p className="text-[var(--color-ink-muted)] leading-relaxed max-w-md mb-6">
             We&apos;re handpicking Singapore&apos;s founding cohort right now. Apply

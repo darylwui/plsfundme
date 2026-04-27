@@ -105,9 +105,6 @@ function FoundingCohortEmptyState() {
       <div className="w-14 h-14 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 border border-[var(--color-brand-crust)]/30 flex items-center justify-center mb-5">
         <Sparkles className="w-6 h-6 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)]" />
       </div>
-      <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] mb-3">
-        Founding cohort
-      </p>
       <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[var(--color-ink)] mb-3 max-w-xl">
         Be one of our first creators
       </h2>
