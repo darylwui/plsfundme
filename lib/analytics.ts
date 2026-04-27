@@ -4,5 +4,5 @@ export function trackEvent(
   name: string,
   params?: Record<string, string | number | boolean>
 ) {
-  sendGAEvent("event", name, params);
+  sendGAEvent("event", name, params ?? {});
 }
