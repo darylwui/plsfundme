@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { ShareButtons } from "@/components/sharing/ShareButtons";
 import { DraftContinuationCard } from "@/components/dashboard/DraftContinuationCard";
 import { WizardDraftBanner } from "@/components/dashboard/WizardDraftBanner";
+import { RevertToDraftButton } from "@/components/dashboard/RevertToDraftButton";
 import { formatDate, daysRemaining } from "@/lib/utils/dates";
 import { formatSgd, fundingPercent } from "@/lib/utils/currency";
 import { REJECTION_REASONS } from "@/types/admin";
@@ -97,6 +98,16 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
     .eq("id", user.id)
     .single();
   const canCreate = creatorProfile?.status === "approved";
+
+  // Admin-only affordances on this page (e.g. "Revert to draft" on active
+  // campaigns). The API endpoint enforces this server-side too — we read it
+  // here purely so the button doesn't render for non-admins.
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("is_admin")
+    .eq("id", user.id)
+    .single();
+  const isAdmin = profile?.is_admin === true;
 
   // Surface in-progress wizard work in the empty state. Mirrors /dashboard's
   // logic: wizard draft only shown when no projects exist (projects.status='draft'
@@ -316,6 +327,15 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
                       <Pencil className="w-3 h-3" />
                       Edit
                     </Link>
+                    {/* Admin-only: revert an active campaign back to draft.
+                        Useful for the platform owner to manage their own
+                        campaigns without diving into /dashboard/admin. */}
+                    {isAdmin && project.status === "active" && (
+                      <RevertToDraftButton
+                        projectId={project.id}
+                        projectTitle={project.title}
+                      />
+                    )}
                     <Link href={`/projects/${project.slug}`}>
                       <ArrowRight className="w-4 h-4 text-[var(--color-ink-subtle)]" />
                     </Link>
