@@ -42,7 +42,10 @@ const CONFIRM = '{{ .ConfirmationURL }}';
 const EMAIL = '{{ .Email }}';
 const TOKEN = '{{ .Token }}';
 
-const targets = [
+// Explicit tuple type so TS doesn't widen the array element to
+// `string | () => Promise<string>` — without it, destructuring `[name, fn]`
+// makes `fn()` a type error because `fn` could be the string.
+const targets: Array<[string, () => Promise<string>]> = [
   ['confirm-signup', () => renderConfirmSignup({ confirmUrl: CONFIRM })],
   ['magic-link', () => renderMagicLink({ confirmUrl: CONFIRM })],
   ['invite', () => renderInvite({ confirmUrl: CONFIRM })],
