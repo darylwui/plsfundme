@@ -10,73 +10,72 @@ export const metadata: Metadata = {
 
 type Faq = { q: string; a: React.ReactNode; plain: string };
 
-const WHY_US_FAQS: Faq[] = [
+const LAUNCH_PITCH_FAQS: Faq[] = [
   {
-    q: "What makes get that bread different from Kickstarter or Indiegogo?",
+    q: "Why launch your campaign on get that bread?",
     a: (
       <>
-        Three things. <strong>Milestone-based escrow</strong> — funds are released as the
-        creator hits each delivery milestone, not handed over in one lump when
-        the campaign closes, so backers stay protected even after a campaign
-        funds.{" "}
-        <strong>Singapore-first</strong> — local creators reaching local backers,{" "}
+        Three reasons that move the needle when you&apos;re trying to fund a campaign.
+        <strong> Milestone-based escrow</strong> doubles as a trust signal — backers
+        pledge more readily when they can see funds release as you deliver,
+        rather than all at once on day one.{" "}
+        <strong>Singapore-first</strong> means your local audience finds you faster, with{" "}
         <a
           href="/backer-protection"
           className="font-semibold text-[var(--color-brand-crust)] hover:underline"
         >
           Singapore Consumer Protection Act coverage
-        </a>
-        , PayNow native, no cross-border friction. And{" "}
-        <strong>5% all-in</strong> — our platform fee includes payment processing,
-        which on most platforms is a separate 3–5% on top.
+        </a>{" "}
+        and PayNow checkout that&apos;s frictionless for SG backers. And{" "}
+        <strong>simple all-in pricing</strong> — one flat platform fee, payment
+        processing included, only billed if you hit your goal.
       </>
     ),
     plain:
-      "Three things. Milestone-based escrow — funds are released as the creator hits each delivery milestone, not handed over in one lump when the campaign closes, so backers stay protected even after a campaign funds. Singapore-first — local creators reaching local backers, Singapore Consumer Protection Act coverage, PayNow native, no cross-border friction. And 5% all-in — our platform fee includes payment processing, which on most platforms is a separate 3–5% on top.",
+      "Three reasons that move the needle when you're trying to fund a campaign. Milestone-based escrow doubles as a trust signal — backers pledge more readily when they can see funds release as you deliver, rather than all at once on day one. Singapore-first means your local audience finds you faster, with Singapore Consumer Protection Act coverage and PayNow checkout that's frictionless for SG backers. And simple all-in pricing — one flat platform fee, payment processing included, only billed if you hit your goal.",
   },
   {
-    q: "What is milestone-based escrow, and why does it matter?",
-    a: "When a creator launches, they commit to a small set of delivery milestones. After the campaign funds, the money sits in escrow — we only release the next tranche after the creator submits proof of a milestone and our team verifies it. Backers see real progress before any further money moves. Creators can't disappear with the full sum on day one. It's the structural protection that's been missing from reward-based crowdfunding for over a decade.",
+    q: "How does milestone-based escrow help me as a creator?",
+    a: "It's a conversion tool, not just a backer protection. When a backer can see that funds release in stages tied to verified delivery milestones, the pledge feels safer — and they're more likely to back you in the first place. You commit to a small set of milestones up front, and we release each tranche as you submit proof and our team verifies it. Predictable cashflow on your side, structural trust on theirs.",
     plain:
-      "When a creator launches, they commit to a small set of delivery milestones. After the campaign funds, the money sits in escrow — we only release the next tranche after the creator submits proof of a milestone and our team verifies it. Backers see real progress before any further money moves. Creators can't disappear with the full sum on day one. It's the structural protection that's been missing from reward-based crowdfunding for over a decade.",
+      "It's a conversion tool, not just a backer protection. When a backer can see that funds release in stages tied to verified delivery milestones, the pledge feels safer — and they're more likely to back you in the first place. You commit to a small set of milestones up front, and we release each tranche as you submit proof and our team verifies it. Predictable cashflow on your side, structural trust on theirs.",
   },
   {
     q: "Why is the platform Singapore-only right now?",
     a: (
       <>
-        Reward-based crowdfunding regulations, payment rails, and creator-verification
-        rules differ by country. We&apos;re doing Singapore properly first — PayNow integration,
-        local Consumer Protection Act coverage, ACRA-grounded creator vetting — and will
-        open elsewhere once those foundations transfer cleanly. Overseas creators can{" "}
+        We&apos;re focused on getting Singapore right first — PayNow integration, local
+        Consumer Protection Act coverage, ACRA-grounded verification. For Singapore
+        creators, that means the platform is built around your audience and you&apos;re
+        not competing for attention with global campaigns. Overseas creators can{" "}
         <a
           href="/for-creators/international"
           className="font-semibold text-[var(--color-brand-crust)] hover:underline"
         >
           register interest here
         </a>{" "}
-        and we&apos;ll let you know when we open in your country.
+        — we&apos;ll let you know when we open in your country.
       </>
     ),
     plain:
-      "Reward-based crowdfunding regulations, payment rails, and creator-verification rules differ by country. We're doing Singapore properly first — PayNow integration, local Consumer Protection Act coverage, ACRA-grounded creator vetting — and will open elsewhere once those foundations transfer cleanly. Overseas creators can register interest at /for-creators/international and we'll let you know when we open in your country.",
+      "We're focused on getting Singapore right first — PayNow integration, local Consumer Protection Act coverage, ACRA-grounded verification. For Singapore creators, that means the platform is built around your audience and you're not competing for attention with global campaigns. Overseas creators can register interest at /for-creators/international — we'll let you know when we open in your country.",
   },
   {
-    q: "How do your fees actually compare to other platforms?",
-    a: "5% of funds raised, all-in — that figure includes payment processing. Kickstarter is 5% platform + 3–5% payment processing (≈8–10% all-in). Indiegogo is 5% + ~3% (≈8%). We didn't pick 5% to undercut anyone; we picked it because it's the simplest possible deal — one number, includes everything, only billed if your campaign hits its goal.",
+    q: "How does your pricing work?",
+    a: "5% of funds raised — payment processing included, no setup fees, no monthly fees, no hidden costs. We only charge if your campaign hits its goal; if it doesn't, you owe nothing. One number, billed once, only on success.",
     plain:
-      "5% of funds raised, all-in — that figure includes payment processing. Kickstarter is 5% platform + 3–5% payment processing (≈8–10% all-in). Indiegogo is 5% + ~3% (≈8%). We didn't pick 5% to undercut anyone; we picked it because it's the simplest possible deal — one number, includes everything, only billed if your campaign hits its goal.",
+      "5% of funds raised — payment processing included, no setup fees, no monthly fees, no hidden costs. We only charge if your campaign hits its goal; if it doesn't, you owe nothing. One number, billed once, only on success.",
   },
   {
-    q: "Why should a backer trust a smaller, newer platform?",
+    q: "How does the platform help me build trust with backers?",
     a: (
       <>
-        Because the protections are tighter. Every creator goes through admin review before
-        launch — identity, campaign legitimacy, restricted-category screening. After a
-        campaign funds, money sits in escrow and is only released as milestones are
-        verified. Disputes auto-trigger if a milestone is 45+ days overdue with no update.
-        Singapore&apos;s Consumer Protection (Fair Trading) Act applies to fulfillment too.
-        Bigger platforms have brand recognition; the structural backer-side protections
-        built in here are stronger than what most of them offer today. Full details in our{" "}
+        Every layer is designed to reduce backer hesitation. Admin review before launch
+        is a vetting signal backers can see. Money sits in escrow after funding,
+        released on verified milestones — so backers know you have skin in the game.
+        The two-stage dispute process and Singapore Consumer Protection Act coverage
+        give backers a clear safety net, which makes pledging feel lower-risk.
+        Translation: more pledges, fewer abandoned carts. Full details on our{" "}
         <a
           href="/backer-protection"
           className="font-semibold text-[var(--color-brand-crust)] hover:underline"
@@ -87,13 +86,13 @@ const WHY_US_FAQS: Faq[] = [
       </>
     ),
     plain:
-      "Because the protections are tighter. Every creator goes through admin review before launch — identity, campaign legitimacy, restricted-category screening. After a campaign funds, money sits in escrow and is only released as milestones are verified. Disputes auto-trigger if a milestone is 45+ days overdue with no update. Singapore's Consumer Protection (Fair Trading) Act applies to fulfillment too. Bigger platforms have brand recognition; the structural backer-side protections built in here are stronger than what most of them offer today. Full details on our backer protection page.",
+      "Every layer is designed to reduce backer hesitation. Admin review before launch is a vetting signal backers can see. Money sits in escrow after funding, released on verified milestones — so backers know you have skin in the game. The two-stage dispute process and Singapore Consumer Protection Act coverage give backers a clear safety net, which makes pledging feel lower-risk. Translation: more pledges, fewer abandoned carts. Full details on our backer protection page.",
   },
   {
-    q: "What does PayNow get me that a card doesn't?",
-    a: "PayNow charges immediately rather than holding funds, so creators see committed liquidity earlier and refunds clear faster if a campaign misses its goal — typically 5–10 business days vs the up-to-30-day card-hold release some banks impose. No card surcharge, no shared card details, and the QR flow is faster on mobile.",
+    q: "What does PayNow give me that a card doesn't?",
+    a: "From your side as a creator, PayNow charges backers immediately rather than placing a card hold — so committed liquidity is visible from day one, and the campaign feels more momentum-positive to other backers browsing the page. From the backer's side: no card surcharge, no shared card details, and a fast QR flow on mobile. Native to your SG audience.",
     plain:
-      "PayNow charges immediately rather than holding funds, so creators see committed liquidity earlier and refunds clear faster if a campaign misses its goal — typically 5–10 business days vs the up-to-30-day card-hold release some banks impose. No card surcharge, no shared card details, and the QR flow is faster on mobile.",
+      "From your side as a creator, PayNow charges backers immediately rather than placing a card hold — so committed liquidity is visible from day one, and the campaign feels more momentum-positive to other backers browsing the page. From the backer's side: no card surcharge, no shared card details, and a fast QR flow on mobile. Native to your SG audience.",
   },
 ];
 
@@ -223,7 +222,7 @@ const CREATOR_FAQS: Faq[] = [
 const FAQ_JSON_LD = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  mainEntity: [...WHY_US_FAQS, ...BACKER_FAQS, ...CREATOR_FAQS].map(({ q, plain }) => ({
+  mainEntity: [...BACKER_FAQS, ...LAUNCH_PITCH_FAQS, ...CREATOR_FAQS].map(({ q, plain }) => ({
     "@type": "Question",
     name: q,
     acceptedAnswer: {
@@ -255,24 +254,6 @@ export default function FaqPage() {
         </div>
       </section>
 
-      {/* ── Why getthatbread ─────────────────────────────────────
-          USP / differentiator section. Positioned first because
-          it's the highest-leverage content for visitors deciding
-          whether to use the platform vs Kickstarter / Indiegogo.
-          The Backer + Creator sections below are deeper-funnel
-          ("now I know I'm using it, how does X work"). */}
-      <section className="border-b border-[var(--color-border)] bg-[var(--color-surface-raised)]">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-          <FaqGroup
-            label="Why getthatbread"
-            heading="What makes us different"
-            accent="crust-dark"
-            Icon={Sparkles}
-            items={WHY_US_FAQS}
-          />
-        </div>
-      </section>
-
       {/* ── Backer FAQs ──────────────────────────────────────── */}
       <section className="border-b border-[var(--color-border)] bg-[var(--color-surface)]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
@@ -286,8 +267,26 @@ export default function FaqPage() {
         </div>
       </section>
 
-      {/* ── Creator FAQs ─────────────────────────────────────── */}
+      {/* ── Why launch here ──────────────────────────────────────
+          Creator pitch section, positioned at the top of the
+          creator funnel: convince → operationalize. The "Launching
+          your campaign" mechanics section below answers HOW; this
+          section answers WHY. Strongest accent (crust-dark) so it
+          reads as the lead within the creator-side content. */}
       <section className="border-b border-[var(--color-border)] bg-[var(--color-surface-raised)]">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
+          <FaqGroup
+            label="Why launch here"
+            heading="Why launch on get that bread"
+            accent="crust-dark"
+            Icon={Sparkles}
+            items={LAUNCH_PITCH_FAQS}
+          />
+        </div>
+      </section>
+
+      {/* ── Creator FAQs ─────────────────────────────────────── */}
+      <section className="border-b border-[var(--color-border)] bg-[var(--color-surface)]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
           <FaqGroup
             label="For creators"
@@ -300,7 +299,7 @@ export default function FaqPage() {
       </section>
 
       {/* ── Contact ──────────────────────────────────────────── */}
-      <section className="bg-[var(--color-surface)]">
+      <section className="bg-[var(--color-surface-raised)]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
           <div className="flex items-start gap-3">
             <div className="w-11 h-11 rounded-[var(--radius-card)] bg-[var(--color-brand-crust)] flex items-center justify-center shadow-[var(--shadow-cta)] shrink-0">
@@ -325,7 +324,7 @@ export default function FaqPage() {
         </div>
       </section>
 
-      <div className="flex justify-center py-10 border-t border-[var(--color-border)] bg-[var(--color-surface)]">
+      <div className="flex justify-center py-10 border-t border-[var(--color-border)] bg-[var(--color-surface-raised)]">
         <BackToTop />
       </div>
     </div>
