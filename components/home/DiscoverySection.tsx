@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { ArrowRight, TrendingUp, Star, Clock } from "lucide-react";
+import { ArrowRight, TrendingUp, Star, Clock, Sparkles } from "lucide-react";
 import { ProjectGrid } from "@/components/projects/ProjectGrid";
 import type { ProjectWithRelations } from "@/types/project";
 
@@ -73,16 +73,63 @@ export function DiscoverySection({
           </Link>
         </div>
 
-        {/* Projects grid with fade transition */}
+        {/* Projects grid with fade transition. Empty state on the homepage
+            is rendered inline as a creator-conversion moment rather than
+            falling through to ProjectGrid's generic search-icon empty state
+            — every visitor who lands here without active campaigns is a
+            recruitment opportunity for the founding cohort. */}
         <div
           className={`transition-opacity duration-300 ${isPending ? "opacity-50" : "opacity-100"}`}
         >
-          <ProjectGrid
-            projects={projects}
-            emptyMessage="No active projects yet — be the first to launch one!"
-          />
+          {projects.length === 0 ? (
+            <FoundingCohortEmptyState />
+          ) : (
+            <ProjectGrid projects={projects} />
+          )}
         </div>
       </div>
     </section>
+  );
+}
+
+/**
+ * Homepage empty state — shown when there are no active projects yet.
+ * Pre-launch this is the default view, so we lean into "founding cohort"
+ * framing: visitors see opportunity, not absence. Primary CTA pushes
+ * creators toward applying; secondary link gives backers a path to learn
+ * more without feeling pitched at.
+ */
+function FoundingCohortEmptyState() {
+  return (
+    <div className="py-20 sm:py-28 flex flex-col items-center text-center px-4">
+      <div className="w-14 h-14 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 border border-[var(--color-brand-crust)]/30 flex items-center justify-center mb-5">
+        <Sparkles className="w-6 h-6 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)]" />
+      </div>
+      <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] mb-3">
+        Founding cohort
+      </p>
+      <h3 className="text-2xl sm:text-3xl font-black tracking-tight text-[var(--color-ink)] mb-3 max-w-xl">
+        Be one of our first creators
+      </h3>
+      <p className="text-[var(--color-ink-muted)] leading-relaxed max-w-md mb-6">
+        We&apos;re handpicking Singapore&apos;s founding cohort right now. Apply
+        to launch your campaign and get featured at the top of the homepage on
+        day one.
+      </p>
+      <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-5">
+        <Link
+          href="/apply/creator"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-[var(--radius-btn)] bg-[var(--color-brand-crust)] text-white font-bold text-sm hover:opacity-90 transition-opacity"
+        >
+          Apply to launch <ArrowRight className="w-4 h-4" />
+        </Link>
+        <Link
+          href="/for-creators"
+          className="text-sm font-semibold text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] underline-offset-4 hover:underline transition-colors"
+        >
+          or learn how it works
+        </Link>
+      </div>
+    </div>
   );
 }
