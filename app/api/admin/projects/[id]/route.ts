@@ -124,6 +124,41 @@ export async function PATCH(request: Request, { params }: RouteContext) {
     return NextResponse.json({ ok: true });
   }
 
+  if (action === "revert_to_draft") {
+    // Going back to draft un-publishes the campaign and makes it editable
+    // again. Used for cleaning up test data and shelving campaigns we want
+    // to relaunch later. Skip the creator email — typical use is admin
+    // staging cleanup, not creator-facing moderation.
+    //
+    // Safety: refuse if any pledges hold real money. Allowing revert in
+    // that case would let a creator silently edit a campaign that backers
+    // have already pledged to.
+    const { count, error: pledgeErr } = await service
+      .from("pledges")
+      .select("id", { count: "exact", head: true })
+      .eq("project_id", id)
+      .in("status", ["authorized", "captured", "paynow_captured"]);
+
+    if (pledgeErr) return NextResponse.json({ error: pledgeErr.message }, { status: 500 });
+    if ((count ?? 0) > 0) {
+      return NextResponse.json(
+        {
+          error: `Can't revert — ${count} pledge${count === 1 ? "" : "s"} still hold money. Refund or release them first.`,
+        },
+        { status: 409 },
+      );
+    }
+
+    const { error } = await service
+      .from("projects")
+      .update({ status: "draft" })
+      .eq("id", id);
+
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+    return NextResponse.json({ ok: true });
+  }
+
   return NextResponse.json({ error: "Invalid action" }, { status: 400 });
 }
 
