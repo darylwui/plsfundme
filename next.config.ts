@@ -18,6 +18,13 @@ const nextConfig: NextConfig = {
       // permanent redirect so bookmarks, pasted links, and any old
       // marketing copy still resolve to the actual download.
       { source: "/for-creators/launch-guide/print", destination: "/api/launch-guide/pdf", permanent: true },
+      // Common-sense aliases for the signup route — the canonical path is
+      // /register but external write-ups, marketing emails, and our own
+      // preview gate have linked to /sign-up. Next preserves the
+      // ?redirectTo=... query string through redirect, so post-signup
+      // bounce-back to /projects/create still works.
+      { source: "/sign-up", destination: "/register", permanent: true },
+      { source: "/signup", destination: "/register", permanent: true },
       // Old /admin/* tree consolidated into /dashboard/admin/*. Keep these
       // redirects so any existing bookmarks or external links still resolve.
       { source: "/admin", destination: "/dashboard", permanent: true },
