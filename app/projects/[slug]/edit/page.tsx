@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { XCircle } from "lucide-react";
+import { FileText, XCircle } from "lucide-react";
 import { BackLink } from "@/components/ui/back-link";
 import { createClient } from "@/lib/supabase/server";
 import { EditProjectForm } from "@/components/project/EditProjectForm";
@@ -81,6 +81,7 @@ export default async function EditProjectPage({ params }: EditProjectPageProps) 
 
   const hasPledges = (pledgeCount ?? 0) > 0;
   const isRejected = project.status === "cancelled";
+  const isDraft = project.status === "draft";
   const rejectionReason = (raw as any).rejection_reason as string | null;
 
   return (
@@ -114,19 +115,48 @@ export default async function EditProjectPage({ params }: EditProjectPageProps) 
               </div>
             )}
             <div className="px-5 py-4">
-              <ResubmitButton projectId={project.id} />
+              <ResubmitButton projectId={project.id} mode="resubmit" />
+            </div>
+          </div>
+        )}
+
+        {/* Draft banner — happens when admin reverts a campaign back to
+            draft (or when one is shelved for relaunch). Without this
+            panel a creator has no way to push the campaign forward. */}
+        {isDraft && (
+          <div className="mb-8 rounded-[var(--radius-card)] border border-[var(--color-brand-crust)]/30 bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/15 overflow-hidden">
+            <div className="px-5 py-4 flex items-start gap-3 border-b border-[var(--color-brand-crust)]/20">
+              <FileText className="w-5 h-5 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] shrink-0 mt-0.5" />
+              <div>
+                <p className="font-bold text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)]">
+                  This campaign is a draft
+                </p>
+                <p className="text-sm text-[var(--color-ink-muted)] mt-0.5">
+                  Make any final edits below, then submit for review. Our
+                  team gets back to you within 1–2 business days.
+                </p>
+              </div>
+            </div>
+            <div className="px-5 py-4">
+              <ResubmitButton projectId={project.id} mode="submit" />
             </div>
           </div>
         )}
 
         <div className="mb-8">
           <h1 className="text-3xl font-black text-[var(--color-ink)] tracking-tight">
-            {isRejected ? "Edit & resubmit campaign" : "Edit campaign"}
+            {isRejected
+              ? "Edit & resubmit campaign"
+              : isDraft
+                ? "Edit & submit campaign"
+                : "Edit campaign"}
           </h1>
           <p className="mt-1 text-[var(--color-ink-muted)]">
             {isRejected
               ? "Make your changes below, then hit Resubmit above."
-              : "Changes are saved immediately and reflected on your public page."}
+              : isDraft
+                ? "Make your changes below, then hit Submit for review above."
+                : "Changes are saved immediately and reflected on your public page."}
           </p>
         </div>
 

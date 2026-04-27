@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PlusCircle, ArrowRight, Pencil, Rocket, PartyPopper, XCircle, Milestone as MilestoneIcon } from "lucide-react";
+import { PlusCircle, ArrowRight, Pencil, Rocket, PartyPopper, XCircle, FileText, Milestone as MilestoneIcon } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -227,6 +227,7 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
             const days = daysRemaining(project.deadline);
             const isShareable = project.status === "active" || project.status === "pending_review";
             const isRejected = project.status === "cancelled";
+            const isDraft = project.status === "draft";
             const rejectionReasonCode = (project as any).rejection_reason_code as string | null;
             const rejectionMessage = (project as any).rejection_reason as string | null;
             const reasonLabel = rejectionReasonCode
@@ -333,6 +334,27 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
                       title={project.title}
                       compact
                     />
+                  </div>
+                )}
+
+                {/* Draft nudge — surfaces the submit-for-review action
+                    inline so a creator whose campaign was reverted to
+                    draft (or shelved for relaunch) doesn't have to
+                    discover it deep in the edit page. */}
+                {isDraft && (
+                  <div className="border-t border-[var(--color-brand-crust)]/20 px-5 py-3 bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/15 flex items-start gap-2">
+                    <FileText className="w-3.5 h-3.5 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] shrink-0 mt-0.5" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs text-[var(--color-ink-muted)]">
+                        This campaign is a draft — review your details, then submit it for our team to approve.
+                      </p>
+                    </div>
+                    <Link
+                      href={`/projects/${project.slug}/edit`}
+                      className="text-xs font-semibold text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] hover:underline shrink-0 whitespace-nowrap"
+                    >
+                      Edit &amp; submit →
+                    </Link>
                   </div>
                 )}
 
