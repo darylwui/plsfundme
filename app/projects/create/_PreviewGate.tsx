@@ -173,7 +173,7 @@ export function CampaignPreviewGate() {
               </div>
 
               <Link
-                href="/sign-up?redirectTo=/projects/create"
+                href="/register?redirectTo=/projects/create"
                 className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-[var(--radius-btn)] bg-[var(--color-brand-golden)] text-white text-sm font-bold hover:opacity-90 transition-opacity"
               >
                 Create free account
