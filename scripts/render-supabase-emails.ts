@@ -32,7 +32,7 @@ import {
   renderResetPassword,
   renderChangeEmail,
   renderReauthentication,
-} from '../lib/email/auth-emails.ts';
+} from '../lib/email/auth-emails';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const outDir = resolve(__dirname, 'out');
