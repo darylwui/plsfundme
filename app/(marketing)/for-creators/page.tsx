@@ -65,6 +65,18 @@ export default function ForCreatorsPage() {
               </Link>
             </Button>
           </div>
+          {/* International creators: surfaces the waitlist for non-SG
+              applicants. Small text link, not a primary CTA — the page
+              targets SG creators, this is an opt-out for the rest. */}
+          <p className="mt-5 text-sm text-[var(--color-ink-muted)]">
+            Outside Singapore?{" "}
+            <Link
+              href="/for-creators/international"
+              className="font-semibold text-[var(--color-brand-crust)] hover:underline"
+            >
+              Tell us you&apos;re interested →
+            </Link>
+          </p>
           <ScrollDownCue />
         </div>
       </section>
