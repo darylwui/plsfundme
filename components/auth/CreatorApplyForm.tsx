@@ -292,7 +292,7 @@ export function CreatorApplyForm({ userId, onSuccess }: CreatorApplyFormProps) {
           />
 
           <p className="text-xs text-[var(--color-ink-subtle)] leading-relaxed">
-            🇸🇬 Singpass verification is coming soon — once live, we&apos;ll invite you to verify in one click. No action needed now.
+            🇸🇬 You can verify your identity via Singpass from your dashboard after submitting — it takes 30 seconds and builds trust with backers.
           </p>
 
           <div className="flex gap-3">
