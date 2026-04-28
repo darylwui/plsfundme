@@ -72,11 +72,20 @@ export async function pushAuthorizationRequest(params: {
     buildRequestObject(params),
   ]);
 
+  // SingPass requires plain auth params alongside the request object
+  // (client auth params from body, auth params from JWT — both required)
   const body = new URLSearchParams({
     client_id: singpassConfig.clientId,
     client_assertion_type:
       "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
     client_assertion: clientAssertion,
+    response_type: "code",
+    scope: "openid name",
+    redirect_uri: singpassConfig.redirectUri,
+    state: params.state,
+    nonce: params.nonce,
+    code_challenge: params.codeChallenge,
+    code_challenge_method: "S256",
     request: requestObject,
   });
 
