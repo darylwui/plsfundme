@@ -33,47 +33,18 @@ async function loadEncKey() {
   return importJWK(enc as Parameters<typeof importJWK>[0], "ECDH-ES+A256KW");
 }
 
-// Signed JWT request object for FAPI 2.0 PAR
-export async function buildRequestObject(params: {
-  state: string;
-  nonce: string;
-  codeChallenge: string;
-}): Promise<string> {
-  const privateKey = await loadSigKey();
-  const now = Math.floor(Date.now() / 1000);
-
-  return new SignJWT({
-    response_type: "code",
-    client_id: singpassConfig.clientId,
-    scope: "openid name",
-    redirect_uri: singpassConfig.redirectUri,
-    state: params.state,
-    nonce: params.nonce,
-    code_challenge: params.codeChallenge,
-    code_challenge_method: "S256",
-  })
-    .setProtectedHeader({ alg: "ES256", kid: "gtb-sig-1" })
-    .setIssuer(singpassConfig.clientId)
-    .setAudience(singpassConfig.issuer)
-    .setIssuedAt(now)
-    .setExpirationTime(now + 300)
-    .setJti(crypto.randomUUID())
-    .sign(privateKey);
-}
-
 // FAPI 2.0: POST all params to /fapi/par, get back a request_uri
 export async function pushAuthorizationRequest(params: {
   state: string;
   nonce: string;
   codeChallenge: string;
 }): Promise<string> {
-  const [clientAssertion, requestObject] = await Promise.all([
-    buildClientAssertion(singpassConfig.parEndpoint),
-    buildRequestObject(params),
-  ]);
+  const clientAssertion = await buildClientAssertion(singpassConfig.parEndpoint);
 
-  // SingPass requires plain auth params alongside the request object
-  // (client auth params from body, auth params from JWT — both required)
+  // Per SingPass FAPI 2.0 docs: all OIDC params go directly in the PAR body.
+  // No `request` JWT parameter — SingPass does NOT use a signed request object.
+  // `authentication_context_type` is REQUIRED (matches the auth context types
+  // configured in the SingPass developer portal).
   const body = new URLSearchParams({
     client_id: singpassConfig.clientId,
     client_assertion_type:
@@ -86,7 +57,7 @@ export async function pushAuthorizationRequest(params: {
     nonce: params.nonce,
     code_challenge: params.codeChallenge,
     code_challenge_method: "S256",
-    request: requestObject,
+    authentication_context_type: "APP_AUTHENTICATION_DEFAULT",
   });
 
   const response = await fetch(singpassConfig.parEndpoint, {
