@@ -13,6 +13,7 @@ import { FundingWidget } from "@/components/projects/FundingWidget";
 import { BackerEducationSection } from "@/components/backer/BackerEducationSection";
 import { FeaturedSticker } from "@/components/projects/FeaturedSticker";
 import { ProjectPageSections } from "@/components/projects/ProjectPageSections";
+import { CoverImage } from "@/components/projects/CoverImage";
 import { CampaignToc } from "@/components/projects/CampaignToc";
 import { ProjectCard } from "@/components/projects/ProjectCard";
 import { Badge } from "@/components/ui/badge";
@@ -309,10 +310,9 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               if (project.cover_image_url) {
                 return (
                   <div className="relative w-full aspect-[16/9] rounded-[var(--radius-card)] border border-amber-200 dark:border-amber-800/50 bg-[var(--color-surface-overlay)] overflow-hidden">
-                    <Image
+                    <CoverImage
                       src={project.cover_image_url}
                       alt={project.title}
-                      fill
                       priority
                       className="object-cover"
                       sizes="(max-width: 1024px) 100vw, 66vw"
