@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Shield, Globe, Lock } from "lucide-react";
+import { ArrowRight, Shield, Globe, Zap } from "lucide-react";
 import { unstable_cache } from "next/cache";
 // Marketing homepage: use the cookieless service-role client inside
 // `unstable_cache`. Next 16 throws if `cookies()` is called inside a cached
@@ -246,15 +246,15 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                         <ul className="text-sm text-[var(--color-ink-muted)] space-y-2">
                           <li className="flex items-start gap-2">
                             <Shield className="w-4 h-4 text-[var(--color-brand-crust)] shrink-0 mt-0.5" />
-                            Milestone-protected escrow
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <Lock className="w-4 h-4 text-[var(--color-brand-golden)] shrink-0 mt-0.5" />
-                            Secure escrow — funds held safely
+                            Milestone escrow — funds released as you deliver
                           </li>
                           <li className="flex items-start gap-2">
                             <Globe className="w-4 h-4 text-[var(--color-brand-info)] shrink-0 mt-0.5" />
                             PayNow and card — made for Singapore
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <Zap className="w-4 h-4 text-[var(--color-brand-golden)] shrink-0 mt-0.5" />
+                            Live in 48 hours — we review campaigns fast
                           </li>
                         </ul>
                       </div>
