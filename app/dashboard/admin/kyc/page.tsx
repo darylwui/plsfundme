@@ -16,12 +16,6 @@ export default async function DashboardAdminKycPage() {
     .single();
   if (!profile?.is_admin) redirect("/dashboard");
 
-  const { data: profiles } = await supabase
-    .from("profiles")
-    .select("id, display_name, avatar_url, kyc_status, kyc_submitted_at, created_at")
-    .eq("kyc_status", "pending")
-    .order("kyc_submitted_at", { ascending: true });
-
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -30,8 +24,7 @@ export default async function DashboardAdminKycPage() {
           Review and approve identity verification requests from users.
         </p>
       </div>
-      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-      <KycApprovalList profiles={(profiles as any[]) ?? []} />
+      <KycApprovalList />
     </div>
   );
 }
