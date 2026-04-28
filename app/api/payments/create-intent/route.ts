@@ -122,7 +122,11 @@ export async function POST(request: Request) {
           transfer_data: { destination: creatorProfile.stripe_account_id },
         }),
       },
-      { idempotencyKey: `paynow-${user.id}-${project_id}-${Date.now()}` }
+      // Deterministic idempotency key — a fast double-click with the same
+      // pledge values will reuse the same PaymentIntent rather than creating
+      // duplicates. Date.now() previously produced a fresh key per request,
+      // silently breaking Stripe's dedup guarantee.
+      { idempotencyKey: `paynow-${user.id}-${project_id}-${reward_id ?? "none"}-${amountCents}` }
     );
 
     // Create pledge record
@@ -167,7 +171,8 @@ export async function POST(request: Request) {
           amount_sgd: String(amount_sgd),
         },
       },
-      { idempotencyKey: `setup-${user.id}-${project_id}-${Date.now()}` }
+      // Deterministic idempotency key — see paynow branch above.
+      { idempotencyKey: `setup-${user.id}-${project_id}-${reward_id ?? "none"}-${amountCents}` }
     );
 
     // Create pledge record
