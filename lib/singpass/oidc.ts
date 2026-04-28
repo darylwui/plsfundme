@@ -6,6 +6,7 @@ import {
   compactDecrypt,
 } from "jose";
 import { singpassConfig } from "./config";
+import { buildDpopProof } from "./dpop";
 
 // Cache the remote JWKS set so we don't re-fetch on every request
 let cachedJwks: ReturnType<typeof createRemoteJWKSet> | null = null;
@@ -60,9 +61,15 @@ export async function pushAuthorizationRequest(params: {
     authentication_context_type: "APP_AUTHENTICATION_DEFAULT",
   });
 
+  // FAPI 2.0: PAR request requires a DPoP proof bound to (POST, parEndpoint)
+  const dpopProof = await buildDpopProof("POST", singpassConfig.parEndpoint);
+
   const response = await fetch(singpassConfig.parEndpoint, {
     method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      DPoP: dpopProof,
+    },
     body: body.toString(),
   });
 
@@ -107,9 +114,15 @@ export async function exchangeCodeForTokens(
     code_verifier: codeVerifier,
   });
 
+  // FAPI 2.0: token request also requires a DPoP proof
+  const dpopProof = await buildDpopProof("POST", singpassConfig.tokenEndpoint);
+
   const response = await fetch(singpassConfig.tokenEndpoint, {
     method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      DPoP: dpopProof,
+    },
     body: body.toString(),
   });
 
