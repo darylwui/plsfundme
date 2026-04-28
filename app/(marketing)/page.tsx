@@ -235,7 +235,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                           </span>
                         </div>
                         <p className="text-sm md:text-xs text-[var(--color-ink-subtle)]">
-                          Be among our founding creators
+                          Be among our first founders
                         </p>
                       </div>
 

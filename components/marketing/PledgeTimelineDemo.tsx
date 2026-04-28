@@ -80,7 +80,7 @@ export function PledgeTimelineDemo() {
 
   const progressBarTone =
     status === "success"
-      ? "from-[var(--color-brand-golden)] to-[var(--color-brand-golden)]"
+      ? "from-[var(--color-brand-success)] to-[var(--color-brand-success)]"
       : status === "missed"
         ? "from-[var(--color-ink-subtle)]/40 to-[var(--color-ink-subtle)]/40"
         : "from-[var(--color-brand-golden)] to-[var(--color-brand-crust)]";
@@ -145,7 +145,7 @@ export function PledgeTimelineDemo() {
                 <span
                   className={`font-mono font-bold transition-colors ${
                     status === "success"
-                      ? "text-[var(--color-brand-golden)]"
+                      ? "text-[var(--color-brand-success)]"
                       : status === "missed"
                         ? "text-[var(--color-ink-subtle)]"
                         : "text-[var(--color-ink-muted)]"
@@ -170,7 +170,7 @@ export function PledgeTimelineDemo() {
                   </span>
                 </button>
               ) : status === "success" ? (
-                <div className="inline-flex items-center gap-2 px-4 py-3 rounded-[var(--radius-btn)] bg-[var(--color-brand-golden)]/15 text-[var(--color-brand-golden)] font-bold text-sm">
+                <div className="inline-flex items-center gap-2 px-4 py-3 rounded-[var(--radius-btn)] bg-[var(--color-brand-success)]/15 text-[var(--color-brand-success)] font-bold text-sm">
                   <CheckCircle2 className="w-4 h-4" />
                   Goal reached
                 </div>
@@ -243,7 +243,7 @@ function DeadlineBadge({
         ? "bg-[#dc2626] text-white ring-4 ring-[#dc2626]/30 shadow-[0_0_0_6px_rgba(220,38,38,0.18),0_10px_30px_-8px_rgba(220,38,38,0.6)]"
         : "bg-[#ef4444] text-white ring-2 ring-[#ef4444]/25 shadow-[0_8px_24px_-8px_rgba(239,68,68,0.55)]"
       : status === "success"
-        ? "bg-[var(--color-brand-golden)] text-white ring-2 ring-[var(--color-brand-golden)]/25 shadow-[0_8px_24px_-8px_rgba(217,119,6,0.55)]"
+        ? "bg-[var(--color-brand-success)] text-white ring-2 ring-[var(--color-brand-success)]/25 shadow-[0_8px_24px_-8px_rgba(62,142,91,0.55)]"
         : "bg-[var(--color-ink-subtle)]/20 text-[var(--color-ink-muted)] ring-1 ring-[var(--color-border)]";
 
   return (
@@ -272,9 +272,9 @@ function DeadlineBadge({
 // ───────────────────────────────────────────────
 function SuccessCard() {
   return (
-    <div className="p-[3px] rounded-[calc(var(--radius-card)+3px)] bg-gradient-to-br from-[var(--color-brand-golden)]/50 to-[var(--color-brand-crust)]/50">
+    <div className="p-[3px] rounded-[calc(var(--radius-card)+3px)] bg-gradient-to-br from-[var(--color-brand-success)]/40 to-[var(--color-brand-success)]/20">
       <div className="rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] p-6 sm:p-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-brand-golden)]/10 text-[var(--color-brand-golden)] text-xs font-bold uppercase tracking-wider w-fit">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-brand-success)]/10 text-[var(--color-brand-success)] text-xs font-bold uppercase tracking-wider w-fit">
           <TrendingUp className="w-3.5 h-3.5" />
           Goal reached
         </div>
@@ -355,7 +355,7 @@ function OutcomeRow({
 }) {
   const bubble =
     accent === "golden"
-      ? "bg-[var(--color-brand-golden)]/15 text-[var(--color-brand-golden)]"
+      ? "bg-[var(--color-brand-success)]/15 text-[var(--color-brand-success)]"
       : "bg-[var(--color-surface-overlay)] border border-[var(--color-border)] text-[var(--color-brand-crust)]";
   return (
     <div className="flex items-start gap-3">
