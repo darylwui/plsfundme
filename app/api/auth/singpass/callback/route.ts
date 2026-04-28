@@ -28,15 +28,17 @@ export async function GET(request: NextRequest) {
   const cookieStore = await cookies();
   const savedState = cookieStore.get("sp_state")?.value;
   const savedNonce = cookieStore.get("sp_nonce")?.value;
+  const codeVerifier = cookieStore.get("sp_cv")?.value;
 
   // CSRF check
-  if (!savedState || savedState !== returnedState || !savedNonce) {
+  if (!savedState || savedState !== returnedState || !savedNonce || !codeVerifier) {
     return errorRedirect("expired");
   }
 
   // Clear state cookies immediately
   cookieStore.delete("sp_state");
   cookieStore.delete("sp_nonce");
+  cookieStore.delete("sp_cv");
 
   // Require authenticated getthatbread session
   const supabase = await createClient();
@@ -50,7 +52,7 @@ export async function GET(request: NextRequest) {
 
   let claims: { sub: string; name?: string };
   try {
-    const tokens = await exchangeCodeForTokens(code);
+    const tokens = await exchangeCodeForTokens(code, codeVerifier);
     claims = await verifyIdToken(tokens.id_token, savedNonce);
   } catch {
     return errorRedirect("failed");

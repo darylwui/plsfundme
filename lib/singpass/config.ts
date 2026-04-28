@@ -8,6 +8,10 @@ export const singpassConfig = {
     env === "production"
       ? "https://id.singpass.gov.sg/auth"
       : "https://stg-id.singpass.gov.sg/auth",
+  parEndpoint:
+    env === "production"
+      ? "https://id.singpass.gov.sg/fapi/par"
+      : "https://stg-id.singpass.gov.sg/fapi/par",
   tokenEndpoint:
     env === "production"
       ? "https://id.singpass.gov.sg/token"
