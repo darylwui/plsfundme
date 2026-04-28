@@ -134,6 +134,11 @@ export default async function RootLayout({
           </CurrencyProvider>
         </ThemeProvider>
         <GoogleAnalytics gaId="G-W93BB7060D" />
+        <Script
+          id="hs-script-loader"
+          src="//js.hs-scripts.com/20135231.js"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
