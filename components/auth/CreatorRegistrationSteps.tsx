@@ -400,7 +400,7 @@ export function CreatorRegistrationSteps({ onBack }: CreatorRegistrationStepsPro
           </div>
 
           <p className="text-xs text-[var(--color-ink-subtle)] leading-relaxed">
-            🇸🇬 Singpass verification is coming soon — once live, we&apos;ll invite you to verify in one click. No action needed now.
+            🇸🇬 After approval, you&apos;ll verify your identity with Singpass before launching your first campaign — it&apos;s a one-tap process. No action needed here.
           </p>
 
           <div className="flex gap-3 pt-1">
