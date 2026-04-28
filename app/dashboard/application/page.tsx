@@ -9,6 +9,7 @@ import {
 import { BackLink } from "@/components/ui/back-link";
 import { createClient } from "@/lib/supabase/server";
 import { ApplicationThread } from "@/components/dashboard/ApplicationThread";
+import { ApplicationStatusPoller } from "@/components/dashboard/ApplicationStatusPoller";
 
 export const metadata = { title: "Your application — get that bread" };
 
@@ -92,6 +93,13 @@ export default async function ApplicationPage() {
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Polls /api/creators/me/status every 30s while the application
+          is still in review, and triggers a router.refresh() the
+          moment a reviewer flips it. Renders a fixed-overlay
+          celebration toast on the pending → approved transition.
+          No-op for terminal statuses. */}
+      <ApplicationStatusPoller initialStatus={status} />
+
       <div>
         <BackLink href="/dashboard" className="w-fit">
           Back to dashboard

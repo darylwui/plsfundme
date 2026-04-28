@@ -57,6 +57,31 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
   const { data: projects } = await query.limit(24);
   const typedProjects = (projects as unknown as ProjectWithRelations[]) ?? [];
 
+  // Branch the empty-state CTA on the viewer's creator status. Showing
+  // "Apply to launch" to a creator who already applied (or got approved)
+  // is the kind of paper-cut that breaks platform-trust on day one. Falls
+  // back to the original "Apply" CTA for unauthed visitors and anyone
+  // who hasn't applied yet.
+  const { data: { user } } = await supabase.auth.getUser();
+  type CreatorStatus = "approved" | "pending_review" | "needs_info" | "rejected";
+  let creatorStatus: CreatorStatus | null = null;
+  if (user) {
+    const { data: cp } = await supabase
+      .from("creator_profiles")
+      .select("status")
+      .eq("id", user.id)
+      .maybeSingle();
+    const raw = cp?.status;
+    if (
+      raw === "approved" ||
+      raw === "pending_review" ||
+      raw === "needs_info" ||
+      raw === "rejected"
+    ) {
+      creatorStatus = raw;
+    }
+  }
+
   const SORTS = [
     { key: "trending", label: "Trending", Icon: TrendingUp },
     { key: "newest", label: "Newest", Icon: Star },
@@ -164,27 +189,73 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
           <div className="w-14 h-14 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 border border-[var(--color-brand-crust)]/30 flex items-center justify-center mb-5">
             <Sparkles className="w-6 h-6 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)]" />
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[var(--color-ink)] mb-3 max-w-xl">
-            Be one of our first creators
-          </h2>
-          <p className="text-[var(--color-ink-muted)] leading-relaxed max-w-md mb-6">
-            We&apos;re handpicking Singapore&apos;s founding cohort right now. Apply
-            to launch your campaign and get featured here on day one.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-5">
-            <Link
-              href="/apply/creator"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-[var(--radius-btn)] bg-[var(--color-brand-crust)] text-white font-bold text-sm hover:opacity-90 transition-opacity"
-            >
-              Apply to launch <ArrowRight className="w-4 h-4" />
-            </Link>
-            <Link
-              href="/for-creators"
-              className="text-sm font-semibold text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] underline-offset-4 hover:underline transition-colors"
-            >
-              or learn how it works
-            </Link>
-          </div>
+          {creatorStatus === "approved" ? (
+            <>
+              <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[var(--color-ink)] mb-3 max-w-xl">
+                You&apos;re cleared to launch
+              </h2>
+              <p className="text-[var(--color-ink-muted)] leading-relaxed max-w-md mb-6">
+                There aren&apos;t any campaigns live yet — yours could be the
+                first. Featured spot on this page goes to early creators on
+                day one.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-5">
+                <Link
+                  href="/projects/create"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-[var(--radius-btn)] bg-[var(--color-brand-crust)] text-white font-bold text-sm hover:opacity-90 transition-opacity"
+                >
+                  Start your campaign <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link
+                  href="/for-creators/launch-guide"
+                  className="text-sm font-semibold text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] underline-offset-4 hover:underline transition-colors"
+                >
+                  or read the launch checklist
+                </Link>
+              </div>
+            </>
+          ) : creatorStatus === "pending_review" || creatorStatus === "needs_info" ? (
+            <>
+              <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[var(--color-ink)] mb-3 max-w-xl">
+                Your application is in review
+              </h2>
+              <p className="text-[var(--color-ink-muted)] leading-relaxed max-w-md mb-6">
+                {creatorStatus === "needs_info"
+                  ? "A reviewer asked a follow-up question — answer it on your application page to keep things moving."
+                  : "We're reviewing your creator application — usually 1–2 business days. You'll get an email when there's an update."}
+              </p>
+              <Link
+                href="/dashboard/application"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-[var(--radius-btn)] bg-[var(--color-brand-crust)] text-white font-bold text-sm hover:opacity-90 transition-opacity"
+              >
+                View application status <ArrowRight className="w-4 h-4" />
+              </Link>
+            </>
+          ) : (
+            <>
+              <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[var(--color-ink)] mb-3 max-w-xl">
+                Be one of our first creators
+              </h2>
+              <p className="text-[var(--color-ink-muted)] leading-relaxed max-w-md mb-6">
+                We&apos;re handpicking Singapore&apos;s founding cohort right now. Apply
+                to launch your campaign and get featured here on day one.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-5">
+                <Link
+                  href={creatorStatus === "rejected" ? "/dashboard/application" : "/apply/creator"}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-[var(--radius-btn)] bg-[var(--color-brand-crust)] text-white font-bold text-sm hover:opacity-90 transition-opacity"
+                >
+                  {creatorStatus === "rejected" ? "View feedback & re-apply" : "Apply to launch"} <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link
+                  href="/for-creators"
+                  className="text-sm font-semibold text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] underline-offset-4 hover:underline transition-colors"
+                >
+                  or learn how it works
+                </Link>
+              </div>
+            </>
+          )}
         </div>
       ) : (
         <ProjectGrid
