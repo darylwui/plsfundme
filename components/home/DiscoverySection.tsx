@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { ArrowRight, TrendingUp, Star, Clock, Rocket, Users } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
+import { BackerNotifyForm } from "@/components/home/BackerNotifyForm";
 import { ProjectGrid } from "@/components/projects/ProjectGrid";
 import type { ProjectWithRelations } from "@/types/project";
 
@@ -108,7 +109,7 @@ function FoundingCohortEmptyState() {
       <div className="flex justify-center mb-10">
         <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--color-brand-crust)]/10 dark:bg-[var(--color-brand-crust-dark)]/20 border border-[var(--color-brand-crust)]/20 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] text-[11px] font-bold uppercase tracking-[0.16em]">
           <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-brand-crust)] animate-pulse shrink-0" />
-          Founding cohort · Limited spots
+          First founders · Limited spots
         </span>
       </div>
 
@@ -118,7 +119,7 @@ function FoundingCohortEmptyState() {
           Singapore&apos;s first wave of<br className="hidden sm:block" /> campaigns is launching soon.
         </h2>
         <p className="text-[var(--color-ink-muted)] leading-relaxed max-w-md mx-auto">
-          We&apos;re handpicking our founding creators now. Join before launch
+          We&apos;re handpicking our first founders now. Join before launch
           to get first-mover advantage — as a creator or a backer.
         </p>
       </div>
@@ -177,16 +178,13 @@ function FoundingCohortEmptyState() {
               <h3 className="font-black text-[var(--color-ink)] text-xl leading-snug">
                 Be the first to back.
               </h3>
+              <p className="mt-2 text-sm text-[var(--color-ink-muted)]">
+                Get notified when the first campaigns go live.
+              </p>
             </div>
-            <Link
-              href="/register"
-              className="group mt-auto inline-flex items-center gap-2 self-start px-5 py-2.5 rounded-[var(--radius-btn)] bg-[var(--color-surface-overlay)] border border-[var(--color-border)] text-[var(--color-ink)] font-bold text-sm transition-all duration-[250ms] ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-[var(--color-brand-crumb)] active:scale-[0.98]"
-            >
-              Create account
-              <span className="w-6 h-6 rounded-full bg-[var(--color-border)] flex items-center justify-center transition-transform duration-[250ms] ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:translate-x-0.5 group-hover:-translate-y-px">
-                <ArrowRight className="w-3 h-3" />
-              </span>
-            </Link>
+            <div className="mt-auto">
+              <BackerNotifyForm />
+            </div>
           </div>
         </motion.div>
 
