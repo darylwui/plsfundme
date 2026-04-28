@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { getUsdToSgdRate } from "@/lib/currency/sgd-rate";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import "./globals.css";
@@ -58,11 +59,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // 24h-cached server-side fetch (open.er-api.com) → injected into the
+  // currency provider. Falls back to 1.35 if the upstream is down. The
+  // displayed rate only affects USD-toggle UX on the marketing surface;
+  // actual Stripe charges always settle in SGD regardless.
+  const usdToSgdRate = await getUsdToSgdRate();
+
   return (
     <html
       lang="en"
@@ -120,7 +127,7 @@ export default function RootLayout({
         </Script>
 
         <ThemeProvider>
-          <CurrencyProvider>
+          <CurrencyProvider initialUsdToSgd={usdToSgdRate}>
             <Navbar />
             <main className="flex-1">{children}</main>
             <Footer />

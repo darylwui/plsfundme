@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { ADMIN_EMAIL, FROM, getResend } from "@/lib/email/resend";
 import { renderDisputeConcernAdminEmail } from "@/lib/email/dispute-concern-emails";
+import { maybeSweep, rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 interface SubmitBody {
   pledgeId?: unknown;
@@ -13,6 +14,12 @@ const MIN_LEN = 10;
 const MAX_LEN = 2000;
 
 export async function POST(req: NextRequest) {
+  // Auth-required, but each call sends an admin email — without a
+  // rate limit a compromised account could spam the inbox. 5/min/IP.
+  maybeSweep();
+  const rl = rateLimit(req, "dispute-concerns", { windowMs: 60_000, max: 5 });
+  if (!rl.ok) return rateLimitResponse(rl);
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
