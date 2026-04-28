@@ -138,6 +138,9 @@ describe("POST /api/projects", () => {
           creator_profiles: { status: "pending_review" },
         });
       }
+      if (table === "creator_profiles") {
+        return profileResult({ status: "pending" });
+      }
     });
 
     const res = await POST(buildRequest());
@@ -153,6 +156,9 @@ describe("POST /api/projects", () => {
           display_name: "Joe",
           creator_profiles: { status: "approved" },
         });
+      }
+      if (table === "creator_profiles") {
+        return profileResult({ status: "approved" });
       }
     });
 
@@ -171,6 +177,9 @@ describe("POST /api/projects", () => {
           display_name: "Joe",
           creator_profiles: { status: "approved" },
         });
+      }
+      if (table === "creator_profiles") {
+        return profileResult({ status: "approved" });
       }
     });
 
@@ -199,6 +208,9 @@ describe("POST /api/projects", () => {
           display_name: "Joe Creator",
           creator_profiles: { status: "approved" },
         });
+      }
+      if (table === "creator_profiles") {
+        return profileResult({ status: "approved" });
       }
       if (table === "projects") {
         return {
@@ -261,6 +273,9 @@ describe("POST /api/projects", () => {
           creator_profiles: [{ status: "approved" }],
         });
       }
+      if (table === "creator_profiles") {
+        return profileResult({ status: "approved" });
+      }
       if (table === "projects") {
         return { insert: projectInsertMock, select: projectSelectMock, single: projectSingleMock };
       }
@@ -283,6 +298,9 @@ describe("POST /api/projects", () => {
           display_name: "Joe",
           creator_profiles: { status: "approved" },
         });
+      }
+      if (table === "creator_profiles") {
+        return profileResult({ status: "approved" });
       }
       if (table === "projects") {
         return {
@@ -312,6 +330,9 @@ describe("POST /api/projects", () => {
           display_name: "Joe",
           creator_profiles: { status: "approved" },
         });
+      }
+      if (table === "creator_profiles") {
+        return profileResult({ status: "approved" });
       }
       if (table === "projects") {
         return {

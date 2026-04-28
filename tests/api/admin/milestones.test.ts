@@ -116,7 +116,7 @@ describe('GET /api/admin/milestones', () => {
         proof_data: { letter_text: 'Proof' },
         submitted_at: '2024-01-01T00:00:00Z',
         created_at: '2024-01-01T00:00:00Z',
-        projects: { title: 'Cool Campaign' },
+        projects: { title: 'Cool Campaign', slug: null },
         profiles: { display_name: 'John Doe' },
       },
     ];
@@ -146,6 +146,18 @@ describe('GET /api/admin/milestones', () => {
       }),
     };
 
+    // Approvals secondary query chain: .select().in().order()
+    const approvalsSelectChain = {
+      in: vi.fn().mockReturnValue({
+        order: vi.fn().mockResolvedValue({ data: [], error: null }),
+      }),
+    };
+
+    // Status counts query: milestone_submissions called a second time with just .select('status')
+    const statusCountsSelectResult = Promise.resolve({ data: [{ status: 'pending' }], error: null });
+
+    let milestoneSubmissionsCallCount = 0;
+
     vi.mocked(createClient).mockResolvedValue({
       auth: {
         getUser: vi.fn().mockResolvedValue({
@@ -156,6 +168,23 @@ describe('GET /api/admin/milestones', () => {
         if (table === 'profiles') {
           return {
             select: vi.fn().mockReturnValue(profileSelectChain),
+          };
+        }
+        if (table === 'milestone_approvals') {
+          return {
+            select: vi.fn().mockReturnValue(approvalsSelectChain),
+          };
+        }
+        if (table === 'milestone_submissions') {
+          milestoneSubmissionsCallCount += 1;
+          if (milestoneSubmissionsCallCount === 1) {
+            return {
+              select: vi.fn().mockReturnValue(milestonesSelectChain),
+            };
+          }
+          // Second call: status counts query (.select('status') resolves directly)
+          return {
+            select: vi.fn().mockReturnValue(statusCountsSelectResult),
           };
         }
         return {
@@ -177,6 +206,7 @@ describe('GET /api/admin/milestones', () => {
       id: 'sub-1',
       campaign_id: 'campaign-1',
       campaign_name: 'Cool Campaign',
+      campaign_slug: null,
       creator_id: 'creator-1',
       creator_name: 'John Doe',
       milestone_number: 1,
@@ -184,6 +214,7 @@ describe('GET /api/admin/milestones', () => {
       proof_data: { letter_text: 'Proof' },
       submitted_at: '2024-01-01T00:00:00Z',
       created_at: '2024-01-01T00:00:00Z',
+      approval: null,
     });
     expect(data.total).toBe(1);
     expect(data.page).toBe(1);
@@ -204,7 +235,7 @@ describe('GET /api/admin/milestones', () => {
         proof_data: {},
         submitted_at: '2024-01-02T00:00:00Z',
         created_at: '2024-01-02T00:00:00Z',
-        projects: { title: 'Another Campaign' },
+        projects: { title: 'Another Campaign', slug: null },
         profiles: { display_name: 'Jane Smith' },
       },
     ];
@@ -228,6 +259,16 @@ describe('GET /api/admin/milestones', () => {
       }),
     };
 
+    const approvalsSelectChain = {
+      in: vi.fn().mockReturnValue({
+        order: vi.fn().mockResolvedValue({ data: [], error: null }),
+      }),
+    };
+
+    const statusCountsSelectResult = Promise.resolve({ data: [{ status: 'approved' }], error: null });
+
+    let milestoneSubmissionsCallCount = 0;
+
     vi.mocked(createClient).mockResolvedValue({
       auth: {
         getUser: vi.fn().mockResolvedValue({
@@ -238,6 +279,22 @@ describe('GET /api/admin/milestones', () => {
         if (table === 'profiles') {
           return {
             select: vi.fn().mockReturnValue(profileSelectChain),
+          };
+        }
+        if (table === 'milestone_approvals') {
+          return {
+            select: vi.fn().mockReturnValue(approvalsSelectChain),
+          };
+        }
+        if (table === 'milestone_submissions') {
+          milestoneSubmissionsCallCount += 1;
+          if (milestoneSubmissionsCallCount === 1) {
+            return {
+              select: vi.fn().mockReturnValue(milestonesSelectChain),
+            };
+          }
+          return {
+            select: vi.fn().mockReturnValue(statusCountsSelectResult),
           };
         }
         return {
@@ -458,6 +515,16 @@ describe('GET /api/admin/milestones', () => {
       }),
     };
 
+    const approvalsSelectChain = {
+      in: vi.fn().mockReturnValue({
+        order: vi.fn().mockResolvedValue({ data: [], error: null }),
+      }),
+    };
+
+    const statusCountsSelectResult = Promise.resolve({ data: [], error: null });
+
+    let milestoneSubmissionsCallCount = 0;
+
     vi.mocked(createClient).mockResolvedValue({
       auth: {
         getUser: vi.fn().mockResolvedValue({
@@ -468,6 +535,22 @@ describe('GET /api/admin/milestones', () => {
         if (table === 'profiles') {
           return {
             select: vi.fn().mockReturnValue(profileSelectChain),
+          };
+        }
+        if (table === 'milestone_approvals') {
+          return {
+            select: vi.fn().mockReturnValue(approvalsSelectChain),
+          };
+        }
+        if (table === 'milestone_submissions') {
+          milestoneSubmissionsCallCount += 1;
+          if (milestoneSubmissionsCallCount === 1) {
+            return {
+              select: vi.fn().mockReturnValue(milestonesSelectChain),
+            };
+          }
+          return {
+            select: vi.fn().mockReturnValue(statusCountsSelectResult),
           };
         }
         return {

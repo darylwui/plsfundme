@@ -20,7 +20,9 @@ function createMockSupabase(responses: {
     }),
     milestone_submissions_public: () => ({
       select: () => ({
-        eq: async () => ({ data: responses.submissions, error: null }),
+        eq: () => ({
+          order: async () => ({ data: responses.submissions, error: null }),
+        }),
       }),
     }),
     milestone_approvals_public: () => ({
@@ -268,7 +270,11 @@ describe('resolveMilestonesForBacker', () => {
         }
         if (table === 'milestone_submissions_public') {
           return {
-            select: () => ({ eq: async () => ({ data: [], error: null }) }),
+            select: () => ({
+              eq: () => ({
+                order: async () => ({ data: [], error: null }),
+              }),
+            }),
           };
         }
         if (table === 'milestone_approvals_public') {
