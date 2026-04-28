@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ImageUpload } from "@/components/ui/ImageUpload";
+import { SingpassIcon } from "@/components/icons/SingpassIcon";
 
 const PROJECT_TYPES = [
   "Technology",
@@ -399,8 +400,9 @@ export function CreatorRegistrationSteps({ onBack }: CreatorRegistrationStepsPro
             />
           </div>
 
-          <p className="text-xs text-[var(--color-ink-subtle)] leading-relaxed">
-            🇸🇬 After approval, you&apos;ll verify your identity with Singpass before launching your first campaign — it&apos;s a one-tap process. No action needed here.
+          <p className="text-xs text-[var(--color-ink-subtle)] leading-relaxed flex items-start gap-1.5">
+            <SingpassIcon className="w-4 h-4 rounded-[3px] shrink-0 mt-px" />
+            After approval, you&apos;ll verify your identity with Singpass before launching your first campaign — it&apos;s a one-tap process. No action needed here.
           </p>
 
           <div className="flex gap-3 pt-1">
