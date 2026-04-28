@@ -5,6 +5,7 @@ import {
   categoryLabelFor,
   renderCampaignReportAdminEmail,
 } from "@/lib/email/campaign-report-emails";
+import { maybeSweep, rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 interface SubmitBody {
   projectId?: unknown;
@@ -29,6 +30,12 @@ function isCategory(v: unknown): v is Category {
 }
 
 export async function POST(req: NextRequest) {
+  // Auth-required, but each call sends an admin email — without a
+  // rate limit a compromised account could spam the inbox. 5/min/IP.
+  maybeSweep();
+  const rl = rateLimit(req, "campaign-reports", { windowMs: 60_000, max: 5 });
+  if (!rl.ok) return rateLimitResponse(rl);
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 

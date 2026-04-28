@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { FROM, getResend } from "@/lib/email/resend";
 import { renderInternationalInterestEmail } from "@/lib/email/international-interest-emails";
+import { maybeSweep, rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 interface SubmitBody {
   email?: unknown;
@@ -21,6 +22,14 @@ const MAX_COUNTRY_LEN = 60;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(req: NextRequest) {
+  // Public, no-auth POST — without a rate limit anyone can script tens
+  // of thousands of fake submissions and bury real signal. 3/min/IP
+  // matches the bug-reports pattern; legitimate users only hit this
+  // once.
+  maybeSweep();
+  const rl = rateLimit(req, "international-interest", { windowMs: 60_000, max: 3 });
+  if (!rl.ok) return rateLimitResponse(rl);
+
   let body: SubmitBody;
   try {
     body = await req.json();
