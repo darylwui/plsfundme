@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Mail, Search, ShieldCheck, ShieldOff } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
 import { formatDate } from "@/lib/utils/dates";
 
 interface UserRow {
@@ -23,8 +22,7 @@ export function UserList({ users: initial, currentUserId }: UserListProps) {
   const [search, setSearch] = useState("");
   const [users, setUsers] = useState(initial);
   const [togglingId, setTogglingId] = useState<string | null>(null);
-
-  const supabase = createClient();
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const filtered = users.filter((u) => {
     const q = search.toLowerCase();
@@ -37,23 +35,36 @@ export function UserList({ users: initial, currentUserId }: UserListProps) {
   async function toggleAdmin(user: UserRow) {
     if (user.id === currentUserId) return; // self-protection
     const newValue = !user.is_admin;
+    setErrorMsg(null);
     // Optimistic update
     setUsers((prev) =>
       prev.map((u) => (u.id === user.id ? { ...u, is_admin: newValue } : u))
     );
     setTogglingId(user.id);
-    const { error } = await supabase
-      .from("profiles")
-      .update({ is_admin: newValue })
-      .eq("id", user.id);
-    if (error) {
-      // Revert on failure
+    try {
+      const res = await fetch(`/api/admin/users/${user.id}/role`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ is_admin: newValue }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        const msg: string = data?.error ?? "Failed to update admin status.";
+        // Revert optimistic update
+        setUsers((prev) =>
+          prev.map((u) => (u.id === user.id ? { ...u, is_admin: !newValue } : u))
+        );
+        setErrorMsg(msg);
+      }
+    } catch {
+      // Network error — revert
       setUsers((prev) =>
         prev.map((u) => (u.id === user.id ? { ...u, is_admin: !newValue } : u))
       );
-      alert("Failed to update admin status.");
+      setErrorMsg("Network error. Please try again.");
+    } finally {
+      setTogglingId(null);
     }
-    setTogglingId(null);
   }
 
   if (users.length === 0) {
@@ -67,6 +78,12 @@ export function UserList({ users: initial, currentUserId }: UserListProps) {
 
   return (
     <div className="flex flex-col gap-4">
+      {/* Error banner */}
+      {errorMsg && (
+        <div className="rounded-[var(--radius-card)] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {errorMsg}
+        </div>
+      )}
       {/* Search */}
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-ink-subtle)] pointer-events-none" />
