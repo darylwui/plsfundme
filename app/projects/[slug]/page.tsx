@@ -44,6 +44,10 @@ async function getProject(slug: string): Promise<ProjectWithRelations | null> {
     .eq("slug", slug)
     .single();
 
+  if (data?.rewards) {
+    (data as any).rewards = data.rewards.filter((r: any) => r.is_active);
+  }
+
   return (data as unknown as ProjectWithRelations) ?? null;
 }
 

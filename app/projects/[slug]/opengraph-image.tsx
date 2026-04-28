@@ -24,7 +24,7 @@ export default async function Image({ params }: Props) {
   const { data: project } = await supabase
     .from("projects")
     .select(
-      "title, short_description, cover_image_url, funding_goal_sgd, amount_pledged_sgd, backer_count, deadline, status, creator:profiles!creator_id(display_name), category:categories(name)"
+      "title, short_description, cover_image_url, funding_goal_sgd, amount_pledged_sgd, backer_count, deadline, status, creator:profiles!creator_id(display_name, avatar_url), category:categories(name)"
     )
     .eq("slug", slug)
     .maybeSingle();
@@ -44,7 +44,7 @@ export default async function Image({ params }: Props) {
     backer_count: number;
     deadline: string;
     status: string;
-    creator: { display_name: string } | null;
+    creator: { display_name: string; avatar_url: string | null } | null;
     category: { name: string } | null;
   };
 
@@ -169,11 +169,40 @@ export default async function Image({ params }: Props) {
               <div
                 style={{
                   display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
                   fontSize: "22px",
                   color: "#5B4636",
                   fontWeight: 600,
                 }}
               >
+                {row.creator.avatar_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={row.creator.avatar_url}
+                    width={32}
+                    height={32}
+                    style={{ borderRadius: 16 }}
+                    alt=""
+                  />
+                ) : (
+                  <div
+                    style={{
+                      display: "flex",
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "16px",
+                      background: "#E07F14",
+                      color: "#FFF7EC",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "16px",
+                      fontWeight: 700,
+                    }}
+                  >
+                    {row.creator.display_name?.charAt(0).toUpperCase() ?? "?"}
+                  </div>
+                )}
                 by {row.creator.display_name}
               </div>
             )}

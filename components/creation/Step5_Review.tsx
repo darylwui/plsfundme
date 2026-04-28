@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { trackEvent } from "@/lib/analytics";
 import { Rocket, Eye, CalendarDays, Flag } from "lucide-react";
@@ -78,6 +78,7 @@ export function Step5_Review({ draft, rewards, categories, onBack, onSuccess }: 
   const router = useRouter();
   const [launching, setLaunching] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const submittingRef = useRef(false);
 
   const category = categories.find((c) => c.id === draft.category_id);
   const previewProject = buildPreviewProject(draft, rewards, category);
@@ -106,6 +107,9 @@ export function Step5_Review({ draft, rewards, categories, onBack, onSuccess }: 
   const readyPercent = Math.round((readyCount / Object.keys(isReady).length) * 100);
 
   async function handleLaunch() {
+    if (submittingRef.current) return; // already in flight
+    submittingRef.current = true;
+
     setLaunching(true);
     setError(null);
 
@@ -133,6 +137,7 @@ export function Step5_Review({ draft, rewards, categories, onBack, onSuccess }: 
     if (!res.ok) {
       setError(json.error ?? "Failed to create project.");
       setLaunching(false);
+      submittingRef.current = false; // allow retry after error
       return;
     }
 
