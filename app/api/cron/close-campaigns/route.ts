@@ -4,13 +4,18 @@ import { getStripe } from "@/lib/stripe/server";
 import { captureProjectPledges } from "@/app/api/payments/capture/route";
 import { sendCampaignFailedEmail, sendCampaignFailedToBackerEmail } from "@/lib/email/templates";
 import * as Sentry from "@sentry/nextjs";
+import { timingSafeEqual } from "crypto";
+
+function verifyBearerToken(authHeader: string | null, secret: string): boolean {
+  const expected = `Bearer ${secret}`;
+  if (!authHeader || authHeader.length !== expected.length) return false;
+  return timingSafeEqual(Buffer.from(authHeader), Buffer.from(expected));
+}
 
 export async function GET(request: Request) {
-  // Verify Vercel cron secret
-  const authHeader = request.headers.get("Authorization");
+  // Verify Vercel cron secret — timing-safe to prevent oracle attacks
   const cronSecret = process.env.CRON_SECRET;
-
-  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+  if (!cronSecret || !verifyBearerToken(request.headers.get("Authorization"), cronSecret)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

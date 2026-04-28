@@ -32,6 +32,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Password must be at least 8 characters" }, { status: 400 });
     }
 
+    // Only allow URLs pointing to our own Supabase storage to prevent
+    // storing arbitrary external URLs (tracking pixels, competitor images, etc.)
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    if (!supabaseUrl) {
+      return NextResponse.json({ error: "Server misconfiguration" }, { status: 500 });
+    }
+    const storagePrefix = `${supabaseUrl}/storage/v1/object/public/`;
+    for (const [field, value] of [["photo_url", photo_url], ["id_document_url", id_document_url]] as const) {
+      if (value && !value.startsWith(storagePrefix)) {
+        return NextResponse.json({ error: `${field} must be a Supabase storage URL` }, { status: 400 });
+      }
+    }
+
     const service = createServiceClient();
 
     // Look up existing user by email to avoid duplicates
