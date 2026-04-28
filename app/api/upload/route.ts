@@ -7,8 +7,8 @@ const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const BUCKET = "project-images";
 
 async function detectImageType(file: File): Promise<string | null> {
-  const ab = await file.arrayBuffer();
-  const buf = new Uint8Array(ab, 0, Math.min(12, ab.byteLength));
+  const ab = await file.slice(0, 12).arrayBuffer();
+  const buf = new Uint8Array(ab);
   if (buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff) return "image/jpeg";
   if (buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47) return "image/png";
   if (buf[0] === 0x47 && buf[1] === 0x49 && buf[2] === 0x46 && buf[3] === 0x38) return "image/gif";
