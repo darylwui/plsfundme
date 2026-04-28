@@ -120,7 +120,7 @@ function StepIcon({ step }: { step: Step }) {
 
   if (step.status === "locked") {
     if (step.number === 2) {
-      return <SingpassIcon className="w-7 h-7 rounded-[5px] shrink-0" />;
+      return <SingpassIcon className="w-7 h-7 shrink-0" />;
     }
     return (
       <div className={`${base} bg-[var(--color-surface-overlay)] text-[var(--color-ink-subtle)]`}>

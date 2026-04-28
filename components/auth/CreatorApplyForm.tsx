@@ -293,7 +293,7 @@ export function CreatorApplyForm({ userId, onSuccess }: CreatorApplyFormProps) {
           />
 
           <p className="text-xs text-[var(--color-ink-subtle)] leading-relaxed flex items-start gap-1.5">
-            <SingpassIcon className="w-4 h-4 rounded-[3px] shrink-0 mt-px" />
+            <SingpassIcon className="w-4 h-4 shrink-0 mt-px" aria-hidden="true" />
             You can verify your identity via Singpass from your dashboard after submitting — it takes 30 seconds and builds trust with backers.
           </p>
 

@@ -1,15 +1,18 @@
 interface SingpassIconProps {
   className?: string;
+  "aria-hidden"?: boolean | "true" | "false";
 }
 
-export function SingpassIcon({ className }: SingpassIconProps) {
+export function SingpassIcon({ className, "aria-hidden": ariaHidden }: SingpassIconProps) {
+  const decorative = ariaHidden === true || ariaHidden === "true";
   return (
     <svg
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      aria-label="Singpass"
-      role="img"
+      aria-label={decorative ? undefined : "Singpass"}
+      aria-hidden={decorative ? true : undefined}
+      role={decorative ? undefined : "img"}
       className={className}
     >
       <rect width="24" height="24" rx="5" fill="#C8102E" />

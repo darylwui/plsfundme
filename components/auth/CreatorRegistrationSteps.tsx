@@ -401,7 +401,7 @@ export function CreatorRegistrationSteps({ onBack }: CreatorRegistrationStepsPro
           </div>
 
           <p className="text-xs text-[var(--color-ink-subtle)] leading-relaxed flex items-start gap-1.5">
-            <SingpassIcon className="w-4 h-4 rounded-[3px] shrink-0 mt-px" />
+            <SingpassIcon className="w-4 h-4 shrink-0 mt-px" aria-hidden="true" />
             After approval, you&apos;ll verify your identity with Singpass before launching your first campaign — it&apos;s a one-tap process. No action needed here.
           </p>
 

@@ -241,7 +241,7 @@ async function CreatorDashboard({ userId, displayName, email, singpassSuccess }:
       {/* ── Singpass verified success ── */}
       {singpassSuccess && (
         <div className="rounded-[var(--radius-card)] border border-[var(--color-brand-success)]/30 bg-[var(--color-brand-success)]/8 p-5 flex items-center gap-4">
-          <SingpassIcon className="w-10 h-10 rounded-lg shrink-0" />
+          <SingpassIcon className="w-10 h-10 shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="font-bold text-[var(--color-ink)] text-sm">Identity verified via Singpass</p>
             <p className="text-xs text-[var(--color-ink-muted)] mt-0.5">Your backers will see a verified badge on your campaign page.</p>
@@ -258,7 +258,7 @@ async function CreatorDashboard({ userId, displayName, email, singpassSuccess }:
       {/* ── Singpass verify prompt — shown to all approved creators who haven't verified ── */}
       {creatorStatus === "approved" && !singpassVerified && !singpassSuccess && (
         <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 flex items-center gap-4">
-          <SingpassIcon className="w-10 h-10 rounded-lg shrink-0" />
+          <SingpassIcon className="w-10 h-10 shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="font-bold text-[var(--color-ink)] text-sm">Verify your identity with Singpass</p>
             <p className="text-xs text-[var(--color-ink-muted)] mt-0.5">Takes 30 seconds — backers will see a verified badge on your campaigns.</p>
