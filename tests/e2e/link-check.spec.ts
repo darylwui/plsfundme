@@ -103,18 +103,20 @@ test.describe("internal links on public pages", () => {
 // ── Redirect chain check ──────────────────────────────��──────────
 
 test.describe("redirect chains", () => {
-  const REDIRECTS: [string, string][] = [
-    ["/sign-up", "/register"],
-    ["/signup", "/register"],
-    ["/admin", "/dashboard"],
-    ["/refund-policy", "/terms"],
-    ["/apply/pm", "/apply/creator"],
+  const REDIRECTS: Array<{ from: string; to: string; finalContains: string }> = [
+    { from: "/sign-up",      to: "/register",       finalContains: "/register" },
+    { from: "/signup",       to: "/register",       finalContains: "/register" },
+    // /admin redirects to /dashboard which is auth-gated → /login?redirectTo=/dashboard
+    { from: "/admin",        to: "/dashboard",      finalContains: "dashboard" },
+    { from: "/refund-policy", to: "/terms",         finalContains: "/terms" },
+    // /apply/pm → /apply/creator → /register?role=creator (apply/creator redirects to register)
+    { from: "/apply/pm",    to: "/apply/creator",   finalContains: "creator" },
   ];
 
-  for (const [from, to] of REDIRECTS) {
+  for (const { from, to, finalContains } of REDIRECTS) {
     test(`${from} → ${to}`, async ({ page }) => {
       await page.goto(from);
-      expect(page.url()).toContain(to);
+      expect(page.url(), `${from} should redirect toward ${to}`).toContain(finalContains);
     });
   }
 });
