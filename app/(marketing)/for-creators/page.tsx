@@ -44,7 +44,7 @@ export default function ForCreatorsPage() {
             </span>
           </h1>
           <p className="text-lg text-[var(--color-ink-muted)] leading-relaxed max-w-2xl">
-            We&apos;re handpicking Singapore&apos;s founding cohort of creators
+            We&apos;re handpicking Singapore&apos;s first founders
             right now. Apply to launch a campaign, raise capital from your
             community, and get featured at the top of the homepage on day one.
             Milestone-based payouts, fee only if you hit your goal.

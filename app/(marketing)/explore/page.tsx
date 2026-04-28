@@ -237,7 +237,7 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
                 Be one of our first creators
               </h2>
               <p className="text-[var(--color-ink-muted)] leading-relaxed max-w-md mb-6">
-                We&apos;re handpicking Singapore&apos;s founding cohort right now. Apply
+                We&apos;re handpicking Singapore&apos;s first founders right now. Apply
                 to launch your campaign and get featured here on day one.
               </p>
               <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-5">
