@@ -410,7 +410,20 @@ export function PrivacyContent() {
             </li>
           </ul>
           <p>
-            To exercise any of these rights, email our Data Protection Officer at{" "}
+            <strong>Self-service download.</strong> If you&apos;re signed in, you can download a copy of
+            the personal data we hold about you (profile, pledges, creator application, dispute concerns,
+            campaign drafts) at{" "}
+            <a href="/api/me/export" className="font-semibold text-[var(--color-brand-crust)] hover:underline">
+              /api/me/export
+            </a>{" "}
+            — the response is a structured JSON file you can save locally. Self-service covers the
+            data we hold about you directly; for anything held by Creators or third-party processors,
+            email the DPO below.
+          </p>
+          <p>
+            <strong>Other rights.</strong> To request correction, withdrawal of consent, or account
+            deletion (subject to retention obligations for completed transactions and AML records),
+            email our Data Protection Officer at{" "}
             <a href={`mailto:${CONTACT_EMAIL}`} className="font-semibold text-[var(--color-brand-crust)] hover:underline">{CONTACT_EMAIL}</a>.
             We respond within 30 days as required by the PDPA. We may verify your identity before
             acting on access or correction requests to protect you against impersonation.
@@ -439,7 +452,45 @@ export function PrivacyContent() {
           </p>
         </Section>
 
-        <Section title="12. Limitation of Liability for Third-Party Data Handling">
+        <Section title="12. Notifiable Data Breach Procedure">
+          <p>
+            Singapore&apos;s Personal Data Protection (Notification of Data Breaches) Regulations 2021
+            require us to assess data breaches against the notifiability thresholds and, where notifiable,
+            notify the Personal Data Protection Commission (PDPC) and affected individuals. We follow
+            the process below.
+          </p>
+          <ul>
+            <li>
+              <strong>Detection &amp; assessment.</strong> When we become aware of a suspected breach
+              we begin assessing its scope, the personal data affected, and whether the affected data is
+              of a type or volume that meets the PDPA&apos;s notifiability thresholds (significant harm
+              to affected individuals, or 500+ individuals affected).
+            </li>
+            <li>
+              <strong>Notification to PDPC.</strong> If the breach meets the notifiability threshold
+              we notify PDPC <strong>within 3 calendar days</strong> of completing our assessment, as
+              required by Section 26D of the PDPA.
+            </li>
+            <li>
+              <strong>Notification to affected individuals.</strong> Where the breach is likely to
+              result in significant harm, we notify the affected individuals <em>as soon as practicable</em>{" "}
+              by email at the address on file, and where appropriate by an in-product notice. The
+              notification will describe the data affected, what we are doing about it, and what
+              steps you can take to protect yourself.
+            </li>
+            <li>
+              <strong>Internal record-keeping.</strong> All breaches — notifiable or not — are
+              documented internally with the date detected, scope, remediation steps, and post-incident
+              review.
+            </li>
+          </ul>
+          <p>
+            If you suspect a security incident affecting your account, contact our DPO immediately at{" "}
+            <a href={`mailto:${CONTACT_EMAIL}`} className="font-semibold text-[var(--color-brand-crust)] hover:underline">{CONTACT_EMAIL}</a>.
+          </p>
+        </Section>
+
+        <Section title="13. Limitation of Liability for Third-Party Data Handling">
           <p>
             To the fullest extent permitted by law, we are not liable for any loss, damage, or harm
             arising from the actions of third parties — including Creators, payment processors, or
@@ -465,7 +516,7 @@ export function PrivacyContent() {
           </p>
         </Section>
 
-        <Section title="13. Children">
+        <Section title="14. Children">
           <p>
             get that bread is not intended for users under 18 years of age. We do not knowingly collect
             personal data from minors. If you believe a minor has registered on our platform, please
@@ -473,7 +524,7 @@ export function PrivacyContent() {
           </p>
         </Section>
 
-        <Section title="14. Changes to This Policy">
+        <Section title="15. Changes to This Policy">
           <p>
             We may update this Privacy Policy from time to time. We will notify you of material changes
             by email or by posting a notice on the platform. Your continued use of get that bread after
@@ -481,7 +532,7 @@ export function PrivacyContent() {
           </p>
         </Section>
 
-        <Section title="15. Data Protection Officer &amp; Contact">
+        <Section title="16. Data Protection Officer &amp; Contact">
           <p>
             Our Data Protection Officer can be reached at:{" "}
             <a href={`mailto:${CONTACT_EMAIL}`} className="font-semibold text-[var(--color-brand-crust)] hover:underline">{CONTACT_EMAIL}</a>
