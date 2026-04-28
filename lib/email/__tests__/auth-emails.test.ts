@@ -9,37 +9,39 @@ import {
 } from "../auth-emails";
 
 const URL = "https://getthatbread.sg/auth/confirm?token_hash=abc123&type=signup&next=%2Fdashboard";
+// @react-email/render HTML-encodes '&' → '&amp;' inside href attributes.
+const ENCODED_URL = URL.replace(/&/g, "&amp;");
 
 describe("auth email render functions", () => {
   test("renderConfirmSignup embeds the confirm URL and brand", async () => {
     const html = await renderConfirmSignup({ confirmUrl: URL });
-    expect(html).toContain(URL);
+    expect(html).toContain(ENCODED_URL);
     expect(html).toContain("Confirm your email");
     expect(html).toContain("get that bread");
-    expect(html).toMatch(/<!DOCTYPE html>/i);
+    expect(html).toMatch(/<!DOCTYPE html/i);
   });
 
   test("renderMagicLink embeds the sign-in URL", async () => {
     const html = await renderMagicLink({ confirmUrl: URL });
-    expect(html).toContain(URL);
+    expect(html).toContain(ENCODED_URL);
     expect(html).toContain("Your sign-in link");
   });
 
   test("renderInvite embeds the invite URL", async () => {
     const html = await renderInvite({ confirmUrl: URL });
-    expect(html).toContain(URL);
-    expect(html).toContain("You're invited");
+    expect(html).toContain(ENCODED_URL);
+    expect(html).toContain("You&#x27;re invited");
   });
 
   test("renderResetPassword embeds the reset URL", async () => {
     const html = await renderResetPassword({ confirmUrl: URL });
-    expect(html).toContain(URL);
+    expect(html).toContain(ENCODED_URL);
     expect(html).toContain("Reset your password");
   });
 
   test("renderChangeEmail shows new email and confirm URL", async () => {
     const html = await renderChangeEmail({ confirmUrl: URL, newEmail: "new@getthatbread.sg" });
-    expect(html).toContain(URL);
+    expect(html).toContain(ENCODED_URL);
     expect(html).toContain("new@getthatbread.sg");
     expect(html).toContain("Confirm your new email");
   });
@@ -55,7 +57,7 @@ describe("auth email render functions", () => {
   test("renderReauthentication displays the 6-digit token", async () => {
     const html = await renderReauthentication({ token: "482917" });
     expect(html).toContain("482917");
-    expect(html).toContain("Verify it's you");
+    expect(html).toContain("Verify it&#x27;s you");
   });
 
   test("reauthentication escapes the token value", async () => {
