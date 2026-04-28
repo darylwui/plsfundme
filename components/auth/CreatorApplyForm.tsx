@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ImageUpload } from "@/components/ui/ImageUpload";
+import { SingpassIcon } from "@/components/icons/SingpassIcon";
 
 const PROJECT_TYPES = [
   "Technology",
@@ -291,8 +292,9 @@ export function CreatorApplyForm({ userId, onSuccess }: CreatorApplyFormProps) {
             compact
           />
 
-          <p className="text-xs text-[var(--color-ink-subtle)] leading-relaxed">
-            🇸🇬 You can verify your identity via Singpass from your dashboard after submitting — it takes 30 seconds and builds trust with backers.
+          <p className="text-xs text-[var(--color-ink-subtle)] leading-relaxed flex items-start gap-1.5">
+            <SingpassIcon className="w-4 h-4 shrink-0 mt-px" aria-hidden="true" />
+            You can verify your identity via Singpass from your dashboard after submitting — it takes 30 seconds and builds trust with backers.
           </p>
 
           <div className="flex gap-3">

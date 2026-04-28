@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Check, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SingpassIcon } from "@/components/icons/SingpassIcon";
 
 interface CreatorOnboardingStepperProps {
   singpassVerified: boolean;
@@ -118,6 +119,9 @@ function StepIcon({ step }: { step: Step }) {
   }
 
   if (step.status === "locked") {
+    if (step.number === 2) {
+      return <SingpassIcon className="w-7 h-7 shrink-0" />;
+    }
     return (
       <div className={`${base} bg-[var(--color-surface-overlay)] text-[var(--color-ink-subtle)]`}>
         <Lock className="w-3.5 h-3.5" />

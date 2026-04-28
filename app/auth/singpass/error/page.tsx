@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AlertCircle, RefreshCw, ArrowLeft } from "lucide-react";
+import { SingpassIcon } from "@/components/icons/SingpassIcon";
 
 const MESSAGES: Record<string, { heading: string; body: string; action: "retry" | "support" | "back" }> = {
   duplicate: {
@@ -32,8 +33,11 @@ export default async function SingPassErrorPage({
       <div className="max-w-md w-full">
         <div className="p-[3px] rounded-[calc(var(--radius-card)+3px)] bg-[var(--color-surface-overlay)] ring-1 ring-[var(--color-border)]">
           <div className="rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.7)] dark:shadow-none p-8 text-center flex flex-col items-center gap-5">
-            <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
-              <AlertCircle className="w-6 h-6 text-red-600 dark:text-red-400" />
+            <div className="relative">
+              <SingpassIcon className="w-12 h-12" />
+              <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-red-100 dark:bg-red-900/50 ring-2 ring-[var(--color-surface)] flex items-center justify-center">
+                <AlertCircle className="w-3 h-3 text-red-600 dark:text-red-400" />
+              </span>
             </div>
 
             <div>
