@@ -33,6 +33,68 @@ async function loadEncKey() {
   return importJWK(enc as Parameters<typeof importJWK>[0], "ECDH-ES+A256KW");
 }
 
+// Signed JWT request object for FAPI 2.0 PAR
+export async function buildRequestObject(params: {
+  state: string;
+  nonce: string;
+  codeChallenge: string;
+}): Promise<string> {
+  const privateKey = await loadSigKey();
+  const now = Math.floor(Date.now() / 1000);
+
+  return new SignJWT({
+    response_type: "code",
+    client_id: singpassConfig.clientId,
+    scope: "openid name",
+    redirect_uri: singpassConfig.redirectUri,
+    state: params.state,
+    nonce: params.nonce,
+    code_challenge: params.codeChallenge,
+    code_challenge_method: "S256",
+  })
+    .setProtectedHeader({ alg: "ES256", kid: "gtb-sig-1" })
+    .setIssuer(singpassConfig.clientId)
+    .setAudience(singpassConfig.parEndpoint)
+    .setIssuedAt(now)
+    .setExpirationTime(now + 300)
+    .setJti(crypto.randomUUID())
+    .sign(privateKey);
+}
+
+// FAPI 2.0: POST all params to /fapi/par, get back a request_uri
+export async function pushAuthorizationRequest(params: {
+  state: string;
+  nonce: string;
+  codeChallenge: string;
+}): Promise<string> {
+  const [clientAssertion, requestObject] = await Promise.all([
+    buildClientAssertion(),
+    buildRequestObject(params),
+  ]);
+
+  const body = new URLSearchParams({
+    client_id: singpassConfig.clientId,
+    client_assertion_type:
+      "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+    client_assertion: clientAssertion,
+    request: requestObject,
+  });
+
+  const response = await fetch(singpassConfig.parEndpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: body.toString(),
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`PAR request failed: ${response.status} ${text}`);
+  }
+
+  const json = await response.json() as { request_uri: string };
+  return json.request_uri;
+}
+
 export async function buildClientAssertion(): Promise<string> {
   const privateKey = await loadSigKey();
   const now = Math.floor(Date.now() / 1000);
@@ -49,7 +111,8 @@ export async function buildClientAssertion(): Promise<string> {
 }
 
 export async function exchangeCodeForTokens(
-  code: string
+  code: string,
+  codeVerifier: string
 ): Promise<{ id_token: string; access_token: string }> {
   const clientAssertion = await buildClientAssertion();
 
@@ -61,6 +124,7 @@ export async function exchangeCodeForTokens(
     client_assertion_type:
       "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
     client_assertion: clientAssertion,
+    code_verifier: codeVerifier,
   });
 
   const response = await fetch(singpassConfig.tokenEndpoint, {
