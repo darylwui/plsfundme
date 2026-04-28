@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { ArrowRight, TrendingUp, Star, Clock, Rocket, Users } from "lucide-react";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { ProjectGrid } from "@/components/projects/ProjectGrid";
 import type { ProjectWithRelations } from "@/types/project";
 
@@ -94,10 +94,13 @@ export function DiscoverySection({
 }
 
 function FoundingCohortEmptyState() {
+  const reduceMotion = useReducedMotion();
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={reduceMotion ? false : { opacity: 0, y: 20 }}
+      whileInView={reduceMotion ? {} : { opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.65, ease: [0.21, 0.62, 0.35, 1] }}
       className="py-16 sm:py-24"
     >
@@ -125,8 +128,9 @@ function FoundingCohortEmptyState() {
 
         {/* Creator card — gradient border bezel */}
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+          whileInView={reduceMotion ? {} : { opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.55, delay: 0.12, ease: [0.21, 0.62, 0.35, 1] }}
           className="sm:col-span-3 p-[2px] rounded-[calc(var(--radius-card)+2px)] bg-gradient-to-br from-[var(--color-brand-golden)] to-[var(--color-brand-crust)]"
         >
@@ -156,8 +160,9 @@ function FoundingCohortEmptyState() {
 
         {/* Backer card — subtle border bezel */}
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+          whileInView={reduceMotion ? {} : { opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.55, delay: 0.22, ease: [0.21, 0.62, 0.35, 1] }}
           className="sm:col-span-2 p-[2px] rounded-[calc(var(--radius-card)+2px)] bg-[var(--color-surface-overlay)] ring-1 ring-[var(--color-border)]"
         >
