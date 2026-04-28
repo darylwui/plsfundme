@@ -28,6 +28,16 @@ export async function GET(request: NextRequest) {
   }
 
   const supabase = await createClient();
+
+  // Guard against password-reset link reuse: if a session already exists
+  // the link was already consumed, so redirect rather than issuing a second session.
+  if (type === "recovery") {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      return NextResponse.redirect(`${origin}/login?error=link_expired`);
+    }
+  }
+
   const { error } = await supabase.auth.verifyOtp({ type, token_hash });
 
   if (error) {

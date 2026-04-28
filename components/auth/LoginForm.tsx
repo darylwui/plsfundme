@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -23,18 +22,23 @@ export function LoginForm({ redirectTo = "/dashboard" }: LoginFormProps) {
     setError(null);
     setLoading(true);
 
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
     });
 
-    if (error) {
-      setError(
-        error.message === "Invalid login credentials"
-          ? "Wrong email or password. Give it another shot."
-          : error.message
-      );
+    if (!res.ok) {
+      const json = await res.json().catch(() => ({}));
+      if (res.status === 429) {
+        setError("Too many login attempts. Please wait a moment and try again.");
+      } else {
+        setError(
+          json.error === "Invalid login credentials"
+            ? "Wrong email or password. Give it another shot."
+            : (json.error ?? "Something went wrong. Please try again.")
+        );
+      }
       setLoading(false);
       return;
     }
