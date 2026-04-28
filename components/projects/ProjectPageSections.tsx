@@ -2,15 +2,16 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { MessageCircle, Megaphone, Send, Lock, HelpCircle } from "lucide-react";
+import { MessageCircle, Megaphone, Send, Lock, HelpCircle, Trophy } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { RewardTierCard } from "@/components/projects/RewardTierCard";
 import { PostUpdateForm } from "@/components/project/PostUpdateForm";
 import { ProjectSectionNav } from "@/components/projects/ProjectSectionNav";
-import type { ProjectUpdatePost } from "@/types/project";
+import type { ProjectUpdatePost, StretchGoal } from "@/types/project";
 import type { Reward } from "@/types/reward";
 import { formatDate } from "@/lib/utils/dates";
+import { formatSgd } from "@/lib/utils/currency";
 import { CAMPAIGN_PROSE_CLASSES, type CampaignHeading } from "@/lib/utils/campaignHtml";
 
 type FeedbackAuthor = {
@@ -43,6 +44,7 @@ interface ProjectPageSectionsProps {
   descriptionHtml: string;
   descriptionHeadings: CampaignHeading[];
   rewards: Reward[];
+  stretchGoals: StretchGoal[];
 }
 
 export function ProjectPageSections({
@@ -59,6 +61,7 @@ export function ProjectPageSections({
   descriptionHtml,
   descriptionHeadings,
   rewards,
+  stretchGoals,
 }: ProjectPageSectionsProps) {
   const [feedback, setFeedback] = useState<ProjectFeedback[]>(initialFeedback);
   const [message, setMessage] = useState("");
@@ -74,6 +77,11 @@ export function ProjectPageSections({
         .filter((r) => r.is_active)
         .sort((a, b) => a.minimum_pledge_sgd - b.minimum_pledge_sgd),
     [rewards]
+  );
+
+  const sortedStretchGoals = useMemo(
+    () => [...stretchGoals].sort((a, b) => a.display_order - b.display_order),
+    [stretchGoals]
   );
 
   const selectedReward = useMemo(
@@ -125,11 +133,14 @@ export function ProjectPageSections({
     () => [
       { id: "campaign", label: "Campaign" },
       { id: "rewards", label: `Rewards (${activeRewards.length})` },
+      ...(sortedStretchGoals.length > 0
+        ? [{ id: "stretch-goals", label: `Stretch Goals (${sortedStretchGoals.length})` }]
+        : []),
       { id: "faq", label: "FAQ" },
       { id: "updates", label: `Updates (${updates.length})` },
       { id: "comments", label: `Comments (${feedback.length})` },
     ],
-    [activeRewards.length, updates.length, feedback.length]
+    [activeRewards.length, sortedStretchGoals.length, updates.length, feedback.length]
   );
 
   async function submitFeedback(e: React.FormEvent, parentId?: string) {
@@ -282,6 +293,85 @@ export function ProjectPageSections({
           </>
         )}
       </section>
+
+      {/* ── Stretch Goals ── */}
+      {sortedStretchGoals.length > 0 && (
+        <section id="stretch-goals" className="scroll-mt-32 flex flex-col gap-5">
+          <h2 className="text-2xl font-black text-[var(--color-ink)] tracking-tight border-b border-[var(--color-border)] pb-3 flex items-center gap-2">
+            <Trophy className="w-5 h-5 text-[var(--color-brand-crust)]" />
+            Stretch Goals
+          </h2>
+
+          <p className="text-sm text-[var(--color-ink-muted)]">
+            Bonus goals that unlock when funding surpasses the main target.
+          </p>
+
+          <div className="flex flex-col gap-3">
+            {sortedStretchGoals.map((goal) => {
+              const reached = goal.reached_at !== null;
+              return (
+                <div
+                  key={goal.id}
+                  className={[
+                    "rounded-[var(--radius-card)] border p-5 flex items-start gap-4",
+                    reached
+                      ? "border-green-300 dark:border-green-700/60 bg-green-50/40 dark:bg-green-950/20"
+                      : "border-[var(--color-border)] bg-[var(--color-surface-raised)]",
+                  ].join(" ")}
+                >
+                  {/* Status icon */}
+                  <div
+                    className={[
+                      "mt-0.5 w-8 h-8 rounded-full flex items-center justify-center shrink-0",
+                      reached
+                        ? "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400"
+                        : "bg-[var(--color-surface-overlay)] text-[var(--color-ink-subtle)]",
+                    ].join(" ")}
+                  >
+                    {reached ? (
+                      <Trophy className="w-4 h-4" />
+                    ) : (
+                      <Lock className="w-4 h-4" />
+                    )}
+                  </div>
+
+                  {/* Content */}
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <p className="font-bold text-[var(--color-ink)]">{goal.title}</p>
+                      {reached ? (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-green-700 dark:text-green-400 bg-green-100 dark:bg-green-900/40 px-2 py-0.5 rounded-full">
+                          Reached
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-[var(--color-ink-subtle)] bg-[var(--color-surface-overlay)] px-2 py-0.5 rounded-full">
+                          Pending
+                        </span>
+                      )}
+                    </div>
+
+                    {goal.description && (
+                      <p className="mt-1.5 text-sm text-[var(--color-ink-muted)] leading-relaxed">
+                        {goal.description}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Funding target */}
+                  <div className="shrink-0 text-right">
+                    <p className="text-xs text-[var(--color-ink-subtle)] uppercase tracking-wider font-medium mb-0.5">
+                      Target
+                    </p>
+                    <p className="text-base font-black text-[var(--color-ink)] tabular-nums">
+                      {formatSgd(goal.goal_amount_sgd)}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       {/* ── FAQ ── */}
       <section id="faq" className="scroll-mt-32 flex flex-col gap-5">

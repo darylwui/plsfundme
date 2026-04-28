@@ -439,6 +439,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               descriptionHtml={campaign.html}
               descriptionHeadings={campaign.headings}
               rewards={project.rewards}
+              stretchGoals={project.stretch_goals}
             />
           </div>
 
