@@ -91,6 +91,51 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
       );
     }
 
+    // Load the project + creator NOW — we need creator.stripe_account_id
+    // for the Stripe Connect pre-flight below, and we need to do that
+    // check BEFORE writing any approval records. If the creator hasn't
+    // completed payout onboarding, the downstream payout job has
+    // nowhere to send the released funds — and the admin gets no
+    // signal that anything went wrong (the escrow_release row gets
+    // written, the email goes out, but no money actually moves).
+    // Refusing here surfaces it while it's still actionable: admin
+    // nudges creator, creator finishes onboarding, admin re-clicks
+    // Approve and the release goes through cleanly.
+    const { data: project, error: projectError } = await service
+      .from('projects')
+      .select(
+        'id, title, slug, amount_pledged_sgd, creator_id, creator:profiles!creator_id(display_name, email, stripe_account_id)',
+      )
+      .eq('id', campaignId)
+      .single();
+
+    if (projectError || !project) {
+      return NextResponse.json(
+        { error: 'Failed to load project for approval' },
+        { status: 500 },
+      );
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const p = project as any;
+    const creatorEmail = p.creator?.email;
+    const creatorName = p.creator?.display_name;
+    const creatorStripeAccountId = p.creator?.stripe_account_id as string | null;
+    const projectTitle = p.title;
+    const projectSlug = p.slug;
+    const milestoneNumber = submission.milestone_number as 1 | 2 | 3;
+
+    if (decision === 'approved' && !creatorStripeAccountId) {
+      return NextResponse.json(
+        {
+          error:
+            "Creator hasn't completed Stripe Connect onboarding. Ask them to finish their payout setup, then re-approve this milestone.",
+          status: 'creator_payouts_not_setup',
+        },
+        { status: 400 },
+      );
+    }
+
     // Create approval record
     const { data: approval, error: approvalError } = await service
       .from('milestone_approvals')
@@ -122,26 +167,6 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
         { status: 500 }
       );
     }
-
-    // Load project + creator for emails
-    const { data: project, error: projectError } = await service
-      .from('projects')
-      .select('id, title, slug, amount_pledged_sgd, creator:profiles!creator_id(display_name, email)')
-      .eq('id', campaignId)
-      .single();
-
-    if (projectError || !project) {
-      console.error('Failed to load project for milestone email:', projectError);
-      return NextResponse.json({ success: true, approval }, { status: 200 });
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const p = project as any;
-    const creatorEmail = p.creator?.email;
-    const creatorName = p.creator?.display_name;
-    const projectTitle = p.title;
-    const projectSlug = p.slug;
-    const milestoneNumber = submission.milestone_number as 1 | 2 | 3;
 
     if (decision === 'approved') {
       // Insert escrow_releases row
