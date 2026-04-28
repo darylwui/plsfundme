@@ -2,6 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { maybeSweep, rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import { ADMIN_EMAIL, FROM, getResend } from "@/lib/email/resend";
 
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 export async function POST(req: NextRequest) {
   maybeSweep();
   const rl = rateLimit(req, "bug-reports", { windowMs: 60_000, max: 3 });
@@ -32,9 +41,9 @@ export async function POST(req: NextRequest) {
       subject: `[Bug Report] 404 on ${url ?? "unknown page"}`,
       html: `
         <h2>404 Bug Report</h2>
-        <p><strong>Page:</strong> ${url ?? "unknown"}</p>
-        <p><strong>Description:</strong><br/>${desc.replace(/\n/g, "<br/>")}</p>
-        ${email ? `<p><strong>Reporter email:</strong> ${email}</p>` : "<p><em>No email provided</em></p>"}
+        <p><strong>Page:</strong> ${escapeHtml(url ?? "unknown")}</p>
+        <p><strong>Description:</strong><br/>${escapeHtml(desc).replace(/\n/g, "<br/>")}</p>
+        ${email ? `<p><strong>Reporter email:</strong> ${escapeHtml(email)}</p>` : "<p><em>No email provided</em></p>"}
       `,
     });
   } catch (err) {
