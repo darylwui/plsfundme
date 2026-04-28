@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PlusCircle, ArrowRight, Pencil, Heart, Clock, XCircle, MessageCircleQuestion } from "lucide-react";
+import { PlusCircle, ArrowRight, Pencil, Heart, Clock, XCircle, MessageCircleQuestion, ShieldCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { FundingProgressCard } from "@/components/dashboard/FundingProgressCard";
 import { BackerTable } from "@/components/dashboard/BackerTable";
@@ -144,7 +144,7 @@ async function BackerDashboard({ userId, displayName, email }: { userId: string;
 
 // ─── Creator Dashboard ───────────────────────────────────────────────────────
 
-async function CreatorDashboard({ userId, displayName, email }: { userId: string; displayName: string; email: string }) {
+async function CreatorDashboard({ userId, displayName, email, singpassSuccess }: { userId: string; displayName: string; email: string; singpassSuccess?: boolean }) {
   const supabase = await createClient();
 
   const { data: projects } = await supabase
@@ -236,6 +236,25 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
           </div>
         )}
       </div>
+
+      {/* ── Singpass verified success ── */}
+      {singpassSuccess && (
+        <div className="rounded-[var(--radius-card)] border border-[var(--color-brand-success)]/30 bg-[var(--color-brand-success)]/8 p-5 flex items-center gap-4">
+          <div className="w-10 h-10 rounded-full bg-[var(--color-brand-success)]/15 flex items-center justify-center shrink-0">
+            <ShieldCheck className="w-5 h-5 text-[var(--color-brand-success)]" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-bold text-[var(--color-ink)] text-sm">Identity verified via Singpass</p>
+            <p className="text-xs text-[var(--color-ink-muted)] mt-0.5">Your backers will see a verified badge on your campaign page.</p>
+          </div>
+          <Link
+            href="/dashboard"
+            className="text-xs font-semibold text-[var(--color-ink-subtle)] hover:text-[var(--color-ink)] shrink-0"
+          >
+            Dismiss
+          </Link>
+        </div>
+      )}
 
       {/* ── Needs info ── */}
       {creatorStatus === "needs_info" && (
@@ -437,7 +456,11 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
 
 export const metadata = { title: "Dashboard" };
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ singpass?: string }>;
+}) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -450,10 +473,18 @@ export default async function DashboardPage() {
   const displayName = profile?.display_name ?? "there";
   const email = user?.email ?? "";
   const role = (profile?.role ?? "backer").toString().trim().toLowerCase();
+  const { singpass } = await searchParams;
 
   // Backer shows backer dashboard for all non-creator roles
   if (role === "creator") {
-    return <CreatorDashboard userId={user!.id} displayName={displayName} email={email} />;
+    return (
+      <CreatorDashboard
+        userId={user!.id}
+        displayName={displayName}
+        email={email}
+        singpassSuccess={singpass === "verified"}
+      />
+    );
   }
 
   return <BackerDashboard userId={user!.id} displayName={displayName} email={email} />;

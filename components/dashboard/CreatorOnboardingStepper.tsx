@@ -14,7 +14,8 @@ interface Step {
   title: string;
   description: string;
   href?: string;
-  comingSoon?: boolean;
+  actionHref?: string;
+  actionLabel?: string;
 }
 
 export function CreatorOnboardingStepper({ singpassVerified }: CreatorOnboardingStepperProps) {
@@ -29,8 +30,11 @@ export function CreatorOnboardingStepper({ singpassVerified }: CreatorOnboarding
       number: 2,
       status: singpassVerified ? "done" : "locked",
       title: "Verify identity with Singpass",
-      description: "Builds trust with your backers — we'll email you when it's live",
-      comingSoon: !singpassVerified,
+      description: singpassVerified
+        ? "Identity verified — backers can see this on your campaign"
+        : "Takes 30 seconds — verify your identity in one click with your Singpass app",
+      actionHref: singpassVerified ? undefined : "/api/auth/singpass",
+      actionLabel: "Verify now →",
     },
     {
       number: 3,
@@ -65,22 +69,23 @@ export function CreatorOnboardingStepper({ singpassVerified }: CreatorOnboarding
 }
 
 function StepRow({ step, isLast }: { step: Step; isLast: boolean }) {
-  const dimmed = step.status === "locked";
+  const dimmed = step.status === "locked" && !step.actionHref;
   const borderClass = isLast ? "" : "border-b border-[var(--color-border)]";
 
   return (
     <div className={`flex gap-3 py-3 ${borderClass} ${dimmed ? "opacity-70" : ""}`}>
       <StepIcon step={step} />
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 flex-wrap">
-          <p className="font-bold text-[var(--color-ink)] text-sm">{step.title}</p>
-          {step.comingSoon && (
-            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
-              Coming soon
-            </span>
-          )}
-        </div>
+        <p className="font-bold text-[var(--color-ink)] text-sm">{step.title}</p>
         <p className="text-xs text-[var(--color-ink-muted)] mt-0.5 leading-relaxed">{step.description}</p>
+        {step.actionHref && (
+          <Link
+            href={step.actionHref}
+            className="inline-block mt-2 text-xs font-bold text-[var(--color-brand-crust)] hover:underline"
+          >
+            {step.actionLabel}
+          </Link>
+        )}
         {step.status === "cta" && step.href && (
           <Button asChild size="sm" variant="primary" className="mt-3">
             <Link href={step.href}>
