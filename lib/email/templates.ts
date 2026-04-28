@@ -2,6 +2,7 @@ import { render } from "@react-email/render";
 import { getResend, FROM, REPLY_TO, ADMIN_EMAIL } from "./resend";
 import { formatSgd } from "@/lib/utils/currency";
 import { PledgeConfirmedEmail } from "@/emails/PledgeConfirmed";
+import { ProjectUpdateEmail } from "@/emails/ProjectUpdate";
 
 interface CampaignFundedArgs {
   creatorEmail: string;
@@ -579,5 +580,36 @@ export async function sendPledgeRefundedEmail(args: PledgeRefundedArgs) {
         Explore projects
       </a>
     `,
+  });
+}
+
+interface ProjectUpdateArgs {
+  backerEmail: string;
+  backerName: string;
+  projectTitle: string;
+  projectSlug: string;
+  updateTitle: string;
+  updateBody: string;
+  isBackersOnly: boolean;
+}
+
+export async function sendProjectUpdateEmail(args: ProjectUpdateArgs) {
+  const html = await render(
+    ProjectUpdateEmail({
+      backerName: args.backerName,
+      projectTitle: args.projectTitle,
+      projectSlug: args.projectSlug,
+      updateTitle: args.updateTitle,
+      updateBody: args.updateBody,
+      isBackersOnly: args.isBackersOnly,
+    }),
+  );
+
+  const label = args.isBackersOnly ? "🔒 " : "";
+  return sendEmail({
+    from: FROM,
+    to: args.backerEmail,
+    subject: `${label}${args.updateTitle} · ${args.projectTitle}`,
+    html,
   });
 }

@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Send, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { createClient } from "@/lib/supabase/client";
 
 interface PostUpdateFormProps {
   projectId: string;
@@ -27,18 +26,16 @@ export function PostUpdateForm({ projectId, creatorId, onPosted }: PostUpdateFor
     setLoading(true);
     setError(null);
 
-    const supabase = createClient();
-    const { error: err } = await supabase.from("project_updates").insert({
-      project_id: projectId,
-      creator_id: creatorId,
-      title: title.trim(),
-      body: body.trim(),
-      is_backers_only: backersOnly,
+    const res = await fetch(`/api/projects/${projectId}/updates`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, body, is_backers_only: backersOnly }),
     });
 
     setLoading(false);
-    if (err) {
-      setError(err.message);
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      setError(data.error ?? "Something went wrong");
     } else {
       setTitle("");
       setBody("");
