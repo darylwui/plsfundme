@@ -7,6 +7,7 @@ import { Step3_Milestones } from "./Step3_Milestones";
 import { Step4_Rewards } from "./Step4_Rewards";
 import { Step5_Review } from "./Step5_Review";
 import { CreationChecklist } from "./CreationChecklist";
+import { BackLink } from "@/components/ui/back-link";
 import { useProjectCreation } from "@/hooks/useProjectCreation";
 import type { Category } from "@/types/project";
 
@@ -35,7 +36,12 @@ export function ProjectCreationForm({ categories }: ProjectCreationFormProps) {
 
   return (
     <div className="flex flex-col gap-8">
-      <StepIndicator current={step} saveState={saveState} onGoTo={goTo} />
+      {/* Back to dashboard — visible on every step. Work is auto-saved (see
+          StepIndicator's save-state indicator), so leaving the wizard is safe. */}
+      <div>
+        <BackLink href="/dashboard" className="mb-4">Back to dashboard</BackLink>
+        <StepIndicator current={step} saveState={saveState} onGoTo={goTo} />
+      </div>
 
       {/* Main layout: form on left, checklist on right */}
       <div className="flex flex-col lg:flex-row gap-8">

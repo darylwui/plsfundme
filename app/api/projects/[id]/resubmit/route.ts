@@ -21,8 +21,18 @@ export async function POST(_request: Request, { params }: RouteContext) {
 
   if (!project) return NextResponse.json({ error: "Not found" }, { status: 404 });
   if (project.creator_id !== user.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  if (project.status !== "cancelled") {
-    return NextResponse.json({ error: "Only rejected campaigns can be resubmitted" }, { status: 400 });
+  // Two paths into pending_review via this endpoint:
+  //  - "cancelled" — admin previously rejected the campaign
+  //  - "draft"     — admin reverted the campaign to draft (admin's
+  //                  `revert_to_draft` action). Without this branch
+  //                  the creator has no way to get the campaign back
+  //                  in front of a reviewer short of asking an admin
+  //                  to flip the row directly.
+  if (project.status !== "cancelled" && project.status !== "draft") {
+    return NextResponse.json(
+      { error: "Only draft or rejected campaigns can be submitted for review" },
+      { status: 400 },
+    );
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

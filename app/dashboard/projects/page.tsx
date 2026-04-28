@@ -1,13 +1,16 @@
 import Link from "next/link";
-import { PlusCircle, ArrowRight, Pencil, Rocket, PartyPopper, XCircle } from "lucide-react";
+import { PlusCircle, ArrowRight, Pencil, Rocket, PartyPopper, XCircle, FileText, Milestone as MilestoneIcon } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ShareButtons } from "@/components/sharing/ShareButtons";
+import { DraftContinuationCard } from "@/components/dashboard/DraftContinuationCard";
+import { WizardDraftBanner } from "@/components/dashboard/WizardDraftBanner";
 import { formatDate, daysRemaining } from "@/lib/utils/dates";
 import { formatSgd, fundingPercent } from "@/lib/utils/currency";
 import { REJECTION_REASONS } from "@/types/admin";
 import { getProjectStatusLabel, getProjectStatusVariant } from "@/lib/utils/project-status";
+import { extractDraftTitle } from "@/lib/dashboard/wizard-draft";
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://getthatbread.sg";
 
@@ -28,7 +31,64 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
     .from("projects")
     .select("id, title, slug, status, rejection_reason, rejection_reason_code, funding_goal_sgd, amount_pledged_sgd, backer_count, deadline, created_at, cover_image_url")
     .eq("creator_id", user.id)
+    .is("deleted_at", null)
     .order("created_at", { ascending: false }) as { data: any[] | null };
+
+  // For milestone-eligible projects (active/funded/completed), compute whether
+  // any milestone needs the creator's attention so we can flag it on the card.
+  const milestoneEligibleIds = (projects ?? [])
+    .filter((p) => p.status === "active" || p.status === "funded" || p.status === "completed")
+    .map((p) => p.id as string);
+
+  const milestoneAttentionByProject = new Map<string, "needs_action" | "under_review" | null>();
+  if (milestoneEligibleIds.length > 0) {
+    const { data: subs } = await supabase
+      .from("milestone_submissions")
+      .select("id, campaign_id, milestone_number, status, submitted_at")
+      .in("campaign_id", milestoneEligibleIds)
+      .order("submitted_at", { ascending: false });
+
+    const subIds = (subs ?? []).map((s) => s.id);
+    let approvals: Array<{ submission_id: string; decision: string; reviewed_at: string }> = [];
+    if (subIds.length > 0) {
+      const { data: aps } = await supabase
+        .from("milestone_approvals")
+        .select("submission_id, decision, reviewed_at")
+        .in("submission_id", subIds)
+        .order("reviewed_at", { ascending: false });
+      approvals = aps ?? [];
+    }
+
+    const latestApprovalBySub = new Map<string, { decision: string }>();
+    for (const a of approvals) {
+      if (!latestApprovalBySub.has(a.submission_id)) {
+        latestApprovalBySub.set(a.submission_id, { decision: a.decision });
+      }
+    }
+
+    // Latest submission per (campaign, milestone)
+    const latestByKey = new Map<string, { id: string; status: string }>();
+    for (const s of subs ?? []) {
+      const key = `${s.campaign_id}:${s.milestone_number}`;
+      if (!latestByKey.has(key)) latestByKey.set(key, { id: s.id, status: s.status });
+    }
+
+    for (const projectId of milestoneEligibleIds) {
+      let needsAction = false;
+      let underReview = false;
+      for (const m of [1, 2, 3] as const) {
+        const latest = latestByKey.get(`${projectId}:${m}`);
+        if (!latest) continue;
+        const decision = latestApprovalBySub.get(latest.id)?.decision;
+        if (decision === "rejected" || decision === "needs_info") needsAction = true;
+        else if (latest.status === "pending") underReview = true;
+      }
+      milestoneAttentionByProject.set(
+        projectId,
+        needsAction ? "needs_action" : underReview ? "under_review" : null,
+      );
+    }
+  }
 
   // Only show "New campaign" button when the user is actually able to create.
   const { data: creatorProfile } = await supabase
@@ -37,6 +97,23 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
     .eq("id", user.id)
     .single();
   const canCreate = creatorProfile?.status === "approved";
+
+  // Surface in-progress wizard work in the empty state. Mirrors /dashboard's
+  // logic: wizard draft only shown when no projects exist (projects.status='draft'
+  // takes priority when both sources have content).
+  const { data: wizardDraftRow } = await supabase
+    .from("campaign_drafts")
+    .select("draft_data, step, updated_at")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  const wizardDraft = wizardDraftRow
+    ? {
+        title: extractDraftTitle(wizardDraftRow.draft_data),
+        step: wizardDraftRow.step,
+        updated_at: wizardDraftRow.updated_at,
+      }
+    : null;
 
   return (
     <div className="flex flex-col gap-6">
@@ -82,12 +159,12 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-black text-[var(--color-ink)]">My projects</h1>
         {canCreate ? (
-          <Link href="/projects/create">
-            <Button>
+          <Button asChild>
+            <Link href="/projects/create">
               <PlusCircle className="w-4 h-4" />
               New campaign
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         ) : creatorProfile?.status === "pending_review" ? (
           <span
             title="Your creator application is still under review. You'll be able to launch once approved."
@@ -97,34 +174,52 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
             New campaign · Awaiting approval
           </span>
         ) : (
-          <Link href="/apply/creator">
-            <Button variant="secondary">
+          <Button asChild variant="secondary">
+            <Link href="/apply/creator">
               <PlusCircle className="w-4 h-4" />
               Apply to launch campaigns
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         )}
       </div>
 
+      {/* Wizard draft banner above the project list — surfaces in-progress
+          wizard work when the creator already has other projects so it
+          doesn't disappear behind committed campaigns. */}
+      {projects && projects.length > 0 && wizardDraft && (
+        <WizardDraftBanner draft={wizardDraft} />
+      )}
+
       {!projects || projects.length === 0 ? (
-        <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border-2 border-dashed border-[var(--color-border)] p-16 flex flex-col items-center text-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-[var(--color-brand-crust)]/10 flex items-center justify-center">
-            <Rocket className="w-8 h-8 text-[var(--color-brand-crust)]" />
-          </div>
-          <div>
-            <h2 className="text-xl font-black text-[var(--color-ink)]">No projects yet</h2>
-            <p className="text-sm text-[var(--color-ink-muted)] mt-1 max-w-sm">
-              Ready to raise funds for your idea? Create your first campaign in minutes.
-            </p>
-          </div>
-          <Link href="/projects/create">
-            <Button size="lg">
-              <PlusCircle className="w-4 h-4" />
-              Start your first campaign
-              <ArrowRight className="w-4 h-4" />
+        wizardDraft ? (
+          <DraftContinuationCard
+            source="campaign-draft"
+            draft={{
+              title: wizardDraft.title,
+              step: wizardDraft.step,
+              updated_at: wizardDraft.updated_at,
+            }}
+          />
+        ) : (
+          <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border-2 border-dashed border-[var(--color-border)] p-16 flex flex-col items-center text-center gap-4">
+            <div className="w-16 h-16 rounded-full bg-[var(--color-brand-crust)]/10 flex items-center justify-center">
+              <Rocket className="w-8 h-8 text-[var(--color-brand-crust)]" />
+            </div>
+            <div>
+              <h2 className="text-xl font-black text-[var(--color-ink)]">No projects yet</h2>
+              <p className="text-sm text-[var(--color-ink-muted)] mt-1 max-w-sm">
+                Ready to raise funds for your idea? Create your first campaign in minutes.
+              </p>
+            </div>
+            <Button asChild size="lg">
+              <Link href="/projects/create">
+                <PlusCircle className="w-4 h-4" />
+                Start your first campaign
+                <ArrowRight className="w-4 h-4" />
+              </Link>
             </Button>
-          </Link>
-        </div>
+          </div>
+        )
       ) : (
         <div className="flex flex-col gap-4">
           {projects.map((project) => {
@@ -132,6 +227,7 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
             const days = daysRemaining(project.deadline);
             const isShareable = project.status === "active" || project.status === "pending_review";
             const isRejected = project.status === "cancelled";
+            const isDraft = project.status === "draft";
             const rejectionReasonCode = (project as any).rejection_reason_code as string | null;
             const rejectionMessage = (project as any).rejection_reason as string | null;
             const reasonLabel = rejectionReasonCode
@@ -188,6 +284,32 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
 
                   {/* Actions */}
                   <div className="flex items-center gap-2 shrink-0">
+                    {(project.status === "active" ||
+                      project.status === "funded" ||
+                      project.status === "completed") && (() => {
+                      const attn = milestoneAttentionByProject.get(project.id);
+                      const tone =
+                        attn === "needs_action"
+                          ? "border-red-300 bg-red-50 text-red-700 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800"
+                          : attn === "under_review"
+                            ? "border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-800"
+                            : "border-[var(--color-border)] bg-[var(--color-surface-overlay)] hover:bg-[var(--color-border)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]";
+                      const label =
+                        attn === "needs_action"
+                          ? "Needs your action"
+                          : attn === "under_review"
+                            ? "Under review"
+                            : "Milestones";
+                      return (
+                        <Link
+                          href={`/dashboard/projects/${project.id}/milestones`}
+                          className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-[var(--radius-btn)] border transition-colors ${tone}`}
+                        >
+                          <MilestoneIcon className="w-3 h-3" />
+                          {label}
+                        </Link>
+                      );
+                    })()}
                     <Link
                       href={`/projects/${project.slug}/edit`}
                       className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface-overlay)] hover:bg-[var(--color-border)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
@@ -212,6 +334,27 @@ export default async function DashboardProjectsPage({ searchParams }: Props) {
                       title={project.title}
                       compact
                     />
+                  </div>
+                )}
+
+                {/* Draft nudge — surfaces the submit-for-review action
+                    inline so a creator whose campaign was reverted to
+                    draft (or shelved for relaunch) doesn't have to
+                    discover it deep in the edit page. */}
+                {isDraft && (
+                  <div className="border-t border-[var(--color-brand-crust)]/20 px-5 py-3 bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/15 flex items-start gap-2">
+                    <FileText className="w-3.5 h-3.5 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] shrink-0 mt-0.5" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs text-[var(--color-ink-muted)]">
+                        This campaign is a draft — review your details, then submit it for our team to approve.
+                      </p>
+                    </div>
+                    <Link
+                      href={`/projects/${project.slug}/edit`}
+                      className="text-xs font-semibold text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] hover:underline shrink-0 whitespace-nowrap"
+                    >
+                      Edit &amp; submit →
+                    </Link>
                   </div>
                 )}
 

@@ -23,6 +23,11 @@ export function FundingWidget({ project }: FundingWidgetProps) {
   const isFunded = project.amount_pledged_sgd >= project.funding_goal_sgd;
   const isClosed = project.status !== "active";
   const isZeroState = project.backer_count === 0 && project.amount_pledged_sgd === 0 && !isClosed;
+  // Wizard's Step 5 review uses the literal id "preview" since the
+  // campaign hasn't been saved yet. The CTA below would route to
+  // /backing/preview/checkout (404) — so we render it as a non-clickable
+  // affordance instead so creators still see what backers will see.
+  const isPreview = project.id === "preview";
   const activeRewards = useMemo(
     () => project.rewards.filter((r) => r.is_active).sort((a, b) => a.minimum_pledge_sgd - b.minimum_pledge_sgd),
     [project.rewards]
@@ -126,15 +131,26 @@ export function FundingWidget({ project }: FundingWidgetProps) {
               </div>
             )}
 
-            <Link href={checkoutHref}>
-              <Button size="lg" fullWidth>
+            {isPreview ? (
+              <Button
+                size="lg"
+                fullWidth
+                disabled
+                title="Preview only — backers will see this once your campaign is live"
+              >
                 {selectedReward ? `Back with ${selectedReward.title}` : "Be the first backer"}
               </Button>
-            </Link>
+            ) : (
+              <Button asChild size="lg" fullWidth>
+                <Link href={checkoutHref}>
+                  {selectedReward ? `Back with ${selectedReward.title}` : "Be the first backer"}
+                </Link>
+              </Button>
+            )}
 
             <p className="text-xs text-center text-[var(--color-ink-subtle)] flex items-center justify-center gap-1.5">
               <Shield className="w-3.5 h-3.5" />
-              Milestone-protected escrow
+              {isPreview ? "Preview — clicking the button is disabled" : "Milestone-protected escrow"}
             </p>
           </div>
         ) : (
@@ -167,11 +183,22 @@ export function FundingWidget({ project }: FundingWidgetProps) {
                   )}
                 </div>
               ) : (
-                <Link href={checkoutHref}>
-                  <Button size="lg" fullWidth>
+                isPreview ? (
+                  <Button
+                    size="lg"
+                    fullWidth
+                    disabled
+                    title="Preview only — backers will see this once your campaign is live"
+                  >
                     {selectedReward ? `Back with ${selectedReward.title}` : "Pledge without reward"}
                   </Button>
-                </Link>
+                ) : (
+                  <Button asChild size="lg" fullWidth>
+                    <Link href={checkoutHref}>
+                      {selectedReward ? `Back with ${selectedReward.title}` : "Pledge without reward"}
+                    </Link>
+                  </Button>
+                )
               )}
             </div>
 

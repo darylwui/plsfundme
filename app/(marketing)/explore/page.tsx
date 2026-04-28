@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { ProjectGrid } from "@/components/projects/ProjectGrid";
-import { Search, TrendingUp, Star, Clock } from "lucide-react";
+import { Search, TrendingUp, Star, Clock, Sparkles, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import type { ProjectWithRelations } from "@/types/project";
 import type { Category } from "@/types/project";
@@ -57,6 +57,31 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
   const { data: projects } = await query.limit(24);
   const typedProjects = (projects as unknown as ProjectWithRelations[]) ?? [];
 
+  // Branch the empty-state CTA on the viewer's creator status. Showing
+  // "Apply to launch" to a creator who already applied (or got approved)
+  // is the kind of paper-cut that breaks platform-trust on day one. Falls
+  // back to the original "Apply" CTA for unauthed visitors and anyone
+  // who hasn't applied yet.
+  const { data: { user } } = await supabase.auth.getUser();
+  type CreatorStatus = "approved" | "pending_review" | "needs_info" | "rejected";
+  let creatorStatus: CreatorStatus | null = null;
+  if (user) {
+    const { data: cp } = await supabase
+      .from("creator_profiles")
+      .select("status")
+      .eq("id", user.id)
+      .maybeSingle();
+    const raw = cp?.status;
+    if (
+      raw === "approved" ||
+      raw === "pending_review" ||
+      raw === "needs_info" ||
+      raw === "rejected"
+    ) {
+      creatorStatus = raw;
+    }
+  }
+
   const SORTS = [
     { key: "trending", label: "Trending", Icon: TrendingUp },
     { key: "newest", label: "Newest", Icon: Star },
@@ -77,9 +102,6 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
       {/* Page hero */}
       <section className="bg-gradient-to-br from-amber-50 via-[#FFFBF5] to-orange-50 dark:from-[#0f0f0f] dark:via-[#0a0a0a] dark:to-[#111111] border-b border-[var(--color-border)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-          <div className="inline-flex items-center px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] text-xs uppercase tracking-[0.12em] font-medium mb-4">
-            Singapore campaigns
-          </div>
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
             <div>
               <h1 className="text-3xl md:text-4xl font-black tracking-tight text-[var(--color-ink)]">
@@ -156,14 +178,95 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
         </div>
       </div>
 
-      <ProjectGrid
-        projects={typedProjects}
-        emptyMessage={
-          q
-            ? `No projects found for "${q}"`
-            : "No active projects in this category yet."
-        }
-      />
+      {/* Empty-state branching:
+          - No filter + no projects → founding-cohort recruitment block
+            (same theme as the homepage; this is also a landing-page moment
+            for visitors who arrive directly at /explore)
+          - Active search/category filter + no projects → simple "no results"
+            (filtered context where conversion CTA would feel pushy) */}
+      {typedProjects.length === 0 && !q && !category ? (
+        <div className="py-20 sm:py-28 flex flex-col items-center text-center px-4">
+          <div className="w-14 h-14 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 border border-[var(--color-brand-crust)]/30 flex items-center justify-center mb-5">
+            <Sparkles className="w-6 h-6 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)]" />
+          </div>
+          {creatorStatus === "approved" ? (
+            <>
+              <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[var(--color-ink)] mb-3 max-w-xl">
+                You&apos;re cleared to launch
+              </h2>
+              <p className="text-[var(--color-ink-muted)] leading-relaxed max-w-md mb-6">
+                There aren&apos;t any campaigns live yet — yours could be the
+                first. Featured spot on this page goes to early creators on
+                day one.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-5">
+                <Link
+                  href="/projects/create"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-[var(--radius-btn)] bg-[var(--color-brand-crust)] text-white font-bold text-sm hover:opacity-90 transition-opacity"
+                >
+                  Start your campaign <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link
+                  href="/for-creators/launch-guide"
+                  className="text-sm font-semibold text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] underline-offset-4 hover:underline transition-colors"
+                >
+                  or read the launch checklist
+                </Link>
+              </div>
+            </>
+          ) : creatorStatus === "pending_review" || creatorStatus === "needs_info" ? (
+            <>
+              <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[var(--color-ink)] mb-3 max-w-xl">
+                Your application is in review
+              </h2>
+              <p className="text-[var(--color-ink-muted)] leading-relaxed max-w-md mb-6">
+                {creatorStatus === "needs_info"
+                  ? "A reviewer asked a follow-up question — answer it on your application page to keep things moving."
+                  : "We're reviewing your creator application — usually 1–2 business days. You'll get an email when there's an update."}
+              </p>
+              <Link
+                href="/dashboard/application"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-[var(--radius-btn)] bg-[var(--color-brand-crust)] text-white font-bold text-sm hover:opacity-90 transition-opacity"
+              >
+                View application status <ArrowRight className="w-4 h-4" />
+              </Link>
+            </>
+          ) : (
+            <>
+              <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[var(--color-ink)] mb-3 max-w-xl">
+                Be one of our first creators
+              </h2>
+              <p className="text-[var(--color-ink-muted)] leading-relaxed max-w-md mb-6">
+                We&apos;re handpicking Singapore&apos;s founding cohort right now. Apply
+                to launch your campaign and get featured here on day one.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-5">
+                <Link
+                  href={creatorStatus === "rejected" ? "/dashboard/application" : "/apply/creator"}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-[var(--radius-btn)] bg-[var(--color-brand-crust)] text-white font-bold text-sm hover:opacity-90 transition-opacity"
+                >
+                  {creatorStatus === "rejected" ? "View feedback & re-apply" : "Apply to launch"} <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link
+                  href="/for-creators"
+                  className="text-sm font-semibold text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] underline-offset-4 hover:underline transition-colors"
+                >
+                  or learn how it works
+                </Link>
+              </div>
+            </>
+          )}
+        </div>
+      ) : (
+        <ProjectGrid
+          projects={typedProjects}
+          emptyMessage={
+            q
+              ? `No projects found for "${q}"`
+              : "No active projects in this category yet."
+          }
+        />
+      )}
     </div>
     </div>
   );

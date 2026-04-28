@@ -53,12 +53,12 @@ export default async function DashboardBackersPage() {
               your idea.
             </p>
           </div>
-          <Link href="/projects/create">
-            <Button size="lg">
+          <Button asChild size="lg">
+            <Link href="/projects/create">
               <PlusCircle className="w-4 h-4" />
               Start a campaign
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </div>
     );
@@ -89,11 +89,11 @@ export default async function DashboardBackersPage() {
           </div>
           <div className="flex gap-3">
             {projects.map((p) => (
-              <Link key={p.id} href={`/projects/${p.slug}`}>
-                <Button variant="secondary" size="sm">
+              <Button key={p.id} asChild variant="secondary" size="sm">
+                <Link href={`/projects/${p.slug}`}>
                   View {p.title}
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             ))}
           </div>
         </div>

@@ -1,633 +1,615 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { POST } from '@/app/api/campaigns/[campaignId]/milestone-approve/route';
-import { NextRequest } from 'next/server';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Mock the Supabase clients
+const mocks = vi.hoisted(() => ({
+  releaseMilestonePayment: vi.fn().mockResolvedValue({ success: true, amount_released: 4000 }),
+  sendMilestoneApprovedToCreatorEmail: vi.fn().mockResolvedValue({}),
+  sendMilestoneApprovedToBackerEmail: vi.fn().mockResolvedValue({}),
+  sendMilestoneNeedsActionEmail: vi.fn().mockResolvedValue({}),
+}));
+
+vi.mock('@/lib/milestones/escrow', () => ({
+  releaseMilestonePayment: mocks.releaseMilestonePayment,
+}));
+
+vi.mock('@/lib/email/templates', () => ({
+  sendMilestoneApprovedToCreatorEmail: mocks.sendMilestoneApprovedToCreatorEmail,
+  sendMilestoneApprovedToBackerEmail: mocks.sendMilestoneApprovedToBackerEmail,
+  sendMilestoneNeedsActionEmail: mocks.sendMilestoneNeedsActionEmail,
+}));
+
 vi.mock('@/lib/supabase/server', () => ({
   createClient: vi.fn(),
   createServiceClient: vi.fn(),
 }));
 
+import { POST } from '@/app/api/campaigns/[campaignId]/milestone-approve/route';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
 
-const mockCreateClient = vi.mocked(createClient);
-const mockCreateServiceClient = vi.mocked(createServiceClient);
+// ─── Shared helpers ────────────────────────────────────────────────────────
 
-// Helper to create a chainable mock
-function createChainableMock(resolveValue: any) {
+/** Makes a chainable query object that resolves with { data, error: null }. */
+function thenable(data: unknown) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const chain: any = {};
+  for (const m of ['eq', 'in', 'is', 'order', 'limit', 'range']) {
+    chain[m] = () => chain;
+  }
+  chain.single = async () => ({ data, error: null });
+  chain.then = (resolve: (v: unknown) => void) => resolve({ data, error: null });
+  return chain;
+}
+
+/**
+ * Build a minimal auth client.
+ * - isAdmin=true  → profile row { is_admin: true }
+ * - isAdmin=false → profile row { is_admin: false }
+ * - isAdmin=null  → profile row null (missing profile)
+ * - Pass profileError to simulate a DB error on the profiles query.
+ */
+function buildAuthClient(
+  opts:
+    | boolean
+    | {
+        isAdmin?: boolean | null;
+        profileError?: { message: string };
+        unauthenticated?: boolean;
+      } = true
+) {
+  const o = typeof opts === 'boolean' ? { isAdmin: opts as boolean } : opts;
+  // Deliberately keep null distinct from undefined: null → missing profile row, true/false → is_admin value
+  const isAdmin = 'isAdmin' in o ? o.isAdmin : true;
+  const profileError = (o as { profileError?: { message: string } }).profileError;
+  const unauthenticated = (o as { unauthenticated?: boolean }).unauthenticated;
+
   return {
-    select: vi.fn().mockReturnThis(),
-    eq: vi.fn().mockReturnThis(),
-    single: vi.fn().mockResolvedValue(resolveValue),
+    auth: {
+      getUser: async () =>
+        unauthenticated
+          ? { data: { user: null } }
+          : { data: { user: { id: 'admin-1' } } },
+    },
+    from: () => ({
+      select: () => {
+        if (profileError) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const chain: any = {};
+          for (const m of ['eq', 'in', 'is', 'order', 'limit', 'range']) {
+            chain[m] = () => chain;
+          }
+          chain.single = async () => ({ data: null, error: profileError });
+          chain.then = (resolve: (v: unknown) => void) =>
+            resolve({ data: null, error: profileError });
+          return chain;
+        }
+        return thenable(isAdmin === null ? null : { is_admin: isAdmin });
+      },
+    }),
   };
 }
 
-describe('POST /api/campaigns/[campaignId]/milestone-approve', () => {
-  let mockSupabaseClient: any;
-  let mockServiceClient: any;
+interface ServiceMockArgs {
+  decision: 'approved' | 'rejected' | 'needs_info';
+  backers?: Array<{ status: string; display_name: string; email: string }>;
+}
 
+/** Full happy-path service client for email/escrow tests. */
+function buildServiceClient({ decision, backers = [] }: ServiceMockArgs) {
+  const submission = {
+    id: 'sub-1',
+    campaign_id: 'campaign-1',
+    milestone_number: 1,
+    status: 'pending',
+  };
+  const project = {
+    id: 'campaign-1',
+    title: 'Sourdough',
+    slug: 'sourdough',
+    amount_pledged_sgd: 10000,
+    creator: { display_name: 'Jamie', email: 'creator@example.com' },
+  };
+
+  // Filter to captured/paynow_captured to match .in() the route applies.
+  const visibleBackers = backers
+    .filter((b) => ['captured', 'paynow_captured'].includes(b.status))
+    .map((b) => ({ backer: { display_name: b.display_name, email: b.email } }));
+
+  return {
+    from: (table: string) => {
+      if (table === 'milestone_submissions') {
+        return {
+          select: () => thenable(submission),
+          update: () => thenable(null),
+        };
+      }
+      if (table === 'milestone_approvals') {
+        return {
+          insert: () => ({
+            select: () => thenable({ id: 'app-1', submission_id: 'sub-1', decision }),
+          }),
+        };
+      }
+      if (table === 'projects') {
+        return { select: () => thenable(project) };
+      }
+      if (table === 'pledges') {
+        return { select: () => thenable(visibleBackers) };
+      }
+      throw new Error(`Unexpected table: ${table}`);
+    },
+  };
+}
+
+/**
+ * Build a chainable mock for the service client that returns a configurable
+ * resolution value. Covers select().eq().eq().single() chains.
+ */
+function createChainableMock(resolveValue: { data: unknown; error: unknown }) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const chain: any = {
+    select: vi.fn().mockReturnThis(),
+    eq: vi.fn().mockReturnThis(),
+    single: vi.fn().mockResolvedValue(resolveValue),
+    update: vi.fn().mockReturnThis(),
+    insert: vi.fn().mockReturnThis(),
+  };
+  return chain;
+}
+
+// ─── Tests ─────────────────────────────────────────────────────────────────
+
+describe('milestone-approve route', () => {
   beforeEach(() => {
-    // Reset mocks
-    vi.clearAllMocks();
-
-    // Setup default mock behavior for regular client
-    mockSupabaseClient = {
-      auth: {
-        getUser: vi.fn(),
-      },
-      from: vi.fn(),
-    };
-
-    // Setup default mock behavior for service client with smarter from() handling
-    mockServiceClient = {
-      from: vi.fn(),
-    };
-
-    mockCreateClient.mockResolvedValue(mockSupabaseClient);
-    mockCreateServiceClient.mockReturnValue(mockServiceClient);
+    mocks.releaseMilestonePayment.mockClear();
+    mocks.releaseMilestonePayment.mockResolvedValue({ success: true, amount_released: 4000 });
+    mocks.sendMilestoneApprovedToCreatorEmail.mockClear();
+    mocks.sendMilestoneApprovedToBackerEmail.mockClear();
+    mocks.sendMilestoneNeedsActionEmail.mockClear();
+    (createClient as ReturnType<typeof vi.fn>).mockResolvedValue(buildAuthClient(true));
   });
 
+  // ── Auth ──────────────────────────────────────────────────────────────────
+
   describe('Authentication', () => {
-    it('should return 401 when user is not authenticated', async () => {
-      mockSupabaseClient.auth.getUser.mockResolvedValue({
-        data: { user: null },
-      });
+    it('401 when user is not authenticated', async () => {
+      (createClient as ReturnType<typeof vi.fn>).mockResolvedValue(
+        buildAuthClient({ unauthenticated: true })
+      );
 
-      const request = new NextRequest('http://localhost/api/campaigns/campaign-1/milestone-approve', {
+      const req = new Request('http://localhost/x', {
         method: 'POST',
-        body: JSON.stringify({
-          submission_id: 'sub-1',
-          decision: 'approved',
-        }),
+        body: JSON.stringify({ submission_id: 'sub-1', decision: 'approved' }),
       });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const res = await POST(req as any, { params: Promise.resolve({ campaignId: 'campaign-1' }) });
 
-      const response = await POST(request, {
-        params: Promise.resolve({ campaignId: 'campaign-1' }),
-      });
-
-      expect(response.status).toBe(401);
-      const body = await response.json();
+      expect(res.status).toBe(401);
+      const body = await res.json();
       expect(body.error).toBe('Unauthorized');
     });
   });
 
+  // ── Admin Authorization ───────────────────────────────────────────────────
+
   describe('Admin Authorization', () => {
-    it('should approve milestone when user is admin', async () => {
-      const userId = 'user-1';
-      const submissionId = 'sub-1';
-      const campaignId = 'campaign-1';
-
-      // Mock authenticated user
-      mockSupabaseClient.auth.getUser.mockResolvedValue({
-        data: { user: { id: userId } },
-      });
-
-      // Mock admin profile
-      mockSupabaseClient.from.mockReturnValue(
-        createChainableMock({
-          data: { is_admin: true },
-          error: null,
-        })
+    it('403 when user is not admin', async () => {
+      (createClient as ReturnType<typeof vi.fn>).mockResolvedValue(
+        buildAuthClient({ isAdmin: false })
       );
 
-      // Setup service client mocks for multiple calls
-      let fromCallCount = 0;
-      mockServiceClient.from.mockImplementation((table: string) => {
-        fromCallCount++;
-        if (table === 'milestone_submissions') {
-          if (fromCallCount === 1) {
-            // First call: select() for checking submission
-            return createChainableMock({
-              data: {
-                id: submissionId,
-                campaign_id: campaignId,
-                milestone_number: 1,
-                status: 'pending',
-              },
-              error: null,
-            });
-          } else {
-            // Second call: update() for updating submission status
-            return {
-              update: vi.fn().mockReturnThis(),
-              eq: vi.fn().mockResolvedValue({
-                data: null,
-                error: null,
-              }),
-            };
-          }
-        } else if (table === 'milestone_approvals') {
-          return {
-            insert: vi.fn().mockReturnThis(),
-            select: vi.fn().mockReturnThis(),
-            single: vi.fn().mockResolvedValue({
-              data: {
-                id: 'approval-1',
-                submission_id: submissionId,
-                approved_by: userId,
-                decision: 'approved',
-                feedback_text: null,
-              },
-              error: null,
-            }),
-          };
-        }
-      });
-
-      const request = new NextRequest('http://localhost/api/campaigns/campaign-1/milestone-approve', {
+      const req = new Request('http://localhost/x', {
         method: 'POST',
-        body: JSON.stringify({
-          submission_id: submissionId,
-          decision: 'approved',
-        }),
+        body: JSON.stringify({ submission_id: 'sub-1', decision: 'approved' }),
       });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const res = await POST(req as any, { params: Promise.resolve({ campaignId: 'campaign-1' }) });
 
-      const response = await POST(request, {
-        params: Promise.resolve({ campaignId }),
-      });
-
-      expect(response.status).toBe(200);
-      const body = await response.json();
-      expect(body.success).toBe(true);
-      expect(body.approval).toBeDefined();
-    });
-
-    it('should return 403 when user is not admin', async () => {
-      const userId = 'user-1';
-
-      mockSupabaseClient.auth.getUser.mockResolvedValue({
-        data: { user: { id: userId } },
-      });
-
-      // Mock non-admin profile
-      const profileQuery = {
-        select: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        single: vi.fn().mockResolvedValue({
-          data: { is_admin: false },
-          error: null,
-        }),
-      };
-      mockSupabaseClient.from.mockReturnValue(profileQuery);
-
-      const request = new NextRequest('http://localhost/api/campaigns/campaign-1/milestone-approve', {
-        method: 'POST',
-        body: JSON.stringify({
-          submission_id: 'sub-1',
-          decision: 'approved',
-        }),
-      });
-
-      const response = await POST(request, {
-        params: Promise.resolve({ campaignId: 'campaign-1' }),
-      });
-
-      expect(response.status).toBe(403);
-      const body = await response.json();
+      expect(res.status).toBe(403);
+      const body = await res.json();
       expect(body.error).toBe('Only admins can approve milestones');
     });
 
-    it('should return 403 when profile does not exist', async () => {
-      const userId = 'user-1';
+    it('403 when profile does not exist', async () => {
+      (createClient as ReturnType<typeof vi.fn>).mockResolvedValue(
+        buildAuthClient({ isAdmin: null })
+      );
 
-      mockSupabaseClient.auth.getUser.mockResolvedValue({
-        data: { user: { id: userId } },
-      });
-
-      // Mock missing profile
-      const profileQuery = {
-        select: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        single: vi.fn().mockResolvedValue({
-          data: null,
-          error: null,
-        }),
-      };
-      mockSupabaseClient.from.mockReturnValue(profileQuery);
-
-      const request = new NextRequest('http://localhost/api/campaigns/campaign-1/milestone-approve', {
+      const req = new Request('http://localhost/x', {
         method: 'POST',
-        body: JSON.stringify({
-          submission_id: 'sub-1',
-          decision: 'approved',
-        }),
+        body: JSON.stringify({ submission_id: 'sub-1', decision: 'approved' }),
       });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const res = await POST(req as any, { params: Promise.resolve({ campaignId: 'campaign-1' }) });
 
-      const response = await POST(request, {
-        params: Promise.resolve({ campaignId: 'campaign-1' }),
-      });
-
-      expect(response.status).toBe(403);
-      const body = await response.json();
+      expect(res.status).toBe(403);
+      const body = await res.json();
       expect(body.error).toBe('Only admins can approve milestones');
     });
 
-    it('should return 500 when admin check query fails', async () => {
-      const userId = 'user-1';
+    it('500 when admin check query fails', async () => {
+      (createClient as ReturnType<typeof vi.fn>).mockResolvedValue(
+        buildAuthClient({ profileError: { message: 'Database error' } })
+      );
 
-      mockSupabaseClient.auth.getUser.mockResolvedValue({
-        data: { user: { id: userId } },
-      });
-
-      // Mock profile query error
-      const profileQuery = {
-        select: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        single: vi.fn().mockResolvedValue({
-          data: null,
-          error: { message: 'Database error' },
-        }),
-      };
-      mockSupabaseClient.from.mockReturnValue(profileQuery);
-
-      const request = new NextRequest('http://localhost/api/campaigns/campaign-1/milestone-approve', {
+      const req = new Request('http://localhost/x', {
         method: 'POST',
-        body: JSON.stringify({
-          submission_id: 'sub-1',
-          decision: 'approved',
-        }),
+        body: JSON.stringify({ submission_id: 'sub-1', decision: 'approved' }),
       });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const res = await POST(req as any, { params: Promise.resolve({ campaignId: 'campaign-1' }) });
 
-      const response = await POST(request, {
-        params: Promise.resolve({ campaignId: 'campaign-1' }),
-      });
-
-      expect(response.status).toBe(500);
-      const body = await response.json();
+      expect(res.status).toBe(500);
+      const body = await res.json();
       expect(body.error).toBe('Failed to verify admin status');
     });
   });
 
+  // ── Input Validation ──────────────────────────────────────────────────────
+
   describe('Validation', () => {
-    beforeEach(() => {
-      // Setup admin user by default
-      mockSupabaseClient.auth.getUser.mockResolvedValue({
-        data: { user: { id: 'user-1' } },
-      });
-
-      const profileQuery = {
-        select: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        single: vi.fn().mockResolvedValue({
-          data: { is_admin: true },
-          error: null,
-        }),
-      };
-      mockSupabaseClient.from.mockReturnValue(profileQuery);
-    });
-
-    it('should return 400 when submission_id is missing', async () => {
-      const request = new NextRequest('http://localhost/api/campaigns/campaign-1/milestone-approve', {
+    it('400 when submission_id is missing', async () => {
+      const req = new Request('http://localhost/x', {
         method: 'POST',
-        body: JSON.stringify({
-          decision: 'approved',
-        }),
+        body: JSON.stringify({ decision: 'approved' }),
       });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const res = await POST(req as any, { params: Promise.resolve({ campaignId: 'campaign-1' }) });
 
-      const response = await POST(request, {
-        params: Promise.resolve({ campaignId: 'campaign-1' }),
-      });
-
-      expect(response.status).toBe(400);
-      const body = await response.json();
+      expect(res.status).toBe(400);
+      const body = await res.json();
       expect(body.error).toContain('submission_id is required');
     });
 
-    it('should return 400 when decision is invalid', async () => {
-      mockServiceClient.from.mockReturnValue({
-        select: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        single: vi.fn().mockResolvedValue({
-          data: {
-            id: 'sub-1',
-            campaign_id: 'campaign-1',
-            milestone_number: 1,
-            status: 'pending',
-          },
-          error: null,
-        }),
-      });
-
-      const request = new NextRequest('http://localhost/api/campaigns/campaign-1/milestone-approve', {
+    it('400 when decision is invalid', async () => {
+      // The route validates submission_id and decision before calling createServiceClient,
+      // so no service client setup is needed here.
+      const req = new Request('http://localhost/x', {
         method: 'POST',
-        body: JSON.stringify({
-          submission_id: 'sub-1',
-          decision: 'invalid_decision',
-        }),
+        body: JSON.stringify({ submission_id: 'sub-1', decision: 'invalid_decision' }),
       });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const res = await POST(req as any, { params: Promise.resolve({ campaignId: 'campaign-1' }) });
 
-      const response = await POST(request, {
-        params: Promise.resolve({ campaignId: 'campaign-1' }),
-      });
-
-      expect(response.status).toBe(400);
-      const body = await response.json();
+      expect(res.status).toBe(400);
+      const body = await res.json();
       expect(body.error).toContain('decision must be one of');
     });
 
-    it('should accept valid decisions: approved, rejected, needs_info', async () => {
-      const decisions = ['approved', 'rejected', 'needs_info'];
+    it('accepts valid decisions: approved, rejected, needs_info', async () => {
+      const decisions = ['approved', 'rejected', 'needs_info'] as const;
 
       for (const decision of decisions) {
-        vi.clearAllMocks();
-
-        // Re-setup auth for each iteration
-        mockSupabaseClient.auth.getUser.mockResolvedValue({
-          data: { user: { id: 'user-1' } },
-        });
-
-        mockSupabaseClient.from.mockReturnValue(
-          createChainableMock({
-            data: { is_admin: true },
-            error: null,
-          })
+        mocks.releaseMilestonePayment.mockClear();
+        mocks.sendMilestoneApprovedToCreatorEmail.mockClear();
+        mocks.sendMilestoneApprovedToBackerEmail.mockClear();
+        mocks.sendMilestoneNeedsActionEmail.mockClear();
+        (createClient as ReturnType<typeof vi.fn>).mockResolvedValue(buildAuthClient(true));
+        (createServiceClient as ReturnType<typeof vi.fn>).mockReturnValue(
+          buildServiceClient({ decision })
         );
 
-        let fromCallCount = 0;
-        mockServiceClient.from.mockImplementation((table: string) => {
-          fromCallCount++;
-          if (table === 'milestone_submissions') {
-            if (fromCallCount === 1) {
-              // First call: select() for checking submission
-              return createChainableMock({
-                data: {
-                  id: 'sub-1',
-                  campaign_id: 'campaign-1',
-                  milestone_number: 1,
-                  status: 'pending',
-                },
-                error: null,
-              });
-            } else {
-              // Second call: update() for updating submission status
-              return {
-                update: vi.fn().mockReturnThis(),
-                eq: vi.fn().mockResolvedValue({
-                  data: null,
-                  error: null,
-                }),
-              };
-            }
-          } else if (table === 'milestone_approvals') {
-            return {
-              insert: vi.fn().mockReturnThis(),
-              select: vi.fn().mockReturnThis(),
-              single: vi.fn().mockResolvedValue({
-                data: {
-                  id: 'approval-1',
-                  submission_id: 'sub-1',
-                  approved_by: 'user-1',
-                  decision,
-                  feedback_text: null,
-                },
-                error: null,
-              }),
-            };
-          }
-        });
-
-        const request = new NextRequest('http://localhost/api/campaigns/campaign-1/milestone-approve', {
+        const req = new Request('http://localhost/x', {
           method: 'POST',
-          body: JSON.stringify({
-            submission_id: 'sub-1',
-            decision,
-          }),
+          body: JSON.stringify({ submission_id: 'sub-1', decision }),
         });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const res = await POST(req as any, { params: Promise.resolve({ campaignId: 'campaign-1' }) });
 
-        const response = await POST(request, {
-          params: Promise.resolve({ campaignId: 'campaign-1' }),
-        });
-
-        expect(response.status).toBe(200);
+        expect(res.status).toBe(200);
       }
     });
   });
 
+  // ── Submission Handling ───────────────────────────────────────────────────
+
   describe('Submission Handling', () => {
-    beforeEach(() => {
-      // Setup admin user by default
-      mockSupabaseClient.auth.getUser.mockResolvedValue({
-        data: { user: { id: 'user-1' } },
-      });
-
-      const profileQuery = {
-        select: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        single: vi.fn().mockResolvedValue({
-          data: { is_admin: true },
-          error: null,
-        }),
-      };
-      mockSupabaseClient.from.mockReturnValue(profileQuery);
-    });
-
-    it('should return 404 when submission not found', async () => {
-      const submissionQuery = {
-        select: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        single: vi.fn().mockResolvedValue({
-          data: null,
-          error: null,
-        }),
-      };
-
-      mockServiceClient.from.mockReturnValue(submissionQuery);
-
-      const request = new NextRequest('http://localhost/api/campaigns/campaign-1/milestone-approve', {
-        method: 'POST',
-        body: JSON.stringify({
-          submission_id: 'non-existent',
-          decision: 'approved',
-        }),
-      });
-
-      const response = await POST(request, {
-        params: Promise.resolve({ campaignId: 'campaign-1' }),
-      });
-
-      expect(response.status).toBe(404);
-      const body = await response.json();
-      expect(body.error).toBe('Submission not found');
-    });
-
-    it('should include feedback_text in approval when provided', async () => {
-      const userId = 'user-1';
-      const submissionId = 'sub-1';
-      const campaignId = 'campaign-1';
-      const feedbackText = 'Great submission, approved!';
-
-      let fromCallCount = 0;
-      mockServiceClient.from.mockImplementation((table: string) => {
-        fromCallCount++;
-        if (table === 'milestone_submissions') {
-          if (fromCallCount === 1) {
-            // First call: select() for checking submission
-            return createChainableMock({
-              data: {
-                id: submissionId,
-                campaign_id: campaignId,
-                milestone_number: 1,
-                status: 'pending',
-              },
-              error: null,
-            });
-          } else {
-            // Second call: update() for updating submission status
+    it('returns 409 when submission has already been reviewed', async () => {
+      const reviewedServiceClient = {
+        from: (table: string) => {
+          if (table === 'milestone_submissions') {
             return {
-              update: vi.fn().mockReturnThis(),
-              eq: vi.fn().mockResolvedValue({
-                data: null,
-                error: null,
-              }),
-            };
-          }
-        } else if (table === 'milestone_approvals') {
-          return {
-            insert: vi.fn().mockReturnThis(),
-            select: vi.fn().mockReturnThis(),
-            single: vi.fn().mockResolvedValue({
-              data: {
-                id: 'approval-1',
-                submission_id: submissionId,
-                approved_by: userId,
-                decision: 'approved',
-                feedback_text: feedbackText,
-              },
-              error: null,
-            }),
-          };
-        }
-      });
-
-      const request = new NextRequest('http://localhost/api/campaigns/campaign-1/milestone-approve', {
-        method: 'POST',
-        body: JSON.stringify({
-          submission_id: submissionId,
-          decision: 'approved',
-          feedback_text: feedbackText,
-        }),
-      });
-
-      const response = await POST(request, {
-        params: Promise.resolve({ campaignId }),
-      });
-
-      expect(response.status).toBe(200);
-      const body = await response.json();
-      expect(body.approval.feedback_text).toBe(feedbackText);
-    });
-
-    it('should return 500 when approval creation fails', async () => {
-      // Mock submission query
-      const submissionQuery = {
-        select: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        single: vi.fn().mockResolvedValue({
-          data: {
-            id: 'sub-1',
-            campaign_id: 'campaign-1',
-            milestone_number: 1,
-            status: 'pending',
-          },
-          error: null,
-        }),
-      };
-
-      // Mock approval creation error
-      const approvalQuery = {
-        insert: vi.fn().mockReturnThis(),
-        select: vi.fn().mockReturnThis(),
-        single: vi.fn().mockResolvedValue({
-          data: null,
-          error: { message: 'Database constraint violation' },
-        }),
-      };
-
-      mockServiceClient.from.mockImplementation((table: string) => {
-        if (table === 'milestone_submissions') {
-          return submissionQuery;
-        } else if (table === 'milestone_approvals') {
-          return approvalQuery;
-        }
-        return submissionQuery;
-      });
-
-      const request = new NextRequest('http://localhost/api/campaigns/campaign-1/milestone-approve', {
-        method: 'POST',
-        body: JSON.stringify({
-          submission_id: 'sub-1',
-          decision: 'approved',
-        }),
-      });
-
-      const response = await POST(request, {
-        params: Promise.resolve({ campaignId: 'campaign-1' }),
-      });
-
-      expect(response.status).toBe(500);
-      const body = await response.json();
-      expect(body.error).toBe('Database constraint violation');
-    });
-
-    it('should return 500 when submission update fails', async () => {
-      let fromCallCount = 0;
-      mockServiceClient.from.mockImplementation((table: string) => {
-        fromCallCount++;
-        if (table === 'milestone_submissions') {
-          if (fromCallCount === 1) {
-            // First call: select() for checking submission
-            return createChainableMock({
-              data: {
+              select: () => thenable({
                 id: 'sub-1',
                 campaign_id: 'campaign-1',
                 milestone_number: 1,
-                status: 'pending',
-              },
-              error: null,
-            });
-          } else {
-            // Second call: update() for updating submission status - this one fails
+                status: 'approved', // already reviewed!
+              }),
+              update: () => thenable(null),
+            };
+          }
+          // For other tables, route shouldn't reach them — return a thenable
+          // that resolves to nothing. (If route bug causes them to be hit, the
+          // test will still pass but assertions below will catch it.)
+          return { select: () => thenable(null), insert: () => ({ select: () => thenable(null) }) };
+        },
+      };
+      (createServiceClient as ReturnType<typeof vi.fn>).mockReturnValue(reviewedServiceClient);
+
+      const req = new Request('http://localhost/x', {
+        method: 'POST',
+        body: JSON.stringify({ submission_id: 'sub-1', decision: 'approved' }),
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const res = await POST(req as any, { params: Promise.resolve({ campaignId: 'campaign-1' }) });
+
+      expect(res.status).toBe(409);
+      expect(mocks.releaseMilestonePayment).not.toHaveBeenCalled();
+      expect(mocks.sendMilestoneApprovedToCreatorEmail).not.toHaveBeenCalled();
+      expect(mocks.sendMilestoneApprovedToBackerEmail).not.toHaveBeenCalled();
+    });
+
+    it('404 when submission not found', async () => {
+      (createServiceClient as ReturnType<typeof vi.fn>).mockReturnValue({
+        from: () =>
+          createChainableMock({ data: null, error: null }),
+      });
+
+      const req = new Request('http://localhost/x', {
+        method: 'POST',
+        body: JSON.stringify({ submission_id: 'non-existent', decision: 'approved' }),
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const res = await POST(req as any, { params: Promise.resolve({ campaignId: 'campaign-1' }) });
+
+      expect(res.status).toBe(404);
+      const body = await res.json();
+      expect(body.error).toBe('Submission not found');
+    });
+
+    it('include feedback_text in approval when provided', async () => {
+      const feedbackText = 'Great submission, approved!';
+
+      // Custom service client that returns feedback_text in the approval row.
+      let submissionCallCount = 0;
+      (createServiceClient as ReturnType<typeof vi.fn>).mockReturnValue({
+        from: (table: string) => {
+          if (table === 'milestone_submissions') {
+            submissionCallCount++;
+            if (submissionCallCount === 1) {
+              return createChainableMock({
+                data: { id: 'sub-1', campaign_id: 'campaign-1', milestone_number: 1, status: 'pending' },
+                error: null,
+              });
+            }
+            // Second call is the update()
             return {
               update: vi.fn().mockReturnThis(),
-              eq: vi.fn().mockResolvedValue({
-                data: null,
-                error: { message: 'Failed to update submission' },
+              eq: vi.fn().mockResolvedValue({ data: null, error: null }),
+            };
+          }
+          if (table === 'milestone_approvals') {
+            return {
+              insert: vi.fn().mockReturnValue({
+                select: vi.fn().mockReturnValue({
+                  single: vi.fn().mockResolvedValue({
+                    data: {
+                      id: 'approval-1',
+                      submission_id: 'sub-1',
+                      approved_by: 'admin-1',
+                      decision: 'approved',
+                      feedback_text: feedbackText,
+                    },
+                    error: null,
+                  }),
+                }),
               }),
             };
           }
-        } else if (table === 'milestone_approvals') {
-          return {
-            insert: vi.fn().mockReturnThis(),
-            select: vi.fn().mockReturnThis(),
-            single: vi.fn().mockResolvedValue({
+          if (table === 'projects') {
+            return createChainableMock({
               data: {
-                id: 'approval-1',
-                submission_id: 'sub-1',
-                approved_by: 'user-1',
-                decision: 'approved',
-                feedback_text: null,
+                id: 'campaign-1',
+                title: 'Sourdough',
+                slug: 'sourdough',
+                amount_pledged_sgd: 10000,
+                creator: { display_name: 'Jamie', email: 'creator@example.com' },
               },
               error: null,
-            }),
-          };
-        }
+            });
+          }
+          if (table === 'pledges') {
+            // Pledges query uses .eq().in() — use thenable which supports .in()
+            return { select: () => thenable([]) };
+          }
+          return createChainableMock({ data: null, error: null });
+        },
       });
 
-      const request = new NextRequest('http://localhost/api/campaigns/campaign-1/milestone-approve', {
+      const req = new Request('http://localhost/x', {
         method: 'POST',
-        body: JSON.stringify({
-          submission_id: 'sub-1',
-          decision: 'approved',
-        }),
+        body: JSON.stringify({ submission_id: 'sub-1', decision: 'approved', feedback_text: feedbackText }),
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const res = await POST(req as any, { params: Promise.resolve({ campaignId: 'campaign-1' }) });
+
+      expect(res.status).toBe(200);
+      const body = await res.json();
+      expect(body.approval.feedback_text).toBe(feedbackText);
+    });
+
+    it('500 when approval creation fails', async () => {
+      (createServiceClient as ReturnType<typeof vi.fn>).mockReturnValue({
+        from: (table: string) => {
+          if (table === 'milestone_submissions') {
+            return createChainableMock({
+              data: { id: 'sub-1', campaign_id: 'campaign-1', milestone_number: 1, status: 'pending' },
+              error: null,
+            });
+          }
+          if (table === 'milestone_approvals') {
+            return {
+              insert: vi.fn().mockReturnValue({
+                select: vi.fn().mockReturnValue({
+                  single: vi.fn().mockResolvedValue({
+                    data: null,
+                    error: { message: 'Database constraint violation' },
+                  }),
+                }),
+              }),
+            };
+          }
+          return createChainableMock({ data: null, error: null });
+        },
       });
 
-      const response = await POST(request, {
-        params: Promise.resolve({ campaignId: 'campaign-1' }),
+      const req = new Request('http://localhost/x', {
+        method: 'POST',
+        body: JSON.stringify({ submission_id: 'sub-1', decision: 'approved' }),
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const res = await POST(req as any, { params: Promise.resolve({ campaignId: 'campaign-1' }) });
+
+      expect(res.status).toBe(500);
+      const body = await res.json();
+      expect(body.error).toBe('Database constraint violation');
+    });
+
+    it('500 when submission update fails', async () => {
+      let submissionCallCount = 0;
+      (createServiceClient as ReturnType<typeof vi.fn>).mockReturnValue({
+        from: (table: string) => {
+          if (table === 'milestone_submissions') {
+            submissionCallCount++;
+            if (submissionCallCount === 1) {
+              return createChainableMock({
+                data: { id: 'sub-1', campaign_id: 'campaign-1', milestone_number: 1, status: 'pending' },
+                error: null,
+              });
+            }
+            // Second call: the update() that should fail
+            return {
+              update: vi.fn().mockReturnThis(),
+              eq: vi.fn().mockResolvedValue({ data: null, error: { message: 'Failed to update submission' } }),
+            };
+          }
+          if (table === 'milestone_approvals') {
+            return {
+              insert: vi.fn().mockReturnValue({
+                select: vi.fn().mockReturnValue({
+                  single: vi.fn().mockResolvedValue({
+                    data: { id: 'approval-1', submission_id: 'sub-1', approved_by: 'admin-1', decision: 'approved', feedback_text: null },
+                    error: null,
+                  }),
+                }),
+              }),
+            };
+          }
+          return createChainableMock({ data: null, error: null });
+        },
       });
 
-      expect(response.status).toBe(500);
-      const body = await response.json();
+      const req = new Request('http://localhost/x', {
+        method: 'POST',
+        body: JSON.stringify({ submission_id: 'sub-1', decision: 'approved' }),
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const res = await POST(req as any, { params: Promise.resolve({ campaignId: 'campaign-1' }) });
+
+      expect(res.status).toBe(500);
+      const body = await res.json();
       expect(body.error).toBe('Failed to update submission');
+    });
+  });
+
+  // ── Email + Escrow ────────────────────────────────────────────────────────
+
+  describe('Email and Escrow', () => {
+    it('on approved, releases escrow + emails creator + emails captured backers', async () => {
+      (createServiceClient as ReturnType<typeof vi.fn>).mockReturnValue(
+        buildServiceClient({
+          decision: 'approved',
+          backers: [
+            { status: 'captured', display_name: 'Sam', email: 'sam@example.com' },
+            { status: 'paynow_captured', display_name: 'Pat', email: 'pat@example.com' },
+            { status: 'authorized', display_name: 'Skip', email: 'skip@example.com' },
+          ],
+        })
+      );
+
+      const req = new Request('http://localhost/x', {
+        method: 'POST',
+        body: JSON.stringify({ submission_id: 'sub-1', decision: 'approved' }),
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const res = await POST(req as any, { params: Promise.resolve({ campaignId: 'campaign-1' }) });
+
+      expect(res.status).toBe(200);
+      expect(mocks.releaseMilestonePayment).toHaveBeenCalledTimes(1);
+      expect(mocks.releaseMilestonePayment.mock.calls[0][0]).toMatchObject({
+        campaign_id: 'campaign-1',
+        milestone_number: 1,
+        campaign_total_sgd: 10000,
+      });
+      expect(mocks.releaseMilestonePayment.mock.calls[0][0].supabase).toBeDefined();
+      expect(mocks.sendMilestoneApprovedToCreatorEmail).toHaveBeenCalledTimes(1);
+      expect(mocks.sendMilestoneApprovedToCreatorEmail.mock.calls[0][0].escrowReleasedSgd).toBe(4000);
+      expect(mocks.sendMilestoneApprovedToBackerEmail).toHaveBeenCalledTimes(2);
+      const recipients = mocks.sendMilestoneApprovedToBackerEmail.mock.calls.map((c) => c[0].backerEmail);
+      expect(recipients).toContain('sam@example.com');
+      expect(recipients).toContain('pat@example.com');
+      expect(recipients).not.toContain('skip@example.com');
+    });
+
+    it('still sends emails when releaseMilestonePayment fails', async () => {
+      mocks.releaseMilestonePayment.mockResolvedValueOnce({ success: false, error: 'db error' });
+      (createServiceClient as ReturnType<typeof vi.fn>).mockReturnValue(
+        buildServiceClient({
+          decision: 'approved',
+          backers: [{ status: 'captured', display_name: 'Sam', email: 'sam@example.com' }],
+        })
+      );
+
+      const req = new Request('http://localhost/x', {
+        method: 'POST',
+        body: JSON.stringify({ submission_id: 'sub-1', decision: 'approved' }),
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await POST(req as any, { params: Promise.resolve({ campaignId: 'campaign-1' }) });
+
+      expect(mocks.sendMilestoneApprovedToCreatorEmail).toHaveBeenCalledTimes(1);
+      expect(mocks.sendMilestoneApprovedToCreatorEmail.mock.calls[0][0].escrowReleasedSgd).toBe(0);
+      expect(mocks.sendMilestoneApprovedToBackerEmail).toHaveBeenCalledTimes(1);
+    });
+
+    it('on rejected, sends needs-action email and skips approval emails + escrow release', async () => {
+      (createServiceClient as ReturnType<typeof vi.fn>).mockReturnValue(
+        buildServiceClient({
+          decision: 'rejected',
+          backers: [{ status: 'captured', display_name: 'Sam', email: 'sam@example.com' }],
+        })
+      );
+
+      const req = new Request('http://localhost/x', {
+        method: 'POST',
+        body: JSON.stringify({ submission_id: 'sub-1', decision: 'rejected', feedback_text: 'Photo blurry' }),
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await POST(req as any, { params: Promise.resolve({ campaignId: 'campaign-1' }) });
+
+      expect(mocks.releaseMilestonePayment).not.toHaveBeenCalled();
+      expect(mocks.sendMilestoneApprovedToCreatorEmail).not.toHaveBeenCalled();
+      expect(mocks.sendMilestoneApprovedToBackerEmail).not.toHaveBeenCalled();
+      expect(mocks.sendMilestoneNeedsActionEmail).toHaveBeenCalledTimes(1);
+      expect(mocks.sendMilestoneNeedsActionEmail.mock.calls[0][0]).toMatchObject({
+        decision: 'rejected',
+        feedbackText: 'Photo blurry',
+        milestoneNumber: 1,
+      });
+    });
+
+    it('on needs_info, sends needs-action email with that decision', async () => {
+      (createServiceClient as ReturnType<typeof vi.fn>).mockReturnValue(
+        buildServiceClient({ decision: 'needs_info' })
+      );
+
+      const req = new Request('http://localhost/x', {
+        method: 'POST',
+        body: JSON.stringify({ submission_id: 'sub-1', decision: 'needs_info' }),
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await POST(req as any, { params: Promise.resolve({ campaignId: 'campaign-1' }) });
+
+      expect(mocks.sendMilestoneNeedsActionEmail).toHaveBeenCalledTimes(1);
+      expect(mocks.sendMilestoneNeedsActionEmail.mock.calls[0][0].decision).toBe('needs_info');
     });
   });
 });

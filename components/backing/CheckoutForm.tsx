@@ -11,6 +11,7 @@ import {
 import { Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatSgd } from "@/lib/utils/currency";
+import { getFriendlyStripeError } from "@/lib/stripe/error-messages";
 import { useCurrency, SGD_TO_USD, USD_TO_SGD } from "@/contexts/CurrencyContext";
 import type { ProjectWithRelations } from "@/types/project";
 import type { Reward } from "@/types/reward";
@@ -71,7 +72,7 @@ export function CheckoutForm({
 
     const { error: submitError } = await elements.submit();
     if (submitError) {
-      setError(submitError.message ?? "Payment failed.");
+      setError(getFriendlyStripeError(submitError));
       setLoading(false);
       return;
     }
@@ -92,7 +93,7 @@ export function CheckoutForm({
     }
 
     if (result.error) {
-      setError(result.error.message ?? "Payment failed.");
+      setError(getFriendlyStripeError(result.error));
       setLoading(false);
     }
   }
@@ -217,7 +218,7 @@ export function CheckoutForm({
           Privacy Policy
         </Link>
         , and{" "}
-        <Link href="/refund-policy" className="underline hover:text-[var(--color-ink)]">
+        <Link href="/terms?tab=refund" className="underline hover:text-[var(--color-ink)]">
           Refund &amp; Dispute Policy
         </Link>
         .

@@ -24,17 +24,23 @@ export function ScrollDownCue({
     return () => window.removeEventListener("scroll", onScroll);
   }, [hideAfter]);
 
+  function scrollDown() {
+    window.scrollBy({ top: window.innerHeight, behavior: "smooth" });
+  }
+
   return (
     <AnimatePresence>
       {visible && (
-        <motion.div
+        <motion.button
           key="scroll-cue"
+          type="button"
+          onClick={scrollDown}
+          aria-label="Scroll down"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 8 }}
           transition={{ duration: 0.5, ease: [0.21, 0.62, 0.35, 1] }}
-          className="mt-12 md:mt-16 flex flex-col items-center gap-4"
-          aria-hidden="true"
+          className="mt-12 md:mt-16 flex flex-col items-center gap-4 cursor-pointer w-full"
         >
           <motion.span
             whileInView={{ y: [0, 6, 0] }}
@@ -81,7 +87,7 @@ export function ScrollDownCue({
               />
             </motion.span>
           </div>
-        </motion.div>
+        </motion.button>
       )}
     </AnimatePresence>
   );

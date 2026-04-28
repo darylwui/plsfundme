@@ -1,6 +1,7 @@
 import { Resend } from "resend";
 
 export const FROM = process.env.RESEND_FROM_EMAIL ?? "noreply@getthatbread.sg";
+export const REPLY_TO = process.env.RESEND_REPLY_TO_EMAIL ?? "hello@getthatbread.sg";
 export const ADMIN_EMAIL = process.env.ADMIN_NOTIFICATION_EMAIL ?? "hello@getthatbread.sg";
 
 let resendClient: Resend | null = null;

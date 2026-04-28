@@ -253,13 +253,13 @@ export function ProjectPageSections({
               <p className="text-sm text-[var(--color-ink-muted)]">
                 Select a reward tier to continue backing.
               </p>
-              <Link
-                href={`/backing/${projectId}/checkout${selectedReward ? `?reward=${selectedReward.id}` : ""}`}
-              >
-                <Button size="sm">
+              <Button asChild size="sm">
+                <Link
+                  href={`/backing/${projectId}/checkout${selectedReward ? `?reward=${selectedReward.id}` : ""}`}
+                >
                   {selectedReward ? `Back with ${selectedReward.title}` : "Pledge without reward"}
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {activeRewards.map((reward) => (

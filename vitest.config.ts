@@ -6,7 +6,10 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./vitest.setup.ts'],
-    exclude: ['**/node_modules/**', '**/.claude/worktrees/**'],
+    // `tests/e2e/**` is Playwright territory — different runner, different
+    // assertion API. Without this exclude Vitest picks up the .spec.ts
+    // files and crashes on `@playwright/test` imports.
+    exclude: ['**/node_modules/**', '**/.claude/worktrees/**', 'tests/e2e/**'],
   },
   resolve: {
     alias: {

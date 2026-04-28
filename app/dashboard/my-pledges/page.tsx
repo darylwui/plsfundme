@@ -1,10 +1,13 @@
 import Link from "next/link";
-import { ArrowRight, Heart, Rocket } from "lucide-react";
+import { ArrowRight, CheckCircle2, Heart, Rocket } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { ReportConcernButton } from "@/components/dispute/ReportConcernButton";
 import { formatSgd, fundingPercent } from "@/lib/utils/currency";
 import { formatDate, daysRemaining } from "@/lib/utils/dates";
+import { MilestoneSummary } from "@/components/milestones/MilestoneSummary";
+import { resolveMilestonesForBacker, type BackerMilestoneView } from "@/lib/milestones/backer-view";
 
 export const metadata = { title: "My pledges" };
 
@@ -25,6 +28,8 @@ export default async function MyPledgesPage() {
     payment_method: string;
     status: string;
     created_at: string;
+    refunded: boolean;
+    refunded_at: string | null;
     project: {
       id: string; title: string; slug: string; status: string;
       funding_goal_sgd: number; amount_pledged_sgd: number;
@@ -33,6 +38,32 @@ export default async function MyPledgesPage() {
   };
 
   const pledges = (pledgesRaw ?? []) as unknown as PledgeRow[];
+
+  const fundedPledges = pledges.filter((p) => p.project?.status === "funded");
+  const milestoneViewByProjectId = new Map<string, BackerMilestoneView>();
+  await Promise.all(
+    fundedPledges.map(async (p) => {
+      if (!p.project) return;
+      const view = await resolveMilestonesForBacker(supabase, p.project.id);
+      milestoneViewByProjectId.set(p.project.id, view);
+    }),
+  );
+
+  // Open Stage 1 concerns this user has filed, keyed by pledge_id. We use
+  // them to (a) suppress the "Report a concern" button when one is already
+  // open and (b) show a small "Concern submitted" indicator instead.
+  const { data: concernsRaw } = await supabase
+    .from("dispute_concerns")
+    .select("id, pledge_id, created_at, status")
+    .eq("backer_id", user!.id)
+    .in("status", ["open", "responded"]);
+  const openConcernByPledgeId = new Map<string, { id: string; created_at: string }>();
+  for (const c of concernsRaw ?? []) {
+    if (!openConcernByPledgeId.has(c.pledge_id)) {
+      openConcernByPledgeId.set(c.pledge_id, { id: c.id, created_at: c.created_at });
+    }
+  }
+
   const activePledges = pledges.filter((p) => !["cancelled", "failed", "released", "refunded"].includes(p.status));
   const pastPledges = pledges.filter((p) => ["cancelled", "failed", "released", "refunded"].includes(p.status));
   const totalActive = activePledges.reduce((s, p) => s + p.amount_sgd, 0);
@@ -54,7 +85,15 @@ export default async function MyPledgesPage() {
     draft: "Draft", cancelled: "Cancelled",
   };
 
-  function ActivePledgeCard({ pledge }: { pledge: PledgeRow }) {
+  function ActivePledgeCard({
+    pledge,
+    milestoneViewByProjectId,
+    openConcern,
+  }: {
+    pledge: PledgeRow;
+    milestoneViewByProjectId: Map<string, BackerMilestoneView>;
+    openConcern: { id: string; created_at: string } | undefined;
+  }) {
     const project = pledge.project;
     if (!project) return null;
     const percent = fundingPercent(project.amount_pledged_sgd, project.funding_goal_sgd);
@@ -62,6 +101,12 @@ export default async function MyPledgesPage() {
     const isActive = project.status === "active";
     const isFunded = project.status === "funded";
     const barColor = isFunded ? "bg-[var(--color-brand-success)]" : "bg-[var(--color-brand-crust)]";
+    // Surface the report-concern affordance once the campaign funds (escrow
+    // begins) — that's when the protection mechanism actually engages.
+    const milestoneView = isFunded ? milestoneViewByProjectId.get(project.id) : undefined;
+    const lateMilestone = milestoneView?.milestones.find((m) => m.state === "late");
+    const lateMilestoneNumber = (lateMilestone?.number ?? null) as 1 | 2 | 3 | null;
+    const showConcernSection = isFunded;
 
     return (
       <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] shadow-[var(--shadow-card)] overflow-hidden">
@@ -98,30 +143,59 @@ export default async function MyPledgesPage() {
           </Link>
         </div>
 
-        {/* Live progress strip */}
-        <div className="border-t border-[var(--color-border)] bg-[var(--color-surface-raised)] px-5 py-3 flex flex-col gap-2">
-          <div className="h-1.5 rounded-full bg-[var(--color-surface-overlay)] overflow-hidden">
-            <div
-              className={`h-full rounded-full transition-all duration-500 ${barColor}`}
-              style={{ width: `${Math.min(percent, 100)}%` }}
-            />
-          </div>
-          <div className="flex items-center justify-between text-xs text-[var(--color-ink-muted)]">
-            <span>
-              <span className="font-mono font-bold text-[var(--color-ink)]">{formatSgd(project.amount_pledged_sgd)}</span>
-              {" "}raised of <span className="font-mono">{formatSgd(project.funding_goal_sgd)}</span>
-            </span>
-            <div className="flex items-center gap-3">
-              <span><span className="font-mono font-bold text-[var(--color-ink)]">{percent}%</span> funded</span>
-              <span><span className="font-mono font-bold text-[var(--color-ink)]">{project.backer_count}</span> backers</span>
-              {isActive && (
-                <span className={`font-mono font-bold ${days <= 3 ? "text-[var(--color-brand-danger)]" : "text-[var(--color-ink)]"}`}>
-                  {days}d left
+        {/* Progress strip: funding bar while funding; milestone summary once funded */}
+        {(() => {
+          if (project.status === "funded") {
+            const view = milestoneViewByProjectId.get(project.id);
+            if (view && view.milestones.length === 3) {
+              return <MilestoneSummary milestones={view.milestones} hasOpenDispute={view.hasOpenDispute} />;
+            }
+            // Defensive fallback: funded but no milestones defined (legacy data) — keep funding strip
+          }
+          return (
+            <div className="border-t border-[var(--color-border)] bg-[var(--color-surface-raised)] px-5 py-3 flex flex-col gap-2">
+              <div className="h-1.5 rounded-full bg-[var(--color-surface-overlay)] overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all duration-500 ${barColor}`}
+                  style={{ width: `${Math.min(percent, 100)}%` }}
+                />
+              </div>
+              <div className="flex items-center justify-between text-xs text-[var(--color-ink-muted)]">
+                <span>
+                  <span className="font-mono font-bold text-[var(--color-ink)]">{formatSgd(project.amount_pledged_sgd)}</span>
+                  {" "}raised of <span className="font-mono">{formatSgd(project.funding_goal_sgd)}</span>
                 </span>
-              )}
+                <div className="flex items-center gap-3">
+                  <span><span className="font-mono font-bold text-[var(--color-ink)]">{percent}%</span> funded</span>
+                  <span><span className="font-mono font-bold text-[var(--color-ink)]">{project.backer_count}</span> backers</span>
+                  {isActive && (
+                    <span className={`font-mono font-bold ${days <= 3 ? "text-[var(--color-brand-danger)]" : "text-[var(--color-ink)]"}`}>
+                      {days}d left
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
+          );
+        })()}
+
+        {showConcernSection && (
+          <div className="border-t border-[var(--color-border)] px-5 py-2.5 flex items-center justify-end">
+            {openConcern ? (
+              <span className="inline-flex items-center gap-1.5 text-xs text-[var(--color-ink-muted)]">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" aria-hidden="true" />
+                Concern submitted on {formatDate(openConcern.created_at)} — we&apos;ll be in touch
+              </span>
+            ) : (
+              <ReportConcernButton
+                pledgeId={pledge.id}
+                projectTitle={project.title}
+                defaultLateMilestone={lateMilestoneNumber}
+                variant="inline"
+              />
+            )}
           </div>
-        </div>
+        )}
       </div>
     );
   }
@@ -129,6 +203,20 @@ export default async function MyPledgesPage() {
   function PastPledgeCard({ pledge }: { pledge: PledgeRow }) {
     const project = pledge.project;
     if (!project) return null;
+    const methodLabel = pledge.payment_method === "paynow" ? "PayNow" : "Card";
+
+    // Status-specific refund detail line. Backers' top question on a past
+    // pledge is "did the money come back, when, how" — so spell it out.
+    let refundDetail: string | null = null;
+    if (pledge.status === "refunded" && pledge.refunded_at) {
+      refundDetail = `Refunded on ${formatDate(pledge.refunded_at)}`;
+    } else if (pledge.status === "refunded") {
+      // Refunded flag set without a timestamp (legacy / partial data)
+      refundDetail = `Refunded to ${methodLabel}`;
+    } else if (pledge.status === "released") {
+      refundDetail = "Card hold released — never charged";
+    }
+
     return (
       <div className="flex items-center gap-4 bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-4 opacity-70">
         <div className="w-12 h-12 rounded-lg bg-[var(--color-surface-overlay)] shrink-0 overflow-hidden">
@@ -151,8 +239,13 @@ export default async function MyPledgesPage() {
             </Badge>
           </div>
           <p className="text-xs text-[var(--color-ink-subtle)] mt-0.5">
-            {formatSgd(pledge.amount_sgd)} · {formatDate(pledge.created_at)}
+            {formatSgd(pledge.amount_sgd)} via {methodLabel} · pledged {formatDate(pledge.created_at)}
           </p>
+          {refundDetail && (
+            <p className="text-xs text-[var(--color-ink-muted)] mt-0.5 font-medium">
+              {refundDetail}
+            </p>
+          )}
         </div>
         <Link
           href={`/projects/${project.slug}`}
@@ -192,16 +285,23 @@ export default async function MyPledgesPage() {
               Find a project you believe in and be the first to back it.
             </p>
           </div>
-          <Link href="/explore">
-            <Button size="lg"><Heart className="w-4 h-4" /> Explore projects</Button>
-          </Link>
+          <Button asChild size="lg">
+            <Link href="/explore"><Heart className="w-4 h-4" /> Explore projects</Link>
+          </Button>
         </div>
       ) : (
         <div className="flex flex-col gap-6">
           {activePledges.length > 0 && (
             <div className="flex flex-col gap-3">
               <h2 className="font-bold text-[var(--color-ink)]">Active pledges</h2>
-              {activePledges.map((p) => <ActivePledgeCard key={p.id} pledge={p} />)}
+              {activePledges.map((p) => (
+                <ActivePledgeCard
+                  key={p.id}
+                  pledge={p}
+                  milestoneViewByProjectId={milestoneViewByProjectId}
+                  openConcern={openConcernByPledgeId.get(p.id)}
+                />
+              ))}
             </div>
           )}
           {pastPledges.length > 0 && (

@@ -33,3 +33,42 @@ export function formatDateShort(date: string | Date | null | undefined): string 
     month: 'short',
   }).format(d)
 }
+
+/**
+ * Format a date as a relative time string for "Last saved X ago" copy.
+ *
+ * Returns:
+ * - empty string for invalid input
+ * - "just now" for < 60s (or future dates from clock skew)
+ * - "N minute(s) ago" for < 1h
+ * - "N hour(s) ago" for < 24h
+ * - "N day(s) ago" for < 7d
+ * - falls back to formatDate(date) for >= 7d (e.g., "18 April 2026")
+ */
+export function formatRelativeTime(date: string | Date | null | undefined): string {
+  if (!date) return ''
+  const then = new Date(date)
+  if (Number.isNaN(then.getTime())) return ''
+
+  const diffMs = Math.max(0, Date.now() - then.getTime())
+  const diffSec = Math.floor(diffMs / 1000)
+
+  if (diffSec < 60) return 'just now'
+
+  const diffMin = Math.floor(diffSec / 60)
+  if (diffMin < 60) {
+    return diffMin === 1 ? '1 minute ago' : `${diffMin} minutes ago`
+  }
+
+  const diffHour = Math.floor(diffMin / 60)
+  if (diffHour < 24) {
+    return diffHour === 1 ? '1 hour ago' : `${diffHour} hours ago`
+  }
+
+  const diffDay = Math.floor(diffHour / 24)
+  if (diffDay < 7) {
+    return diffDay === 1 ? '1 day ago' : `${diffDay} days ago`
+  }
+
+  return formatDate(then)
+}

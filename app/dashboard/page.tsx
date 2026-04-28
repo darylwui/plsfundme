@@ -3,15 +3,16 @@ import { PlusCircle, ArrowRight, Pencil, Heart, Clock, XCircle, MessageCircleQue
 import { createClient } from "@/lib/supabase/server";
 import { FundingProgressCard } from "@/components/dashboard/FundingProgressCard";
 import { BackerTable } from "@/components/dashboard/BackerTable";
-import {
-  SingpassVerificationCard,
-  SingpassVerifiedBadge,
-} from "@/components/dashboard/SingpassVerificationCard";
+import { SingpassVerifiedBadge } from "@/components/dashboard/SingpassVerificationCard";
+import { CreatorOnboardingStepper } from "@/components/dashboard/CreatorOnboardingStepper";
+import { DraftContinuationCard } from "@/components/dashboard/DraftContinuationCard";
+import { WizardDraftBanner } from "@/components/dashboard/WizardDraftBanner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils/dates";
 import { formatSgd } from "@/lib/utils/currency";
 import { getProjectStatusLabel, getProjectStatusVariant } from "@/lib/utils/project-status";
+import { extractDraftTitle } from "@/lib/dashboard/wizard-draft";
 import type { ProjectWithRelations } from "@/types/project";
 import type { PledgeWithBacker } from "@/types/pledge";
 
@@ -53,11 +54,11 @@ async function BackerDashboard({ userId, displayName, email }: { userId: string;
           <h3 className="font-bold text-[var(--color-ink)] mb-1">Ready to launch your own campaign?</h3>
           <p className="text-sm text-[var(--color-ink-muted)]">Become a creator and bring your ideas to life on get that bread.</p>
         </div>
-        <Link href="/apply/creator" className="shrink-0">
-          <Button variant="primary" size="sm">
+        <Button asChild variant="primary" size="sm">
+          <Link href="/apply/creator" className="shrink-0">
             Apply as Creator
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
 
       {/* Stats */}
@@ -81,12 +82,12 @@ async function BackerDashboard({ userId, displayName, email }: { userId: string;
           <p className="text-sm text-[var(--color-ink-muted)] mt-1 mb-6">
             Explore campaigns and back the ideas you believe in.
           </p>
-          <Link href="/explore">
-            <Button size="lg">
+          <Button asChild size="lg">
+            <Link href="/explore">
               <Heart className="w-4 h-4" />
               Explore projects
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       ) : (
         <div>
@@ -130,12 +131,12 @@ async function BackerDashboard({ userId, displayName, email }: { userId: string;
       )}
 
       <div className="pt-4 border-t border-[var(--color-border)]">
-        <Link href="/explore">
-          <Button variant="ghost" fullWidth>
+        <Button asChild variant="ghost" fullWidth>
+          <Link href="/explore">
             <Heart className="w-4 h-4" />
             Explore all projects
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
     </div>
   );
@@ -150,11 +151,14 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
     .from("projects")
     .select("*, category:categories(*), creator:profiles!creator_id(id, display_name, avatar_url), rewards(*), stretch_goals(*)")
     .eq("creator_id", userId)
+    .is("deleted_at", null)
     .order("created_at", { ascending: false })
     .limit(5);
 
   const typedProjects = (projects as unknown as ProjectWithRelations[]) ?? [];
   const activeProject = typedProjects.find((p) => p.status === "active") ?? typedProjects[0];
+  const onlyProjectIsDraft =
+    typedProjects.length > 0 && typedProjects.every((p) => p.status === "draft");
 
   const { data: creatorProfile } = await supabase
     .from("creator_profiles")
@@ -164,6 +168,26 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
   const singpassVerified = Boolean(creatorProfile?.singpass_verified);
   const creatorStatus = creatorProfile?.status ?? "pending_review";
   const rejectionReason = creatorProfile?.rejection_reason ?? null;
+
+  // Surface in-progress wizard work on the dashboard.
+  // The wizard auto-saves to `campaign_drafts` (one row per user via
+  // UNIQUE(user_id)). When the creator has zero projects we render the
+  // full DraftContinuationCard. When they already have projects we render
+  // a slim WizardDraftBanner above the existing layout so wizard work
+  // doesn't disappear behind committed projects.
+  const { data: wizardDraftRow } = await supabase
+    .from("campaign_drafts")
+    .select("draft_data, step, updated_at")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  const wizardDraft = wizardDraftRow
+    ? {
+        title: extractDraftTitle(wizardDraftRow.draft_data),
+        step: wizardDraftRow.step,
+        updated_at: wizardDraftRow.updated_at,
+      }
+    : null;
 
   let recentPledges: PledgeWithBacker[] = [];
   if (activeProject) {
@@ -201,26 +225,17 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
           <p className="text-sm text-[var(--color-ink-muted)] mt-0.5">{subtitle}</p>
           <p className="text-xs text-[var(--color-ink-subtle)] mt-1">{email}</p>
         </div>
-        <div className="flex items-center gap-2">
-          <Link href="/dashboard/creator-profile">
-            <Button variant="secondary">
-              <Pencil className="w-4 h-4" />
-              Edit creator card
-            </Button>
-          </Link>
-          {creatorStatus === "approved" && (
-            <Link href="/projects/create">
-              <Button>
+        {creatorStatus === "approved" && (
+          <div className="flex items-center gap-2">
+            <Button asChild>
+              <Link href="/projects/create">
                 <PlusCircle className="w-4 h-4" />
                 New campaign
-              </Button>
-            </Link>
-          )}
-        </div>
+              </Link>
+            </Button>
+          </div>
+        )}
       </div>
-
-      {/* Singpass card — only relevant once approved */}
-      {creatorStatus === "approved" && !singpassVerified && <SingpassVerificationCard />}
 
       {/* ── Needs info ── */}
       {creatorStatus === "needs_info" && (
@@ -233,9 +248,9 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
             <p className="text-sm text-[var(--color-ink-muted)] mt-1 leading-relaxed">
               Head to your application thread to see what they asked and reply.
             </p>
-            <Link href="/dashboard/application" className="inline-block mt-3">
-              <Button size="sm">Open application</Button>
-            </Link>
+            <Button asChild size="sm" className="mt-3">
+              <Link href="/dashboard/application">Open application</Link>
+            </Button>
           </div>
         </div>
       )}
@@ -281,9 +296,9 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
             </div>
           )}
           <div className="px-5 py-4 flex items-center gap-4 flex-wrap">
-            <Link href="/apply/creator">
-              <Button size="sm">Re-apply as Creator</Button>
-            </Link>
+            <Button asChild size="sm">
+              <Link href="/apply/creator">Re-apply as Creator</Link>
+            </Button>
             <a
               href="mailto:hello@getthatbread.sg"
               className="text-sm font-semibold text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
@@ -294,18 +309,66 @@ async function CreatorDashboard({ userId, displayName, email }: { userId: string
         </div>
       )}
 
+      {/* Wizard draft banner — shown above the rest of the approved-creator
+          layout whenever they have other projects in flight. Mirrors the
+          "always surface wizard work" intent: full DraftContinuationCard
+          when projects.length === 0, slim banner otherwise. */}
+      {creatorStatus === "approved" && typedProjects.length > 0 && wizardDraft && (
+        <WizardDraftBanner draft={wizardDraft} />
+      )}
+
       {/* ── Approved: show campaigns ── */}
       {creatorStatus === "approved" && (
         typedProjects.length === 0 ? (
-          <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border-2 border-dashed border-[var(--color-border)] p-12 text-center">
-            <p className="text-4xl mb-4">🚀</p>
-            <h2 className="text-lg font-bold text-[var(--color-ink)]">Launch your first campaign</h2>
-            <p className="text-sm text-[var(--color-ink-muted)] mt-1 mb-6">
-              Create a project, set your goal, and start raising funds.
-            </p>
-            <Link href="/projects/create">
-              <Button size="lg"><PlusCircle className="w-4 h-4" /> Start a project</Button>
-            </Link>
+          // No projects yet. If the wizard has in-progress work, surface
+          // the draft-continuation card pointing back to /projects/create
+          // (which auto-restores from campaign_drafts). Otherwise show the
+          // 4-step onboarding stepper.
+          wizardDraft ? (
+            <DraftContinuationCard
+              source="campaign-draft"
+              draft={{
+                title: wizardDraft.title,
+                step: wizardDraft.step,
+                updated_at: wizardDraft.updated_at,
+              }}
+            />
+          ) : (
+            <CreatorOnboardingStepper singpassVerified={singpassVerified} />
+          )
+        ) : onlyProjectIsDraft && activeProject ? (
+          <div className="flex flex-col gap-8">
+            <DraftContinuationCard
+              source="project"
+              project={{
+                id: activeProject.id,
+                title: activeProject.title,
+                slug: activeProject.slug,
+                updated_at: activeProject.updated_at,
+              }}
+            />
+            {typedProjects.length > 1 && (
+              <div>
+                <h2 className="font-bold text-[var(--color-ink)] mb-4">All campaigns</h2>
+                <div className="flex flex-col gap-3">
+                  {typedProjects.map((p) => (
+                    <div key={p.id} className="flex items-center gap-4 bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-4">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-[var(--color-ink)] truncate">{p.title}</p>
+                        <p className="text-xs text-[var(--color-ink-muted)] mt-0.5">Ends {formatDate(p.deadline)}</p>
+                      </div>
+                      <Badge variant={getProjectStatusVariant(p.status)}>{getProjectStatusLabel(p.status)}</Badge>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Link href={`/projects/${p.slug}/edit`} className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface-overlay)] hover:bg-[var(--color-border)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors">
+                          <Pencil className="w-3 h-3" /> Edit
+                        </Link>
+                        <Link href={`/projects/${p.slug}`}><ArrowRight className="w-4 h-4 text-[var(--color-ink-subtle)]" /></Link>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <div className="flex flex-col gap-8">

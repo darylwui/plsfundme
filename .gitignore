@@ -13,6 +13,11 @@
 # testing
 /coverage
 
+# Playwright (E2E)
+/test-results/
+/playwright-report/
+/playwright/.cache/
+
 # next.js
 /.next/
 /out/
@@ -44,3 +49,7 @@ next-env.d.ts
 # Sentry Config File
 .env.sentry-build-plugin
 .claude/worktrees/
+.superpowers/
+
+# Local render-script output (e.g. scripts/render-supabase-emails.ts)
+scripts/out/

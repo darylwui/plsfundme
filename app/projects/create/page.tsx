@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ProjectCreationForm } from "@/components/creation/ProjectCreationForm";
+import { CampaignPreviewGate } from "./_PreviewGate";
 import type { Category } from "@/types/project";
 import { Clock, XCircle, Rocket } from "lucide-react";
 
@@ -13,7 +13,7 @@ export default async function CreateProjectPage() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/login?redirectTo=/projects/create");
+  if (!user) return <CampaignPreviewGate />;
 
   // Check role
   const { data: profile } = await supabase

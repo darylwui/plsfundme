@@ -1,12 +1,15 @@
 import Link from "next/link";
 import {
   ArrowRight,
+  BookOpen,
   CheckCircle2,
   DollarSign,
+  Globe,
   HelpCircle,
   Rocket,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { BackToTop } from "@/components/ui/back-to-top";
 import { CreatorTimelineScrub } from "@/components/marketing/CreatorTimelineScrubDynamic";
 import { CreatorReassurance } from "@/components/marketing/CreatorReassurance";
 import { ScrollReveal } from "@/components/marketing/ScrollReveal";
@@ -34,27 +37,56 @@ export default function ForCreatorsPage() {
       {/* ── Hero ─────────────────────────────────────────────── */}
       <section className="bg-gradient-to-br from-amber-50 via-[#FFFBF5] to-orange-50 dark:from-[#0f0f0f] dark:via-[#0a0a0a] dark:to-[#111111] border-b border-[var(--color-border)]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24">
-          <div className="inline-flex items-center px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] text-xs uppercase tracking-[0.12em] font-medium mb-6">
-            For creators
-          </div>
           <h1 className="text-[40px] md:text-[56px] font-black tracking-tight leading-[1.05] mb-5 max-w-4xl">
-            Launch a campaign.{" "}
+            Be one of the first.{" "}
             <span className="text-[var(--color-brand-crust)] dark:text-[var(--color-brand-golden)]">
               Fund your idea.
             </span>
           </h1>
           <p className="text-lg text-[var(--color-ink-muted)] leading-relaxed max-w-2xl">
-            Raise capital from your community and bring your idea to life.
-            Singapore-first, milestone-based funding, and you only pay a fee if
-            you hit your goal.
+            We&apos;re handpicking Singapore&apos;s founding cohort of creators
+            right now. Apply to launch a campaign, raise capital from your
+            community, and get featured at the top of the homepage on day one.
+            Milestone-based payouts, fee only if you hit your goal.
           </p>
-          <div className="mt-8">
-            <Link href="/projects/create">
-              <Button size="lg" variant="primary">
-                Start your campaign
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            <Button asChild size="lg" variant="primary">
+              <Link href="/apply/creator">
+                Apply to launch
                 <ArrowRight className="w-4 h-4" />
-              </Button>
-            </Link>
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="secondary">
+              <Link href="/for-creators/launch-guide">
+                <BookOpen className="w-4 h-4" />
+                Get the launch checklist
+              </Link>
+            </Button>
+          </div>
+          {/* International creators: surfaces the waitlist for non-SG
+              applicants. Ghost-style CTA — visually subordinate to the
+              primary "Apply to launch" CTA above so the page still leads
+              with its SG audience, but tappable enough to feel like an
+              actionable invitation rather than a fine-print footnote. */}
+          {/* Border opacity bumped to /30 (light) / /25 (dark) so the
+              chip reads as a tappable button on the amber-50 hero,
+              not a faint outline. Copy switches to a tighter version
+              under sm: full sentence wraps on 375px viewports inside
+              the size="sm" h-8, so we shorten there. */}
+          <div className="mt-5">
+            <Button
+              asChild
+              size="sm"
+              variant="ghost"
+              className="text-[var(--color-brand-crust)] hover:text-[var(--color-brand-crust-dark)] hover:bg-[var(--color-brand-crumb)] dark:text-[var(--color-brand-golden)] dark:hover:text-[var(--color-brand-golden)] dark:hover:bg-[var(--color-brand-crust-dark)]/25 border border-[var(--color-brand-crust)]/30 dark:border-[var(--color-brand-golden)]/25 hover:border-[var(--color-brand-crust)]/50 dark:hover:border-[var(--color-brand-golden)]/45"
+            >
+              <Link href="/for-creators/international">
+                <Globe className="w-4 h-4 shrink-0" />
+                <span className="sm:hidden">Overseas founder? Submit your idea</span>
+                <span className="hidden sm:inline">If you&apos;re an overseas founder, submit your idea here</span>
+                <ArrowRight className="w-4 h-4 shrink-0" />
+              </Link>
+            </Button>
           </div>
           <ScrollDownCue />
         </div>
@@ -70,7 +102,7 @@ export default function ForCreatorsPage() {
                 How a campaign works
               </div>
               <h2 className="text-3xl md:text-4xl font-black tracking-tight leading-[1.1] text-[var(--color-ink)]">
-                From first draft to funded.
+                From idea to milestones.
               </h2>
               <p className="mt-4 text-[var(--color-ink-muted)] leading-relaxed">
                 Scroll through the timeline to see each stage of a campaign —
@@ -83,12 +115,12 @@ export default function ForCreatorsPage() {
 
           <ScrollReveal>
             <div className="mt-10">
-              <Link href="/projects/create">
-                <Button size="lg">
+              <Button asChild size="lg">
+                <Link href="/projects/create">
                   Start your campaign
                   <ArrowRight className="w-4 h-4" />
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
           </ScrollReveal>
         </div>
@@ -172,20 +204,33 @@ export default function ForCreatorsPage() {
               🍞 Let&apos;s go
             </div>
             <h2 className="text-4xl md:text-5xl font-black tracking-tight leading-[1.05] text-[var(--color-ink)] mb-4">
-              Ready to launch?
+              Ready to be one of our first?
             </h2>
             <p className="text-lg text-[var(--color-ink-muted)] max-w-md mx-auto mb-10 leading-relaxed">
-              Start for free. No upfront costs, no risk to your backers.
+              Apply for free. No upfront costs, no risk to your backers — we
+              only take a fee if your campaign hits its goal.
             </p>
-            <Link href="/projects/create">
-              <Button size="lg" variant="primary">
-                Start your campaign
-                <ArrowRight className="w-4 h-4" />
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <Button asChild size="lg" variant="primary">
+                <Link href="/apply/creator">
+                  Apply to launch
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
               </Button>
-            </Link>
+              <Button asChild size="lg" variant="secondary">
+                <Link href="/for-creators/launch-guide">
+                  <BookOpen className="w-4 h-4" />
+                  Get the launch checklist
+                </Link>
+              </Button>
+            </div>
           </div>
         </section>
       </ScrollReveal>
+
+      <div className="flex justify-center py-10 border-t border-[var(--color-border)] bg-[var(--color-surface)]">
+        <BackToTop />
+      </div>
     </div>
   );
 }

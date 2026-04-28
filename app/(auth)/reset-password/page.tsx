@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CheckCircle, AlertCircle } from "lucide-react";
+import { BackLink } from "@/components/ui/back-link";
 
 type Stage = "verifying" | "ready" | "success" | "expired";
 
@@ -87,14 +88,14 @@ function ResetPasswordContent() {
             This password reset link has expired or already been used. Request a fresh one.
           </p>
         </div>
-        <Link href="/forgot-password" className="w-full">
-          <Button size="lg" fullWidth>
+        <Button asChild size="lg" fullWidth>
+          <Link href="/forgot-password" className="w-full">
             Request new link
-          </Button>
-        </Link>
-        <Link href="/login" className="text-sm text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors">
-          Back to login
-        </Link>
+          </Link>
+        </Button>
+        <div className="flex justify-center">
+          <BackLink href="/login">Back to login</BackLink>
+        </div>
       </Card>
     );
   }

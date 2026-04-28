@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ShieldCheck, Clock, CreditCard, AlertCircle, Mail } from "lucide-react";
+import { ShieldCheck, Milestone, CreditCard, AlertCircle, Mail } from "lucide-react";
 import { BackerProtectionTimeline } from "@/components/marketing/BackerProtectionTimeline";
+import { BackToTop } from "@/components/ui/back-to-top";
 
 export const metadata: Metadata = {
   title: "Backer protection — get that bread",
@@ -39,9 +40,9 @@ export default function RefundGuaranteePage() {
             body="Card holds are released automatically if the campaign misses its goal."
           />
           <SummaryCard
-            icon={<Clock className="w-5 h-5" />}
-            title="Funds held 14 days"
-            body="After a campaign funds, we hold funds before paying creators — so you have time to raise issues."
+            icon={<Milestone className="w-5 h-5" />}
+            title="Released by milestone"
+            body="Funds sit in escrow and only release as the creator proves each milestone — not in one lump sum."
           />
           <SummaryCard
             icon={<AlertCircle className="w-5 h-5" />}
@@ -51,6 +52,15 @@ export default function RefundGuaranteePage() {
         </div>
 
         <div className="prose prose-sm max-w-none text-[var(--color-ink)] prose-headings:text-[var(--color-ink)] prose-headings:font-black prose-a:text-[var(--color-brand-crust)] space-y-8">
+          <Section title="The regulatory picture in Singapore">
+            <p>
+              Reward-based crowdfunding in Singapore isn&apos;t directly regulated by MAS — it&apos;s not classified as a financial product the way investment crowdfunding is. Your protection comes from elsewhere: pledges sit in <strong>Stripe escrow</strong> (the same infrastructure used by most major SG platforms), and creators are bound by Singapore&apos;s <strong>Consumer Protection (Fair Trading) Act</strong> for what they deliver. Misrepresenting a campaign is unlawful regardless of the platform.
+            </p>
+            <p>
+              On top of that, our 5% platform fee is refunded along with your pledge whenever a dispute is resolved in your favour.
+            </p>
+          </Section>
+
           <Section title="How milestone-based escrow protects you">
             <p>
               When you back a project, your payment is either:
@@ -85,7 +95,7 @@ export default function RefundGuaranteePage() {
               Our two-stage dispute process gives creators 14 days to respond to a concern before a formal dispute opens — because most delays in real projects are communication gaps, not failures. If a milestone is 45+ days overdue with no update, we open the dispute on backers&apos; behalf automatically.
             </p>
             <p>
-              <Link href="/refund-policy" className="font-semibold text-[var(--color-brand-crust)] hover:underline">
+              <Link href="/terms?tab=refund" className="font-semibold text-[var(--color-brand-crust)] hover:underline">
                 Read the full refund &amp; dispute policy →
               </Link>
             </p>
@@ -105,7 +115,7 @@ export default function RefundGuaranteePage() {
 
           <Section title="For creators">
             <p>
-              If you&apos;re launching a campaign, the same protections apply in reverse — we will only pay out funds after the 14-day hold, and we may reverse a payout if credible evidence of fraud or non-delivery emerges. Full details are in our{" "}
+              If you&apos;re launching a campaign, the same protections apply in reverse — funds release only as you submit and we approve each milestone (M1 / M2 / M3), and we may reverse a payout if credible evidence of fraud or non-delivery emerges. Full details are in our{" "}
               <Link href="/terms">Terms of Service</Link>.
             </p>
           </Section>
@@ -128,6 +138,10 @@ export default function RefundGuaranteePage() {
               </a>
             </p>
           </Section>
+
+          <div className="mt-8 flex justify-center">
+            <BackToTop />
+          </div>
         </div>
       </div>
     </div>

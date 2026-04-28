@@ -1,15 +1,50 @@
 import type { NextConfig } from "next";
 import { withSentryConfig } from "@sentry/nextjs";
 
+const securityHeaders = [
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "X-Frame-Options", value: "DENY" },
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+  { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
+];
+
 const nextConfig: NextConfig = {
+  async headers() {
+    return [{ source: "/(.*)", headers: securityHeaders }];
+  },
   async redirects() {
     return [
+      // /privacy is its own page; /terms?tab=privacy is handled in proxy.ts so
+      // the destination doesn't carry the now-meaningless `tab` query.
+      // Refund still lives under /terms tabs.
+      { source: "/refund-policy", destination: "/terms?tab=refund", permanent: true },
       // Legacy PM routes → creator equivalents (permanent 308)
       { source: "/apply/pm", destination: "/apply/creator", permanent: true },
       { source: "/api/pm-apply", destination: "/api/creator-apply", permanent: true },
       { source: "/api/admin/pm/:id", destination: "/api/admin/creator/:id", permanent: true },
-      { source: "/admin/project-managers", destination: "/admin/creators", permanent: true },
+      { source: "/admin/project-managers", destination: "/dashboard/admin/creators", permanent: true },
       { source: "/dashboard/admin/pms", destination: "/dashboard/admin/creators", permanent: true },
+      // Legacy browser-print export → new react-pdf checklist. Keep this
+      // permanent redirect so bookmarks, pasted links, and any old
+      // marketing copy still resolve to the actual download.
+      { source: "/for-creators/launch-guide/print", destination: "/api/launch-guide/pdf", permanent: true },
+      // Common-sense aliases for the signup route — the canonical path is
+      // /register but external write-ups, marketing emails, and our own
+      // preview gate have linked to /sign-up. Next preserves the
+      // ?redirectTo=... query string through redirect, so post-signup
+      // bounce-back to /projects/create still works.
+      { source: "/sign-up", destination: "/register", permanent: true },
+      { source: "/signup", destination: "/register", permanent: true },
+      // Old /admin/* tree consolidated into /dashboard/admin/*. Keep these
+      // redirects so any existing bookmarks or external links still resolve.
+      { source: "/admin", destination: "/dashboard", permanent: true },
+      { source: "/admin/categories", destination: "/dashboard/admin/categories", permanent: true },
+      { source: "/admin/creators", destination: "/dashboard/admin/creators", permanent: true },
+      { source: "/admin/kyc", destination: "/dashboard/admin/kyc", permanent: true },
+      { source: "/admin/projects", destination: "/dashboard/admin/projects", permanent: true },
+      { source: "/admin/queue", destination: "/dashboard/admin/queue", permanent: true },
+      { source: "/admin/users", destination: "/dashboard/admin/users", permanent: true },
     ];
   },
   images: {

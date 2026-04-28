@@ -1,10 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ExternalLink, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { MilestoneDecision, MilestoneNumber, MilestoneProofData, MilestoneSubmissionStatus } from '@/lib/milestones/types';
+
+interface ApprovalSummary {
+  decision: string;
+  feedback_text: string | null;
+  reviewed_at: string;
+}
 
 interface SubmissionRow {
   id: string;
@@ -18,6 +24,14 @@ interface SubmissionRow {
   proof_data: MilestoneProofData;
   submitted_at: string;
   created_at: string;
+  approval: ApprovalSummary | null;
+}
+
+interface Counts {
+  pending: number;
+  approved: number;
+  rejected: number;
+  needs_info: number;
 }
 
 const STATUS_PILL: Record<MilestoneSubmissionStatus, string> = {
@@ -40,43 +54,82 @@ const MILESTONE_LABEL: Record<MilestoneNumber, string> = {
   3: 'M3 — Fulfillment',
 };
 
+const TABS: MilestoneSubmissionStatus[] = ['pending', 'approved', 'rejected', 'needs_info'];
+
 export function MilestoneReviewQueue() {
+  const [tab, setTab] = useState<MilestoneSubmissionStatus>('pending');
   const [submissions, setSubmissions] = useState<SubmissionRow[]>([]);
+  const [counts, setCounts] = useState<Counts>({ pending: 0, approved: 0, rejected: 0, needs_info: 0 });
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    fetch('/api/admin/milestones?status=pending')
-      .then((r) => r.json())
-      .then((data) => setSubmissions(data.submissions ?? []))
-      .catch(console.error)
-      .finally(() => setIsLoading(false));
+  const load = useCallback(async (status: MilestoneSubmissionStatus) => {
+    setIsLoading(true);
+    try {
+      const res = await fetch(`/api/admin/milestones?status=${status}`);
+      const data = await res.json();
+      setSubmissions(data.submissions ?? []);
+      if (data.counts) setCounts(data.counts);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
-  function removeSubmission(id: string) {
-    setSubmissions((prev) => prev.filter((s) => s.id !== id));
-  }
+  useEffect(() => {
+    load(tab);
+  }, [tab, load]);
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center py-12">
-        <Loader2 className="w-5 h-5 animate-spin text-[var(--color-ink-muted)]" />
-      </div>
-    );
-  }
-
-  if (submissions.length === 0) {
-    return (
-      <p className="text-sm text-[var(--color-ink-muted)] py-8 text-center">
-        No pending milestone submissions.
-      </p>
-    );
+  function refresh() {
+    load(tab);
   }
 
   return (
-    <div className="flex flex-col gap-3">
-      {submissions.map((s) => (
-        <SubmissionCard key={s.id} submission={s} onDecision={removeSubmission} />
-      ))}
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap gap-1 border-b border-[var(--color-border)]">
+        {TABS.map((t) => {
+          const isActive = t === tab;
+          return (
+            <button
+              key={t}
+              type="button"
+              onClick={() => setTab(t)}
+              className={`px-3 py-2 text-sm font-semibold transition-colors border-b-2 -mb-px ${
+                isActive
+                  ? 'border-[var(--color-brand-crust)] text-[var(--color-ink)]'
+                  : 'border-transparent text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]'
+              }`}
+            >
+              {STATUS_LABEL[t]}
+              <span
+                className={`ml-2 inline-flex items-center justify-center min-w-[1.25rem] px-1.5 py-0.5 text-[10px] font-bold rounded-full ${
+                  isActive
+                    ? STATUS_PILL[t]
+                    : 'bg-[var(--color-surface-overlay)] text-[var(--color-ink-subtle)]'
+                }`}
+              >
+                {counts[t]}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {isLoading ? (
+        <div className="flex justify-center py-12">
+          <Loader2 className="w-5 h-5 animate-spin text-[var(--color-ink-muted)]" />
+        </div>
+      ) : submissions.length === 0 ? (
+        <p className="text-sm text-[var(--color-ink-muted)] py-8 text-center">
+          No {STATUS_LABEL[tab].toLowerCase()} submissions.
+        </p>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {submissions.map((s) => (
+            <SubmissionCard key={s.id} submission={s} onDecision={refresh} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -86,12 +139,14 @@ function SubmissionCard({
   onDecision,
 }: {
   submission: SubmissionRow;
-  onDecision: (id: string) => void;
+  onDecision: () => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [deciding, setDeciding] = useState<MilestoneDecision | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const isPending = submission.status === 'pending';
 
   async function handleDecision(decision: MilestoneDecision) {
     setDeciding(decision);
@@ -111,7 +166,7 @@ function SubmissionCard({
       );
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? 'Request failed');
-      onDecision(submission.id);
+      onDecision();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
@@ -123,6 +178,12 @@ function SubmissionCard({
     dateStyle: 'medium',
     timeStyle: 'short',
   });
+  const reviewed = submission.approval
+    ? new Date(submission.approval.reviewed_at).toLocaleString('en-SG', {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      })
+    : null;
 
   const projectHref = submission.campaign_slug
     ? `/projects/${submission.campaign_slug}`
@@ -158,6 +219,7 @@ function SubmissionCard({
           </div>
           <p className="text-xs text-[var(--color-ink-muted)]">
             {submission.creator_name} · submitted {submitted}
+            {reviewed && ` · reviewed ${reviewed}`}
           </p>
         </div>
         <Button
@@ -165,7 +227,7 @@ function SubmissionCard({
           size="sm"
           onClick={() => setExpanded((v) => !v)}
         >
-          {expanded ? 'Close' : 'Review'}
+          {expanded ? 'Close' : isPending ? 'Review' : 'View'}
         </Button>
       </header>
 
@@ -176,51 +238,76 @@ function SubmissionCard({
             proof={submission.proof_data}
           />
 
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-ink-muted)] mb-1">
-              Feedback to creator
-            </p>
-            <textarea
-              value={feedback}
-              onChange={(e) => setFeedback(e.target.value)}
-              placeholder="Optional for approval — recommended when requesting info or rejecting."
-              rows={3}
-              className="w-full px-3 py-2 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] text-sm leading-relaxed resize-y focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)]"
-            />
-          </div>
-
-          {error && (
-            <p className="text-xs text-[var(--color-brand-danger)]">{error}</p>
+          {submission.approval && (
+            <div className="rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-3 py-2">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-ink-muted)] mb-1">
+                Decision
+              </p>
+              <p className="text-sm text-[var(--color-ink)] mb-1">
+                <span className="font-semibold">{STATUS_LABEL[submission.approval.decision as MilestoneSubmissionStatus]}</span>
+              </p>
+              {submission.approval.feedback_text && (
+                <p className="text-sm text-[var(--color-ink)] whitespace-pre-wrap leading-relaxed">
+                  {submission.approval.feedback_text}
+                </p>
+              )}
+              {!submission.approval.feedback_text && (
+                <p className="text-xs italic text-[var(--color-ink-muted)]">
+                  No feedback was left.
+                </p>
+              )}
+            </div>
           )}
 
-          <div className="flex gap-2 justify-end flex-wrap">
-            <Button
-              variant="ghost"
-              size="sm"
-              disabled={deciding !== null}
-              onClick={() => handleDecision('rejected')}
-              loading={deciding === 'rejected'}
-            >
-              Reject
-            </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              disabled={deciding !== null}
-              onClick={() => handleDecision('needs_info')}
-              loading={deciding === 'needs_info'}
-            >
-              Request info
-            </Button>
-            <Button
-              size="sm"
-              disabled={deciding !== null}
-              onClick={() => handleDecision('approved')}
-              loading={deciding === 'approved'}
-            >
-              Approve &amp; release escrow
-            </Button>
-          </div>
+          {isPending && (
+            <>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-ink-muted)] mb-1">
+                  Feedback to creator
+                </p>
+                <textarea
+                  value={feedback}
+                  onChange={(e) => setFeedback(e.target.value)}
+                  placeholder="Optional for approval — recommended when requesting info or rejecting."
+                  rows={3}
+                  className="w-full px-3 py-2 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] text-sm leading-relaxed resize-y focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)]"
+                />
+              </div>
+
+              {error && (
+                <p className="text-xs text-[var(--color-brand-danger)]">{error}</p>
+              )}
+
+              <div className="flex gap-2 justify-end flex-wrap">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  disabled={deciding !== null}
+                  onClick={() => handleDecision('rejected')}
+                  loading={deciding === 'rejected'}
+                >
+                  Reject
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  disabled={deciding !== null}
+                  onClick={() => handleDecision('needs_info')}
+                  loading={deciding === 'needs_info'}
+                >
+                  Request info
+                </Button>
+                <Button
+                  size="sm"
+                  disabled={deciding !== null}
+                  onClick={() => handleDecision('approved')}
+                  loading={deciding === 'approved'}
+                >
+                  Approve &amp; release escrow
+                </Button>
+              </div>
+            </>
+          )}
         </div>
       )}
     </article>

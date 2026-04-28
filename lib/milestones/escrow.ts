@@ -1,7 +1,10 @@
 import { createClient } from '@/lib/supabase/server';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import type { MilestoneNumber } from './types';
 
 interface ReleaseMilestonePaymentInput {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: SupabaseClient<any, any, any>;
   campaign_id: string;
   milestone_number: MilestoneNumber;
   campaign_total_sgd: number;
@@ -12,6 +15,14 @@ interface ReleaseMilestonePaymentResult {
   amount_released?: number;
   reason?: string;
   error?: string;
+  /**
+   * True when the release row already existed (Postgres unique_violation
+   * on `(campaign_id, milestone_number)`) — i.e. a concurrent admin
+   * approval or a retried request beat us to the insert. Caller should
+   * short-circuit duplicate side-effects (emails, notifications) when
+   * this is set, rather than treating it like a generic failure.
+   */
+  already_released?: boolean;
 }
 
 /**
@@ -30,12 +41,10 @@ function getPayoutPercentage(milestone_number: MilestoneNumber): number {
 export async function releaseMilestonePayment(
   input: ReleaseMilestonePaymentInput
 ): Promise<ReleaseMilestonePaymentResult> {
-  const { campaign_id, milestone_number, campaign_total_sgd } = input;
+  const { supabase, campaign_id, milestone_number, campaign_total_sgd } = input;
 
   const percentage = getPayoutPercentage(milestone_number);
   const amount_sgd = Math.round(campaign_total_sgd * percentage * 100) / 100;
-
-  const supabase = await createClient();
 
   const { data, error } = await supabase
     .from('escrow_releases')
@@ -49,6 +58,18 @@ export async function releaseMilestonePayment(
     .select();
 
   if (error) {
+    // Postgres unique_violation on (campaign_id, milestone_number):
+    // another insert beat us to it. Surface as a distinct flag so
+    // the caller skips duplicate emails/notifications instead of
+    // treating it like a generic failure.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if ((error as any).code === '23505') {
+      return {
+        success: false,
+        error: 'Escrow release already exists for this milestone',
+        already_released: true,
+      };
+    }
     return {
       success: false,
       error: error.message,

@@ -6,7 +6,8 @@ import { createClient } from "@/lib/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, CheckCircle } from "lucide-react";
+import { CheckCircle } from "lucide-react";
+import { BackLink } from "@/components/ui/back-link";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -60,11 +61,11 @@ export default function ForgotPasswordPage() {
             .
           </p>
         </div>
-        <Link href="/login">
-          <Button variant="secondary" fullWidth>
+        <Button asChild variant="secondary" fullWidth>
+          <Link href="/login">
             Back to login
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </Card>
     );
   }
@@ -96,13 +97,9 @@ export default function ForgotPasswordPage() {
         </Button>
       </form>
 
-      <Link
-        href="/login"
-        className="flex items-center justify-center gap-1.5 text-sm text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
-      >
-        <ArrowLeft className="w-3.5 h-3.5" />
-        Back to login
-      </Link>
+      <div className="flex justify-center">
+        <BackLink href="/login">Back to login</BackLink>
+      </div>
     </Card>
   );
 }

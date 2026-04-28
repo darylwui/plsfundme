@@ -15,7 +15,6 @@ const LINKS = {
   Legal: [
     { href: "/terms", label: "Terms of service" },
     { href: "/privacy", label: "Privacy policy" },
-    { href: "/refund-policy", label: "Refund policy" },
   ],
 };
 
@@ -45,9 +44,9 @@ export function Footer() {
           {/* Link columns */}
           {Object.entries(LINKS).map(([section, links]) => (
             <div key={section}>
-              <h4 className="text-[11px] font-bold uppercase tracking-[0.15em] text-[var(--color-ink-invert-subtle)] mb-4">
+              <h3 className="text-[11px] font-bold uppercase tracking-[0.15em] text-[var(--color-ink-invert-subtle)] mb-4">
                 {section}
-              </h4>
+              </h3>
               <ul className="flex flex-col gap-2.5">
                 {links.map(({ href, label }) => (
                   <li key={href}>

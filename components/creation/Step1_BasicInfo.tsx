@@ -73,7 +73,7 @@ export function Step1_BasicInfo({
         value={draft.title}
         onChange={(e) => onUpdate({ title: e.target.value })}
         error={errors.title}
-        hint="60 characters or fewer works best. Be specific about what you're building — backers see this in search results."
+        hint="5–100 chars. Specific beats clever — backers skim fast."
       />
 
       <div className="flex flex-col gap-1.5">
@@ -168,7 +168,7 @@ export function Step1_BasicInfo({
         label="Cover image"
         value={draft.cover_image_url}
         onChange={(url) => onUpdate({ cover_image_url: url })}
-        hint="Recommended: 1280×720px or wider (16:9)"
+        hint="Recommended: 1280×720 or wider (16:9). JPG or PNG, under 2 MB."
       />
 
       <div className="flex justify-end pt-2">

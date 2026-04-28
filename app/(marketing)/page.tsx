@@ -15,6 +15,18 @@ import { DiscoverySection } from "@/components/home/DiscoverySection";
 import { ScrollReveal } from "@/components/marketing/ScrollReveal";
 import type { ProjectWithRelations } from "@/types/project";
 
+// Page-specific metadata override — the homepage is the most-shared URL,
+// so it gets a punchier title/description than the root-layout fallback.
+// `title.absolute` skips the "%s — get that bread" template since "get that
+// bread" is already the headline here.
+export const metadata = {
+  title: {
+    absolute: "get that bread — Singapore's reward-based crowdfunding platform",
+  },
+  description:
+    "Back bold ideas from Singapore creators. Pledge to campaigns you love, get exclusive rewards, only pay if they hit their goal.",
+};
+
 type FilterTab = "trending" | "newest" | "ending_soon";
 
 interface HomePageProps {
@@ -120,10 +132,6 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
             {/* Left — headline + CTAs */}
             <div className="max-w-xl">
-              <div className="inline-flex items-center px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] text-xs uppercase tracking-[0.12em] font-medium mb-4 md:mb-6">
-                Made for Singapore entrepreneurs
-              </div>
-
               <h1 className="text-[52px] md:text-[60px] font-black tracking-tight leading-[1.05]">
                 <span className="block">Let&apos;s go</span>{" "}
                 <span className="block text-[var(--color-brand-crust)] dark:text-[var(--color-brand-golden)]">get that bread.</span>
@@ -136,18 +144,18 @@ export default async function HomePage({ searchParams }: HomePageProps) {
               </h2>
 
               <div className="mt-6 md:mt-8 flex flex-wrap gap-3">
-                <Link href="/projects/create">
-                  <Button size="lg" variant="inverse">
+                <Button asChild size="lg" variant="inverse">
+                  <Link href="/projects/create">
                     Start for free
                     <ArrowRight className="w-4 h-4 shrink-0" />
-                  </Button>
-                </Link>
-                <Link href="/explore">
-                  <Button size="lg">
+                  </Link>
+                </Button>
+                <Button asChild size="lg">
+                  <Link href="/explore">
                     Explore projects
                     <ArrowRight className="w-4 h-4 shrink-0" />
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </div>
 
             </div>

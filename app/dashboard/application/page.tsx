@@ -5,10 +5,11 @@ import {
   CheckCircle,
   XCircle,
   MessageCircleQuestion,
-  ArrowLeft,
 } from "lucide-react";
+import { BackLink } from "@/components/ui/back-link";
 import { createClient } from "@/lib/supabase/server";
 import { ApplicationThread } from "@/components/dashboard/ApplicationThread";
+import { ApplicationStatusPoller } from "@/components/dashboard/ApplicationStatusPoller";
 
 export const metadata = { title: "Your application — get that bread" };
 
@@ -64,12 +65,9 @@ export default async function ApplicationPage() {
   if (!creatorProfile) {
     return (
       <div className="flex flex-col gap-6">
-        <Link
-          href="/dashboard"
-          className="text-sm text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] flex items-center gap-1 w-fit"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" /> Back to dashboard
-        </Link>
+        <BackLink href="/dashboard" className="w-fit">
+          Back to dashboard
+        </BackLink>
         <div className="rounded-[var(--radius-card)] border border-dashed border-[var(--color-border)] px-6 py-12 text-center">
           <h1 className="text-lg font-bold text-[var(--color-ink)]">
             You haven&apos;t applied as a creator yet
@@ -95,13 +93,17 @@ export default async function ApplicationPage() {
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Polls /api/creators/me/status every 30s while the application
+          is still in review, and triggers a router.refresh() the
+          moment a reviewer flips it. Renders a fixed-overlay
+          celebration toast on the pending → approved transition.
+          No-op for terminal statuses. */}
+      <ApplicationStatusPoller initialStatus={status} />
+
       <div>
-        <Link
-          href="/dashboard"
-          className="text-sm text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] flex items-center gap-1 w-fit"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" /> Back to dashboard
-        </Link>
+        <BackLink href="/dashboard" className="w-fit">
+          Back to dashboard
+        </BackLink>
         <h1 className="text-2xl font-black text-[var(--color-ink)] mt-3">Your application</h1>
         <p className="text-sm text-[var(--color-ink-muted)] mt-1">
           Status, reviewer messages, and follow-ups.

@@ -133,6 +133,7 @@ export function Step4_Rewards({
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
               error={formErrors.title}
+              hint="What can backers get in return for their pledges? E.g. 'A pack of 50 containers' or '10 prints + signed poster'."
             />
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-[var(--color-ink)]">
@@ -161,9 +162,13 @@ export function Step4_Rewards({
                   `}
                 />
               </div>
-              {formErrors.minimum_pledge_sgd && (
+              {formErrors.minimum_pledge_sgd ? (
                 <p className="text-xs text-[var(--color-brand-danger)]">
                   {formErrors.minimum_pledge_sgd}
+                </p>
+              ) : (
+                <p className="text-xs text-[var(--color-ink-subtle)]">
+                  The lowest pledge that unlocks this reward. Factor in delivery + materials.
                 </p>
               )}
             </div>
@@ -181,7 +186,7 @@ export function Step4_Rewards({
               className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] placeholder:text-[var(--color-ink-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)] resize-none"
             />
             <p className="text-xs text-[var(--color-ink-subtle)]">
-              Explain exactly what backers get. Include delivery date. Example: "Digital ebook (20 pages) + lifetime access to updates"
+              Add the details — what's included, materials, dimensions, anything backers should know before pledging. Save the headline for the title above.
             </p>
           </div>
 
@@ -194,6 +199,7 @@ export function Step4_Rewards({
                 setForm({ ...form, estimated_delivery_date: e.target.value })
               }
               error={formErrors.estimated_delivery_date}
+              hint="Optional but strongly recommended. Sets expectations for when rewards arrive."
             />
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-[var(--color-ink)]">
@@ -217,6 +223,9 @@ export function Step4_Rewards({
                 }
                 className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3.5 py-2.5 text-sm bg-[var(--color-surface)] text-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-crust)]"
               />
+              <p className="text-xs text-[var(--color-ink-subtle)]">
+                Optional. Use for limited-edition runs or capacity-constrained experiences.
+              </p>
             </div>
           </div>
 

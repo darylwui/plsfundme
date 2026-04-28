@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { trackEvent } from "@/lib/analytics";
 import { Rocket, Eye, CalendarDays, Flag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -136,6 +137,7 @@ export function Step5_Review({ draft, rewards, categories, onBack, onSuccess }: 
     }
 
     onSuccess?.();
+    trackEvent("campaign_submitted");
     router.push(`/dashboard/projects?submitted=1&slug=${json.slug}`);
   }
 

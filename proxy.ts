@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-const PROTECTED_ROUTES = ['/dashboard', '/projects/create', '/backing']
+const PROTECTED_ROUTES = ['/dashboard', '/backing']
 
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
@@ -31,6 +31,15 @@ export async function proxy(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
 
   const pathname = request.nextUrl.pathname
+
+  // Privacy lives at /privacy; permanent redirect for any old /terms?tab=privacy
+  // links. Built-in next.config redirects forward unmatched query params, so we
+  // do this here to drop `tab=privacy` from the destination.
+  if (pathname === '/terms' && request.nextUrl.searchParams.get('tab') === 'privacy') {
+    const target = new URL('/privacy', request.url)
+    return NextResponse.redirect(target, 308)
+  }
+
   const isProtected = PROTECTED_ROUTES.some((route) =>
     pathname.startsWith(route)
   )
