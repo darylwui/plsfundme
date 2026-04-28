@@ -256,6 +256,25 @@ async function CreatorDashboard({ userId, displayName, email, singpassSuccess }:
         </div>
       )}
 
+      {/* ── Singpass verify prompt — shown to all approved creators who haven't verified ── */}
+      {creatorStatus === "approved" && !singpassVerified && !singpassSuccess && (
+        <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 flex items-center gap-4">
+          <div className="w-10 h-10 rounded-full bg-[var(--color-surface-overlay)] flex items-center justify-center shrink-0">
+            <ShieldCheck className="w-5 h-5 text-[var(--color-ink-muted)]" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-bold text-[var(--color-ink)] text-sm">Verify your identity with Singpass</p>
+            <p className="text-xs text-[var(--color-ink-muted)] mt-0.5">Takes 30 seconds — backers will see a verified badge on your campaigns.</p>
+          </div>
+          <Link
+            href="/api/auth/singpass"
+            className="shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-[var(--radius-btn)] bg-[var(--color-brand-crust)] text-white hover:opacity-90 transition-opacity"
+          >
+            Verify now
+          </Link>
+        </div>
+      )}
+
       {/* ── Needs info ── */}
       {creatorStatus === "needs_info" && (
         <div className="rounded-[var(--radius-card)] border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/20 p-6 flex items-start gap-4">
