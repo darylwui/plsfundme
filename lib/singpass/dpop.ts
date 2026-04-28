@@ -1,4 +1,4 @@
-import { SignJWT, importJWK, exportJWK } from "jose";
+import { SignJWT, importJWK } from "jose";
 import type { JWK } from "jose";
 import { singpassConfig } from "./config";
 
@@ -26,14 +26,13 @@ export async function buildDpopProof(htm: string, htu: string): Promise<string> 
   );
 
   // Public-key fields (no `d`) embedded in the DPoP header per RFC 9449.
-  // exportJWK strips the private `d` scalar automatically.
-  const publicJwk = await exportJWK(privateKey as Parameters<typeof exportJWK>[0]);
-  // exportJWK on an ES256 private key gives back x/y/crv/kty without d
+  // We pull these from the raw JWK directly because `importJWK` returns a
+  // non-extractable CryptoKey that can't be re-exported.
   const headerJwk = {
-    kty: publicJwk.kty,
-    crv: publicJwk.crv,
-    x: publicJwk.x,
-    y: publicJwk.y,
+    kty: raw.sig.kty,
+    crv: raw.sig.crv,
+    x: raw.sig.x,
+    y: raw.sig.y,
   };
 
   const now = Math.floor(Date.now() / 1000);

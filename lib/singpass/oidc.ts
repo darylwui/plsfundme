@@ -40,7 +40,7 @@ export async function pushAuthorizationRequest(params: {
   nonce: string;
   codeChallenge: string;
 }): Promise<string> {
-  const clientAssertion = await buildClientAssertion(singpassConfig.parEndpoint);
+  const clientAssertion = await buildClientAssertion(singpassConfig.clientAssertionAudience);
 
   // Per SingPass FAPI 2.0 docs: all OIDC params go directly in the PAR body.
   // No `request` JWT parameter — SingPass does NOT use a signed request object.
@@ -90,7 +90,7 @@ export async function buildClientAssertion(audience?: string): Promise<string> {
     .setProtectedHeader({ alg: "ES256", kid: "gtb-sig-1" })
     .setIssuer(singpassConfig.clientId)
     .setSubject(singpassConfig.clientId)
-    .setAudience(audience ?? singpassConfig.tokenEndpoint)
+    .setAudience(audience ?? singpassConfig.clientAssertionAudience)
     .setIssuedAt(now)
     .setExpirationTime(now + 300) // 5 min validity
     .setJti(crypto.randomUUID())
@@ -101,7 +101,9 @@ export async function exchangeCodeForTokens(
   code: string,
   codeVerifier: string
 ): Promise<{ id_token: string; access_token: string }> {
-  const clientAssertion = await buildClientAssertion();
+  // SingPass expects client_assertion `aud` to be the FAPI base URL for both
+  // PAR and token endpoints (verified against staging).
+  const clientAssertion = await buildClientAssertion(singpassConfig.clientAssertionAudience);
 
   const body = new URLSearchParams({
     grant_type: "authorization_code",
