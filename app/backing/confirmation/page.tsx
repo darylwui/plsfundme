@@ -23,23 +23,39 @@ export default async function ConfirmationPage({
   let projectShareUrl = "";
   let projectTitle = "the project";
   let amount = 0;
+  let backerNumber: number | null = null;
+  let isAnonymous = false;
 
   if (pledgeId) {
     const supabase = await createClient();
     const { data } = await supabase
       .from("pledges")
-      .select("amount_sgd, project:projects!project_id(slug, title)")
+      .select("amount_sgd, created_at, is_anonymous, project_id, project:projects!project_id(slug, title)")
       .eq("id", pledgeId)
       .single();
 
     if (data) {
       amount = data.amount_sgd;
+      isAnonymous = data.is_anonymous;
       const project = data.project as unknown as { slug: string; title: string } | null;
       if (project) {
         projectSlug = `/projects/${project.slug}`;
         projectShareUrl = `${BASE_URL}/projects/${project.slug}`;
         projectTitle = project.title;
       }
+
+      // Derive backer number: count pledges on the same project created before
+      // this one. We count any non-failed pledge so the number reflects "social
+      // order" rather than just successfully-captured pledges (which only
+      // settle when the campaign funds, often weeks later).
+      const { count } = await supabase
+        .from("pledges")
+        .select("id", { count: "exact", head: true })
+        .eq("project_id", data.project_id)
+        .lt("created_at", data.created_at)
+        .not("status", "in", "(failed,cancelled,refunded)");
+
+      backerNumber = (count ?? 0) + 1;
     }
   }
 
@@ -62,7 +78,18 @@ export default async function ConfirmationPage({
             </p>
           )}
 
-          <p className="mt-3 text-[var(--color-ink-muted)] text-sm leading-relaxed">
+          {backerNumber && (
+            <div className="mt-5 inline-flex flex-col items-center gap-1 rounded-full bg-[var(--color-brand-crust)]/10 border border-[var(--color-brand-crust)]/30 px-5 py-2">
+              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--color-brand-crust)]">
+                Founding backer
+              </p>
+              <p className="text-2xl font-black text-[var(--color-brand-crust)] leading-none">
+                #{backerNumber}
+              </p>
+            </div>
+          )}
+
+          <p className="mt-4 text-[var(--color-ink-muted)] text-sm leading-relaxed">
             Your pledge to <strong>{projectTitle}</strong> is confirmed. You&apos;ll
             only be charged if the campaign reaches its funding goal. We&apos;ll
             email you with updates.
@@ -91,16 +118,29 @@ export default async function ConfirmationPage({
           </Link>
         </div>
 
-        {/* Share CTA — grows momentum before the campaign closes */}
+        {/* Share CTA — grows momentum before the campaign closes.
+            Non-anonymous backers get a personalized message that name-drops
+            their badge number; anonymous backers get a generic "spread the
+            word" version that doesn't out them. */}
         {projectShareUrl && (
           <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-dashed border-[var(--color-brand-golden)]/60 p-6">
             <p className="text-sm font-bold text-[var(--color-ink)]">
-              Help {projectTitle} get funded
+              {!isAnonymous && backerNumber
+                ? `You're backer #${backerNumber} — go tell people`
+                : `Help ${projectTitle} get funded`}
             </p>
             <p className="text-xs text-[var(--color-ink-muted)] mt-0.5 mb-3">
               Share with one person who&apos;d love this. The more backers, the higher the chance it funds.
             </p>
-            <ShareButtons url={projectShareUrl} title={projectTitle} compact />
+            <ShareButtons
+              url={projectShareUrl}
+              title={
+                !isAnonymous && backerNumber
+                  ? `Just became backer #${backerNumber} of ${projectTitle} on @getthatbreadsg 🍞`
+                  : projectTitle
+              }
+              compact
+            />
           </div>
         )}
       </div>
