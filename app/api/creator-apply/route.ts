@@ -47,11 +47,20 @@ export async function POST(req: NextRequest) {
 
     const service = createServiceClient();
 
-    // Look up existing user by email to avoid duplicates
-    const { data: userList } = await service.auth.admin.listUsers();
-    const existingUser = userList?.users?.find(
-      (u) => u.email?.toLowerCase() === email.toLowerCase()
-    );
+    // Look up existing user by email to avoid duplicates.
+    // listUsers() paginates at 1000/page — iterate until we find a match
+    // or exhaust all pages. This avoids the silent correctness bug where
+    // users beyond page 1 (default 50) were invisible to the duplicate check.
+    let existingUser: Awaited<ReturnType<typeof service.auth.admin.listUsers>>["data"]["users"][number] | undefined;
+    let page = 1;
+    while (!existingUser) {
+      const { data: userList } = await service.auth.admin.listUsers({ page, perPage: 1000 });
+      existingUser = userList?.users?.find(
+        (u) => u.email?.toLowerCase() === email.toLowerCase()
+      );
+      if (!userList?.users?.length || userList.users.length < 1000) break;
+      page++;
+    }
 
     let userId: string;
 
