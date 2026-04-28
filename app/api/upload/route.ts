@@ -6,6 +6,18 @@ const MAX_SIZE_MB = 5;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const BUCKET = "project-images";
 
+async function detectImageType(file: File): Promise<string | null> {
+  const ab = await file.arrayBuffer();
+  const buf = new Uint8Array(ab, 0, Math.min(12, ab.byteLength));
+  if (buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff) return "image/jpeg";
+  if (buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47) return "image/png";
+  if (buf[0] === 0x47 && buf[1] === 0x49 && buf[2] === 0x46 && buf[3] === 0x38) return "image/gif";
+  // WebP: RIFF????WEBP
+  if (buf[0] === 0x52 && buf[1] === 0x49 && buf[2] === 0x46 && buf[3] === 0x46 &&
+      buf[8] === 0x57 && buf[9] === 0x45 && buf[10] === 0x42 && buf[11] === 0x50) return "image/webp";
+  return null;
+}
+
 export async function POST(request: Request) {
   maybeSweep();
   const rl = rateLimit(request, "upload", { windowMs: 60_000, max: 20 });
@@ -24,6 +36,10 @@ export async function POST(request: Request) {
   }
   if (file.size > MAX_SIZE_MB * 1024 * 1024) {
     return NextResponse.json({ error: `File must be under ${MAX_SIZE_MB}MB` }, { status: 400 });
+  }
+  const detectedType = await detectImageType(file);
+  if (!detectedType || detectedType !== file.type) {
+    return NextResponse.json({ error: "File content does not match its declared type" }, { status: 400 });
   }
 
   const ext = file.name.split(".").pop() ?? "jpg";
