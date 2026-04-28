@@ -4,6 +4,10 @@ export const singpassConfig = {
   clientId: process.env.SINGPASS_CLIENT_ID!,
   redirectUri: process.env.SINGPASS_REDIRECT_URI!,
   privateKeyBase64: process.env.SINGPASS_PRIVATE_KEY_BASE64!,
+  issuer:
+    env === "production"
+      ? "https://id.singpass.gov.sg"
+      : "https://stg-id.singpass.gov.sg",
   authEndpoint:
     env === "production"
       ? "https://id.singpass.gov.sg/auth"

@@ -54,7 +54,7 @@ export async function buildRequestObject(params: {
   })
     .setProtectedHeader({ alg: "ES256", kid: "gtb-sig-1" })
     .setIssuer(singpassConfig.clientId)
-    .setAudience(singpassConfig.parEndpoint)
+    .setAudience(singpassConfig.issuer)
     .setIssuedAt(now)
     .setExpirationTime(now + 300)
     .setJti(crypto.randomUUID())
@@ -68,7 +68,7 @@ export async function pushAuthorizationRequest(params: {
   codeChallenge: string;
 }): Promise<string> {
   const [clientAssertion, requestObject] = await Promise.all([
-    buildClientAssertion(),
+    buildClientAssertion(singpassConfig.parEndpoint),
     buildRequestObject(params),
   ]);
 
@@ -95,7 +95,7 @@ export async function pushAuthorizationRequest(params: {
   return json.request_uri;
 }
 
-export async function buildClientAssertion(): Promise<string> {
+export async function buildClientAssertion(audience?: string): Promise<string> {
   const privateKey = await loadSigKey();
   const now = Math.floor(Date.now() / 1000);
 
@@ -103,7 +103,7 @@ export async function buildClientAssertion(): Promise<string> {
     .setProtectedHeader({ alg: "ES256", kid: "gtb-sig-1" })
     .setIssuer(singpassConfig.clientId)
     .setSubject(singpassConfig.clientId)
-    .setAudience(singpassConfig.tokenEndpoint)
+    .setAudience(audience ?? singpassConfig.tokenEndpoint)
     .setIssuedAt(now)
     .setExpirationTime(now + 300) // 5 min validity
     .setJti(crypto.randomUUID())
