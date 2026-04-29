@@ -13,6 +13,8 @@ import { HowItWorksSection } from "@/components/home/HowItWorksSection";
 import { PreFooterCTA } from "@/components/home/PreFooterCTA";
 import { DiscoverySection } from "@/components/home/DiscoverySection";
 import { ScrollReveal } from "@/components/marketing/ScrollReveal";
+import { HeroGlow } from "@/components/marketing/HeroGlow";
+import { Eyebrow } from "@/components/marketing/Eyebrow";
 import type { ProjectWithRelations } from "@/types/project";
 
 // Page-specific metadata override — the homepage is the most-shared URL,
@@ -124,10 +126,11 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   const showLiveStats = platformStats.activeCampaigns >= 3;
 
   return (
-    <div>
+    <div className="bg-[var(--color-surface)]">
       {/* ── Hero ─────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-amber-50 via-[#FFFBF5] to-orange-50 dark:from-[#0f0f0f] dark:via-[#0a0a0a] dark:to-[#111111]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-14">
+      <section className="relative overflow-hidden border-b border-[var(--color-border)]">
+        <HeroGlow tone="golden" origin="top-right" intensity={0.22} size="700px 500px" />
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-14">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
             {/* Left — headline + CTAs */}
@@ -268,11 +271,6 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           </div>
         </div>
 
-        {/* Decorative blob */}
-        <div
-          aria-hidden
-          className="absolute top-0 right-0 w-[40vw] h-[40vw] max-w-[600px] bg-gradient-to-bl from-amber-200/50 to-orange-200/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4 pointer-events-none"
-        />
       </section>
 
       {/* ── Stats band (only once we have real traction) ─────── */}
