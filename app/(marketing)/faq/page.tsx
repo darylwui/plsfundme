@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import { CheckCircle2, Rocket, Sparkles, Users } from "lucide-react";
+import { Mail, ArrowRight } from "lucide-react";
 import { BackToTop } from "@/components/ui/back-to-top";
+import { Eyebrow } from "@/components/marketing/Eyebrow";
+import { HeroGlow } from "@/components/marketing/HeroGlow";
 
 export const metadata: Metadata = {
   title: "FAQ — get that bread",
@@ -219,6 +221,13 @@ const CREATOR_FAQS: Faq[] = [
   },
 ];
 
+// ─── Sidebar nav config — anchors map to <section id="..."> targets ─────────
+const GROUPS = [
+  { id: "for-backers", label: "For backers", items: BACKER_FAQS, accent: "golden" as const },
+  { id: "why-launch", label: "Why launch here", items: LAUNCH_PITCH_FAQS, accent: "crust-dark" as const },
+  { id: "for-creators", label: "For creators", items: CREATOR_FAQS, accent: "crust" as const },
+];
+
 const FAQ_JSON_LD = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
@@ -234,93 +243,111 @@ const FAQ_JSON_LD = {
 
 export default function FaqPage() {
   return (
-    <div>
+    <div className="bg-[var(--color-surface)]">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSON_LD) }}
       />
+
       {/* ── Hero ─────────────────────────────────────────────── */}
-      <section className="bg-gradient-to-br from-amber-50 via-[#FFFBF5] to-orange-50 dark:from-[#0f0f0f] dark:via-[#0a0a0a] dark:to-[#111111] border-b border-[var(--color-border)]">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24">
-          <div className="inline-flex items-center px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] text-xs uppercase tracking-[0.12em] font-medium mb-6">
-            Good to know
-          </div>
-          <h1 className="text-[40px] md:text-[52px] font-black tracking-tight leading-[1.1] mb-4">
-            Frequently asked questions
+      <section className="relative overflow-hidden border-b border-[var(--color-border)]">
+        <HeroGlow tone="golden" origin="center" intensity={0.18} size="640px 320px" />
+        <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24 text-center">
+          <Eyebrow variant="brand" className="mb-3.5">
+            Help &amp; FAQ
+          </Eyebrow>
+          <h1 className="font-black tracking-[-0.035em] leading-[1.02] text-[clamp(40px,5.5vw,56px)] m-0 text-[var(--color-ink)]">
+            The quick answers, in one place.
           </h1>
-          <p className="text-lg text-[var(--color-ink-muted)] leading-relaxed">
-            The answers backers and creators ask us most, in one place.
+          <p className="mt-5 text-base sm:text-lg leading-[1.55] text-[var(--color-ink-muted)] max-w-2xl mx-auto">
+            Browse by category on the left. Can&apos;t find what you&apos;re looking for? Email us
+            — we answer every message within a business day.
           </p>
         </div>
       </section>
 
-      {/* ── Backer FAQs ──────────────────────────────────────── */}
-      <section className="border-b border-[var(--color-border)] bg-[var(--color-surface)]">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-          <FaqGroup
-            label="For backers"
-            heading="Before you pledge"
-            accent="golden"
-            Icon={Users}
-            items={BACKER_FAQS}
-          />
+      {/* ── Sidebar + content ────────────────────────────────── */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 md:pt-12 pb-16 md:pb-24 grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-10 lg:gap-14 items-start">
+        {/* ── Sticky sidebar nav ──────────────────────────── */}
+        <aside className="lg:sticky lg:top-24">
+          <Eyebrow variant="muted" className="mb-3.5">
+            Browse
+          </Eyebrow>
+          <nav>
+            <ul className="flex flex-col gap-1">
+              {GROUPS.map((g) => (
+                <li key={g.id}>
+                  <a
+                    href={`#${g.id}`}
+                    className="group flex items-center justify-between gap-3 px-3 py-2.5 rounded-[var(--radius-btn)] hover:bg-[var(--color-brand-crumb)] transition-colors"
+                  >
+                    <span className="text-sm font-medium text-[var(--color-ink)] group-hover:text-[var(--color-brand-crust-dark)]">
+                      {g.label}
+                    </span>
+                    <span className="font-mono text-[11px] font-semibold text-[var(--color-ink-subtle)] group-hover:text-[var(--color-brand-crust-dark)] tabular-nums">
+                      {g.items.length}
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </aside>
+
+        {/* ── Main content: grouped accordions ────────────── */}
+        <div className="min-w-0">
+          {GROUPS.map((g, i) => (
+            <FaqGroup
+              key={g.id}
+              id={g.id}
+              label={g.label}
+              accent={g.accent}
+              items={g.items}
+              first={i === 0}
+            />
+          ))}
         </div>
       </section>
 
-      {/* ── Why launch here ──────────────────────────────────────
-          Creator pitch section, positioned at the top of the
-          creator funnel: convince → operationalize. The "Launching
-          your campaign" mechanics section below answers HOW; this
-          section answers WHY. Strongest accent (crust-dark) so it
-          reads as the lead within the creator-side content. */}
-      <section className="border-b border-[var(--color-border)] bg-[var(--color-surface-raised)]">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-          <FaqGroup
-            label="Why launch here"
-            heading="Why launch on get that bread"
-            accent="crust-dark"
-            Icon={Sparkles}
-            items={LAUNCH_PITCH_FAQS}
-          />
-        </div>
-      </section>
-
-      {/* ── Creator FAQs ─────────────────────────────────────── */}
-      <section className="border-b border-[var(--color-border)] bg-[var(--color-surface)]">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-          <FaqGroup
-            label="For creators"
-            heading="Launching your campaign"
-            accent="crust"
-            Icon={Rocket}
-            items={CREATOR_FAQS}
-          />
-        </div>
-      </section>
-
-      {/* ── Contact ──────────────────────────────────────────── */}
-      <section className="bg-[var(--color-surface-raised)]">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-          <div className="flex items-start gap-3">
-            <div className="w-11 h-11 rounded-[var(--radius-card)] bg-[var(--color-brand-crust)] flex items-center justify-center shadow-[var(--shadow-cta)] shrink-0">
-              <CheckCircle2 className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h2 className="text-xl font-black text-[var(--color-ink)]">
-                Still have questions?
-              </h2>
-              <p className="mt-1 text-[var(--color-ink-muted)] leading-relaxed">
-                Email us at{" "}
-                <a
-                  href="mailto:hello@getthatbread.sg"
-                  className="font-semibold text-[var(--color-brand-crust)] hover:underline"
-                >
-                  hello@getthatbread.sg
-                </a>{" "}
-                — we answer every message within a business day.
-              </p>
-            </div>
+      {/* ── Contact strip ────────────────────────────────────── */}
+      <section className="border-t border-[var(--color-border)] bg-[var(--color-surface-raised)]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20 grid grid-cols-1 md:grid-cols-[1.4fr_1fr] gap-8 md:gap-12 items-center">
+          <div>
+            <Eyebrow variant="brand" className="mb-3">
+              Still stuck?
+            </Eyebrow>
+            <h2 className="font-black tracking-[-0.025em] leading-[1.1] text-2xl sm:text-3xl m-0 text-[var(--color-ink)]">
+              Email us. A real person replies within a business day.
+            </h2>
+            <p className="mt-3 text-sm sm:text-base leading-[1.55] text-[var(--color-ink-muted)] max-w-md">
+              We&apos;re a Singapore-based team — no chatbot, no ticket queue. Drop us a
+              line and we&apos;ll write back.
+            </p>
           </div>
+
+          <a
+            href="mailto:hello@getthatbread.sg"
+            className="group rounded-[var(--radius-card)] bg-[var(--color-surface)] border border-[var(--color-border)] shadow-[var(--shadow-card)] p-6 sm:p-7 flex flex-col gap-2.5 hover:shadow-[var(--shadow-card-hover)] hover:border-[var(--color-brand-crust)] transition-all"
+          >
+            <div className="flex items-center gap-2.5">
+              <span className="w-9 h-9 rounded-full bg-[var(--color-brand-crust)] text-white flex items-center justify-center shadow-[var(--shadow-cta)]">
+                <Mail className="w-4 h-4" />
+              </span>
+              <Eyebrow variant="crust-dark" size="sm">
+                Email
+              </Eyebrow>
+            </div>
+            <h3 className="font-black tracking-[-0.015em] text-lg sm:text-xl m-0 text-[var(--color-ink)]">
+              hello@getthatbread.sg
+            </h3>
+            <p className="text-sm leading-[1.5] text-[var(--color-ink-muted)] m-0">
+              For everything except live disputes — we average a few hours during
+              Singapore business hours.
+            </p>
+            <span className="mt-1 text-sm font-semibold text-[var(--color-brand-crust)] inline-flex items-center gap-1.5 group-hover:gap-2 transition-all">
+              Open mail <ArrowRight className="w-3.5 h-3.5" />
+            </span>
+          </a>
         </div>
       </section>
 
@@ -331,75 +358,63 @@ export default function FaqPage() {
   );
 }
 
+// ─── Grouped accordion list ─────────────────────────────────────────────────
+type Accent = "golden" | "crust" | "crust-dark";
+
+const ACCENT_TEXT: Record<Accent, string> = {
+  golden: "text-[var(--color-brand-golden)]",
+  crust: "text-[var(--color-brand-crust)]",
+  "crust-dark": "text-[var(--color-brand-crust-dark)]",
+};
+
 function FaqGroup({
+  id,
   label,
-  heading,
   accent,
-  Icon,
   items,
+  first,
 }: {
+  id: string;
   label: string;
-  heading: string;
-  // "crust-dark" is the deepest brand orange — reserved for the
-  // top "Why getthatbread" section so it reads as the lead.
-  accent: "golden" | "crust" | "crust-dark";
-  Icon: React.ComponentType<{ className?: string }>;
+  accent: Accent;
   items: Faq[];
+  first: boolean;
 }) {
-  const accentColor =
-    accent === "golden"
-      ? "var(--color-brand-golden)"
-      : accent === "crust-dark"
-        ? "var(--color-brand-crust-dark)"
-        : "var(--color-brand-crust)";
-  const accentBg =
-    accent === "golden"
-      ? "bg-[var(--color-brand-golden)] shadow-[0_4px_20px_0_rgba(217,119,6,0.35)]"
-      : accent === "crust-dark"
-        ? "bg-[var(--color-brand-crust-dark)] shadow-[0_4px_20px_0_rgba(172,88,17,0.45)]"
-        : "bg-[var(--color-brand-crust)] shadow-[var(--shadow-cta)]";
   return (
-    <div>
-      <div className="flex items-center gap-3 mb-8">
-        <div
-          className={`w-11 h-11 rounded-[var(--radius-card)] ${accentBg} flex items-center justify-center`}
-        >
-          <Icon className="w-5 h-5 text-white" />
-        </div>
-        <div>
-          <p
-            className="text-xs font-medium uppercase tracking-[0.12em]"
-            style={{ color: accentColor }}
-          >
-            {label}
-          </p>
-          <h2 className="text-2xl font-black text-[var(--color-ink)]">{heading}</h2>
-        </div>
+    // scroll-mt-24 keeps the heading visible below the navbar when the user
+    // jumps via the sidebar anchor link.
+    <section id={id} className={`scroll-mt-24 ${first ? "" : "mt-12 md:mt-16"}`}>
+      {/* Group heading — uses the Eyebrow primitive but with one-off styling
+          to match the draft's bolder mono label */}
+      <div
+        className={`font-mono text-[11px] font-bold uppercase tracking-[0.22em] mb-4 md:mb-5 ${ACCENT_TEXT[accent]}`}
+      >
+        {label}
       </div>
 
-      <div className="flex flex-col gap-3">
+      <ul className="border-t border-[var(--color-border)]">
         {items.map((faq) => (
-          <details
-            key={faq.q}
-            className="group p-[3px] rounded-[calc(var(--radius-card)+3px)] bg-[var(--color-surface-overlay)] ring-1 ring-[var(--color-border)]"
-          >
-            <summary className="cursor-pointer rounded-[var(--radius-card)] bg-[var(--color-surface)] px-5 py-4 flex items-center justify-between gap-4 list-none">
-              <span className="font-bold text-[var(--color-ink)] text-sm sm:text-base">
-                {faq.q}
-              </span>
-              <span
-                aria-hidden
-                className="w-6 h-6 rounded-full bg-[var(--color-surface-overlay)] border border-[var(--color-border)] flex items-center justify-center shrink-0 transition-transform group-open:rotate-45 text-[var(--color-ink-muted)]"
-              >
-                +
-              </span>
-            </summary>
-            <div className="rounded-b-[var(--radius-card)] bg-[var(--color-surface)] px-5 pb-5 pt-0 text-sm text-[var(--color-ink-muted)] leading-relaxed">
-              {faq.a}
-            </div>
-          </details>
+          <li key={faq.q} className="border-b border-[var(--color-border)]">
+            <details className="group">
+              <summary className="cursor-pointer list-none flex items-start gap-4 py-5 sm:py-6">
+                <h3 className="flex-1 font-bold tracking-[-0.015em] leading-[1.35] text-base sm:text-lg text-[var(--color-ink)] m-0">
+                  {faq.q}
+                </h3>
+                <span
+                  aria-hidden
+                  className="font-mono text-xl text-[var(--color-ink-subtle)] w-5 text-center shrink-0 mt-0.5 transition-transform group-open:rotate-45"
+                >
+                  +
+                </span>
+              </summary>
+              <div className="pb-6 pr-8 sm:pr-12 text-sm sm:text-base leading-[1.65] text-[var(--color-ink-muted)] max-w-[68ch]">
+                {faq.a}
+              </div>
+            </details>
+          </li>
         ))}
-      </div>
-    </div>
+      </ul>
+    </section>
   );
 }
+
