@@ -135,12 +135,12 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
             {/* Left — headline + CTAs */}
             <div className="max-w-xl">
-              <h1 className="text-[52px] md:text-[60px] font-black tracking-tight leading-[1.05]">
+              <h1 className="text-[clamp(40px,6vw,60px)] font-black tracking-[-0.035em] leading-[1.02] m-0 text-[var(--color-ink)]">
                 <span className="block">Let&apos;s go</span>{" "}
-                <span className="block text-[var(--color-brand-crust)] dark:text-[var(--color-brand-golden)]">get that bread.</span>
+                <span className="block text-[var(--color-brand-crust)]">get that bread.</span>
               </h1>
 
-              <h2 className="mt-4 md:mt-6 text-xl md:text-[22px] text-[var(--color-ink-muted)] max-w-lg leading-relaxed font-normal">
+              <h2 className="mt-5 text-base sm:text-lg leading-[1.55] text-[var(--color-ink-muted)] max-w-lg font-normal">
                 Singapore&apos;s reward-based crowdfunding platform for
                 entrepreneurs. Launch a campaign, raise capital from your
                 community, and bring your idea to life.
