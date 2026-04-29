@@ -369,7 +369,18 @@ async function CreatorDashboard({ userId, displayName, email, singpassSuccess }:
               }}
             />
           ) : (
-            <CreatorOnboardingStepper singpassVerified={singpassVerified} />
+            <>
+              <CreatorOnboardingStepper singpassVerified={singpassVerified} />
+              <p className="mt-4 text-sm text-[var(--color-ink-muted)]">
+                Not sure where to start?{" "}
+                <Link
+                  href="/for-creators/launch-guide"
+                  className="font-semibold text-[var(--color-brand-crust)] hover:text-[var(--color-brand-crust-dark)] underline underline-offset-2"
+                >
+                  Run through the launch checklist first.
+                </Link>
+              </p>
+            </>
           )
         ) : onlyProjectIsDraft && activeProject ? (
           <div className="flex flex-col gap-8">

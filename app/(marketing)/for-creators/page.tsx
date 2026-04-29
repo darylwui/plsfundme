@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BackToTop } from "@/components/ui/back-to-top";
+import { Eyebrow } from "@/components/marketing/Eyebrow";
+import { HeroGlow } from "@/components/marketing/HeroGlow";
 import { CreatorTimelineScrub } from "@/components/marketing/CreatorTimelineScrubDynamic";
 import { CreatorReassurance } from "@/components/marketing/CreatorReassurance";
 import { ScrollReveal } from "@/components/marketing/ScrollReveal";
@@ -33,21 +35,23 @@ const FEES = [
 
 export default function ForCreatorsPage() {
   return (
-    <div>
+    <div className="bg-[var(--color-surface)]">
       {/* ── Hero ─────────────────────────────────────────────── */}
-      <section className="bg-gradient-to-br from-amber-50 via-[#FFFBF5] to-orange-50 dark:from-[#0f0f0f] dark:via-[#0a0a0a] dark:to-[#111111] border-b border-[var(--color-border)]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24">
-          <h1 className="text-[40px] md:text-[56px] font-black tracking-tight leading-[1.05] mb-5 max-w-4xl">
+      <section className="relative overflow-hidden border-b border-[var(--color-border)]">
+        <HeroGlow tone="golden" origin="top-left" intensity={0.2} size="700px 400px" />
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24">
+          <Eyebrow variant="brand" className="mb-4">
+            For creators
+          </Eyebrow>
+          <h1 className="font-black tracking-[-0.035em] leading-[1.02] text-[clamp(36px,6vw,64px)] m-0 text-[var(--color-ink)] max-w-3xl">
             Be one of the first.{" "}
-            <span className="text-[var(--color-brand-crust)] dark:text-[var(--color-brand-golden)]">
-              Fund your idea.
-            </span>
+            <span className="text-[var(--color-brand-crust)]">Fund your idea.</span>
           </h1>
-          <p className="text-lg text-[var(--color-ink-muted)] leading-relaxed max-w-2xl">
-            We&apos;re handpicking Singapore&apos;s first founders
-            right now. Apply to launch a campaign, raise capital from your
-            community, and get featured at the top of the homepage on day one.
-            Milestone-based payouts, fee only if you hit your goal.
+          <p className="mt-5 text-base sm:text-lg leading-[1.55] text-[var(--color-ink-muted)] max-w-2xl">
+            We&apos;re handpicking Singapore&apos;s first founders right now. Apply to
+            launch a campaign, raise capital from your community, and get featured
+            at the top of the homepage on day one. Milestone-based payouts, fee
+            only if you hit your goal.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Button asChild size="lg" variant="primary">
@@ -63,16 +67,6 @@ export default function ForCreatorsPage() {
               </Link>
             </Button>
           </div>
-          {/* International creators: surfaces the waitlist for non-SG
-              applicants. Ghost-style CTA — visually subordinate to the
-              primary "Apply to launch" CTA above so the page still leads
-              with its SG audience, but tappable enough to feel like an
-              actionable invitation rather than a fine-print footnote. */}
-          {/* Border opacity bumped to /30 (light) / /25 (dark) so the
-              chip reads as a tappable button on the amber-50 hero,
-              not a faint outline. Copy switches to a tighter version
-              under sm: full sentence wraps on 375px viewports inside
-              the size="sm" h-8, so we shorten there. */}
           <div className="mt-5">
             <Button
               asChild
@@ -97,14 +91,14 @@ export default function ForCreatorsPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
           <ScrollReveal>
             <div className="max-w-2xl mb-10 md:mb-14">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] text-[11px] uppercase tracking-[0.15em] font-medium mb-4">
+              <Eyebrow variant="crust-dark" className="mb-3 inline-flex items-center gap-2">
                 <Rocket className="w-3.5 h-3.5" />
                 How a campaign works
-              </div>
-              <h2 className="text-3xl md:text-4xl font-black tracking-tight leading-[1.1] text-[var(--color-ink)]">
+              </Eyebrow>
+              <h2 className="font-black tracking-[-0.025em] leading-[1.05] text-[clamp(28px,4vw,40px)] m-0 text-[var(--color-ink)]">
                 From idea to milestones.
               </h2>
-              <p className="mt-4 text-[var(--color-ink-muted)] leading-relaxed">
+              <p className="mt-3 text-base leading-[1.55] text-[var(--color-ink-muted)]">
                 Scroll through the timeline to see each stage of a campaign —
                 from launch day to delivering rewards.
               </p>
@@ -131,11 +125,11 @@ export default function ForCreatorsPage() {
         <section className="border-b border-[var(--color-border)] bg-[var(--color-surface-raised)]">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
             <div className="max-w-2xl mb-10">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] text-[11px] uppercase tracking-[0.15em] font-medium mb-4">
+              <Eyebrow variant="crust-dark" className="mb-3 inline-flex items-center gap-2">
                 <HelpCircle className="w-3.5 h-3.5" />
                 The worst case
-              </div>
-              <h2 className="text-3xl md:text-4xl font-black tracking-tight leading-[1.1] text-[var(--color-ink)]">
+              </Eyebrow>
+              <h2 className="font-black tracking-[-0.025em] leading-[1.05] text-[clamp(28px,4vw,40px)] m-0 text-[var(--color-ink)]">
                 What if I don&apos;t hit my goal?
               </h2>
             </div>
@@ -153,10 +147,10 @@ export default function ForCreatorsPage() {
                 <DollarSign className="w-5 h-5 text-white" />
               </div>
               <div>
-                <p className="text-xs uppercase tracking-[0.12em] font-medium text-[var(--color-ink-subtle)]">
+                <Eyebrow variant="muted" size="sm" className="mb-0.5">
                   Transparent
-                </p>
-                <h2 className="text-2xl font-black text-[var(--color-ink)]">
+                </Eyebrow>
+                <h2 className="font-black tracking-[-0.02em] text-2xl m-0 text-[var(--color-ink)]">
                   Simple, honest fees
                 </h2>
               </div>
@@ -196,17 +190,17 @@ export default function ForCreatorsPage() {
         </section>
       </ScrollReveal>
 
-      {/* ── 4. Final CTA ─────────────────────────────────────── */}
+      {/* ── 4. Final CTA — dark ribbon ────────────────────────── */}
       <ScrollReveal>
-        <section className="bg-gradient-to-br from-amber-50 via-[#FFFBF5] to-orange-50 dark:from-[#1a0f00] dark:via-[#0a0a0a] dark:to-[#1a0800] border-t border-[var(--color-border)]">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 text-center">
-            <div className="inline-flex items-center px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] text-xs uppercase tracking-[0.12em] font-medium mb-6">
-              🍞 Let&apos;s go
-            </div>
-            <h2 className="text-4xl md:text-5xl font-black tracking-tight leading-[1.05] text-[var(--color-ink)] mb-4">
+        <section className="bg-[var(--color-ink-deep)]">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">
+            <Eyebrow variant="golden" className="mb-4">
+              Let&apos;s go
+            </Eyebrow>
+            <h2 className="font-black tracking-[-0.03em] leading-[1.05] text-[clamp(32px,5vw,52px)] m-0 text-white mb-4">
               Ready to be one of our first?
             </h2>
-            <p className="text-lg text-[var(--color-ink-muted)] max-w-md mx-auto mb-10 leading-relaxed">
+            <p className="text-base sm:text-lg leading-[1.55] text-white/70 max-w-md mx-auto mb-10">
               Apply for free. No upfront costs, no risk to your backers — we
               only take a fee if your campaign hits its goal.
             </p>
@@ -228,7 +222,7 @@ export default function ForCreatorsPage() {
         </section>
       </ScrollReveal>
 
-      <div className="flex justify-center py-10 border-t border-[var(--color-border)] bg-[var(--color-surface)]">
+      <div className="flex justify-center py-10 border-t border-[var(--color-border)] bg-[var(--color-surface-raised)]">
         <BackToTop />
       </div>
     </div>
