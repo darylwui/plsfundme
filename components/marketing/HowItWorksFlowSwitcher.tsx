@@ -271,7 +271,10 @@ function ToggleButton({
       className={cn(
         "px-5 sm:px-6 py-2.5 rounded-full text-sm font-semibold transition-all",
         active
-          ? "bg-[var(--color-surface)] text-[var(--color-ink)] shadow-[var(--shadow-card)]"
+          ? // Filled brand-crust pill with the same CTA shadow we use on
+            // primary buttons. Reads clearly in light AND dark mode and
+            // makes the selected audience unmistakable.
+            "bg-[var(--color-brand-crust)] text-white shadow-[var(--shadow-cta)]"
           : "text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
       )}
     >
