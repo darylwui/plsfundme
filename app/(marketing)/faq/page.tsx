@@ -252,24 +252,25 @@ export default function FaqPage() {
       {/* ── Hero ─────────────────────────────────────────────── */}
       <section className="relative overflow-hidden border-b border-[var(--color-border)]">
         <HeroGlow tone="golden" origin="center" intensity={0.18} size="640px 320px" />
-        <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24 text-center">
+        <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 md:py-24 text-center">
           <Eyebrow variant="brand" className="mb-3.5">
             Help &amp; FAQ
           </Eyebrow>
-          <h1 className="font-black tracking-[-0.035em] leading-[1.02] text-[clamp(40px,5.5vw,56px)] m-0 text-[var(--color-ink)]">
+          <h1 className="font-black tracking-[-0.035em] leading-[1.02] text-[clamp(36px,6vw,56px)] m-0 text-[var(--color-ink)]">
             The quick answers, in one place.
           </h1>
           <p className="mt-5 text-base sm:text-lg leading-[1.55] text-[var(--color-ink-muted)] max-w-2xl mx-auto">
-            Browse by category on the left. Can&apos;t find what you&apos;re looking for? Email us
-            — we answer every message within a business day.
+            The answers backers and creators ask us most. Can&apos;t find what
+            you&apos;re looking for? Email us — we answer every message within a
+            business day.
           </p>
         </div>
       </section>
 
       {/* ── Sidebar + content ────────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 md:pt-12 pb-16 md:pb-24 grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-10 lg:gap-14 items-start">
-        {/* ── Sticky sidebar nav ──────────────────────────── */}
-        <aside className="lg:sticky lg:top-24">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 md:pt-12 pb-16 md:pb-24 grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-10 lg:gap-14 items-start">
+        {/* ── Sticky sidebar nav (desktop only) ───────────── */}
+        <aside className="hidden lg:block lg:sticky lg:top-24">
           <Eyebrow variant="muted" className="mb-3.5">
             Browse
           </Eyebrow>
@@ -279,7 +280,7 @@ export default function FaqPage() {
                 <li key={g.id}>
                   <a
                     href={`#${g.id}`}
-                    className="group flex items-center justify-between gap-3 px-3 py-2.5 rounded-[var(--radius-btn)] hover:bg-[var(--color-brand-crumb)] transition-colors"
+                    className="group flex items-center justify-between gap-3 px-3 py-3 rounded-[var(--radius-btn)] hover:bg-[var(--color-brand-crumb)] transition-colors"
                   >
                     <span className="text-sm font-medium text-[var(--color-ink)] group-hover:text-[var(--color-brand-crust-dark)]">
                       {g.label}
