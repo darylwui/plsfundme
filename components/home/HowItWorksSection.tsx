@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Banknote, Pencil, Users, type LucideIcon } from "lucide-react";
 import { animate, motion, useInView, useReducedMotion } from "motion/react";
+import { Eyebrow } from "@/components/marketing/Eyebrow";
 
 type Step = {
   Icon: LucideIcon;
@@ -52,9 +53,9 @@ export function HowItWorksSection() {
           className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-14"
         >
           <div>
-            <div className="inline-flex items-center px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)] text-xs uppercase tracking-[0.12em] font-medium mb-4">
+            <Eyebrow variant="crust-dark" className="mb-4">
               How it works
-            </div>
+            </Eyebrow>
             <h2 className="text-3xl md:text-4xl font-black tracking-tight text-[var(--color-ink)]">
               From idea to funded
               <br />
