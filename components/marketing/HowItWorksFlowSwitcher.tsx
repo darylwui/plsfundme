@@ -298,55 +298,56 @@ function FlowTimeline({ steps }: { steps: ReadonlyArray<Step> }) {
           key={step.n}
           className={cn("relative", i < steps.length - 1 && "pb-6 sm:pb-8")}
         >
-          {/* Numbered node */}
-          <span className="absolute -left-[44px] sm:-left-[60px] top-3 inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[var(--color-surface)] border-2 border-[var(--color-brand-crust)] text-[var(--color-brand-crust)] font-mono text-sm sm:text-base font-black tabular-nums z-10">
-            {step.n}
-          </span>
+          {/* Per-step ScrollReveal — each step "lights up" as it scrolls
+              into view rather than the whole list revealing at once.
+              The absolute-positioned step number sits inside the
+              ScrollReveal wrapper, so it slides into place with the
+              card.
 
-          {/* Card */}
-          <div className="rounded-[var(--radius-card)] bg-[var(--color-surface)] border border-[var(--color-border)] shadow-[var(--shadow-card)] p-5 sm:p-6">
-            <Eyebrow variant="brand" size="sm" className="mb-2">
-              {step.when}
-            </Eyebrow>
-            <h3 className="font-black tracking-[-0.02em] text-lg sm:text-xl m-0 text-[var(--color-ink)] leading-[1.25]">
-              {step.title}
-            </h3>
-            <p className="mt-2.5 text-sm sm:text-base leading-[1.6] text-[var(--color-ink-muted)] m-0">
-              {step.body}
-            </p>
+              `amount={0.35}` requires ~35% of the step to be visible
+              before it activates — feels like the step "wakes up" as
+              the user reaches it. */}
+          <ScrollReveal amount={0.35} offset={28} duration={0.5}>
+            {/* Numbered node */}
+            <span className="absolute -left-[44px] sm:-left-[60px] top-3 inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[var(--color-surface)] border-2 border-[var(--color-brand-crust)] text-[var(--color-brand-crust)] font-mono text-sm sm:text-base font-black tabular-nums z-10">
+              {step.n}
+            </span>
 
-            {step.chips.length > 0 && (
-              <div className="mt-4 flex flex-wrap gap-2">
-                {step.chips.map(([label, kind]) => (
-                  <Chip key={label} kind={kind}>
-                    {label}
-                  </Chip>
-                ))}
-              </div>
-            )}
-          </div>
+            {/* Card */}
+            <div className="rounded-[var(--radius-card)] bg-[var(--color-surface)] border border-[var(--color-border)] shadow-[var(--shadow-card)] p-5 sm:p-6">
+              <Eyebrow variant="brand" size="sm" className="mb-2">
+                {step.when}
+              </Eyebrow>
+              <h3 className="font-black tracking-[-0.02em] text-lg sm:text-xl m-0 text-[var(--color-ink)] leading-[1.25]">
+                {step.title}
+              </h3>
+              <p className="mt-2.5 text-sm sm:text-base leading-[1.6] text-[var(--color-ink-muted)] m-0">
+                {step.body}
+              </p>
+
+              {step.chips.length > 0 && (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {step.chips.map(([label]) => (
+                    <Chip key={label}>{label}</Chip>
+                  ))}
+                </div>
+              )}
+            </div>
+          </ScrollReveal>
         </li>
       ))}
     </ol>
   );
 }
 
-function Chip({
-  kind,
-  children,
-}: {
-  kind: "ok" | "neutral";
-  children: React.ReactNode;
-}) {
+// Chip palette unified to brand-crumb. We previously had a green
+// `ok` variant for "reassurance" chips (Cancel anytime / All-or-nothing
+// / Auto-dispute), but the green broke the warm palette consistency
+// the rest of the page lives in. Crumb-orange across the board reads
+// the same theme everywhere.
+function Chip({ children }: { children: React.ReactNode }) {
   return (
-    <span
-      className={cn(
-        "font-mono text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.16em] px-2.5 py-1 rounded-full",
-        kind === "ok"
-          ? "text-[var(--color-brand-success)] bg-[var(--color-brand-success)]/10 ring-1 ring-[var(--color-brand-success)]/25"
-          : "text-[var(--color-brand-crust-dark)] bg-[var(--color-brand-crumb)]"
-      )}
-    >
+    <span className="font-mono text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.16em] px-2.5 py-1 rounded-full text-[var(--color-brand-crust-dark)] bg-[var(--color-brand-crumb)]">
       {children}
     </span>
   );
