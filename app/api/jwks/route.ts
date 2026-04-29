@@ -1,27 +1,25 @@
 import { NextResponse } from "next/server";
+import { buildPublicJwks } from "@/lib/singpass/jwks";
 
-// Public JWKS endpoint — SingPass fetches this to verify our client assertions.
-// Returns only public key fields (no "d" private key scalar).
+// Legacy public JWKS URL — kept live so the staging dev-portal
+// registration (which points here) keeps working. New registrations
+// (prod linkup) should use `/.well-known/singpass-jwks.json` instead.
+//
+// Both routes return the same body via the shared helper.
+
+export const dynamic = "force-dynamic";
+
 export async function GET() {
-  const raw = JSON.parse(
-    Buffer.from(process.env.SINGPASS_PRIVATE_KEY_BASE64!, "base64").toString("utf8")
-  ) as { sig: Record<string, string>; enc: Record<string, string> };
+  const result = buildPublicJwks();
+  if (!result.ok) {
+    return NextResponse.json({ error: result.error }, { status: result.status });
+  }
 
-  const toPublic = (jwk: Record<string, string>, extra: Record<string, string>) => {
-    const { d: _d, ...pub } = jwk;
-    return { ...pub, ...extra };
-  };
-
-  const jwks = {
-    keys: [
-      toPublic(raw.enc, { use: "enc", alg: "ECDH-ES+A256KW", kid: "gtb-enc-1" }),
-      toPublic(raw.sig, { use: "sig", alg: "ES256", kid: "gtb-sig-1" }),
-    ],
-  };
-
-  return NextResponse.json(jwks, {
+  return new NextResponse(JSON.stringify(result.body), {
+    status: 200,
     headers: {
-      "Cache-Control": "public, max-age=3600",
+      "Content-Type": "application/jwk-set+json",
+      "Cache-Control": "public, max-age=3600, s-maxage=3600",
     },
   });
 }
