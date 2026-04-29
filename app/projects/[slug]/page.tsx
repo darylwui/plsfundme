@@ -258,8 +258,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                 {project.short_description}
               </p>
 
-              <div className="mt-5 inline-flex items-center gap-3 px-4 py-3 rounded-[var(--radius-card)] bg-amber-100/40 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50">
-                <div className="w-10 h-10 rounded-full bg-amber-200/70 dark:bg-amber-800/40 ring-1 ring-amber-300 dark:ring-amber-700 flex items-center justify-center font-bold text-amber-800 dark:text-amber-300 shrink-0 overflow-hidden">
+              <div className="mt-5 inline-flex items-center gap-3 px-4 py-3 rounded-[var(--radius-card)] bg-[var(--color-brand-crumb)] border border-[var(--color-border)]">
+                <div className="w-10 h-10 rounded-full bg-[var(--color-surface-overlay)] ring-1 ring-[var(--color-border)] flex items-center justify-center font-bold text-[var(--color-brand-crust-dark)] shrink-0 overflow-hidden">
                   {project.creator.avatar_url ? (
                     <Image
                       src={project.creator.avatar_url}
@@ -293,7 +293,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               const embedUrl = toEmbedUrl(project.video_url);
               if (embedUrl) {
                 return (
-                  <div className="relative w-full aspect-[16/9] rounded-[var(--radius-card)] border border-amber-200 dark:border-amber-800/50 bg-black overflow-hidden">
+                  <div className="relative w-full aspect-[16/9] rounded-[var(--radius-card)] border border-[var(--color-border)] bg-black overflow-hidden">
                     <iframe
                       src={embedUrl}
                       title={`${project.title} pitch video`}
@@ -309,7 +309,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               }
               if (project.cover_image_url) {
                 return (
-                  <div className="relative w-full aspect-[16/9] rounded-[var(--radius-card)] border border-amber-200 dark:border-amber-800/50 bg-[var(--color-surface-overlay)] overflow-hidden">
+                  <div className="relative w-full aspect-[16/9] rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface-overlay)] overflow-hidden">
                     <CoverImage
                       src={project.cover_image_url}
                       alt={project.title}
@@ -328,9 +328,9 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
             {/* Creator PM profile card */}
             {creatorPmProfile && (
-              <div className="rounded-[var(--radius-card)] border-2 border-amber-200 dark:border-amber-800/60 bg-amber-50/30 dark:bg-amber-950/10 p-5">
+              <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-5">
                 <div className="flex items-start gap-3">
-                  <div className="w-11 h-11 rounded-full bg-amber-200/70 dark:bg-amber-800/40 ring-1 ring-amber-300 dark:ring-amber-700 flex items-center justify-center font-bold text-amber-800 dark:text-amber-300 shrink-0 overflow-hidden">
+                  <div className="w-11 h-11 rounded-full bg-[var(--color-surface-overlay)] ring-1 ring-[var(--color-border)] flex items-center justify-center font-bold text-[var(--color-brand-crust-dark)] shrink-0 overflow-hidden">
                     {project.creator.avatar_url ? (
                       <Image
                         src={project.creator.avatar_url}
@@ -370,7 +370,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                             href={creatorPmProfile.company_website}
                             target="_blank"
                             rel="noreferrer"
-                            className="inline-flex items-center gap-1.5 hover:text-amber-700 dark:hover:text-amber-300"
+                            className="inline-flex items-center gap-1.5 hover:text-[var(--color-brand-crust)]"
                           >
                             <Globe className="w-3.5 h-3.5" />
                             Website
@@ -381,7 +381,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                             href={creatorPmProfile.linkedin_url}
                             target="_blank"
                             rel="noreferrer"
-                            className="inline-flex items-center gap-1.5 hover:text-amber-700 dark:hover:text-amber-300"
+                            className="inline-flex items-center gap-1.5 hover:text-[var(--color-brand-crust)]"
                           >
                             <Link2 className="w-3.5 h-3.5" />
                             LinkedIn
@@ -390,7 +390,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                       </div>
                     )}
 
-                    <div className="mt-4 rounded-[var(--radius-btn)] border border-amber-200 dark:border-amber-700/60 bg-amber-100/50 dark:bg-amber-900/20 px-3 py-2.5">
+                    <div className="mt-4 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-brand-crumb)] px-3 py-2.5">
                       <p className="text-xs font-semibold uppercase tracking-wider text-[var(--color-ink-subtle)] mb-1">
                         What they are building
                       </p>
