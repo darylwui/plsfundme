@@ -5,6 +5,9 @@ import { BackToTop } from "@/components/ui/back-to-top";
 import { Eyebrow } from "@/components/marketing/Eyebrow";
 import { HeroGlow } from "@/components/marketing/HeroGlow";
 import { HowItWorksFlowSwitcher } from "@/components/marketing/HowItWorksFlowSwitcher";
+import { PledgeTimelineDemo } from "@/components/marketing/PledgeTimelineDemo";
+import { ScrollReveal } from "@/components/marketing/ScrollReveal";
+import { PlayCircle } from "lucide-react";
 
 export const metadata = {
   title: "How it works — get that bread",
@@ -32,14 +35,43 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
+      {/* ── Try it yourself — interactive backer-flow demo ─────
+          Sits above the audience toggle so visitors get an immediate
+          hands-on understanding of how a pledge moves through the
+          system before they even pick a perspective. */}
+      <ScrollReveal>
+        <section className="border-b border-[var(--color-border)] bg-[var(--color-surface-raised)]">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20">
+            <div className="max-w-2xl mb-8 md:mb-10">
+              <Eyebrow variant="crust-dark" className="mb-3 inline-flex items-center gap-2">
+                <PlayCircle className="w-3.5 h-3.5" />
+                Try it yourself
+              </Eyebrow>
+              <h2 className="font-black tracking-[-0.025em] leading-[1.05] text-[clamp(28px,4vw,40px)] m-0 text-[var(--color-ink)]">
+                See how your pledge works.
+              </h2>
+              <p className="mt-3 text-base leading-[1.55] text-[var(--color-ink-muted)]">
+                Don&apos;t take our word for it. Try pledging below, or let the
+                clock run out — you&apos;ll see exactly how your money is handled
+                either way.
+              </p>
+            </div>
+            <PledgeTimelineDemo />
+          </div>
+        </section>
+      </ScrollReveal>
+
       {/* ── Audience switcher + flow timeline ────────────────── */}
-      <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 md:pt-14 pb-16 md:pb-24">
-        <HowItWorksFlowSwitcher />
-      </section>
+      <ScrollReveal>
+        <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 md:pt-14 pb-16 md:pb-24">
+          <HowItWorksFlowSwitcher />
+        </section>
+      </ScrollReveal>
 
       {/* ── Fees, in plain English ───────────────────────────── */}
-      <section className="border-y border-[var(--color-border)] bg-[var(--color-brand-crumb-light)] dark:bg-[var(--color-surface-raised)]">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+      <ScrollReveal>
+        <section className="border-y border-[var(--color-border)] bg-[var(--color-brand-crumb-light)] dark:bg-[var(--color-surface-raised)]">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
           <div className="text-center">
             <Eyebrow variant="crust-dark" className="mb-3">
               Fees, in plain English
@@ -78,29 +110,33 @@ export default function HowItWorksPage() {
             <div className="mt-5 text-center text-[10px] text-[var(--color-ink-subtle)] tracking-[0.16em]">
               · · · ·  released in milestone tranches  · · · ·
             </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </ScrollReveal>
 
-      {/* ── Versus other platforms ───────────────────────────── */}
-      <section className="border-b border-[var(--color-border)] bg-[var(--color-surface)]">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-          <div className="text-center max-w-2xl mx-auto mb-10 md:mb-12">
-            <Eyebrow variant="brand" className="mb-3">
-              Versus the rest
-            </Eyebrow>
-            <h2 className="font-black tracking-[-0.025em] leading-[1.05] text-[clamp(28px,4vw,40px)] m-0 text-[var(--color-ink)]">
-              What you get here that you don&apos;t get elsewhere.
-            </h2>
+      {/* ── So why us — comparison table ─────────────────────── */}
+      <ScrollReveal>
+        <section className="border-b border-[var(--color-border)] bg-[var(--color-surface)]">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+            <div className="text-center max-w-2xl mx-auto mb-10 md:mb-12">
+              <Eyebrow variant="brand" className="mb-3">
+                So why us?
+              </Eyebrow>
+              <h2 className="font-black tracking-[-0.025em] leading-[1.05] text-[clamp(28px,4vw,40px)] m-0 text-[var(--color-ink)]">
+                What you get here that you don&apos;t get elsewhere.
+              </h2>
+            </div>
+
+            <ComparisonTable />
           </div>
-
-          <ComparisonTable />
-        </div>
-      </section>
+        </section>
+      </ScrollReveal>
 
       {/* ── Pivot CTA — two-column dark/light ────────────────── */}
-      <section className="bg-[var(--color-surface-raised)]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+      <ScrollReveal>
+        <section className="bg-[var(--color-surface-raised)]">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-6">
             {/* Creator card — dark */}
             <div className="rounded-[var(--radius-card)] bg-[var(--color-ink-deep)] text-white p-8 sm:p-10 md:p-11 flex flex-col">
@@ -157,9 +193,10 @@ export default function HowItWorksPage() {
                 </Link>
               </div>
             </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </ScrollReveal>
 
       <div className="flex justify-center py-10 border-t border-[var(--color-border)] bg-[var(--color-surface-raised)]">
         <BackToTop />
@@ -223,7 +260,7 @@ function ComparisonTable() {
               <td className="py-3.5 px-3 sm:px-4 font-semibold text-[var(--color-ink)] align-top leading-[1.5]">
                 {label}
               </td>
-              <td className="py-3.5 px-3 sm:px-4 font-semibold text-[var(--color-ink)] bg-[var(--color-brand-crumb-light)] dark:bg-[var(--color-brand-crumb)] align-top leading-[1.5]">
+              <td className="py-3.5 px-3 sm:px-4 font-semibold text-[var(--color-ink)] bg-[var(--color-brand-crust)]/8 dark:bg-[var(--color-brand-crust)]/15 align-top leading-[1.5]">
                 {ours}
               </td>
               <td className="py-3.5 px-3 sm:px-4 text-[var(--color-ink-muted)] align-top leading-[1.5]">
