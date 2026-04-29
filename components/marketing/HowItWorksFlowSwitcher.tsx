@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { Gift } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -152,32 +153,82 @@ export function HowItWorksFlowSwitcher() {
         </div>
       </section>
 
-      {/* ── Backer-only: what kinds of rewards you can expect ──────── */}
+      {/* ── Backer-only sections ────────────────────────────────────── */}
       {audience === "backer" && (
-        <ScrollReveal>
-          <section className="border-y border-[var(--color-border)] bg-[var(--color-surface)]">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-              <div className="max-w-2xl mb-10 md:mb-14">
-                <Eyebrow
-                  variant="crust-dark"
-                  className="mb-3 inline-flex items-center gap-2"
-                >
-                  <Gift className="w-3.5 h-3.5" />
-                  What you get back
-                </Eyebrow>
-                <h2 className="font-black tracking-[-0.025em] leading-[1.05] text-[clamp(28px,4vw,40px)] m-0 text-[var(--color-ink)]">
-                  Backer rewards are the whole point — not a thank-you note.
-                </h2>
-                <p className="mt-3 text-base leading-[1.55] text-[var(--color-ink-muted)]">
-                  Every campaign sets its own reward tiers. Here are the four
-                  kinds you&apos;ll see most often, with real-feel examples of
-                  how creators use them.
+        <>
+          {/* If something goes wrong — dark ribbon */}
+          <ScrollReveal>
+            <section className="bg-[var(--color-ink-deep)]">
+              <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+                <div className="text-center max-w-2xl mx-auto mb-12">
+                  <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--color-brand-golden)] mb-3">
+                    If something goes wrong
+                  </div>
+                  <h2 className="font-black tracking-[-0.025em] leading-[1.05] text-[clamp(28px,4vw,40px)] m-0 text-white">
+                    Three ways to get your money back.
+                  </h2>
+                  <p className="mt-4 text-base leading-[1.55] text-white/70 max-w-xl mx-auto">
+                    Crowdfunding is a promise, not a purchase. We&apos;ve built the
+                    platform to honour the promise — or unwind it.
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-5">
+                  <DarkScenarioCard
+                    eye="Scenario A"
+                    title="Goal not reached."
+                    body="The creator misses the goal by deadline. We void all card auths and reverse PayNow holds the same day."
+                    timing="Refund: instant"
+                  />
+                  <DarkScenarioCard
+                    eye="Scenario B"
+                    title="Creator cancels mid-campaign."
+                    body="Sometimes life gets in the way. The creator can pull a campaign any time before the deadline. All pledges revert."
+                    timing="Refund: instant"
+                  />
+                  <DarkScenarioCard
+                    eye="Scenario C"
+                    title="Creator stalls post-funding."
+                    body="After 90 days without milestone progress and no comms, we refund undisbursed tranches pro-rata to backers."
+                    timing="Refund: within 14 days"
+                  />
+                </div>
+                <p className="mt-10 text-center text-sm text-white/50">
+                  Full rules, refund amounts, and dispute timelines live in our{" "}
+                  <Link
+                    href="/terms?tab=refund"
+                    className="font-semibold text-[var(--color-brand-golden)] hover:underline"
+                  >
+                    Refund &amp; Dispute Policy
+                  </Link>
+                  .
                 </p>
               </div>
-              <RewardArchetypes />
-            </div>
-          </section>
-        </ScrollReveal>
+            </section>
+          </ScrollReveal>
+
+          {/* Reward archetypes */}
+          <ScrollReveal>
+            <section className="border-y border-[var(--color-border)] bg-[var(--color-surface)]">
+              <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+                <div className="max-w-2xl mb-10 md:mb-14">
+                  <Eyebrow variant="crust-dark" className="mb-3 inline-flex items-center gap-2">
+                    <Gift className="w-3.5 h-3.5" />
+                    What you get back
+                  </Eyebrow>
+                  <h2 className="font-black tracking-[-0.025em] leading-[1.05] text-[clamp(28px,4vw,40px)] m-0 text-[var(--color-ink)]">
+                    Backer rewards are the whole point — not a thank-you note.
+                  </h2>
+                  <p className="mt-3 text-base leading-[1.55] text-[var(--color-ink-muted)]">
+                    Every campaign sets its own reward tiers. Here are the four
+                    kinds you&apos;ll see most often, with real-feel examples of
+                    how creators use them.
+                  </p>
+                </div>
+                <RewardArchetypes />
+              </div>
+            </section>
+          </ScrollReveal>
+        </>
       )}
 
       {/* ── Creator-only: fees + comparison table ──────────────────── */}
@@ -359,6 +410,32 @@ function ReceiptRow({ label, value }: { label: string; value: string }) {
     <div className="flex justify-between items-baseline py-2.5 border-b border-dashed border-[var(--color-border)]">
       <span className="text-[var(--color-ink-muted)]">{label}</span>
       <span className="text-[var(--color-ink)] tabular-nums">{value}</span>
+    </div>
+  );
+}
+
+// ─── Dark scenario card (used inside the backer dark ribbon) ───────────────
+function DarkScenarioCard({
+  eye,
+  title,
+  body,
+  timing,
+}: {
+  eye: string;
+  title: string;
+  body: string;
+  timing: string;
+}) {
+  return (
+    <div className="rounded-[var(--radius-card)] bg-white/5 border border-white/10 p-6 sm:p-7 flex flex-col">
+      <div className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-white/50 mb-2">
+        {eye}
+      </div>
+      <h3 className="font-black tracking-[-0.02em] text-lg m-0 text-white">{title}</h3>
+      <p className="mt-3 text-sm leading-[1.6] text-white/70 flex-1 m-0">{body}</p>
+      <div className="mt-5 inline-flex font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--color-brand-golden)] bg-[var(--color-brand-golden)]/10 ring-1 ring-[var(--color-brand-golden)]/25 px-3 py-1.5 rounded-md w-fit">
+        {timing}
+      </div>
     </div>
   );
 }
