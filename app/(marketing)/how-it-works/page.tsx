@@ -306,7 +306,7 @@ export default function HowItWorksPage() {
                 <p className="mt-3.5 text-sm sm:text-base leading-[1.55] text-white/70 max-w-md">
                   Free 30-minute call before you commit. We tell you honestly if we think it&apos;ll fund.
                 </p>
-                <div className="mt-6 flex flex-wrap gap-3 items-center">
+                <div className="mt-auto pt-6 flex flex-wrap gap-3 items-center">
                   <Button asChild size="md" variant="primary">
                     <Link href="/apply/creator">
                       Apply to launch
@@ -333,7 +333,7 @@ export default function HowItWorksPage() {
                   Browse the live campaigns and pick one that moves you. Pledge from S$25,
                   your money&apos;s protected at every stage.
                 </p>
-                <div className="mt-6 flex flex-wrap gap-3 items-center">
+                <div className="mt-auto pt-6 flex flex-wrap gap-3 items-center">
                   <Button asChild size="md" variant="primary">
                     <Link href="/explore">
                       Explore campaigns
