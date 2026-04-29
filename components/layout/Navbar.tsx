@@ -8,10 +8,14 @@ import {
   Menu,
   X,
   PlusCircle,
-  Search,
   Sun,
   Moon,
   ChevronDown,
+  BookOpen,
+  Shield,
+  Rocket,
+  Compass,
+  ClipboardList,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -26,13 +30,47 @@ type NavItem =
       type: "group";
       label: string;
       matchPaths: string[];
-      children: { href: string; label: string; description: string }[];
+      children: {
+        href: string;
+        label: string;
+        description: string;
+        Icon: React.ComponentType<{ className?: string }>;
+      }[];
     };
 
 const NAV_ITEMS: NavItem[] = [
   { type: "link", href: "/explore", label: "Explore" },
-  { type: "link", href: "/how-it-works", label: "How it works" },
-  { type: "link", href: "/for-creators/launch-guide", label: "Creator guide" },
+  {
+    type: "group",
+    label: "Learn",
+    matchPaths: ["/how-it-works", "/backer-protection", "/for-creators", "/for-creators/launch-guide"],
+    children: [
+      {
+        href: "/how-it-works",
+        label: "How it works",
+        description: "Pledging, escrow, milestones — the full picture.",
+        Icon: BookOpen,
+      },
+      {
+        href: "/backer-protection",
+        label: "Backer protection",
+        description: "How your money is safeguarded at every stage.",
+        Icon: Shield,
+      },
+      {
+        href: "/for-creators",
+        label: "For creators",
+        description: "Launch a campaign and raise from your community.",
+        Icon: Rocket,
+      },
+      {
+        href: "/for-creators/launch-guide",
+        label: "Launch checklist",
+        description: "A step-by-step guide to a successful campaign.",
+        Icon: ClipboardList,
+      },
+    ],
+  },
 ];
 
 export function Navbar() {
@@ -40,9 +78,7 @@ export function Navbar() {
   const { currency, setCurrency } = useCurrency();
   const { theme, mounted: themeMounted, toggle: toggleTheme } = useTheme();
   const pathname = usePathname();
-  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
 
   async function handleLogout() {
     const supabase = createClient();
@@ -50,53 +86,34 @@ export function Navbar() {
     window.location.href = "/";
   }
 
-  function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
-    const q = searchQuery.trim();
-    if (q) router.push(`/explore?q=${encodeURIComponent(q)}`);
-    else router.push("/explore");
-    setMenuOpen(false);
-  }
-
   return (
     <nav className="sticky top-0 z-50 bg-[var(--color-surface-invert)]/95 backdrop-blur-md border-b border-[var(--color-border-invert)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 gap-4">
+        <div className="flex items-center justify-between h-14 gap-6">
 
           {/* Logo */}
           <Link
             href="/"
-            className="font-black text-xl tracking-tight hover:opacity-80 transition-opacity flex items-center gap-1.5 shrink-0"
+            className="font-black text-[15px] tracking-tight hover:opacity-80 transition-opacity flex items-center gap-2 shrink-0"
           >
-            <Image src="/bread-icon.png" alt="" width={24} height={24} priority className="object-contain" />
+            <Image src="/bread-icon.png" alt="" width={22} height={22} priority className="object-contain" />
             <span className="text-[var(--color-ink-invert)]">get that bread</span>
           </Link>
 
-          {/* Desktop search */}
-          <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-sm relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-ink-invert-subtle)] pointer-events-none" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search projects…"
-              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border-invert)] bg-[var(--color-surface-invert-raised)] pl-9 pr-4 py-2 text-sm text-[var(--color-ink-invert)] placeholder:text-[var(--color-ink-invert-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-golden)]"
-            />
-          </form>
-
           {/* Desktop nav links */}
-          <div className="hidden md:flex items-center gap-5 shrink-0">
+          <div className="hidden md:flex items-center gap-1 flex-1">
             {NAV_ITEMS.map((item) => {
               if (item.type === "link") {
+                const active = pathname === item.href;
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      "text-sm font-medium transition-colors duration-[160ms]",
-                      pathname === item.href
-                        ? "text-[var(--color-brand-golden)]"
-                        : "text-[var(--color-ink-invert-muted)] hover:text-[var(--color-ink-invert)]"
+                      "px-3 py-1.5 rounded-[var(--radius-btn)] text-sm font-medium transition-colors duration-[160ms]",
+                      active
+                        ? "text-[var(--color-brand-golden)] bg-white/5"
+                        : "text-[var(--color-ink-invert-muted)] hover:text-[var(--color-ink-invert)] hover:bg-white/5"
                     )}
                   >
                     {item.label}
@@ -117,30 +134,10 @@ export function Navbar() {
 
           {/* Desktop actions */}
           <div className="hidden md:flex items-center gap-2 shrink-0">
-            {/* Currency toggle */}
-            <div className="flex items-center rounded-[var(--radius-btn)] border border-[var(--color-border-invert)] bg-[var(--color-surface-invert-raised)]/80 overflow-hidden text-xs font-bold">
-              {(["SGD", "USD"] as const).map((cur) => (
-                <button
-                  key={cur}
-                  onClick={() => setCurrency(cur)}
-                  className={cn(
-                    "px-2.5 py-1.5 transition-colors duration-[160ms]",
-                    currency === cur
-                      ? "bg-[var(--color-brand-golden)] text-[#4A2208]"
-                      : "bg-transparent text-[var(--color-ink-invert)]/90 hover:bg-[var(--color-surface-invert)] hover:text-[var(--color-ink-invert)]"
-                  )}
-                >
-                  {cur}
-                </button>
-              ))}
-            </div>
-
-            {/* Theme toggle — icon is only rendered after ThemeProvider has read
-                localStorage, so the SSR output matches the first client paint and
-                we avoid a hydration mismatch on the icon swap. */}
+            {/* Theme toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg text-[var(--color-ink-invert-muted)] hover:bg-[var(--color-surface-invert-raised)] transition-colors duration-[160ms]"
+              className="p-2 rounded-[var(--radius-btn)] text-[var(--color-ink-invert-muted)] hover:text-[var(--color-ink-invert)] hover:bg-white/5 transition-colors duration-[160ms]"
               aria-label="Toggle dark mode"
               suppressHydrationWarning
             >
@@ -151,24 +148,26 @@ export function Navbar() {
               </span>
             </button>
 
-            <div className="min-w-[168px] flex items-center justify-end gap-2">
+            <div className="w-px h-4 bg-white/10" />
+
+            <div className="flex items-center gap-2">
               {!loading && (
                 <>
                   {user ? (
                     <>
-                      <Button asChild variant="inverse" size="sm">
+                      <Button asChild variant="ghost" size="sm" className="text-[var(--color-ink-invert-muted)] hover:text-[var(--color-ink-invert)] hover:bg-white/5">
                         <Link href="/projects/create">
-                          <PlusCircle className="w-4 h-4" />
-                          Start a project
+                          <PlusCircle className="w-3.5 h-3.5" />
+                          New campaign
                         </Link>
                       </Button>
-                      <Button asChild variant="primary" size="sm">
+                      <Button asChild variant="inverse" size="sm">
                         <Link href="/dashboard">Dashboard</Link>
                       </Button>
                     </>
                   ) : (
                     <>
-                      <Button asChild variant="ghost" size="sm">
+                      <Button asChild variant="ghost" size="sm" className="text-[var(--color-ink-invert-muted)] hover:text-[var(--color-ink-invert)] hover:bg-white/5">
                         <Link href="/login">Log in</Link>
                       </Button>
                       <Button asChild variant="primary" size="sm">
@@ -183,7 +182,7 @@ export function Navbar() {
 
           {/* Mobile menu toggle */}
           <button
-            className="md:hidden min-h-11 min-w-11 inline-flex items-center justify-center rounded-lg text-[var(--color-ink-invert-muted)] hover:bg-[var(--color-surface-invert-raised)] transition-colors duration-[160ms]"
+            className="md:hidden min-h-11 min-w-11 inline-flex items-center justify-center rounded-[var(--radius-btn)] text-[var(--color-ink-invert-muted)] hover:bg-white/5 transition-colors duration-[160ms]"
             onClick={() => setMenuOpen((o) => !o)}
             aria-label="Toggle menu"
             aria-expanded={menuOpen}
@@ -195,28 +194,23 @@ export function Navbar() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="md:hidden border-t border-[var(--color-border-invert)] bg-[var(--color-surface-invert)] px-4 py-4 flex flex-col gap-3">
-          {/* Mobile search */}
-          <form onSubmit={handleSearch} className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-ink-invert-subtle)] pointer-events-none" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search projects…"
-              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border-invert)] bg-[var(--color-surface-invert-raised)] pl-9 pr-4 py-2.5 text-sm text-[var(--color-ink-invert)] placeholder:text-[var(--color-ink-invert-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-golden)]"
-            />
-          </form>
-
+        <div className="md:hidden border-t border-[var(--color-border-invert)] bg-[var(--color-surface-invert)] px-4 py-5 flex flex-col gap-1">
           {NAV_ITEMS.map((item) => {
             if (item.type === "link") {
+              const active = pathname === item.href;
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="text-sm font-medium text-[var(--color-ink-invert-muted)] hover:text-[var(--color-ink-invert)] transition-colors duration-[160ms]"
+                  className={cn(
+                    "flex items-center px-3 py-2.5 rounded-[var(--radius-btn)] text-sm font-medium transition-colors duration-[160ms]",
+                    active
+                      ? "text-[var(--color-brand-golden)] bg-white/5"
+                      : "text-[var(--color-ink-invert-muted)] hover:text-[var(--color-ink-invert)] hover:bg-white/5"
+                  )}
                   onClick={() => setMenuOpen(false)}
                 >
+                  <Compass className="w-4 h-4 mr-3 shrink-0" />
                   {item.label}
                 </Link>
               );
@@ -233,38 +227,7 @@ export function Navbar() {
             );
           })}
 
-          {/* Theme + currency row */}
-          <div className="flex items-center justify-between gap-3">
-            <button
-              onClick={toggleTheme}
-              className="flex items-center gap-2 text-sm font-medium text-[var(--color-ink-invert-muted)] hover:text-[var(--color-ink-invert)] transition-colors duration-[160ms]"
-            >
-              {theme === "dark"
-                ? <><Sun className="w-4 h-4" /> Light mode</>
-                : <><Moon className="w-4 h-4" /> Dark mode</>}
-            </button>
-
-            <div className="flex items-center rounded-[var(--radius-btn)] border border-[var(--color-border-invert)] bg-[var(--color-surface-invert-raised)]/80 overflow-hidden text-xs font-bold">
-              {(["SGD", "USD"] as const).map((cur) => (
-                <button
-                  key={cur}
-                  onClick={() => setCurrency(cur)}
-                  className={cn(
-                    "px-3 py-1.5 transition-colors duration-[160ms]",
-                    currency === cur
-                      ? "bg-[var(--color-brand-golden)] text-[#4A2208]"
-                      : "bg-transparent text-[var(--color-ink-invert)]/90 hover:bg-[var(--color-surface-invert)] hover:text-[var(--color-ink-invert)]"
-                  )}
-                >
-                  {cur}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <hr className="border-[var(--color-border-invert)]" />
-
-          <div className="min-h-[88px] flex flex-col gap-3 justify-start">
+          <div className="mt-3 pt-3 border-t border-[var(--color-border-invert)] flex flex-col gap-2">
             {!loading && (
               <>
                 {user ? (
@@ -272,7 +235,7 @@ export function Navbar() {
                     <Button asChild variant="inverse" size="md" fullWidth>
                       <Link href="/projects/create" onClick={() => setMenuOpen(false)}>
                         <PlusCircle className="w-4 h-4" />
-                        Start a project
+                        New campaign
                       </Link>
                     </Button>
                     <Button asChild variant="primary" size="md" fullWidth>
@@ -281,7 +244,7 @@ export function Navbar() {
                   </>
                 ) : (
                   <>
-                    <Button asChild variant="ghost" size="md" fullWidth>
+                    <Button asChild variant="ghost" size="md" fullWidth className="text-[var(--color-ink-invert-muted)]">
                       <Link href="/login" onClick={() => setMenuOpen(false)}>Log in</Link>
                     </Button>
                     <Button asChild variant="primary" size="md" fullWidth>
@@ -291,6 +254,14 @@ export function Navbar() {
                 )}
               </>
             )}
+            <button
+              onClick={toggleTheme}
+              className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-[var(--color-ink-invert-muted)] hover:text-[var(--color-ink-invert)] transition-colors duration-[160ms]"
+            >
+              {theme === "dark"
+                ? <><Sun className="w-4 h-4" /> Light mode</>
+                : <><Moon className="w-4 h-4" /> Dark mode</>}
+            </button>
           </div>
         </div>
       )}
@@ -298,9 +269,9 @@ export function Navbar() {
   );
 }
 
-// ───────────────────────────────────────────────
-// Desktop dropdown — hover-intent + click-to-open
-// ───────────────────────────────────────────────
+// ─────────────────────────────────────────────────────
+// Desktop dropdown — hover-intent, keyboard accessible
+// ─────────────────────────────────────────────────────
 function NavDropdown({
   label,
   matchPaths,
@@ -309,15 +280,19 @@ function NavDropdown({
 }: {
   label: string;
   matchPaths: string[];
-  items: { href: string; label: string; description: string }[];
+  items: {
+    href: string;
+    label: string;
+    description: string;
+    Icon: React.ComponentType<{ className?: string }>;
+  }[];
   pathname: string;
 }) {
   const [open, setOpen] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
-  const isActive = matchPaths.some((p) => pathname === p);
+  const isActive = matchPaths.some((p) => pathname.startsWith(p));
 
-  // Close on outside click (useful when opened via click on touch devices)
   useEffect(() => {
     if (!open) return;
     const onClick = (e: MouseEvent) => {
@@ -358,10 +333,10 @@ function NavDropdown({
         aria-haspopup="menu"
         aria-expanded={open}
         className={cn(
-          "inline-flex items-center gap-1 text-sm font-medium transition-colors duration-[160ms]",
-          isActive
-            ? "text-[var(--color-brand-golden)]"
-            : "text-[var(--color-ink-invert-muted)] hover:text-[var(--color-ink-invert)]"
+          "inline-flex items-center gap-1 px-3 py-1.5 rounded-[var(--radius-btn)] text-sm font-medium transition-colors duration-[160ms]",
+          isActive || open
+            ? "text-[var(--color-brand-golden)] bg-white/5"
+            : "text-[var(--color-ink-invert-muted)] hover:text-[var(--color-ink-invert)] hover:bg-white/5"
         )}
       >
         {label}
@@ -373,57 +348,64 @@ function NavDropdown({
         />
       </button>
 
+      {/* Dropdown panel */}
       <div
         role="menu"
         className={cn(
-          "absolute left-1/2 top-full -translate-x-1/2 mt-3 w-72 rounded-[var(--radius-card)] border border-[var(--color-border-invert)] bg-[var(--color-surface-invert)] shadow-[0_20px_60px_-20px_rgba(0,0,0,0.6)] p-1.5 z-50 transition-all duration-200",
-          open ? "opacity-100 visible pointer-events-auto" : "opacity-0 invisible pointer-events-none"
+          "absolute left-0 top-full mt-2 w-72 rounded-[var(--radius-card)] border border-[var(--color-border-invert)] bg-[var(--color-surface-invert)] shadow-[0_24px_64px_-16px_rgba(0,0,0,0.7)] p-1.5 z-50 transition-all duration-[180ms]",
+          open ? "opacity-100 visible translate-y-0 pointer-events-auto" : "opacity-0 invisible -translate-y-1 pointer-events-none"
         )}
       >
-          {/* Invisible hover bridge so the cursor can travel from trigger to menu without closing */}
-          <span
-            aria-hidden
-            className="absolute -top-3 left-0 right-0 h-3"
-          />
-          {items.map((item) => {
-            const selected = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                role="menuitem"
-                onClick={() => setOpen(false)}
-                className={cn(
-                  "block rounded-[var(--radius-btn)] px-3 py-2.5 transition-colors duration-[160ms]",
+        {/* Invisible hover bridge */}
+        <span aria-hidden className="absolute -top-2 left-0 right-0 h-2" />
+        {items.map((item) => {
+          const selected = pathname === item.href;
+          const { Icon } = item;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              role="menuitem"
+              onClick={() => setOpen(false)}
+              className={cn(
+                "flex items-start gap-3 rounded-[var(--radius-btn)] px-3 py-2.5 transition-colors duration-[160ms] group",
+                selected
+                  ? "bg-white/8"
+                  : "hover:bg-white/5"
+              )}
+            >
+              <div className={cn(
+                "mt-0.5 w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-colors duration-[160ms]",
+                selected
+                  ? "bg-[var(--color-brand-golden)]/20 text-[var(--color-brand-golden)]"
+                  : "bg-white/8 text-[var(--color-ink-invert-muted)] group-hover:bg-[var(--color-brand-golden)]/15 group-hover:text-[var(--color-brand-golden)]"
+              )}>
+                <Icon className="w-3.5 h-3.5" />
+              </div>
+              <div className="min-w-0">
+                <div className={cn(
+                  "text-sm font-semibold leading-snug",
                   selected
-                    ? "bg-[var(--color-surface-invert-raised)]"
-                    : "hover:bg-[var(--color-surface-invert-raised)]"
-                )}
-              >
-                <div
-                  className={cn(
-                    "text-sm font-semibold",
-                    selected
-                      ? "text-[var(--color-brand-golden)]"
-                      : "text-[var(--color-ink-invert)]"
-                  )}
-                >
+                    ? "text-[var(--color-brand-golden)]"
+                    : "text-[var(--color-ink-invert)] group-hover:text-[var(--color-ink-invert)]"
+                )}>
                   {item.label}
                 </div>
                 <div className="text-xs text-[var(--color-ink-invert-subtle)] mt-0.5 leading-snug">
                   {item.description}
                 </div>
-              </Link>
-            );
-          })}
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </div>
   );
 }
 
-// ───────────────────────────────────────────────
+// ─────────────────────────────────────────────
 // Mobile accordion group
-// ───────────────────────────────────────────────
+// ─────────────────────────────────────────────
 function MobileNavGroup({
   label,
   matchPaths,
@@ -433,24 +415,29 @@ function MobileNavGroup({
 }: {
   label: string;
   matchPaths: string[];
-  items: { href: string; label: string; description: string }[];
+  items: {
+    href: string;
+    label: string;
+    description: string;
+    Icon: React.ComponentType<{ className?: string }>;
+  }[];
   pathname: string;
   onNavigate: () => void;
 }) {
-  const isActive = matchPaths.some((p) => pathname === p);
+  const isActive = matchPaths.some((p) => pathname.startsWith(p));
   const [open, setOpen] = useState(isActive);
 
   return (
-    <div className="flex flex-col">
+    <div>
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         className={cn(
-          "flex items-center justify-between text-sm font-medium transition-colors duration-[160ms] py-1",
+          "w-full flex items-center justify-between px-3 py-2.5 rounded-[var(--radius-btn)] text-sm font-medium transition-colors duration-[160ms]",
           isActive
-            ? "text-[var(--color-brand-golden)]"
-            : "text-[var(--color-ink-invert-muted)] hover:text-[var(--color-ink-invert)]"
+            ? "text-[var(--color-brand-golden)] bg-white/5"
+            : "text-[var(--color-ink-invert-muted)] hover:text-[var(--color-ink-invert)] hover:bg-white/5"
         )}
       >
         <span>{label}</span>
@@ -462,21 +449,23 @@ function MobileNavGroup({
         />
       </button>
       {open && (
-        <div className="mt-2 ml-2 pl-3 border-l border-[var(--color-border-invert)] flex flex-col gap-2">
+        <div className="mt-1 flex flex-col gap-0.5 pl-3">
           {items.map((item) => {
             const selected = pathname === item.href;
+            const { Icon } = item;
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 onClick={onNavigate}
                 className={cn(
-                  "text-sm font-medium py-1 transition-colors duration-[160ms]",
+                  "flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-btn)] text-sm transition-colors duration-[160ms]",
                   selected
-                    ? "text-[var(--color-brand-golden)]"
-                    : "text-[var(--color-ink-invert-muted)] hover:text-[var(--color-ink-invert)]"
+                    ? "text-[var(--color-brand-golden)] bg-white/5 font-medium"
+                    : "text-[var(--color-ink-invert-muted)] hover:text-[var(--color-ink-invert)] hover:bg-white/5 font-medium"
                 )}
               >
+                <Icon className="w-4 h-4 shrink-0" />
                 {item.label}
               </Link>
             );
