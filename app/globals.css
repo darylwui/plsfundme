@@ -37,6 +37,18 @@
   --color-ink-invert-muted:     #C4956A;
   --color-ink-invert-subtle:    #B0855E;   /* Bumped from #8B6545 — was 3.20:1 on the dark footer (#2C1A0E), failing WCAG AA. New value gets ~4.6:1. */
 
+  /* Deep neutral ink — for dark editorial ribbons (TrustExplainer money flow,
+     CreatorGuide perks ribbon, PreLaunchLanding countdown). Cooler than
+     --color-surface-invert which leans warm-brown for the navbar/footer. */
+  --color-ink-deep:             #14110D;
+
+  /* Status backgrounds — light-tint pairings for chips, pills, callouts.
+     Pair with --color-brand-success / -danger / -warning / -info for text. */
+  --color-success-bg:      #E6F1E9;
+  --color-danger-bg:       #FBE6E1;
+  --color-warning-bg:      #FDF0D6;
+  --color-info-bg:         #E3ECF7;
+
   /* Background */
   --color-background:      var(--color-surface);
   --color-foreground:      var(--color-ink);
