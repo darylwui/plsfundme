@@ -6,8 +6,9 @@ import { Eyebrow } from "@/components/marketing/Eyebrow";
 import { HeroGlow } from "@/components/marketing/HeroGlow";
 import { HowItWorksFlowSwitcher } from "@/components/marketing/HowItWorksFlowSwitcher";
 import { PledgeTimelineDemo } from "@/components/marketing/PledgeTimelineDemo";
+import { RewardArchetypes } from "@/components/marketing/RewardArchetypes";
 import { ScrollReveal } from "@/components/marketing/ScrollReveal";
-import { PlayCircle } from "lucide-react";
+import { Gift, PlayCircle } from "lucide-react";
 
 export const metadata = {
   title: "How it works — get that bread",
@@ -57,6 +58,32 @@ export default function HowItWorksPage() {
               </p>
             </div>
             <PledgeTimelineDemo />
+          </div>
+        </section>
+      </ScrollReveal>
+
+      {/* ── What you get back — concrete reward archetypes ────
+          Sits between the interactive demo and the audience toggle so
+          a backer browsing the page sees the *kinds* of value they
+          can expect before they read about how the flow works. */}
+      <ScrollReveal>
+        <section className="border-b border-[var(--color-border)] bg-[var(--color-surface)]">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+            <div className="max-w-2xl mb-10 md:mb-14">
+              <Eyebrow variant="crust-dark" className="mb-3 inline-flex items-center gap-2">
+                <Gift className="w-3.5 h-3.5" />
+                What you get back
+              </Eyebrow>
+              <h2 className="font-black tracking-[-0.025em] leading-[1.05] text-[clamp(28px,4vw,40px)] m-0 text-[var(--color-ink)]">
+                Backer rewards are the whole point — not a thank-you note.
+              </h2>
+              <p className="mt-3 text-base leading-[1.55] text-[var(--color-ink-muted)]">
+                Every campaign sets its own reward tiers. Here are the four
+                kinds you&apos;ll see most often, with real-feel examples of
+                how creators use them.
+              </p>
+            </div>
+            <RewardArchetypes />
           </div>
         </section>
       </ScrollReveal>
