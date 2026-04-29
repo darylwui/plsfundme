@@ -7,7 +7,7 @@ export const singpassConfig = {
   redirectUri: process.env.SINGPASS_REDIRECT_URI!,
   privateKeyBase64: process.env.SINGPASS_PRIVATE_KEY_BASE64!,
   issuer: baseUrl,
-  authEndpoint: `${baseUrl}/auth`,
+  authEndpoint: `${baseUrl}/fapi/auth`,
   parEndpoint: `${baseUrl}/fapi/par`,
   tokenEndpoint: `${baseUrl}/token`,
   jwksUri: `${baseUrl}/.well-known/keys`,
