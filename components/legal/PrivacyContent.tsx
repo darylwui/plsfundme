@@ -1,4 +1,4 @@
-const LAST_UPDATED = "25 April 2026";
+const LAST_UPDATED = "30 April 2026";
 const CONTACT_EMAIL = "hello@getthatbread.sg";
 
 export function PrivacyContent() {
@@ -77,10 +77,12 @@ export function PrivacyContent() {
               <a href="https://stripe.com">Stripe</a> — we never see or store full card numbers.
             </li>
             <li>
-              <strong>Creator verification (KYC):</strong> For Creators who verify via Singpass, we store
-              verified name, date of birth, nationality, residency status, and a one-way cryptographic
-              hash of the UINFIN for duplicate-account detection. The raw UINFIN is never stored. See
-              Section 8.
+              <strong>Creator verification (KYC):</strong> For Creators who verify via Singpass MyInfo,
+              we store verified name, date of birth, nationality, residency status, and a one-way
+              peppered HMAC-SHA256 hash of the UINFIN used solely for duplicate-account detection. The
+              raw UINFIN is never stored. We also retain consent metadata (the timestamp you authorised
+              the disclosure, the data fields you consented to, and the MyInfo transaction reference
+              issued by GovTech) to evidence your consent. See Section 8.
             </li>
             <li>
               <strong>Uploaded images:</strong> Profile pictures, campaign artwork, and reward imagery
@@ -312,30 +314,95 @@ export function PrivacyContent() {
 
         <Section title="8. Creator Verification (Singpass MyInfo)">
           <p>
-            Creators are required to verify their identity through{" "}
-            <a href="https://www.singpass.gov.sg/main/" target="_blank" rel="noopener noreferrer">
-              Singpass MyInfo
-            </a>{" "}
-            before they can receive payouts.
+            Creators are required to verify their identity before they can receive payouts. We support
+            two paths and you may choose either:
           </p>
-          <p>From a successful Singpass verification, we store the following fields:</p>
           <ul>
-            <li>Verified full name</li>
-            <li>Date of birth</li>
-            <li>Nationality</li>
-            <li>Residency status</li>
-            <li>Timestamp of verification</li>
-            <li>A SHA-256 hash of the UINFIN — used only to detect duplicate-account fraud</li>
+            <li>
+              <strong>Singpass MyInfo</strong> (preferred) — government-backed identity verification via{" "}
+              <a href="https://www.singpass.gov.sg/main/" target="_blank" rel="noopener noreferrer">
+                Singpass
+              </a>.
+            </li>
+            <li>
+              <strong>Manual review</strong> (alternative) — admin review of an NRIC document plus
+              selfie. Used during pre-launch and as a fallback for users who decline Singpass.
+            </li>
+          </ul>
+
+          <h3 className="text-base font-bold text-[var(--color-ink)] mt-4">What you consent to with Singpass</h3>
+          <p>
+            When you click <em>Allow</em> on the Singpass consent screen, you authorise GovTech to
+            disclose the following MyInfo fields to get that bread for the purpose of payout-eligibility
+            verification:
+          </p>
+          <ul>
+            <li><strong>UINFIN</strong> — your NRIC or FIN identifier</li>
+            <li><strong>Name</strong> — your full registered name</li>
+            <li><strong>Date of birth</strong></li>
+            <li><strong>Nationality</strong></li>
+            <li><strong>Residential status</strong></li>
           </ul>
           <p>
-            <strong>The raw UINFIN is never written to our database.</strong> Only the one-way hash is
-            stored, which cannot be reversed to recover the UINFIN itself.
+            We request only those five fields and no others. The list of fields requested is governed
+            by the OIDC scopes registered for our Singpass developer account; we cannot request fields
+            outside that registered scope.
+          </p>
+
+          <h3 className="text-base font-bold text-[var(--color-ink)] mt-4">What we store</h3>
+          <p>From a successful Singpass verification we persist:</p>
+          <ul>
+            <li>Verified full name (used for payout records and admin compliance review)</li>
+            <li>Date of birth (used to confirm you are at least 18, MAS payment-services rule)</li>
+            <li>Nationality and residential status (AML / counter-terrorism financing checks)</li>
+            <li>Timestamp of verification</li>
+            <li>
+              A peppered <strong>HMAC-SHA256 hash of the UINFIN</strong> — used only to detect
+              duplicate-account fraud (one person, one creator account)
+            </li>
+            <li>
+              <strong>Consent metadata:</strong> the timestamp you granted consent on the Singpass
+              screen, the OIDC scopes the access token actually granted, and the MyInfo transaction
+              reference (<code>txnNo</code>) returned by GovTech. This is our audit trail evidencing
+              that you consented and what you consented to.
+            </li>
+          </ul>
+          <p>
+            <strong>The raw UINFIN is never written to our database.</strong> The hash is one-way and
+            is keyed with a secret pepper held only on our servers; it cannot be reversed to recover
+            the UINFIN.
+          </p>
+
+          <h3 className="text-base font-bold text-[var(--color-ink)] mt-4">How we use this data</h3>
+          <p>
+            This data is used <em>strictly</em> for: payout-eligibility verification, anti-fraud
+            (duplicate-account detection), and AML / counter-terrorism financing compliance under
+            Monetary Authority of Singapore payment-services rules. It is not used for marketing, not
+            shared with any Backer or other Creator, and not shared with any third party except where
+            legally required (for example, in response to a lawful order from a Singapore regulator or
+            court).
           </p>
           <p>
-            This data is used strictly for payout compliance (Monetary Authority of Singapore payment
-            services rules) and anti-fraud. It is not used for marketing, not shared with other Backers
-            or Creators, and is accessible only to the Creator themselves and to platform admins
-            performing compliance review.
+            Singpass-derived fields are accessible only to the Creator themselves (via their dashboard)
+            and to platform admins performing compliance review. Access by admins is logged.
+          </p>
+
+          <h3 className="text-base font-bold text-[var(--color-ink)] mt-4">Withdrawing consent</h3>
+          <p>
+            You may withdraw consent for our use of your Singpass-derived data at any time by emailing
+            our DPO (Section 16). Withdrawal results in your creator account being closed, because
+            payout eligibility cannot be maintained without verified identity. Records subject to AML
+            retention obligations (see Section 9) will be retained for the legally required period
+            after closure but will not be used for any other purpose.
+          </p>
+
+          <h3 className="text-base font-bold text-[var(--color-ink)] mt-4">Legal basis</h3>
+          <p>
+            We collect this data on the basis of your <strong>consent</strong> (PDPA section 13) given
+            at the Singpass screen, and on the basis that it is <strong>necessary for compliance with
+            legal obligations</strong> applicable to a payment-related platform operating in Singapore
+            (PDPA First Schedule, Part 3). Where the two bases overlap, the legal-obligation basis
+            governs records we are required by law to retain.
           </p>
         </Section>
 
