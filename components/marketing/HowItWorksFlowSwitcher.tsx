@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Gift } from "lucide-react";
+import { ArrowRight, Gift } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Eyebrow } from "./Eyebrow";
 import { RewardArchetypes } from "./RewardArchetypes";
@@ -294,6 +294,32 @@ export function HowItWorksFlowSwitcher() {
                 </div>
 
                 <ComparisonTable />
+              </div>
+            </section>
+          </ScrollReveal>
+
+          {/* ── Find out more CTA ─────────────────────────────────────── */}
+          <ScrollReveal>
+            <section className="border-b border-[var(--color-border)] bg-[var(--color-surface-raised)]">
+              <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+                <div>
+                  <Eyebrow variant="crust-dark" className="mb-2">
+                    Creator guide
+                  </Eyebrow>
+                  <h2 className="font-black tracking-[-0.025em] leading-[1.1] text-xl sm:text-2xl m-0 text-[var(--color-ink)]">
+                    Want the full picture?
+                  </h2>
+                  <p className="mt-2 text-sm sm:text-base leading-[1.55] text-[var(--color-ink-muted)] max-w-md">
+                    The creator guide covers the full campaign journey — timeline, what happens if you miss your goal, and the launch checklist.
+                  </p>
+                </div>
+                <Link
+                  href="/for-creators"
+                  className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-[var(--radius-btn)] bg-[var(--color-brand-crust)] text-white text-sm font-bold hover:bg-[var(--color-brand-crust-dark)] transition-colors duration-[160ms] whitespace-nowrap"
+                >
+                  Find out more
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
               </div>
             </section>
           </ScrollReveal>
