@@ -14,6 +14,7 @@ import { Eyebrow } from "@/components/marketing/Eyebrow";
 import { HeroGlow } from "@/components/marketing/HeroGlow";
 import { CreatorTimelineScrub } from "@/components/marketing/CreatorTimelineScrubDynamic";
 import { CreatorReassurance } from "@/components/marketing/CreatorReassurance";
+import { PlatformComparisonTable } from "@/components/marketing/PlatformComparisonTable";
 import { ScrollReveal } from "@/components/marketing/ScrollReveal";
 import { ScrollDownCue } from "@/components/marketing/ScrollDownCueDynamic";
 
@@ -190,7 +191,24 @@ export default function ForCreatorsPage() {
         </section>
       </ScrollReveal>
 
-      {/* ── 4. Final CTA — dark ribbon ────────────────────────── */}
+      {/* ── 4. Why us — comparison table ─────────────────────── */}
+      <ScrollReveal>
+        <section className="border-b border-[var(--color-border)] bg-[var(--color-surface)]">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+            <div className="text-center max-w-2xl mx-auto mb-10 md:mb-12">
+              <Eyebrow variant="brand" className="mb-3">
+                So why us?
+              </Eyebrow>
+              <h2 className="font-black tracking-[-0.025em] leading-[1.05] text-[clamp(28px,4vw,40px)] m-0 text-[var(--color-ink)]">
+                What you get here that you don&apos;t get elsewhere.
+              </h2>
+            </div>
+            <PlatformComparisonTable />
+          </div>
+        </section>
+      </ScrollReveal>
+
+      {/* ── 5. Final CTA — dark ribbon ────────────────────────── */}
       <ScrollReveal>
         <section className="bg-[var(--color-ink-deep)]">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">

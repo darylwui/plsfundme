@@ -5,6 +5,8 @@ import Link from "next/link";
 import { CheckCircle2, Circle, BookOpen, ArrowRight } from "lucide-react";
 import { BackLink } from "@/components/ui/back-link";
 import { BackToTop } from "@/components/ui/back-to-top";
+import { Button } from "@/components/ui/button";
+import { Eyebrow } from "@/components/marketing/Eyebrow";
 import { LAUNCH_SECTIONS, LAUNCH_TOTAL_ITEMS } from "./_data";
 
 const STORAGE_KEY = "gtb-launch-guide-v1";
@@ -69,12 +71,10 @@ export default function LaunchGuidePage() {
 
         {/* Hero */}
         <div className="mb-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-brand-crumb)] dark:bg-[var(--color-brand-crust-dark)]/25 mb-4">
-            <BookOpen className="w-4 h-4 text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)]" />
-            <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-brand-crust-dark)] dark:text-[var(--color-brand-golden)]">
-              Creator launch guide
-            </span>
-          </div>
+          <Eyebrow variant="crust-dark" className="mb-4 inline-flex items-center gap-2">
+            <BookOpen className="w-3.5 h-3.5" />
+            Creator launch guide
+          </Eyebrow>
           <h1 className="text-4xl font-black text-[var(--color-ink)] tracking-tight">
             Everything you need before you launch
           </h1>
@@ -234,17 +234,19 @@ export default function LaunchGuidePage() {
         </div>
 
         {/* CTA */}
-        <div className="mt-12 rounded-[var(--radius-card)] bg-[var(--color-brand-crust)] px-8 py-8 text-center">
-          <h3 className="text-xl font-black text-white mb-2">Ready to launch?</h3>
-          <p className="text-sm text-white/75 mb-5">
+        <div className="mt-12 rounded-[var(--radius-card)] bg-[var(--color-ink-deep)] px-8 py-10 text-center">
+          <Eyebrow variant="golden" className="mb-4">
+            Let&apos;s go
+          </Eyebrow>
+          <h3 className="text-xl font-black text-white mb-2 tracking-[-0.02em]">Ready to launch?</h3>
+          <p className="text-sm text-white/70 mb-6">
             Open the campaign form — you&apos;ve got everything you need.
           </p>
-          <Link
-            href="/projects/create"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[var(--color-brand-golden)] text-white font-bold text-sm hover:opacity-90 transition-opacity"
-          >
-            Start your campaign <ArrowRight className="w-4 h-4" />
-          </Link>
+          <Button asChild variant="primary" size="md">
+            <Link href="/projects/create">
+              Start your campaign <ArrowRight className="w-4 h-4" />
+            </Link>
+          </Button>
         </div>
 
         {/* Back to top */}
