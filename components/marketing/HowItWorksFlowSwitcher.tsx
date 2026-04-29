@@ -141,7 +141,7 @@ export function HowItWorksFlowSwitcher() {
             <ToggleButton
               active={audience === "creator"}
               onClick={() => setAudience("creator")}
-              label="I'm launching one"
+              label="I'm creating a project"
             />
           </div>
         </div>
