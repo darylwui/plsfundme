@@ -83,12 +83,12 @@ export async function PATCH(request: Request, { params }: RouteContext) {
     invalidateProjectCaches(project.slug);
 
     // Email the creator
-    const { data: { user: creatorAuth } } = await service.auth.admin.getUserById(project.creator_id);
-    const { data: profile } = await service.from("profiles").select("display_name").eq("id", project.creator_id).single();
-    if (creatorAuth?.email && profile) {
+    const { data: approveAuthData } = await service.auth.admin.getUserById(project.creator_id);
+    const { data: approveProfile } = await service.from("profiles").select("display_name").eq("id", project.creator_id).single();
+    if (approveAuthData?.user?.email && approveProfile) {
       await sendProjectApprovedEmail({
-        creatorEmail: creatorAuth.email,
-        creatorName: (profile as any).display_name,
+        creatorEmail: approveAuthData.user.email,
+        creatorName: (approveProfile as any).display_name,
         projectTitle: project.title,
         projectSlug: project.slug,
       }).catch(console.error);
@@ -116,12 +116,12 @@ export async function PATCH(request: Request, { params }: RouteContext) {
 
     invalidateProjectCaches(project.slug);
 
-    const { data: { user: creatorAuth } } = await service.auth.admin.getUserById(project.creator_id);
-    const { data: profile } = await service.from("profiles").select("display_name").eq("id", project.creator_id).single();
-    if (creatorAuth?.email && profile) {
+    const { data: rejectAuthData } = await service.auth.admin.getUserById(project.creator_id);
+    const { data: rejectProfile } = await service.from("profiles").select("display_name").eq("id", project.creator_id).single();
+    if (rejectAuthData?.user?.email && rejectProfile) {
       await sendProjectRejectedEmail({
-        creatorEmail: creatorAuth.email,
-        creatorName: (profile as any).display_name,
+        creatorEmail: rejectAuthData.user.email,
+        creatorName: (rejectProfile as any).display_name,
         projectTitle: project.title,
         reasonCode: reasonCode.trim(),
         message: message.trim(),
@@ -143,12 +143,12 @@ export async function PATCH(request: Request, { params }: RouteContext) {
 
     invalidateProjectCaches(project.slug);
 
-    const { data: { user: creatorAuth } } = await service.auth.admin.getUserById(project.creator_id);
-    const { data: profile } = await service.from("profiles").select("display_name").eq("id", project.creator_id).single();
-    if (creatorAuth?.email && profile) {
+    const { data: removeAuthData } = await service.auth.admin.getUserById(project.creator_id);
+    const { data: removeProfile } = await service.from("profiles").select("display_name").eq("id", project.creator_id).single();
+    if (removeAuthData?.user?.email && removeProfile) {
       await sendProjectRemovedEmail({
-        creatorEmail: creatorAuth.email,
-        creatorName: (profile as any).display_name,
+        creatorEmail: removeAuthData.user.email,
+        creatorName: (removeProfile as any).display_name,
         projectTitle: project.title,
         reason: reason,
       }).catch(console.error);
