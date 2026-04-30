@@ -138,12 +138,12 @@ function RewardUnavailableNotice({
       : `“${unavailable.rewardTitle}” was removed by the creator. Pick another reward, or pledge without one — the campaign is still open.`;
 
   return (
-    <div className="rounded-[var(--radius-card)] border border-amber-200 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/20 p-5 flex flex-col gap-4">
+    <div className="rounded-[var(--radius-card)] border border-[var(--color-brand-warning)]/30 bg-[var(--color-brand-warning)]/10 p-5 flex flex-col gap-4">
       <div className="flex items-start gap-3">
-        <XCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+        <XCircle className="w-5 h-5 text-[var(--color-brand-warning)] shrink-0 mt-0.5" />
         <div className="min-w-0">
-          <p className="font-bold text-amber-900 dark:text-amber-200">{headline}</p>
-          <p className="text-sm text-amber-800 dark:text-amber-300 mt-1 leading-relaxed">
+          <p className="font-bold text-[var(--color-ink)]">{headline}</p>
+          <p className="text-sm text-[var(--color-ink-muted)] mt-1 leading-relaxed">
             {body}
           </p>
         </div>

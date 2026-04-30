@@ -39,8 +39,8 @@ export default function ForgotPasswordPage() {
     return (
       <Card padding="lg" className="flex flex-col gap-6 text-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-14 h-14 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-            <CheckCircle className="w-7 h-7 text-green-600 dark:text-green-400" />
+          <div className="w-14 h-14 rounded-full bg-[var(--color-brand-success)]/10 flex items-center justify-center">
+            <CheckCircle className="w-7 h-7 text-[var(--color-brand-success)]" />
           </div>
           <h1 className="text-2xl font-black text-[var(--color-ink)] tracking-tight">
             Check your inbox

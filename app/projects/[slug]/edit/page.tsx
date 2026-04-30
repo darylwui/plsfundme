@@ -94,22 +94,22 @@ export default async function EditProjectPage({ params }: EditProjectPageProps) 
 
         {/* Rejection banner */}
         {isRejected && (
-          <div className="mb-8 rounded-[var(--radius-card)] border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 overflow-hidden">
-            <div className="px-5 py-4 flex items-start gap-3 border-b border-red-200 dark:border-red-800">
+          <div className="mb-8 rounded-[var(--radius-card)] border border-[var(--color-brand-danger)]/30 bg-[var(--color-brand-danger)]/10 overflow-hidden">
+            <div className="px-5 py-4 flex items-start gap-3 border-b border-[var(--color-brand-danger)]/30">
               <XCircle className="w-5 h-5 text-[var(--color-brand-danger)] shrink-0 mt-0.5" />
               <div>
-                <p className="font-bold text-red-800 dark:text-red-300">Your campaign was not approved</p>
-                <p className="text-sm text-red-700 dark:text-red-400 mt-0.5">
+                <p className="font-bold text-[var(--color-ink)]">Your campaign was not approved</p>
+                <p className="text-sm text-[var(--color-ink-muted)] mt-0.5">
                   Address the feedback below, then resubmit. Our team will review again within 1–2 business days.
                 </p>
               </div>
             </div>
             {rejectionReason && (
-              <div className="px-5 py-4 border-b border-red-200 dark:border-red-800">
-                <p className="text-xs font-bold uppercase tracking-wider text-red-500 dark:text-red-400 mb-1.5">
+              <div className="px-5 py-4 border-b border-[var(--color-brand-danger)]/30">
+                <p className="text-xs font-bold uppercase tracking-wider text-[var(--color-brand-danger)] mb-1.5">
                   Feedback from reviewer
                 </p>
-                <p className="text-sm text-red-800 dark:text-red-300 leading-relaxed">
+                <p className="text-sm text-[var(--color-ink)] leading-relaxed">
                   {rejectionReason}
                 </p>
               </div>
