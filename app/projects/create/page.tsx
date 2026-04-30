@@ -68,8 +68,8 @@ export default async function CreateProjectPage() {
     return (
       <main className="flex-1 bg-[var(--color-surface-raised)] flex items-center justify-center px-4 py-16">
         <div className="max-w-md w-full text-center flex flex-col items-center gap-5">
-            <div className="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center">
-              <Clock className="w-8 h-8 text-amber-600" />
+            <div className="w-16 h-16 rounded-full bg-[var(--color-brand-warning)]/10 flex items-center justify-center">
+              <Clock className="w-8 h-8 text-[var(--color-brand-warning)]" />
             </div>
             <div>
               <h1 className="text-xl font-bold text-[var(--color-ink)]">
@@ -79,7 +79,7 @@ export default async function CreateProjectPage() {
                 Your Creator application is currently being reviewed by our team. We&apos;ll notify you within <strong>1–2 business days</strong>.
               </p>
             </div>
-            <div className="w-full rounded-[var(--radius-card)] border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700">
+            <div className="w-full rounded-[var(--radius-card)] border border-[var(--color-brand-warning)]/30 bg-[var(--color-brand-warning)]/10 px-4 py-3 text-xs text-[var(--color-brand-warning)]">
               Once approved, you&apos;ll be able to create and launch your first campaign.
             </div>
             <Link
@@ -98,8 +98,8 @@ export default async function CreateProjectPage() {
     return (
       <main className="flex-1 bg-[var(--color-surface-raised)] flex items-center justify-center px-4 py-16">
         <div className="max-w-md w-full text-center flex flex-col items-center gap-5">
-            <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
-              <XCircle className="w-8 h-8 text-red-600" />
+            <div className="w-16 h-16 rounded-full bg-[var(--color-brand-danger)]/10 flex items-center justify-center">
+              <XCircle className="w-8 h-8 text-[var(--color-brand-danger)]" />
             </div>
             <div>
               <h1 className="text-xl font-bold text-[var(--color-ink)]">
@@ -110,9 +110,9 @@ export default async function CreateProjectPage() {
               </p>
             </div>
             {creatorProfile.rejection_reason && (
-              <div className="w-full rounded-[var(--radius-card)] border border-red-200 bg-red-50 px-4 py-3 text-left">
-                <p className="text-xs font-semibold text-red-700 mb-1">Reason</p>
-                <p className="text-xs text-red-600">{creatorProfile.rejection_reason}</p>
+              <div className="w-full rounded-[var(--radius-card)] border border-[var(--color-brand-danger)]/30 bg-[var(--color-brand-danger)]/10 px-4 py-3 text-left">
+                <p className="text-xs font-semibold text-[var(--color-brand-danger)] mb-1">Reason</p>
+                <p className="text-xs text-[var(--color-brand-danger)]">{creatorProfile.rejection_reason}</p>
               </div>
             )}
             <Link

@@ -48,7 +48,7 @@ export default async function ConfirmationPage({
       <TrackPledge />
       <div className="max-w-md w-full flex flex-col gap-4">
         <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] shadow-[var(--shadow-card)] p-8 text-center">
-          <div className="w-16 h-16 rounded-full bg-lime-100 dark:bg-lime-900/20 flex items-center justify-center mx-auto mb-6">
+          <div className="w-16 h-16 rounded-full bg-[var(--color-brand-success)]/10 flex items-center justify-center mx-auto mb-6">
             <CheckCircle className="w-8 h-8 text-[var(--color-brand-success)]" />
           </div>
 

@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { AlertCircle, RefreshCw, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { SingpassIcon } from "@/components/icons/SingpassIcon";
+
+export const metadata: Metadata = {
+  title: "SingPass verification error",
+  description: "Something went wrong with SingPass verification. Try again or contact support.",
+};
 
 const MESSAGES: Record<string, { heading: string; body: string; action: "retry" | "support" | "back" }> = {
   duplicate: {
@@ -35,8 +42,8 @@ export default async function SingPassErrorPage({
           <div className="rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.7)] dark:shadow-none p-8 text-center flex flex-col items-center gap-5">
             <div className="relative">
               <SingpassIcon className="w-12 h-12" />
-              <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-red-100 dark:bg-red-900/50 ring-2 ring-[var(--color-surface)] flex items-center justify-center">
-                <AlertCircle className="w-3 h-3 text-red-600 dark:text-red-400" />
+              <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[var(--color-brand-danger)]/15 ring-2 ring-[var(--color-surface)] flex items-center justify-center">
+                <AlertCircle className="w-3 h-3 text-[var(--color-brand-danger)]" />
               </span>
             </div>
 
@@ -51,29 +58,26 @@ export default async function SingPassErrorPage({
 
             <div className="flex flex-col sm:flex-row gap-3 w-full">
               {msg.action === "retry" && (
-                <Link
-                  href="/api/auth/singpass"
-                  className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-[var(--radius-btn)] bg-[var(--color-brand-crust)] text-white font-semibold text-sm"
-                >
-                  <RefreshCw className="w-4 h-4" />
-                  Try again
-                </Link>
+                <Button asChild variant="primary" size="md" className="flex-1">
+                  <Link href="/api/auth/singpass">
+                    <RefreshCw className="w-4 h-4" />
+                    Try again
+                  </Link>
+                </Button>
               )}
               {msg.action === "support" && (
-                <a
-                  href="mailto:hello@getthatbread.sg"
-                  className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-[var(--radius-btn)] bg-[var(--color-brand-crust)] text-white font-semibold text-sm"
-                >
-                  Contact support
-                </a>
+                <Button asChild variant="primary" size="md" className="flex-1">
+                  <a href="mailto:hello@getthatbread.sg">
+                    Contact support
+                  </a>
+                </Button>
               )}
-              <Link
-                href="/dashboard"
-                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-[var(--radius-btn)] bg-[var(--color-surface-overlay)] border border-[var(--color-border)] text-[var(--color-ink)] font-semibold text-sm"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Back to dashboard
-              </Link>
+              <Button asChild variant="secondary" size="md" className="flex-1">
+                <Link href="/dashboard">
+                  <ArrowLeft className="w-4 h-4" />
+                  Back to dashboard
+                </Link>
+              </Button>
             </div>
           </div>
         </div>

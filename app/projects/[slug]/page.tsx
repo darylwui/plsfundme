@@ -206,7 +206,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     <div className="min-h-screen bg-[var(--color-surface)]">
       {/* Pending review banner */}
       {isPendingReview && (
-        <div className="bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800 px-4 py-3 text-sm text-amber-800 dark:text-amber-300 text-center flex items-center justify-center gap-2">
+        <div className="bg-[var(--color-brand-warning)]/10 border-b border-[var(--color-brand-warning)]/30 px-4 py-3 text-sm text-[var(--color-brand-warning)] text-center flex items-center justify-center gap-2">
           <Clock className="w-4 h-4 shrink-0" />
           <span>
             <strong>Under review</strong> — Your campaign is pending admin approval and is not yet
