@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { headers } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
@@ -70,6 +71,10 @@ export default async function RootLayout({
   // actual Stripe charges always settle in SGD regardless.
   const usdToSgdRate = await getUsdToSgdRate();
 
+  // Per-request CSP nonce, set by middleware. Applied to inline <Script>
+  // tags below so they're permitted under our nonce-based CSP.
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
+
   return (
     <html
       lang="en"
@@ -81,7 +86,7 @@ export default async function RootLayout({
             tells Next to emit this inline in <head> during SSR, avoiding the
             React 19 "script tag while rendering" warning that fires when you
             put raw <script> in a Server Component tree. */}
-        <Script id="theme-init" strategy="beforeInteractive">
+        <Script id="theme-init" strategy="beforeInteractive" nonce={nonce}>
           {`(function(){try{var t=localStorage.getItem('theme');var p=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';if((t||p)==='dark')document.documentElement.classList.add('dark');}catch(e){}})();`}
         </Script>
 
