@@ -163,7 +163,7 @@ export function HowItWorksFlowSwitcher() {
                     Want the full picture?
                   </h2>
                   <p className="mt-2 text-sm sm:text-base leading-[1.55] text-[var(--color-ink-muted)] max-w-md">
-                    The creator guide covers the full campaign journey — timeline, what happens if you miss your goal, and the launch checklist.
+                    The creator guide covers the full campaign journey — timeline, comparison vs other platforms, and the launch checklist.
                   </p>
                 </div>
                 <Link
