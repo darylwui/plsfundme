@@ -94,7 +94,7 @@ export function Navbar() {
                 <>
                   {user ? (
                     <>
-                      <Button asChild variant="ghost" size="sm" className="text-[var(--color-ink-invert-muted)] hover:text-[var(--color-ink-invert)] hover:bg-white/5">
+                      <Button asChild variant="ghost" size="sm" className="text-[var(--color-brand-golden)]! hover:text-[var(--color-brand-golden)]! hover:bg-[var(--color-brand-golden)]/10">
                         <Link href="/projects/create">
                           <PlusCircle className="w-3.5 h-3.5" />
                           New campaign
@@ -106,7 +106,7 @@ export function Navbar() {
                     </>
                   ) : (
                     <>
-                      <Button asChild variant="ghost" size="sm" className="text-[var(--color-ink-invert-muted)] hover:text-[var(--color-ink-invert)] hover:bg-white/5">
+                      <Button asChild variant="ghost" size="sm" className="text-[var(--color-brand-golden)]! hover:text-[var(--color-brand-golden)]! hover:bg-[var(--color-brand-golden)]/10">
                         <Link href="/login">Log in</Link>
                       </Button>
                       <Button asChild variant="primary" size="sm">
@@ -170,7 +170,7 @@ export function Navbar() {
                   </>
                 ) : (
                   <>
-                    <Button asChild variant="ghost" size="md" fullWidth className="text-[var(--color-ink-invert-muted)]">
+                    <Button asChild variant="ghost" size="md" fullWidth className="text-[var(--color-brand-golden)]! hover:text-[var(--color-brand-golden)]! hover:bg-[var(--color-brand-golden)]/10">
                       <Link href="/login" onClick={() => setMenuOpen(false)}>Log in</Link>
                     </Button>
                     <Button asChild variant="primary" size="md" fullWidth>
