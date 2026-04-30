@@ -2,6 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { ProjectGrid } from "@/components/projects/ProjectGrid";
 import { Search, TrendingUp, Star, Clock, Sparkles, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { Eyebrow } from "@/components/marketing/Eyebrow";
+import { HeroGlow } from "@/components/marketing/HeroGlow";
 import type { ProjectWithRelations } from "@/types/project";
 import type { Category } from "@/types/project";
 
@@ -98,20 +100,20 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
   }
 
   return (
-    <div>
+    <div className="bg-[var(--color-surface)]">
       {/* Page hero */}
-      <section className="bg-gradient-to-br from-amber-50 via-[#FFFBF5] to-orange-50 dark:from-[#0f0f0f] dark:via-[#0a0a0a] dark:to-[#111111] border-b border-[var(--color-border)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
-            <div>
-              <h1 className="text-3xl md:text-4xl font-black tracking-tight text-[var(--color-ink)]">
-                Explore projects
-              </h1>
-              <p className="text-[var(--color-ink-muted)] mt-1.5">
-                <span className="font-mono font-bold text-[var(--color-brand-crust)] dark:text-[var(--color-brand-golden)]">{typedProjects.length}</span> active campaign{typedProjects.length !== 1 ? "s" : ""} live right now
-              </p>
-            </div>
-          </div>
+      <section className="relative overflow-hidden border-b border-[var(--color-border)]">
+        <HeroGlow tone="golden" origin="top-left" intensity={0.16} size="600px 300px" />
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+          <Eyebrow variant="brand" className="mb-3">
+            Explore
+          </Eyebrow>
+          <h1 className="font-black tracking-[-0.03em] leading-[1.05] text-[clamp(28px,4vw,40px)] m-0 text-[var(--color-ink)]">
+            Explore projects
+          </h1>
+          <p className="text-[var(--color-ink-muted)] mt-1.5">
+            <span className="font-mono font-bold text-[var(--color-brand-crust)]">{typedProjects.length}</span> active campaign{typedProjects.length !== 1 ? "s" : ""} live right now
+          </p>
         </div>
       </section>
 
