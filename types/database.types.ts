@@ -301,6 +301,7 @@ export type Database = {
       }
       pledges: {
         Row: {
+          amount_refunded_sgd: number
           amount_sgd: number
           backer_id: string
           backer_note: string | null
@@ -327,6 +328,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          amount_refunded_sgd?: number
           amount_sgd: number
           backer_id: string
           backer_note?: string | null
@@ -353,6 +355,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          amount_refunded_sgd?: number
           amount_sgd?: number
           backer_id?: string
           backer_note?: string | null

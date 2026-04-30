@@ -179,43 +179,71 @@ export async function POST(request: Request) {
       if (pi) {
         const { data: pledge } = await supabase
           .from("pledges")
-          .select("project_id, amount_sgd, reward_id, backer:profiles!backer_id(display_name, id)")
+          .select("project_id, amount_sgd, amount_refunded_sgd, reward_id, backer:profiles!backer_id(display_name, id)")
           .eq("stripe_payment_intent_id", pi)
           .single();
 
         if (pledge) {
-          await supabase
-            .from("pledges")
-            .update({ status: "refunded" })
-            .eq("stripe_payment_intent_id", pi);
+          // Stripe emits a separate charge.refunded event for every refund
+          // against a charge — partial or full. `charge.amount_refunded` is
+          // the cumulative refunded amount in cents, so we compute the
+          // delta against what we've already accounted for. The optimistic
+          // update by previous cumulative also guards against a duplicate
+          // event slipping past processed_stripe_events dedup.
+          const newCumulative = (charge.amount_refunded ?? 0) / 100;
+          const oldCumulative = Number((pledge as any).amount_refunded_sgd ?? 0);
+          const delta = +(newCumulative - oldCumulative).toFixed(2);
 
-          await supabase.rpc("decrement_pledge_totals", {
-            p_project_id: (pledge as any).project_id,
-            p_amount_sgd: (pledge as any).amount_sgd,
-          });
+          if (delta > 0) {
+            const fullyRefunded = newCumulative >= Number((pledge as any).amount_sgd);
 
-          if ((pledge as any).reward_id) {
-            await supabase.rpc("release_reward_slot", {
-              p_reward_id: (pledge as any).reward_id,
-            });
-          }
+            const { data: claimed } = await supabase
+              .from("pledges")
+              .update({
+                amount_refunded_sgd: newCumulative,
+                ...(fullyRefunded ? { status: "refunded" } : {}),
+              })
+              .eq("stripe_payment_intent_id", pi)
+              .eq("amount_refunded_sgd", oldCumulative)
+              .select("id")
+              .maybeSingle();
 
-          // Email backer — refund notification
-          const backer = (pledge as any).backer;
-          if (backer) {
-            const { data: { user } } = await supabase.auth.admin.getUserById(backer.id);
-            const { data: project } = await supabase
-              .from("projects")
-              .select("title")
-              .eq("id", (pledge as any).project_id)
-              .single();
-            if (user?.email && project) {
-              await sendPledgeRefundedEmail({
-                backerEmail: user.email,
-                backerName: backer.display_name,
-                projectTitle: (project as any).title,
-                amount: (pledge as any).amount_sgd,
-              }).catch(console.error);
+            if (claimed) {
+              await supabase.rpc("decrement_pledge_totals", {
+                p_project_id: (pledge as any).project_id,
+                p_amount_sgd: delta,
+              });
+
+              // Release the reward slot exactly once, when this event
+              // pushes the pledge across the fully-refunded threshold.
+              if (
+                fullyRefunded &&
+                oldCumulative < Number((pledge as any).amount_sgd) &&
+                (pledge as any).reward_id
+              ) {
+                await supabase.rpc("release_reward_slot", {
+                  p_reward_id: (pledge as any).reward_id,
+                });
+              }
+
+              // Email backer — refund notification (send for every refund event)
+              const backer = (pledge as any).backer;
+              if (backer) {
+                const { data: { user } } = await supabase.auth.admin.getUserById(backer.id);
+                const { data: project } = await supabase
+                  .from("projects")
+                  .select("title")
+                  .eq("id", (pledge as any).project_id)
+                  .single();
+                if (user?.email && project) {
+                  await sendPledgeRefundedEmail({
+                    backerEmail: user.email,
+                    backerName: backer.display_name,
+                    projectTitle: (project as any).title,
+                    amount: delta,
+                  }).catch(console.error);
+                }
+              }
             }
           }
         }

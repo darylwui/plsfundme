@@ -47,10 +47,8 @@ export async function POST(req: NextRequest) {
 
     const service = createServiceClient();
 
-    // Look up existing user by email to avoid duplicates.
-    // listUsers() paginates at 1000/page — iterate until we find a match
-    // or exhaust all pages. This avoids the silent correctness bug where
-    // users beyond page 1 (default 50) were invisible to the duplicate check.
+    // Look up existing user by email. listUsers() paginates at 1000/page;
+    // iterate until we find a match or exhaust pages.
     let existingUser: Awaited<ReturnType<typeof service.auth.admin.listUsers>>["data"]["users"][number] | undefined;
     let page = 1;
     while (!existingUser) {
@@ -62,44 +60,31 @@ export async function POST(req: NextRequest) {
       page++;
     }
 
-    let userId: string;
-
     if (existingUser) {
-      // Check if they already have a creator application in good standing
-      const { data: existingCreator } = await service
-        .from("creator_profiles")
-        .select("status")
-        .eq("id", existingUser.id)
-        .maybeSingle();
-
-      if (existingCreator?.status === "approved" || existingCreator?.status === "pending_review") {
-        return NextResponse.json({ error: "An application with this email already exists. Please log in." }, { status: 400 });
-      }
-
-      // Allow re-apply for rejected/needs_info — update password and re-submit
-      const { error: updateErr } = await service.auth.admin.updateUserById(existingUser.id, {
-        password,
-        user_metadata: { full_name: displayName.trim(), role: "creator" },
-        email_confirm: true,
-      });
-      if (updateErr) {
-        return NextResponse.json({ error: updateErr.message }, { status: 500 });
-      }
-      userId = existingUser.id;
-    } else {
-      // Create user atomically via admin API with email auto-confirmed.
-      // (Creators require admin approval anyway, so email confirmation is redundant.)
-      const { data: created, error: createErr } = await service.auth.admin.createUser({
-        email,
-        password,
-        email_confirm: true,
-        user_metadata: { full_name: displayName.trim(), role: "creator" },
-      });
-      if (createErr || !created?.user) {
-        return NextResponse.json({ error: createErr?.message ?? "Failed to create user" }, { status: 500 });
-      }
-      userId = created.user.id;
+      // This endpoint is unauthenticated — it must never modify an existing
+      // account's credentials. Any re-application path (including for
+      // rejected creators) must run from a logged-in session through a
+      // separate authenticated endpoint, or the user must reset their
+      // password via the email-link flow first. Without that gate, anyone
+      // who knows a victim's email could overwrite their password here.
+      return NextResponse.json(
+        { error: "An account with this email already exists. Please log in to continue your application." },
+        { status: 400 }
+      );
     }
+
+    // Create user atomically via admin API with email auto-confirmed.
+    // (Creators require admin approval anyway, so email confirmation is redundant.)
+    const { data: created, error: createErr } = await service.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+      user_metadata: { full_name: displayName.trim(), role: "creator" },
+    });
+    if (createErr || !created?.user) {
+      return NextResponse.json({ error: createErr?.message ?? "Failed to create user" }, { status: 500 });
+    }
+    const userId = created.user.id;
 
     // Ensure profile row exists (handle_new_user trigger should fire on email_confirm=true,
     // but upsert defensively so retries / edge cases work).
