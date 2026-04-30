@@ -112,7 +112,7 @@ export default async function CreateProjectPage() {
             {creatorProfile.rejection_reason && (
               <div className="w-full rounded-[var(--radius-card)] border border-[var(--color-brand-danger)]/30 bg-[var(--color-brand-danger)]/10 px-4 py-3 text-left">
                 <p className="text-xs font-semibold text-[var(--color-brand-danger)] mb-1">Reason</p>
-                <p className="text-xs text-[var(--color-brand-danger)]">{creatorProfile.rejection_reason}</p>
+                <p className="text-xs text-[var(--color-ink)] leading-relaxed">{creatorProfile.rejection_reason}</p>
               </div>
             )}
             <Link
