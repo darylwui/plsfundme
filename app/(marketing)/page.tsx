@@ -135,7 +135,10 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
             {/* Left — headline + CTAs */}
             <div className="max-w-xl">
-              <h1 className="text-[clamp(40px,6vw,60px)] font-black tracking-[-0.035em] leading-[1.02] m-0 text-[var(--color-ink)]">
+              <Eyebrow variant="brand" className="mb-3.5">
+                Built in Singapore
+              </Eyebrow>
+              <h1 className="text-[clamp(40px,6vw,68px)] font-black tracking-[-0.035em] leading-[1.02] m-0 text-[var(--color-ink)]">
                 <span className="block">Let&apos;s go</span>{" "}
                 <span className="block text-[var(--color-brand-crust)]">get that bread.</span>
               </h1>
