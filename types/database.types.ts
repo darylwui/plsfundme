@@ -188,8 +188,11 @@ export type Database = {
       }
       creator_verifications: {
         Row: {
+          consent_granted_at: string | null
+          consent_scopes: string[] | null
           created_at: string
           method: string
+          myinfo_txn_id: string | null
           nationality: string | null
           profile_id: string
           residency: string | null
@@ -199,8 +202,11 @@ export type Database = {
           verified_name: string
         }
         Insert: {
+          consent_granted_at?: string | null
+          consent_scopes?: string[] | null
           created_at?: string
           method: string
+          myinfo_txn_id?: string | null
           nationality?: string | null
           profile_id: string
           residency?: string | null
@@ -210,8 +216,11 @@ export type Database = {
           verified_name: string
         }
         Update: {
+          consent_granted_at?: string | null
+          consent_scopes?: string[] | null
           created_at?: string
           method?: string
+          myinfo_txn_id?: string | null
           nationality?: string | null
           profile_id?: string
           residency?: string | null
