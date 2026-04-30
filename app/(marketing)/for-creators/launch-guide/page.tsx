@@ -7,6 +7,7 @@ import { BackLink } from "@/components/ui/back-link";
 import { BackToTop } from "@/components/ui/back-to-top";
 import { Button } from "@/components/ui/button";
 import { Eyebrow } from "@/components/marketing/Eyebrow";
+import { HeroGlow } from "@/components/marketing/HeroGlow";
 import { LAUNCH_SECTIONS, LAUNCH_TOTAL_ITEMS } from "./_data";
 
 const STORAGE_KEY = "gtb-launch-guide-v1";
@@ -62,28 +63,31 @@ export default function LaunchGuidePage() {
   const UNLOCK_PCT = Math.round((topItemIds.length / LAUNCH_TOTAL_ITEMS) * 100);
 
   return (
-    <div className="min-h-screen bg-[var(--color-surface-raised)]">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        {/* Back link — top left */}
-        <div className="mb-8">
-          <BackLink href="/for-creators">Back to For Creators</BackLink>
-        </div>
-
-        {/* Hero */}
-        <div className="mb-10">
-          <Eyebrow variant="crust-dark" className="mb-4 inline-flex items-center gap-2">
+    <div className="bg-[var(--color-surface)]">
+      {/* ── Hero ─────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden border-b border-[var(--color-border)]">
+        <HeroGlow tone="golden" origin="center" intensity={0.18} size="640px 320px" />
+        <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 md:py-24 text-center">
+          <div className="mb-6 flex justify-center">
+            <BackLink href="/for-creators">Back to For Creators</BackLink>
+          </div>
+          <Eyebrow variant="brand" className="mb-3.5 inline-flex items-center gap-2">
             <BookOpen className="w-3.5 h-3.5" />
             Creator launch guide
           </Eyebrow>
-          <h1 className="text-4xl font-black text-[var(--color-ink)] tracking-tight">
-            Everything you need before you launch
+          <h1 className="font-black tracking-[-0.035em] leading-[1.02] text-[clamp(36px,6vw,56px)] m-0 text-[var(--color-ink)]">
+            Everything you need before you launch.
           </h1>
-          <p className="mt-3 text-[var(--color-ink-muted)] text-lg leading-relaxed">
+          <p className="mt-5 text-base sm:text-lg leading-[1.55] text-[var(--color-ink-muted)] max-w-2xl mx-auto">
             This is your prep list. Run through it before you open the campaign form — the
             more ready you are, the stronger your campaign lands on day one.
           </p>
         </div>
+      </section>
 
+      {/* ── Body ─────────────────────────────────────────────── */}
+      <section className="bg-[var(--color-surface-raised)]">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
         {/* Progress bar — hidden until mounted to avoid hydration flash */}
         {mounted && (
           <div className="mb-10">
@@ -248,11 +252,11 @@ export default function LaunchGuidePage() {
             </Link>
           </Button>
         </div>
-
-        {/* Back to top */}
-        <div className="mt-8 flex justify-center">
-          <BackToTop />
         </div>
+      </section>
+
+      <div className="flex justify-center py-10 border-t border-[var(--color-border)] bg-[var(--color-surface-raised)]">
+        <BackToTop />
       </div>
     </div>
   );
