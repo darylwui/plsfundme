@@ -77,8 +77,8 @@ function ResetPasswordContent() {
   if (stage === "expired") {
     return (
       <Card padding="lg" className="flex flex-col items-center gap-5 text-center">
-        <div className="w-14 h-14 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-          <AlertCircle className="w-7 h-7 text-red-500" />
+        <div className="w-14 h-14 rounded-full bg-[var(--color-brand-danger)]/10 flex items-center justify-center">
+          <AlertCircle className="w-7 h-7 text-[var(--color-brand-danger)]" />
         </div>
         <div className="flex flex-col gap-1.5">
           <h1 className="text-2xl font-black text-[var(--color-ink)] tracking-tight">
